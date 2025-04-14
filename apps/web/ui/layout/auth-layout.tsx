@@ -30,11 +30,11 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
           </ClientOnly>
         </div>
 
-        <div className="fixed bottom-0 pl-10 left-0 grid gap-2 pb-8 pt-4 bg-white w-full">
+        <div className="fixed bottom-0 pl-10 left-0 grid gap-1 py-1 bg-white w-full">
           <p className="text-xs text-neutral-600">
             © {new Date().getFullYear()} PIMMS. 
           </p>
-          <div className="flex gap-3 text-center text-xs text-neutral-500 underline underline-offset-2">
+          <div className="flex gap-3 text-center text-xs text-neutral-500">
             <a
               href="https://pimms.io/legal/privacy"
               target="_blank"

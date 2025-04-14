@@ -7,7 +7,7 @@ Direct your users seamlessly into the right mobile apps, maximize engagement, an
 - 📈 **Maximize conversion and engagement**
 - 📊 **Gain real-time insights into your audience's journey**
 
-[Website →](https://pimms.io) · [Twitter](https://twitter.com/getpimms) · [License](LICENSE)
+[Website →](https://pimms.io) · [App →](https://app.pimms.io) · [License](https://github.com/getpimms/pim-ms/blob/main/LICENSE.md)
 
 This project is a fork of [Dub.co](https://github.com/dubinc/dub)
 
@@ -71,8 +71,7 @@ With PIMMS, you can:
 We love our contributors! Here’s how you can get involved:
 
 1. **Report bugs or suggest improvements** by opening an issue.
-2. **Start coding** using our [local development guide](https://pimms.io/local-development).
-3. **Submit a pull request** to enhance features, improve documentation, or fix bugs.
+2. **Submit a pull request** to enhance features, improve documentation, or fix bugs.
 
 ---
 
