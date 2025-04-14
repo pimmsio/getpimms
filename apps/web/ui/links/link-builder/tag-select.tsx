@@ -156,7 +156,7 @@ export const TagSelect = memo(() => {
       <div className="mb-1 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <p className="text-sm font-medium text-neutral-700">Tags</p>
-          <InfoTooltip
+          {/* <InfoTooltip
             content={
               <SimpleTooltipContent
                 title={`Tags are used to organize your links in your ${process.env.NEXT_PUBLIC_APP_NAME} dashboard.`}
@@ -164,7 +164,7 @@ export const TagSelect = memo(() => {
                 href="https://dub.co/help/article/how-to-use-tags"
               />
             }
-          />
+          /> */}
         </div>
         <a
           href={`/${slug}/settings/library/tags`}

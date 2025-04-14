@@ -1,5 +1,6 @@
 "use client";
 
+import { mutatePrefix } from "@/lib/swr/mutate";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { ExpandedLinkProps } from "@/lib/types";
 import { LinkBuilderDestinationUrlInput } from "@/ui/links/link-builder/controls/link-builder-destination-url-input";
@@ -30,6 +31,7 @@ import {
   ArrowTurnLeft,
   Button,
   ButtonProps,
+  FloatingActionButton,
   Modal,
   TooltipContent,
   useKeyboardShortcut,
@@ -180,24 +182,24 @@ function LinkBuilderInner({
               }
               draftControlsRef.current?.onClose();
             }}
-            foldersEnabled={!!flags?.linkFolders}
+            foldersEnabled={false}
           >
-            <DraftControls
+            {/* <DraftControls
               ref={draftControlsRef}
               props={props}
               workspaceId={workspaceId!}
-            />
+            /> */}
           </LinkBuilderHeader>
 
           <div
             className={cn(
-              "grid w-full gap-y-6 max-md:overflow-auto md:grid-cols-[2fr_1fr]",
+              "grid w-full sm:gap-y-6 max-md:overflow-auto md:grid-cols-[2fr_1fr]",
               "max-md:max-h-[calc(100dvh-200px)] max-md:min-h-[min(566px,_calc(100dvh-200px))]",
               "md:[&>div]:max-h-[calc(100dvh-200px)] md:[&>div]:min-h-[min(566px,_calc(100dvh-200px))]",
             )}
           >
             <div className="scrollbar-hide px-6 md:overflow-auto">
-              <div className="flex min-h-full flex-col gap-6 py-4">
+              <div className="flex min-h-full flex-col gap-3 sm:gap-6 py-4">
                 <LinkBuilderDestinationUrlInput />
 
                 <LinkBuilderShortLinkInput />
@@ -208,23 +210,23 @@ function LinkBuilderInner({
 
                 <ConversionTrackingToggle />
 
-                <div className="flex grow flex-col justify-end">
+                {/* <div className="flex grow flex-col justify-end">
                   <OptionsList />
-                </div>
+                </div> */}
               </div>
             </div>
-            <div className="scrollbar-hide px-6 md:overflow-auto md:pl-0 md:pr-4">
+            <div className="scrollbar-hide px-2 md:px-6 md:overflow-auto md:pl-0 md:pr-4">
               <div className="relative">
-                <div className="absolute inset-0 rounded-xl border border-neutral-200 bg-neutral-50 [mask-image:linear-gradient(to_bottom,black,transparent)]"></div>
+                <div className="absolute inset-0 rounded-3xl border-neutral-200 bg-neutral-50"></div>
                 <div className="relative flex flex-col gap-6 px-4 py-3">
-                  <LinkBuilderFolderSelector />
-                  <QRCodePreview />
+                  {/* <LinkBuilderFolderSelector /> */}
                   <LinkPreview />
+                  <QRCodePreview />
                 </div>
               </div>
             </div>
           </div>
-          <div className="flex items-center justify-between gap-2 border-t border-neutral-100 bg-neutral-50 p-4">
+          <div className="flex items-center gap-6 border-t border-neutral-100 bg-neutral-50 p-4">
             <LinkFeatureButtons />
             {homepageDemo ? (
               <Button
@@ -245,7 +247,7 @@ function LinkBuilderInner({
                     </div>
                   </span>
                 }
-                className="h-8 w-fit pl-2.5 pr-1.5"
+                className="h-8 w-full pl-2.5 pr-1.5"
               />
             )}
           </div>
@@ -259,9 +261,11 @@ type CreateLinkButtonProps = Partial<ButtonProps>;
 
 export function CreateLinkButton({
   setShowLinkBuilder,
+  floating,
   ...buttonProps
 }: {
   setShowLinkBuilder: Dispatch<SetStateAction<boolean>>;
+  floating?: boolean;
 } & CreateLinkButtonProps) {
   const { slug, nextPlan, exceededLinks } = useWorkspace();
 
@@ -295,8 +299,10 @@ export function CreateLinkButton({
     return () => document.removeEventListener("paste", handlePaste);
   }, []);
 
+  const CustomButton = floating ? FloatingActionButton : Button;
+
   return (
-    <Button
+    <CustomButton
       text="Create link"
       shortcut="C"
       disabledTooltip={
@@ -318,10 +324,12 @@ export function useLinkBuilder({
   props,
   duplicateProps,
   homepageDemo,
+  floating,
 }: {
   props?: ExpandedLinkProps;
   duplicateProps?: ExpandedLinkProps;
   homepageDemo?: boolean;
+  floating?: boolean;
 } = {}) {
   const workspace = useWorkspace();
   const [showLinkBuilder, setShowLinkBuilder] = useState(false);
@@ -343,7 +351,11 @@ export function useLinkBuilder({
   const CreateLinkButtonCallback = useCallback(
     (props?: CreateLinkButtonProps) => {
       return (
-        <CreateLinkButton setShowLinkBuilder={setShowLinkBuilder} {...props} />
+        <CreateLinkButton
+          setShowLinkBuilder={setShowLinkBuilder}
+          floating={floating}
+          {...props}
+        />
       );
     },
     [],

@@ -43,15 +43,16 @@ export const FolderSwitcher = () => {
   }, [folder, folderId]);
 
   return (
-    <div className="-ml-2 -mt-1 flex w-full items-center gap-1">
-      <FolderDropdown hideFolderIcon={true} />
+    <div className="flex w-full items-center gap-1">
+      <h1 className="text-xl font-semibold leading-7 text-neutral-900 md:text-2xl">Links</h1>
+      {/* <FolderDropdown hideFolderIcon={true} /> */}
 
-      {selectedFolder && (
+      {/* {selectedFolder && (
         <FolderActions
           folder={selectedFolder}
           onDelete={() => router.push(`/${slug}`)}
         />
-      )}
+      )} */}
     </div>
   );
 };

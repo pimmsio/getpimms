@@ -46,11 +46,11 @@ export function QR() {
             </div>
           </div>
           <div className="relative mt-2 flex h-40 items-center justify-center overflow-hidden rounded-xl border-[2px] border-neutral-300">
-            <ClientOnly>
+            {/* <ClientOnly>
               {!isMobile && (
-                <ShimmerDots className="opacity-30 [mask-image:radial-gradient(40%_80%,transparent_50%,black)]" />
+                <ShimmerDots className="opacity-30" />
               )}
-            </ClientOnly>
+            </ClientOnly> */}
             <div className="relative flex size-full items-center justify-center">
               <QRCode hideLogo={hideLogo} />
             </div>

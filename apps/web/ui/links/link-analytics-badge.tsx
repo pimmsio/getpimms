@@ -1,29 +1,18 @@
 import { useCheckFolderPermission } from "@/lib/swr/use-folder-permissions";
 import useWorkspace from "@/lib/swr/use-workspace";
 import {
-  Button,
   CardList,
-  CopyButton,
   CursorRays,
   InvoiceDollar,
-  Tooltip,
   useMediaQuery,
   UserCheck,
 } from "@dub/ui";
-import { ReferredVia } from "@dub/ui/icons";
-import {
-  APP_DOMAIN,
-  cn,
-  currencyFormatter,
-  INFINITY_NUMBER,
-  nFormatter,
-  pluralize,
-  timeAgo,
-} from "@dub/utils";
+import { cn, currencyFormatter, nFormatter } from "@dub/utils";
 import Link from "next/link";
 import { useContext, useMemo, useState } from "react";
 import { useShareDashboardModal } from "../modals/share-dashboard-modal";
 import { ResponseLink } from "./links-container";
+import { TargetIcon, CoinsIcon, MousePointerClick } from "lucide-react";
 
 export function LinkAnalyticsBadge({
   link,
@@ -44,29 +33,29 @@ export function LinkAnalyticsBadge({
     () => [
       {
         id: "clicks",
-        icon: CursorRays,
+        icon: MousePointerClick,
         value: clicks,
-        iconClassName: "data-[active=true]:text-blue-500",
+        iconClassName: "data-[active=true]:text-[#08272E]",
       },
       // show leads and sales if:
       // 1. link has trackConversion enabled
       // 2. link has leads or sales
       ...(trackConversion || leads > 0 || saleAmount > 0
         ? [
-            {
-              id: "leads",
-              icon: UserCheck,
-              value: leads,
-              className: "hidden sm:flex",
-              iconClassName: "data-[active=true]:text-purple-500",
-            },
-            {
-              id: "sales",
-              icon: InvoiceDollar,
-              value: saleAmount,
-              className: "hidden sm:flex",
-              iconClassName: "data-[active=true]:text-teal-500",
-            },
+          {
+            id: "leads",
+            icon: TargetIcon,
+            value: leads,
+            className: "",
+            iconClassName: "data-[active=true]:text-[#08272E]",
+          },
+          {
+            id: "sales",
+            icon: CoinsIcon,
+            value: saleAmount,
+            className: "",
+            iconClassName: "data-[active=true]:text-[#08272E]",
+          },
           ]
         : []),
     ],
@@ -84,18 +73,19 @@ export function LinkAnalyticsBadge({
     "folders.links.write",
   );
 
-  return isMobile ? (
-    <Link
-      href={`/${slug}/analytics?domain=${domain}&key=${key}`}
-      className="flex items-center gap-1 rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-sm text-neutral-800"
-    >
-      <CursorRays className="h-4 w-4 text-neutral-600" />
-      {nFormatter(link.clicks)}
-    </Link>
-  ) : (
-    <>
-      {sharingEnabled && <ShareDashboardModal />}
-      <Tooltip
+  // return isMobile ? (
+  //   <Link
+  //     href={`/${slug}/analytics?domain=${domain}&key=${key}`}
+  //     className="flex items-center gap-1 rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-sm text-neutral-800"
+  //   >
+  //     <CursorRays className="h-4 w-4 text-neutral-600" />
+  //     {nFormatter(link.clicks)}
+  //   </Link>
+  // ) : (
+  //   <>
+  //     {sharingEnabled && <ShareDashboardModal />}
+  {
+    /* <Tooltip
         key={modalShowCount}
         side="top"
         content={
@@ -135,52 +125,76 @@ export function LinkAnalyticsBadge({
                   <CopyButton
                     value={`${APP_DOMAIN}/share/${link.dashboardId}`}
                     variant="neutral"
-                    className="h-7 items-center justify-center rounded-md border border-neutral-300 bg-white p-1.5 hover:bg-neutral-50 active:bg-neutral-100"
+                    className="h-7 items-center justify-center rounded-xl border-[6px] border-neutral-200 bg-white p-1.5 hover:bg-neutral-50 active:bg-neutral-100"
                   />
                 )}
               </div>
             )}
           </div>
         }
-      >
-        <Link
-          href={`/${slug}/analytics?domain=${domain}&key=${key}${url ? `&url=${url}` : ""}&interval=${plan === "free" ? "30d" : plan === "pro" ? "1y" : "all"}`}
-          className={cn(
-            "block overflow-hidden rounded-md border border-neutral-200 bg-neutral-50 p-0.5 text-sm text-neutral-600 transition-colors",
-            variant === "loose" ? "hover:bg-neutral-100" : "hover:bg-white",
-          )}
-        >
-          <div className="hidden items-center gap-0.5 sm:flex">
-            {stats.map(
-              ({ id: tab, icon: Icon, value, className, iconClassName }) => (
-                <div
-                  key={tab}
-                  className={cn(
-                    "flex items-center gap-1 whitespace-nowrap rounded-md px-1 py-px transition-colors",
-                    className,
-                  )}
-                >
+      > */
+  }
+  return (
+    <Link
+      href={`/${slug}/analytics?domain=${domain}&key=${key}${url ? `&url=${url}` : ""}&interval=${plan === "free" ? "30d" : plan === "pro" ? "1y" : "all"}`}
+      className={cn(
+        "block overflow-hidden rounded-md border border-neutral-200 bg-neutral-50 p-0.5 text-sm text-neutral-600 transition-colors",
+        variant === "loose" ? "hover:bg-neutral-100" : "hover:bg-white",
+      )}
+    >
+      <div className="flex w-full flex-col items-center gap-0.5 sm:px-1">
+        <div className="flex w-full flex-row items-center justify-center gap-1">
+          {stats
+            .filter(({ id }) => id === "clicks")
+            .map(({ id: tab, icon: Icon, value, className, iconClassName }) => (
+              <div
+                key={tab}
+                className={cn(
+                  "flex items-center gap-1 whitespace-nowrap rounded-md px-1 py-px transition-colors",
+                  className,
+                )}
+              >
+                <span className="text-xs sm:text-sm">
+                  {nFormatter(value)} {value <= 1 ? "click" : "clicks"}
+                </span>
+              </div>
+            ))}
+        </div>
+        <div className="flex w-full flex-row items-center gap-0.5">
+          {stats
+            .filter(({ id }) => id !== "clicks")
+            .map(({ id: tab, icon: Icon, value, className, iconClassName }) => (
+              <div
+                key={tab}
+                className={cn(
+                  "flex items-center gap-1 whitespace-nowrap rounded-md px-1 py-px transition-colors",
+                  className,
+                )}
+              >
+                {tab !== "sales" && (
                   <Icon
                     data-active={value > 0}
-                    className={cn("h-4 w-4 shrink-0", iconClassName)}
+                    className={cn("h-3 w-3 shrink-0", iconClassName)}
                   />
-                  <span>
+                )}
+                <div className="flow-col flex gap-1">
+                  <span className="text-xs sm:text-sm">
                     {tab === "sales"
                       ? currencyFormatter(value / 100)
                       : nFormatter(value)}
-                    {stats.length === 1 && " clicks"}
                   </span>
                 </div>
-              ),
-            )}
-            {link.dashboardId && (
+              </div>
+            ))}
+        </div>
+        {/* {link.dashboardId && (
               <div className="border-l border-neutral-200 px-1.5">
                 <ReferredVia className="h-4 w-4 shrink-0 text-neutral-600" />
               </div>
-            )}
-          </div>
-        </Link>
-      </Tooltip>
-    </>
+            )} */}
+      </div>
+    </Link>
   );
+  // </Tooltip> */}
+  // </>
 }

@@ -2,8 +2,12 @@ import {
   createResponseWithCookies,
   detectBot,
   getFinalUrl,
+  isExceptionToDirectRedirect,
+  isNativeBrowser,
   isSupportedDeeplinkProtocol,
+  isSupportedDirectAppLink,
   parse,
+  shallShowDirectPreview,
 } from "@/lib/middleware/utils";
 import { recordClick } from "@/lib/tinybird";
 import { formatRedisLink } from "@/lib/upstash";
@@ -132,6 +136,7 @@ export default async function LinkMiddleware(
   });
 
   const url = testUrl || cachedLink.url;
+  const ua = userAgent(req);
 
   // by default, we only index default dub domain links (e.g. dub.sh)
   // everything else is not indexed by default, unless the user has explicitly set it to be indexed
@@ -205,10 +210,10 @@ export default async function LinkMiddleware(
     }
   }
 
-  const dubIdCookieName = `dub_id_${domain}_${key}`;
+  const pimmsIdCookieName = `pimms_id_${domain}_${key}`;
 
   const cookieStore = cookies();
-  let clickId = cookieStore.get(dubIdCookieName)?.value;
+  let clickId = cookieStore.get(pimmsIdCookieName)?.value;
   if (!clickId) {
     // if trackConversion is enabled, check if clickId is cached in Redis
     if (trackConversion) {
@@ -225,9 +230,9 @@ export default async function LinkMiddleware(
 
   const cookieData = {
     path: `/${originalKey}`,
-    dubIdCookieName,
-    dubIdCookieValue: clickId,
-    dubTestUrlValue: testUrl,
+    pimmsIdCookieName,
+    pimmsIdCookieValue: clickId,
+    pimmsTestUrlValue: testUrl,
   };
 
   // for root domain links, if there's no destination URL, rewrite to placeholder page
@@ -277,7 +282,51 @@ export default async function LinkMiddleware(
       ),
       cookieData,
     );
+    // rewrite to applink page if url matches a direct links
+  } else if (isSupportedDirectAppLink(url) && !shallShowDirectPreview(req)) {
+    ev.waitUntil(
+      recordClick({
+        req,
+        clickId,
+        linkId,
+        domain,
+        key,
+        url,
+        webhookIds,
+        workspaceId,
+        trackConversion,
+      }),
+    );
 
+    console.log("ua.os.name", ua?.os?.name);
+    console.log("ua.browser.name", ua?.browser?.name);
+
+    const rewriteUrl = new URL(
+      `/applink/${encodeURIComponent(
+        getFinalUrl(url, {
+          req,
+          clickId: trackConversion ? clickId : undefined,
+        }),
+      )}`,
+      req.url,
+    );
+
+    if (ua?.os?.name) {
+      rewriteUrl.searchParams.set("os", ua?.os?.name?.toLowerCase());
+    }
+    if (ua?.browser?.name) {
+      rewriteUrl.searchParams.set("browser", ua?.browser?.name?.toLowerCase());
+    }
+
+    return createResponseWithCookies(
+      NextResponse.rewrite(rewriteUrl, {
+        headers: {
+          ...DUB_HEADERS,
+          ...(!shouldIndex && { "X-Robots-Tag": "googlebot: noindex" }),
+        },
+      }),
+      cookieData,
+    );
     // rewrite to deeplink page if the link is a mailto: or tel:
   } else if (isSupportedDeeplinkProtocol(url)) {
     ev.waitUntil(
@@ -454,7 +503,12 @@ export default async function LinkMiddleware(
     );
 
     // regular redirect
-  } else {
+  } else if (
+    (ua?.device?.type != "mobile" && ua?.device?.type != "tablet") ||
+    shallShowDirectPreview(req) ||
+    isNativeBrowser(req) ||
+    isExceptionToDirectRedirect(req)
+  ) {
     ev.waitUntil(
       recordClick({
         req,
@@ -499,6 +553,50 @@ export default async function LinkMiddleware(
           status: key === "_root" ? 301 : 302,
         },
       ),
+      cookieData,
+    );
+    // direct link redirect
+  } else {
+    ev.waitUntil(
+      recordClick({
+        req,
+        clickId,
+        linkId,
+        domain,
+        key,
+        url,
+        webhookIds,
+        workspaceId,
+        trackConversion,
+      }),
+    );
+
+    console.log("ua.os.name", ua?.os?.name);
+    console.log("ua.browser.name", ua?.browser?.name);
+
+    const rewriteUrl = new URL(
+      `/directlink/${encodeURIComponent(
+        getFinalUrl(url, {
+          req,
+          clickId: trackConversion ? clickId : undefined,
+        }),
+      )}`,
+      req.url,
+    );
+
+    if (ua?.os?.name) {
+      rewriteUrl.searchParams.set("os", ua?.os?.name?.toLowerCase());
+    }
+    if (ua?.browser?.name) {
+      rewriteUrl.searchParams.set("browser", ua?.browser?.name?.toLowerCase());
+    }
+    return createResponseWithCookies(
+      NextResponse.rewrite(rewriteUrl, {
+        headers: {
+          ...DUB_HEADERS,
+          ...(!shouldIndex && { "X-Robots-Tag": "googlebot: noindex" }),
+        },
+      }),
       cookieData,
     );
   }

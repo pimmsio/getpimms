@@ -352,7 +352,7 @@ const NewProgramForm = ({ register, watch, setValue }: FormProps) => {
               </label>
               <select
                 {...register("maxDuration", { valueAsNumber: true })}
-                className="mt-2 block w-full rounded-md border border-neutral-300 bg-white py-2 pl-3 pr-10 text-sm text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500"
+                className="mt-2 block w-full rounded-xl border-[6px] border-neutral-200 bg-white py-2 pl-3 pr-10 text-sm text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500"
               >
                 {RECURRING_MAX_DURATIONS.filter((v) => v !== 0).map(
                   (duration) => (
@@ -387,7 +387,7 @@ const NewProgramForm = ({ register, watch, setValue }: FormProps) => {
             </label>
             <select
               {...register("type")}
-              className="mt-2 block w-full rounded-md border border-neutral-300 bg-white py-2 pl-3 pr-10 text-sm text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500"
+              className="mt-2 block w-full rounded-xl border-[6px] border-neutral-200 bg-white py-2 pl-3 pr-10 text-sm text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500"
             >
               <option value="flat">Flat</option>
               <option value="percentage">Percentage</option>

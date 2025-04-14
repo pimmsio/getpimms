@@ -130,9 +130,9 @@ function QRCodePreview({
           onClick={() => setShowLinkQRModal(true)}
           disabled={!_key}
         />
-        {!isMobile && (
-          <ShimmerDots className="opacity-30 [mask-image:radial-gradient(40%_80%,transparent_50%,black)]" />
-        )}
+        {/* {!isMobile && (
+          <ShimmerDots className="opacity-30" />
+        )} */}
         {_key ? (
           <AnimatePresence mode="wait">
             <motion.div

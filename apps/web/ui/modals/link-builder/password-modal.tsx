@@ -93,7 +93,7 @@ function PasswordModalInner({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h3 className="text-lg font-medium">Link Password</h3>
-          <ProBadgeTooltip
+          {/* <ProBadgeTooltip
             content={
               <SimpleTooltipContent
                 title="Restrict access to your short links by encrypting it with a password."
@@ -101,7 +101,7 @@ function PasswordModalInner({
                 href="https://dub.co/help/article/password-protected-links"
               />
             }
-          />
+          /> */}
         </div>
         <div className="max-md:hidden">
           <Tooltip

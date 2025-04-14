@@ -412,9 +412,9 @@ export function AddEditDomainForm({
                       <div className="relative mt-2 rounded-md shadow-sm">
                         {id === "logo" ? (
                           <div className="flex h-24 items-center justify-center overflow-hidden rounded-xl border-[2px] border-neutral-300">
-                            {!isMobile && (
-                              <ShimmerDots className="pointer-events-none z-10 opacity-30 [mask-image:radial-gradient(40%_80%,transparent_50%,black)]" />
-                            )}
+                            {/* {!isMobile && (
+                              <ShimmerDots className="pointer-events-none z-10 opacity-30" />
+                            )} */}
                             <Controller
                               control={control}
                               name="logo"

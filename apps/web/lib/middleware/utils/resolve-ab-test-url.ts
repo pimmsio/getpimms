@@ -27,7 +27,7 @@ export const resolveABTestURL = ({
     }
 
     const cookieStore = cookies();
-    const urlFromCookie = cookieStore.get("dub_test_url")?.value;
+    const urlFromCookie = cookieStore.get("pimms_test_url")?.value;
     if (
       urlFromCookie &&
       testVariants.map((t) => t.url).includes(urlFromCookie)

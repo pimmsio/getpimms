@@ -88,7 +88,7 @@ export function QRCodePreview() {
           /> */}
         </div>
       </div>
-      <div className="relative z-0 mt-2 h-24 overflow-hidden rounded-md border border-neutral-300">
+      <div className="relative z-0 mt-2 h-24 overflow-hidden rounded-xl border-[6px] border-neutral-200 bg-white">
         <Button
           type="button"
           variant="secondary"
@@ -96,9 +96,9 @@ export function QRCodePreview() {
           className="absolute right-2 top-2 z-10 h-8 w-fit bg-white px-1.5"
           onClick={() => setShowLinkQRModal(true)}
         />
-        {!isMobile && (
-          <ShimmerDots className="opacity-30 [mask-image:radial-gradient(40%_80%,transparent_50%,black)]" />
-        )}
+        {/* {!isMobile && (
+          <ShimmerDots className="opacity-30" />
+        )} */}
         {shortLinkUrl ? (
           <AnimatePresence mode="wait">
             <motion.div

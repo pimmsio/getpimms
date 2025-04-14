@@ -87,7 +87,7 @@ export default async function PasswordProtectedLinkPage({
 
   if (
     !link.password ||
-    cookies().get(`dub_password_${link.id}`)?.value === link.password
+    cookies().get(`pimms_password_${link.id}`)?.value === link.password
   ) {
     redirect(link.shortLink);
   }

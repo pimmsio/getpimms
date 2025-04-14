@@ -144,11 +144,11 @@ function WorkspaceLinks() {
                   />
                 </div>
               )}
-              <div className="grow basis-0 md:grow-0">
+              {/* <div className="grow basis-0 md:grow-0">
                 <LinkDisplay />
-              </div>
+              </div> */}
             </div>
-            <div className="flex gap-x-2 max-md:w-full">
+            <div className="flex gap-x-4 max-md:w-full">
               <div className="w-full md:w-56 lg:w-64">
                 <SearchBoxPersisted
                   loading={isValidating}
@@ -166,7 +166,7 @@ function WorkspaceLinks() {
                   <div className="hidden grow-0 sm:block">
                     <CreateLinkButton />
                   </div>
-                  <MoreLinkOptions />
+                  {/* <MoreLinkOptions /> */}
                 </>
               ) : (
                 <div className="w-fit">

@@ -89,7 +89,7 @@ export function LinkBuilderHeader({
   return (
     <div
       className={cn(
-        "flex flex-col items-start gap-2 px-6 py-3 md:flex-row md:items-center md:justify-between",
+        "flex flex-col items-start gap-2 px-4 sm:px-6 sm:py-3 md:flex-row md:items-center md:justify-between",
         className,
       )}
     >

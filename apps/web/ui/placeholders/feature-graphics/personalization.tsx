@@ -21,21 +21,21 @@ const OPTIONS = [
     icon: DiamondTurnRight,
     checked: true,
   },
-  {
-    label: "Expiration",
-    icon: CircleHalfDottedClock,
-    checked: false,
-  },
-  {
-    label: "Targeting",
-    icon: Crosshairs3,
-    checked: true,
-  },
-  {
-    label: "Password",
-    icon: InputPassword,
-    checked: true,
-  },
+  // {
+  //   label: "Expiration",
+  //   icon: CircleHalfDottedClock,
+  //   checked: false,
+  // },
+  // {
+  //   label: "Targeting",
+  //   icon: Crosshairs3,
+  //   checked: true,
+  // },
+  // {
+  //   label: "Password",
+  //   icon: InputPassword,
+  //   checked: true,
+  // },
 ];
 
 export function Personalization() {

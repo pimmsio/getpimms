@@ -73,7 +73,7 @@ export function CustomerPageClient() {
                 <CopyButton
                   value={customer.email}
                   variant="neutral"
-                  className="p-1 [&>*]:h-3 [&>*]:w-3"
+                  className="p-1 [&>*]:h-4"
                   successMessage="Copied email to clipboard!"
                 />
               </div>
