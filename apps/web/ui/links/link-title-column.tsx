@@ -38,7 +38,7 @@ import {
   timeAgo,
 } from "@dub/utils";
 import * as HoverCard from "@radix-ui/react-hover-card";
-import { Mail } from "lucide-react";
+import { Apple, Mail, TargetIcon } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { memo, PropsWithChildren, useContext, useRef, useState } from "react";
@@ -48,6 +48,7 @@ import { CommentsBadge } from "./comments-badge";
 import { useLinkSelection } from "./link-selection-provider";
 import { ResponseLink } from "./links-container";
 import { LinksDisplayContext } from "./links-display-provider";
+import { TestsBadge } from "./tests-badge";
 
 const quickViewSettings = [
   { label: "Conversion Tracking", icon: TargetIcon, key: "trackConversion" },

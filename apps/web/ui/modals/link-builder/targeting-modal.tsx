@@ -18,6 +18,7 @@ import {
   isValidUrl,
   pluralize,
 } from "@dub/utils";
+import { Box } from "lucide-react";
 import {
   Dispatch,
   Fragment,

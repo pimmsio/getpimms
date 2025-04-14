@@ -8,6 +8,7 @@ import AnalyticsProvider, { AnalyticsContext } from "../analytics-provider";
 import Toggle from "../toggle";
 import EventsTable from "./events-table";
 import EventsTabs from "./events-tabs";
+import { CoinsIcon, TargetIcon } from "lucide-react";
 
 export default function AnalyticsEvents({
   staticDomain,
