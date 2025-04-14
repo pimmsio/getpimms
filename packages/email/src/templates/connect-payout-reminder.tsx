@@ -1,7 +1,7 @@
 import {
   currencyFormatter,
-  DICEBEAR_AVATAR_URL,
   DUB_WORDMARK,
+  OG_AVATAR_URL,
 } from "@dub/utils";
 import {
   Body,
@@ -81,7 +81,7 @@ export default function ConnectPayoutReminder({
                         <Img
                           src={
                             program.logo ||
-                            `${DICEBEAR_AVATAR_URL}${program.name}`
+                            `${OG_AVATAR_URL}${program.name}`
                           }
                           width="20"
                           height="20"

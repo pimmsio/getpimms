@@ -1,4 +1,4 @@
-import { DICEBEAR_AVATAR_URL, DUB_WORDMARK } from "@dub/utils";
+import { OG_AVATAR_URL, DUB_WORDMARK } from "@dub/utils";
 import {
   Body,
   Container,
@@ -94,7 +94,7 @@ export function PartnerApplicationReceived({
                       <Img
                         src={
                           partner.image ||
-                          `${DICEBEAR_AVATAR_URL}${partner.name}`
+                          `${OG_AVATAR_URL}${partner.name}`
                         }
                         width="48"
                         height="48"

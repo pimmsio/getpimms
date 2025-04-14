@@ -16,7 +16,8 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@floating-ui/dom": "^1.6.12"
+    "@floating-ui/dom": "^1.6.12",
+    "@dub/utils":"0.1.25"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
