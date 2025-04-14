@@ -20,7 +20,7 @@ export const ConversionTrackingToggle = memo(() => {
   const { slug, plan } = useWorkspace();
   const { control, setValue } = useFormContext<LinkFormData>();
 
-  const conversionsEnabled = !!plan && plan !== "free" && plan !== "pro";
+  const conversionsEnabled = true; //!!plan && plan !== "free" && plan !== "pro";
 
   const [trackConversion, testVariants] = useWatch({
     control,
@@ -44,13 +44,7 @@ export const ConversionTrackingToggle = memo(() => {
         <span className="flex select-none items-center gap-1 text-sm font-medium text-neutral-700">
           Conversion Tracking
           <InfoTooltip
-            content={
-              <SimpleTooltipContent
-                title="View analytics on conversions from your short links."
-                cta="Learn more."
-                href="https://dub.co/docs/conversions/quickstart"
-              />
-            }
+            content="View analytics on conversions from your short links."
           />
         </span>
       </div>

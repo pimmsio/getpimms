@@ -79,43 +79,43 @@ const LinkCardInner = memo(({ link }: { link: ResponseLink }) => {
         onClick={!isMobile ? () => router.push(editUrl) : undefined}
         outerClassName="overflow-hidden"
         innerClassName="p-0"
-        {...(variant === "loose" &&
-          link.folderId &&
-          ![defaultFolderId, searchParams.get("folderId")].includes(
-            link.folderId,
-          ) && {
-            banner: (
-              <Link
-                href={`/${slug}/links?folderId=${folder?.id}`}
-                className="group flex items-center justify-between gap-2 rounded-t-xl border-b border-neutral-100 bg-neutral-50 px-5 py-2 text-xs"
-              >
-                <div className="flex items-center gap-1.5">
-                  {folder ? (
-                    <FolderIcon
-                      folder={folder}
-                      shape="square"
-                      className="rounded"
-                      innerClassName="p-0.5"
-                      iconClassName="size-3"
-                    />
-                  ) : (
-                    <div className="size-4 rounded-md bg-neutral-200" />
-                  )}
-                  {folder ? (
-                    <span className="font-medium text-neutral-900">
-                      {folder.name}
-                    </span>
-                  ) : (
-                    <div className="h-4 w-20 rounded-md bg-neutral-200" />
-                  )}
-                  <ExpandingArrow className="invisible -ml-1.5 size-3.5 text-neutral-500 group-hover:visible" />
-                </div>
-                <p className="text-neutral-500 underline transition-colors group-hover:text-neutral-800">
-                  Open folder
-                </p>
-              </Link>
-            ),
-          })}
+        // {...(variant === "loose" &&
+        //   link.folderId &&
+        //   ![defaultFolderId, searchParams.get("folderId")].includes(
+        //     link.folderId,
+        //   ) && {
+        //     banner: (
+        //       <Link
+        //         href={`/${slug}/links?folderId=${folder?.id}`}
+        //         className="group flex items-center justify-between gap-2 rounded-t-xl border-b border-neutral-100 bg-neutral-50 px-5 py-2 text-xs"
+        //       >
+        //         <div className="flex items-center gap-1.5">
+        //           {folder ? (
+        //             <FolderIcon
+        //               folder={folder}
+        //               shape="square"
+        //               className="rounded"
+        //               innerClassName="p-0.5"
+        //               iconClassName="size-3"
+        //             />
+        //           ) : (
+        //             <div className="size-4 rounded-md bg-neutral-200" />
+        //           )}
+        //           {folder ? (
+        //             <span className="font-medium text-neutral-900">
+        //               {folder.name}
+        //             </span>
+        //           ) : (
+        //             <div className="h-4 w-20 rounded-md bg-neutral-200" />
+        //           )}
+        //           <ExpandingArrow className="invisible -ml-1.5 size-3.5 text-neutral-500 group-hover:visible" />
+        //         </div>
+        //         <p className="text-neutral-500 underline transition-colors group-hover:text-neutral-800">
+        //           Open folder
+        //         </p>
+        //       </Link>
+        //     ),
+        //   })}
       >
         <div className="flex items-center gap-5 px-4 py-2.5 text-sm sm:gap-8 md:gap-12">
           <div ref={ref} className="min-w-0 grow">

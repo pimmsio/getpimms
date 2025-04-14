@@ -16,7 +16,7 @@ export const proFeaturesCheck = (payload: NewLinkProps) => {
   } = payload;
 
   if (
-    proxy ||
+    // proxy ||
     password ||
     rewrite ||
     expiresAt ||
@@ -24,12 +24,12 @@ export const proFeaturesCheck = (payload: NewLinkProps) => {
     android ||
     geo ||
     testVariants ||
-    trackConversion ||
+    // trackConversion ||
     doIndex
   ) {
     const proFeaturesString = combineWords(
       [
-        proxy && "custom social media cards",
+        // proxy && "custom social media cards",
         password && "password protection",
         rewrite && "link cloaking",
         expiresAt && "link expiration",

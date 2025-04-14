@@ -140,7 +140,7 @@ export function CustomerDetailsColumn({
               <CopyButton
                 value={customer.externalId}
                 variant="neutral"
-                className="p-1 [&>*]:h-3 [&>*]:w-3"
+                className="p-1 [&>*]:h-4"
                 successMessage="Copied external ID to clipboard!"
               />
             </div>

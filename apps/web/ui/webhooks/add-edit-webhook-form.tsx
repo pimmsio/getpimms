@@ -191,7 +191,7 @@ export default function AddEditWebhookForm({
             </h2>
             <InfoTooltip content="A secret token used to sign the webhook payload." />
           </label>
-          <div className="flex items-center justify-between rounded-md border border-neutral-300 bg-white px-3 py-1">
+          <div className="flex items-center justify-between rounded-xl border-[6px] border-neutral-200 bg-white px-3 py-1">
             <p className="text-nowrap font-mono text-sm text-neutral-500">
               {secret}
             </p>

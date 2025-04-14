@@ -285,7 +285,7 @@ function ABTestingEdit({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h3 className="text-lg font-medium">A/B Testing</h3>
-            <BusinessBadgeTooltip
+            {/* <BusinessBadgeTooltip
               content={
                 <SimpleTooltipContent
                   title="Test different URLs against each other to optimize your conversion rates."
@@ -293,7 +293,7 @@ function ABTestingEdit({
                   href="https://dub.co/help/article/ab-testing"
                 />
               }
-            />
+            /> */}
           </div>
           <div className="max-md:hidden">
             <Tooltip
@@ -338,7 +338,7 @@ function ABTestingEdit({
               <div className="flex flex-col gap-2 p-1">
                 {testVariants.map((_, index) => (
                   <div key={index} className="flex items-center gap-2">
-                    <label className="relative block flex grow items-center overflow-hidden rounded-md border border-neutral-300 focus-within:border-neutral-500 focus-within:ring-1 focus-within:ring-neutral-500">
+                    <label className="relative block flex grow items-center overflow-hidden rounded-xl border-[6px] border-neutral-200 focus-within:border-neutral-500 focus-within:ring-1 focus-within:ring-neutral-500">
                       <span className="flex h-9 w-8 items-center justify-center border-r border-neutral-300 text-center text-sm font-medium text-neutral-800">
                         {index + 1}
                       </span>
@@ -430,7 +430,7 @@ function ABTestingEdit({
             >
               Completion Date
             </label>
-            <InfoTooltip
+            {/* <InfoTooltip
               content={
                 <SimpleTooltipContent
                   title="Set when the A/B test should complete. After this date, all traffic will go to the best performing URL."
@@ -438,9 +438,9 @@ function ABTestingEdit({
                   href="https://dub.co/help/article/ab-testing"
                 />
               }
-            />
+            /> */}
           </div>
-          <div className="mt-2 flex w-full items-center justify-between rounded-md border border-neutral-300 bg-white shadow-sm transition-all focus-within:border-neutral-800 focus-within:outline-none focus-within:ring-1 focus-within:ring-neutral-500">
+          <div className="mt-2 flex w-full items-center justify-between rounded-xl border-[6px] border-neutral-200 bg-white shadow-sm transition-all focus-within:border-neutral-800 focus-within:outline-none focus-within:ring-1 focus-within:ring-neutral-500">
             <input
               id={`${id}-testCompletedAt`}
               type="text"
@@ -575,7 +575,7 @@ function ABTestingComplete({
           {testVariants?.map((test, index) => (
             <div
               key={index}
-              className="relative block flex grow items-center overflow-hidden rounded-md border border-neutral-300 focus-within:border-neutral-500 focus-within:ring-1 focus-within:ring-neutral-500"
+              className="relative block flex grow items-center overflow-hidden rounded-xl border-[6px] border-neutral-200 focus-within:border-neutral-500 focus-within:ring-1 focus-within:ring-neutral-500"
             >
               <span className="flex h-9 w-8 shrink-0 items-center justify-center border-r border-neutral-300 text-center text-sm font-medium text-neutral-800">
                 {index + 1}

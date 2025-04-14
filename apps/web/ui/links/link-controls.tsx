@@ -255,7 +255,7 @@ export function LinkControls({
                   className="h-9 px-2 font-medium"
                 />
               )}
-              {options.includes("duplicate") && (
+              {/* {options.includes("duplicate") && (
                 <Button
                   text="Duplicate"
                   variant="outline"
@@ -272,11 +272,11 @@ export function LinkControls({
                       : undefined
                   }
                 />
-              )}
+              )} */}
             </div>
             <div className="border-t border-neutral-200" />
             <div className="grid gap-px p-2">
-              {options.includes("move") &&
+              {/* {options.includes("move") &&
                 Boolean(flags?.linkFolders && foldersCount) && (
                   <Button
                     text="Move"
@@ -296,7 +296,7 @@ export function LinkControls({
                         : undefined
                     }
                   />
-                )}
+                )} */}
               {options.includes("archive") && (
                 <Button
                   text={link.archived ? "Unarchive" : "Archive"}
@@ -315,7 +315,7 @@ export function LinkControls({
                   }
                 />
               )}
-              {options.includes("transfer") && (
+              {/* {options.includes("transfer") && (
                 <Button
                   text="Transfer"
                   variant="outline"
@@ -338,7 +338,7 @@ export function LinkControls({
                     ) : undefined
                   }
                 />
-              )}
+              )} */}
               {options.includes("delete") && (
                 <Button
                   text="Delete"

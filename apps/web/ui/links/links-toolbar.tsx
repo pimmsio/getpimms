@@ -89,7 +89,9 @@ export const LinksToolbar = memo(
       );
     }, [selectedLinks, canManageFolderPermissions, folders]);
 
-    const { LinkBuilder, CreateLinkButton } = useLinkBuilder();
+    const { LinkBuilder, CreateLinkButton } = useLinkBuilder({
+      floating: true,
+    });
 
     const { setShowTagLinkModal, TagLinkModal } = useTagLinkModal({
       props: selectedLinks,

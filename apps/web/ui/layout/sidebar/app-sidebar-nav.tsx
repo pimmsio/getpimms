@@ -22,6 +22,7 @@ import { Usage } from "./usage";
 import { WorkspaceDropdown } from "./workspace-dropdown";
 import { BarChart2, CoinsIcon, Link, Settings, Settings2, Split, Target, TargetIcon, WalletCards } from "lucide-react";
 import { ReferralButton } from "./referral-button";
+// import { ReferralButton } from "./referral-button";
 
 const NAV_AREAS: SidebarNavAreas<{
   slug: string;
@@ -42,7 +43,7 @@ const NAV_AREAS: SidebarNavAreas<{
           {
             name: "Deep links",
             icon: Link,
-            href: `/${slug}${pathname === `/${slug}` ? "" : queryString}`,
+            href: `/${slug}/links${pathname === `/${slug}/links` ? "" : queryString}`,
             exact: true,
           },
           {

@@ -32,7 +32,7 @@ export function PageContent({
   return (
     <div
       className={cn(
-        "mt-3 bg-neutral-100 md:bg-white",
+        "pt-3 bg-zinc-100 md:bg-white",
         (hasTitle || hasDescription) && "md:mt-6 md:py-3",
         className,
       )}

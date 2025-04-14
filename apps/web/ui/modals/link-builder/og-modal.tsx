@@ -269,15 +269,15 @@ function OGModalInner({
                       Remove
                     </button>
                   )}
-                  <ButtonTooltip
+                  {/* <ButtonTooltip
                     onClick={() => setShowPromptModal(true)}
                     tooltipProps={{
                       content: "Paste a URL to an image",
                     }}
                   >
                     <Link className="size-4" />
-                  </ButtonTooltip>
-                  <Popover
+                  </ButtonTooltip> */}
+                  {/* <Popover
                     content={
                       <UnsplashSearch
                         onImageSelected={(image) => {
@@ -302,7 +302,7 @@ function OGModalInner({
                         <Unsplash className="size-3 text-neutral-500" />
                       </ButtonTooltip>
                     </div>
-                  </Popover>
+                  </Popover> */}
                 </div>
               </div>
               <FileUpload
@@ -345,7 +345,7 @@ function OGModalInner({
                   <p className="text-sm text-neutral-500">
                     {title?.length || 0}/120
                   </p>
-                  <ButtonTooltip
+                  {/* <ButtonTooltip
                     tooltipProps={{
                       content: exceededAI
                         ? "You've exceeded your AI usage limit"
@@ -361,7 +361,7 @@ function OGModalInner({
                     ) : (
                       <Magic className="size-4" />
                     )}
-                  </ButtonTooltip>
+                  </ButtonTooltip> */}
                 </div>
               </div>
               <div className="relative mt-1 flex rounded-xl shadow-sm">
@@ -399,7 +399,7 @@ function OGModalInner({
                   <p className="text-sm text-neutral-500">
                     {description?.length || 0}/240
                   </p>
-                  <ButtonTooltip
+                  {/* <ButtonTooltip
                     tooltipProps={{
                       content: exceededAI
                         ? "You've exceeded your AI usage limit"
@@ -417,7 +417,7 @@ function OGModalInner({
                     ) : (
                       <Magic className="size-4" />
                     )}
-                  </ButtonTooltip>
+                  </ButtonTooltip> */}
                 </div>
               </div>
               <div className="relative mt-1 flex rounded-xl shadow-sm">

@@ -30,7 +30,7 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
           </ClientOnly>
         </div>
 
-        <div className="fixed bottom-0 left-10 grid gap-2 pb-8 pt-4">
+        <div className="fixed bottom-0 pl-10 left-0 grid gap-2 pb-8 pt-4 bg-white w-full">
           <p className="text-xs text-neutral-600">
             © {new Date().getFullYear()} PIMMS. 
           </p>
@@ -50,7 +50,7 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
               Terms of Service
             </a>
             <a
-              href="https://github.com/getpimms/pim.ms"
+              href="https://github.com/getpimms/pim-ms"
               target="_blank"
               className="hover:text-neutral-800"
             >

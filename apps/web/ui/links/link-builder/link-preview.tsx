@@ -108,7 +108,7 @@ export const LinkPreview = memo(() => {
           <h2 className="text-sm font-medium text-neutral-700">
             Custom Link Preview
           </h2>
-          <InfoTooltip
+          {/* <InfoTooltip
             content={
               <SimpleTooltipContent
                 title="Customize how your links look when shared on social media to improve click-through rates. When enabled, the preview settings below will be shown publicly (instead of the URL's original metatags)."
@@ -116,32 +116,32 @@ export const LinkPreview = memo(() => {
                 href="https://dub.co/help/article/custom-link-previews"
               />
             }
-          />
+          /> */}
         </div>
 
         <Switch
           checked={proxy}
           fn={(checked) => setValue("proxy", checked, { shouldDirty: true })}
-          disabledTooltip={
-            !url ? (
-              "Enter a URL to enable custom link previews."
-            ) : !plan || plan === "free" ? (
-              <TooltipContent
-                title="Custom Link Previews are only available on the Pro plan and above."
-                cta="Upgrade to Pro"
-                href={slug ? `/${slug}/upgrade` : "https://dub.co/pricing"}
-                target="_blank"
-              />
-            ) : undefined
-          }
-          thumbIcon={
-            !plan || plan === "free" ? (
-              <CrownSmall className="size-full text-neutral-500" />
-            ) : undefined
-          }
+          // disabledTooltip={
+          //   !url ? (
+          //     "Enter a URL to enable custom link previews."
+          //   ) : !plan || plan === "free" ? (
+          //     <TooltipContent
+          //       title="Custom Link Previews are only available on the Pro plan and above."
+          //       cta="Upgrade to Pro"
+          //       href={slug ? `/${slug}/upgrade` : "https://dub.co/pricing"}
+          //       target="_blank"
+          //     />
+          //   ) : undefined
+          // }
+          // thumbIcon={
+          //   !plan || plan === "free" ? (
+          //     <CrownSmall className="size-full text-neutral-500" />
+          //   ) : undefined
+          // }
         />
       </div>
-      <div className="mt-2.5 grid grid-cols-4 gap-2">
+      {/* <div className="mt-2.5 grid grid-cols-4 gap-2">
         {tabs.map((tab) => {
           const Icon = tabIcons[tab];
           return (
@@ -162,7 +162,7 @@ export const LinkPreview = memo(() => {
             />
           );
         })}
-      </div>
+      </div> */}
       <div className="relative z-0 mt-2">
         <Button
           type="button"
@@ -272,9 +272,9 @@ const ImagePreview = ({
               accessibilityLabel="OG image upload"
             />
           </div>
-          {!isMobile && (
-            <ShimmerDots className="pointer-events-none opacity-30 [mask-image:radial-gradient(40%_80%,transparent_50%,black)]" />
-          )}
+          {/* {!isMobile && (
+            <ShimmerDots className="pointer-events-none opacity-30" />
+          )} */}
           <div className="pointer-events-none relative flex size-full flex-col items-center justify-center gap-2">
             <NucleoPhoto className="size-5 text-neutral-700" />
             <p className="max-w-32 text-center text-xs text-neutral-700">
@@ -307,7 +307,7 @@ function DefaultOGPreview({ title, description, children }: OGPreviewProps) {
 
   return (
     <div>
-      <div className="group relative overflow-hidden rounded-md border border-neutral-300">
+      <div className="group relative overflow-hidden rounded-xl border-[6px] border-neutral-200">
         {children}
       </div>
       <ReactTextareaAutosize

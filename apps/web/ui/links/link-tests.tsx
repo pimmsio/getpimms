@@ -69,7 +69,7 @@ export const LinkTests = memo(({ link }: { link: ResponseLink }) => {
           return (
             <li
               key={idx}
-              className="flex items-center justify-between rounded-md border border-neutral-300 bg-white p-2.5"
+              className="flex items-center justify-between rounded-xl border-[6px] border-neutral-200 bg-white p-2.5"
             >
               <div className="flex min-w-0 items-center gap-4">
                 {/* Test number */}

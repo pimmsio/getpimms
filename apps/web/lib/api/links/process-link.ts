@@ -7,6 +7,7 @@ import { NewLinkProps, ProcessedLinkProps, WorkspaceProps } from "@/lib/types";
 import { prisma } from "@dub/prisma";
 import {
   DUB_DOMAINS,
+  SHORT_DOMAIN,
   UTMTags,
   constructURLFromUTMParams,
   getApexDomain,

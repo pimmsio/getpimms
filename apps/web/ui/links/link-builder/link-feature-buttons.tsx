@@ -29,7 +29,7 @@ export function LinkFeatureButtons({
       <ExpirationModal />
       {flags?.abTesting && <ABTestingModal />}
 
-      <div className={cn("flex min-w-0 items-center gap-2", className)}>
+      {/* <div className={cn("flex min-w-0 items-center gap-2", className)}>
         <UTMButton />
         <div className="contents max-[380px]:hidden">
           <TargetingButton />
@@ -45,7 +45,7 @@ export function LinkFeatureButtons({
           <ExpirationButton />
         </div>
         <MoreDropdown />
-      </div>
+      </div> */}
     </>
   );
 }

@@ -61,9 +61,9 @@ describe.runIf(env.CI)("Link Redirects", async () => {
       headers: {},
     });
 
-    // the location should contain `?client_reference_id=dub_id_` query param
+    // the location should contain `?client_reference_id=pimms_id_` query param
     expect(response.headers.get("location")).toMatch(
-      /client_reference_id=dub_id_[a-zA-Z0-9]+/,
+      /client_reference_id=pimms_id_[a-zA-Z0-9]+/,
     );
     expect(response.headers.get("x-powered-by")).toBe(poweredBy);
     expect(response.status).toBe(302);

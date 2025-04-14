@@ -38,7 +38,7 @@ import {
   timeAgo,
 } from "@dub/utils";
 import * as HoverCard from "@radix-ui/react-hover-card";
-import { Mail } from "lucide-react";
+import { Apple, Mail, TargetIcon } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { memo, PropsWithChildren, useContext, useRef, useState } from "react";
@@ -48,6 +48,7 @@ import { CommentsBadge } from "./comments-badge";
 import { useLinkSelection } from "./link-selection-provider";
 import { ResponseLink } from "./links-container";
 import { LinksDisplayContext } from "./links-display-provider";
+import { TestsBadge } from "./tests-badge";
 
 const quickViewSettings = [
   { label: "Conversion Tracking", icon: TargetIcon, key: "trackConversion" },
@@ -251,6 +252,7 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
     <button
       type="button"
       role="checkbox"
+      disabled={true}
       aria-checked={isSelected}
       data-checked={isSelected}
       onClick={(e) => handleLinkSelection(link.id, e)}
@@ -286,7 +288,7 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
         <div className="size-5 group-data-[variant=loose]/card-list:size-6 sm:hidden" />
       </div>
       {/* Checkbox */}
-      <div
+      {/* <div
         className={cn(
           "pointer-events-none absolute inset-0 flex items-center justify-center rounded-full border-[2px] border-neutral-400 bg-white ring-0 ring-black/5",
           "opacity-100 max-sm:ring sm:opacity-0",
@@ -302,7 +304,7 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
         >
           <Check2 className="size-3 text-white" />
         </div>
-      </div>
+      </div> */}
     </button>
   );
 });

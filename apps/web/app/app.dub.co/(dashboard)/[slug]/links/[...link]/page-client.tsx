@@ -149,8 +149,8 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
             );
           }}
           className="p-0"
-          foldersEnabled={!!workspace.flags?.linkFolders}
-          linkToFolder={!!workspace.flags?.linkFolders}
+          foldersEnabled={false}
+          linkToFolder={false}
         >
           <div
             className={cn(
@@ -158,11 +158,11 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
               isChangingLink && "opacity-50",
             )}
           >
-            <DraftControls
+            {/* <DraftControls
               ref={draftControlsRef}
               props={link}
               workspaceId={workspace.id!}
-            />
+            /> */}
             <Button
               icon={
                 <div className="relative size-4">
@@ -236,9 +236,9 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
         </div>
         <div className="px-4 md:px-6 lg:bg-neutral-50 lg:px-0">
           <div className="mx-auto max-w-xl divide-neutral-200 lg:divide-y">
-            <div className="py-4 lg:px-4 lg:py-6">
+            {/* <div className="py-4 lg:px-4 lg:py-6">
               <LinkBuilderFolderSelector />
-            </div>
+            </div> */}
             <div className="py-4 lg:px-4 lg:py-6">
               <QRCodePreview />
             </div>

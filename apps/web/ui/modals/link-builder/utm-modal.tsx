@@ -168,7 +168,7 @@ function UTMModalInner({ setShowUTMModal }: UTMModalProps) {
       }}
     >
       <div className="flex items-center justify-between">
-        {utmData ? (
+        {/* {utmData ? (
           <div className="text-sm">
             <div className="max-w-64">
               <UTMTemplateList
@@ -189,7 +189,7 @@ function UTMModalInner({ setShowUTMModal }: UTMModalProps) {
           <div className="flex w-full items-center justify-center p-2 text-center text-xs text-neutral-500 md:w-32">
             Failed to load templates
           </div>
-        )}
+        )} */}
         <div className="flex items-center gap-2">
           {/* <h3 className="text-lg font-medium">UTM Builder</h3> */}
           {/* <InfoTooltip

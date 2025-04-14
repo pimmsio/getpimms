@@ -19,7 +19,7 @@ export async function verifyPassword(_prevState: any, data: FormData) {
     return { error: "Invalid password" };
   }
 
-  cookies().set(`dub_password_${dashboardId}`, password, {
+  cookies().set(`pimms_password_${dashboardId}`, password, {
     path: `/share/${dashboardId}`,
     httpOnly: true,
     secure: true,
