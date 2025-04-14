@@ -1,4 +1,4 @@
-import { cn, GOOGLE_FAVICON_URL } from "@dub/utils";
+import { cn, getGoogleFavicon } from "@dub/utils";
 import { SVGProps, useId } from "react";
 
 export function LinksGraphic(props: SVGProps<SVGSVGElement>) {
@@ -406,7 +406,7 @@ export function LinksGraphic(props: SVGProps<SVGSVGElement>) {
           style={{ whiteSpace: "pre" }}
         >
           <tspan x="97" y="165.364">
-            d.to/try
+            pim.ms/try
           </tspan>
         </text>
         <path
@@ -429,7 +429,7 @@ export function LinksGraphic(props: SVGProps<SVGSVGElement>) {
           style={{ whiteSpace: "pre" }}
         >
           <tspan x="110" y="179.773">
-            app.dub.co/register
+            app.pimms.io/register
           </tspan>
         </text>
         <path
@@ -652,7 +652,7 @@ export function LinksGraphic(props: SVGProps<SVGSVGElement>) {
           <use xlinkHref={`#${id}-z`} transform="scale(.01563)" />
         </pattern>
         <image
-          href={`${GOOGLE_FAVICON_URL}dub.co`}
+          href={getGoogleFavicon("pimms.io", false)}
           id={`${id}-z`}
           width="64"
           height="64"

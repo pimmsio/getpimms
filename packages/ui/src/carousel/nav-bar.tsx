@@ -12,7 +12,7 @@ const CarouselNavBarVariants = cva(
       variant: {
         simple: "relative",
         floating:
-          "absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full border border-neutral-800/10 bg-white sm:bottom-6 ",
+          "absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full border-[2px] border-neutral-800/10 bg-white sm:bottom-6 ",
       },
     },
   },

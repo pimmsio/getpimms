@@ -12,13 +12,13 @@ export function AnalyticsFunnelChart({ demo }: { demo?: boolean }) {
         id: "clicks",
         label: "Clicks",
         value: demo ? 130 : totalEvents?.clicks ?? 0,
-        colorClassName: "text-blue-600",
+        colorClassName: "text-[#08272E]",
       },
       {
         id: "leads",
-        label: "Leads",
+        label: "Conversions",
         value: demo ? 100 : totalEvents?.leads ?? 0,
-        colorClassName: "text-violet-600",
+        colorClassName: "text-[#08272E]",
       },
       {
         id: "sales",

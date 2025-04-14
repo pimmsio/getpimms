@@ -10,14 +10,14 @@ export function ReferralsEmbedPayouts({
   programSlug: string;
 }) {
   return (
-    <div className="border-border-subtle bg-bg-default flex flex-col justify-between gap-4 rounded-lg border p-4">
+    <div className="border-border-subtle bg-bg-default flex flex-col justify-between gap-4 rounded-xl border-[6px] p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1">
           <p className="text-content-subtle text-sm">Payouts</p>
-          <InfoTooltip content="Payouts are processed at the start of each month. Your earnings are automatically transferred to your bank account." />
+          {/* <InfoTooltip content="Payouts are processed at the start of each month. Your earnings are automatically transferred to your bank account." /> */}
         </div>
-        <a
-          href={`https://partners.dub.co/${programSlug}/register`}
+        {/* <a
+          href={`https://partners.pimms.io/${programSlug}/register`}
           target="_blank"
         >
           <Button
@@ -25,7 +25,7 @@ export function ReferralsEmbedPayouts({
             variant="secondary"
             className="h-7 p-2 text-sm"
           />
-        </a>
+        </a> */}
       </div>
       <div className="grid gap-1">
         {[

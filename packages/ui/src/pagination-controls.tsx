@@ -3,7 +3,7 @@ import { PaginationState } from "@tanstack/react-table";
 import { PropsWithChildren } from "react";
 
 const buttonClassName = cn(
-  "flex h-7 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-neutral-200 bg-white px-2 text-sm text-neutral-600",
+  "flex h-7 items-center justify-center gap-2 whitespace-nowrap rounded-xl border-[2px] border-neutral-100 bg-white px-2 text-sm text-neutral-600",
   "outline-none hover:bg-neutral-50 focus-visible:border-neutral-500",
   "disabled:cursor-not-allowed disabled:border-neutral-200 disabled:text-neutral-400 disabled:bg-neutral-100",
 );
@@ -27,7 +27,7 @@ export function PaginationControls({
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-2 text-sm leading-6 text-neutral-600",
+        "flex items-center gap-2 text-sm leading-6 text-neutral-600",
         className,
       )}
     >

@@ -6,9 +6,9 @@ export const resend = process.env.RESEND_API_KEY
   : null;
 
 const VARIANT_TO_FROM_MAP = {
-  primary: "Dub.co <system@dub.co>",
-  notifications: "Dub.co <notifications@mail.dub.co>",
-  marketing: "Steven from Dub.co <steven@ship.dub.co>",
+  primary: "Alexandre from PIMMS <alexandre@pimms.io>",
+  notifications: "Alexandre from PIMMS <alexandre@pimms.io>",
+  marketing: "Alexandre from PIMMS <alexandre@pimms.io>",
 };
 
 // Send email using Resend (Recommended for production)
@@ -36,14 +36,14 @@ export const sendEmailViaResend = async (opts: ResendEmailOptions) => {
     to: email,
     from: from || VARIANT_TO_FROM_MAP[variant],
     bcc: bcc,
-    replyTo: replyTo || "support@dub.co",
+    replyTo: replyTo || "alexandre@pimms.io",
     subject,
     text,
     react,
     scheduledAt,
     ...(variant === "marketing" && {
       headers: {
-        "List-Unsubscribe": "https://app.dub.co/account/settings",
+        "List-Unsubscribe": "https://app.pimms.io/account/settings",
       },
     }),
   });

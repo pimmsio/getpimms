@@ -8,14 +8,14 @@ export const buttonVariants = cva("transition-all", {
   variants: {
     variant: {
       primary:
-        "border-black bg-black dark:bg-white dark:border-white text-content-inverted hover:bg-inverted hover:ring-4 hover:ring-border-subtle",
+        "bg-[#3971ff] border-none text-white font-semibold ring-[6px] ring-[#E7EEFF] text-lg transition duration-500",
       secondary: cn(
-        "border-border-subtle bg-white dark:bg-black text-content-emphasis hover:bg-bg-muted focus-visible:border-border-emphasis outline-none",
-        "data-[state=open]:border-border-emphasis data-[state=open]:ring-4 data-[state=open]:ring-border-subtle",
+        "border-neutral-200 bg-white text-neutral-900 hover:bg-neutral-50 focus-visible:border-neutral-500 outline-none",
+        "data-[state=open]:border-neutral-500 data-[state=open]:ring-4 data-[state=open]:ring-neutral-200",
       ),
-      outline: "border-transparent text-content-default hover:bg-bg-subtle",
+      outline: "border-transparent text-neutral-600 hover:bg-neutral-100",
       success:
-        "border-blue-500 bg-blue-500 text-white hover:bg-blue-600 hover:ring-4 hover:ring-blue-100",
+        "border-blue-500 bg-[#3971ff] text-white hover:bg-blue-600 hover:ring-4 hover:ring-blue-100",
       danger:
         "border-red-500 bg-red-500 text-white hover:bg-red-600 hover:ring-4 hover:ring-red-100",
       "danger-outline":
@@ -62,7 +62,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         <Tooltip content={disabledTooltip}>
           <div
             className={cn(
-              "flex h-10 w-full cursor-not-allowed items-center justify-center gap-x-2 rounded-md border border-neutral-200 bg-neutral-100 px-4 text-sm text-neutral-400 transition-all focus:outline-none",
+              "flex h-10 w-full rounded-xl cursor-not-allowed items-center justify-center gap-x-2 border-[6px] border-neutral-100 bg-neutral-100 px-4 text-sm text-neutral-400 transition-all focus:outline-none",
               {
                 "border-transparent bg-transparent":
                   variant?.endsWith("outline"),
@@ -85,7 +85,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             {shortcut && (
               <kbd
                 className={cn(
-                  "hidden rounded border border-neutral-200 bg-neutral-100 px-2 py-0.5 text-xs font-light text-neutral-400 md:inline-block",
+                  "rounded-md hidden px-2 py-0.5 text-xs font-light transition-all duration-75 md:inline-block",
                   {
                     "bg-neutral-100": variant?.endsWith("outline"),
                   },
@@ -105,7 +105,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         // if onClick is passed, it's a "button" type, otherwise it's being used in a form, hence "submit"
         type={props.onClick ? "button" : "submit"}
         className={cn(
-          "group flex h-10 w-full items-center justify-center gap-2 whitespace-nowrap rounded-md border px-4 text-sm",
+          "group flex rounded-xl h-10 w-full items-center justify-center gap-2 whitespace-nowrap border-2 border-neutral-200 px-4 text-sm",
           props.disabled || loading
             ? "cursor-not-allowed border-neutral-200 bg-neutral-100 text-neutral-400 outline-none"
             : buttonVariants({ variant }),
@@ -129,9 +129,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {shortcut && (
           <kbd
             className={cn(
-              "hidden rounded px-2 py-0.5 text-xs font-light transition-all duration-75 md:inline-block",
+              "rounded-md hidden px-2 py-0.5 text-xs font-light transition-all duration-75 md:inline-block",
               {
-                "bg-neutral-700 text-neutral-400 group-hover:bg-neutral-600 group-hover:text-neutral-300":
+                "bg-[#e7eeff] text-black":
                   variant === "primary",
                 "bg-neutral-200 text-neutral-400 group-hover:bg-neutral-100 group-hover:text-neutral-500":
                   variant === "secondary",

@@ -56,7 +56,7 @@ export async function leadCreated(data: LeadCreatedEvent["data"]) {
         owner.email &&
         sendEmail({
           email: owner.email,
-          subject: "Someone signed up for Dub via your referral link!",
+          subject: "Someone signed up for PiMMs via your referral link!",
           react: NewReferralSignup({
             email: owner.email,
             workspace,

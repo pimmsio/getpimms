@@ -15,16 +15,15 @@ import {
 import { Footer } from "../components/footer";
 
 export function NewSaleAlertPartner({
-  email = "panic@thedis.co",
+  email = "cheers@pimms.io",
   partner = {
     id: "pn_OfewI1Faaf5pV8QH3mha8L7S",
-    referralLink: "https://refer.dub.co/steven",
+    referralLink: "https://refer.pimms.io/alexandre",
   },
   program = {
     id: "prog_CYCu7IMAapjkRpTnr8F1azjN",
-    name: "Acme",
-    slug: "acme",
-    logo: DUB_WORDMARK,
+    name: "PIMMS",
+    slug: "pimms",    logo: DUB_WORDMARK,
   },
   sale = {
     amount: 4900,
@@ -47,7 +46,7 @@ export function NewSaleAlertPartner({
     earnings: number;
   };
 }) {
-  const linkToSale = `https://partners.dub.co/programs/${program.slug}/earnings`;
+  const linkToSale = `https://partners.pimms.io/programs/${program.slug}/earnings`;
 
   const earningsInDollars = currencyFormatter(sale.earnings / 100, {
     minimumFractionDigits: 2,
@@ -68,10 +67,10 @@ export function NewSaleAlertPartner({
       </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[600px] rounded border border-solid border-neutral-200 px-10 py-5">
-            <Section className="mt-8">
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+            <Section className="my-8">
               <Img
-                src={program.logo || "https://assets.dub.co/logo.png"}
+                src={program.logo || "https://assets.pimms.io/logo.png"}
                 height="32"
                 alt={program.name}
               />
@@ -103,7 +102,7 @@ export function NewSaleAlertPartner({
 
             <Section className="mb-12 mt-8">
               <Link
-                className="rounded-lg bg-neutral-900 px-4 py-3 text-[12px] font-semibold text-white no-underline"
+                className="px-5 py-3 bg-[#dc2e65] text-white font-semibold outline outline-[6px] transition outline-[#ffeaf1] cursor-pointer no-underline rounded-xl"
                 href={linkToSale}
               >
                 View sale

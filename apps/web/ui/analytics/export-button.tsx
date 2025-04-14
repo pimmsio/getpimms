@@ -31,7 +31,7 @@ export default function ExportButton({
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `Dub Analytics Export - ${new Date().toISOString()}.zip`;
+      a.download = `PIMMS Analytics Export - ${new Date().toISOString()}.zip`;
       a.click();
     } catch (error) {
       throw new Error(error);

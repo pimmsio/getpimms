@@ -156,12 +156,12 @@ export const GET = withSession(async ({ session, params }) => {
     {
       title: "From",
       address: {
-        name: "Dub Technologies, Inc.",
-        line1: "2261 Market Street STE 5906",
-        city: "San Francisco",
-        state: "CA",
-        postalCode: "94114",
-        email: "support@dub.co",
+        name: "PIMMS.",
+        line1: "Chemin de Louis-Hubert 2",
+        city: "Petit Lancy",
+        state: "CH",
+        postalCode: "1213",
+        email: "support@pimms.io",
       },
     },
     {
@@ -186,9 +186,9 @@ export const GET = withSession(async ({ session, params }) => {
           <Image src={DUB_WORDMARK} style={tw("w-20 h-10")} />
           <View style={tw("text-right w-1/2")}>
             <Text style={tw("text-sm font-medium text-neutral-800")}>
-              Dub Technologies Inc.
+              PIMMS
             </Text>
-            <Text style={tw("text-sm text-neutral-500 ")}>support@dub.co</Text>
+            <Text style={tw("text-sm text-neutral-500 ")}>alexandre@pimms.io</Text>
           </View>
         </View>
 
@@ -244,7 +244,7 @@ export const GET = withSession(async ({ session, params }) => {
 
         <View
           style={tw(
-            "flex-row justify-between border border-neutral-200 rounded-xl mb-6",
+            "flex-row justify-between border-[6px] border-neutral-100 rounded-xl mb-6",
           )}
         >
           <View style={tw("flex-col gap-2 w-1/2 p-4")}>
@@ -273,7 +273,7 @@ export const GET = withSession(async ({ session, params }) => {
           </View>
         </View>
 
-        <View style={tw("mb-6 border border-neutral-200 rounded-xl")}>
+        <View style={tw("mb-6 border-[6px] border-neutral-100 rounded-xl")}>
           <View style={tw("flex-row border-neutral-200 border-b")}>
             <Text
               style={tw("w-2/6 p-3.5 text-sm font-medium text-neutral-700")}
@@ -361,12 +361,12 @@ export const GET = withSession(async ({ session, params }) => {
 
         <Text style={tw("text-sm text-neutral-600 mt-6")}>
           If you have any questions, visit our support site at{" "}
-          <Link href="https://dub.co/help" style={tw("text-neutral-900")}>
-            https://dub.co/help
+          <Link href="https://pimms.io" style={tw("text-neutral-900")}>
+            https://pimms.io
           </Link>{" "}
           or contact us at{" "}
-          <Link href="mailto:support@dub.co" style={tw("text-neutral-900")}>
-            support@dub.co
+          <Link href="mailto:alexandre@pimms.io" style={tw("text-neutral-900")}>
+            alexandre@pimms.io
           </Link>
         </Text>
       </Page>

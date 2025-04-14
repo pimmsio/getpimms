@@ -1,10 +1,10 @@
 import { getAnalytics } from "@/lib/analytics/get-analytics";
 import { getLinkViaEdge } from "@/lib/planetscale";
 import {
-  GOOGLE_FAVICON_URL,
-  getApexDomain,
+  getGoogleFavicon,
   linkConstructor,
   nFormatter,
+  SHORT_DOMAIN,
 } from "@dub/utils";
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     new URL("@/styles/Inter-Medium.ttf", import.meta.url),
   ).then((res) => res.arrayBuffer());
 
-  const domain = req.nextUrl.searchParams.get("domain") || "dub.sh";
+  const domain = req.nextUrl.searchParams.get("domain") || SHORT_DOMAIN;
   const key = req.nextUrl.searchParams.get("key") || "github";
 
   const link = await getLinkViaEdge({ domain, key });
@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
           <div tw="flex items-center">
             <img
               tw="rounded-full w-10 h-10"
-              src={`${GOOGLE_FAVICON_URL}${getApexDomain(link.url || "dub.co")}`}
+              src={getGoogleFavicon(link.url || "pimms.io")}
               alt="favicon"
             />
             <h1 tw="text-4xl font-bold ml-4">
@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
             </svg>
           </div>
 
-          <div tw="flex items-center rounded-md border border-neutral-200 bg-white shadow-sm h-12 px-6">
+          <div tw="flex items-center rounded-xl border-[2px] border-neutral-100 bg-white shadow-sm h-12 px-6">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -84,7 +84,7 @@ export async function GET(req: NextRequest) {
             <p tw="text-neutral-700 ml-2 mt-4">Last 24 hours</p>
           </div>
         </div>
-        <div tw="flex flex-col h-full w-full rounded-lg border border-neutral-200 bg-white shadow-lg overflow-hidden">
+        <div tw="flex flex-col h-full w-full rounded-xl border-[6px] border-neutral-100 bg-white shadow-lg overflow-hidden">
           <div tw="flex flex-col px-12 py-4">
             <div tw="flex items-center">
               <h1 tw="font-bold text-5xl leading-none">{nFormatter(clicks)}</h1>

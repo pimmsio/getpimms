@@ -55,7 +55,7 @@ describe.sequential("PUT /partners/links/upsert", async () => {
       updatedAt: expect.any(String),
       key,
       shortLink: `https://${E2E_PROGRAM.domain}/${key}`,
-      qrCode: `https://api.dub.co/qr?url=https://${E2E_PROGRAM.domain}/${key}?qr=1`,
+      qrCode: `https://api.pimms.io/qr?url=https://${E2E_PROGRAM.domain}/${key}?qr=1`,
     });
   });
 });

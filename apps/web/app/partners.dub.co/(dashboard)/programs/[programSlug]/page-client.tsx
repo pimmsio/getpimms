@@ -91,7 +91,7 @@ export default function ProgramPageClient() {
             }}
             className="overflow-hidden"
           >
-            <div className="relative z-0 mb-4 flex flex-col overflow-hidden rounded-lg border border-neutral-300 p-4 sm:mb-10 md:p-6">
+            <div className="relative z-0 mb-4 flex flex-col overflow-hidden rounded-xl border-[6px] border-neutral-200 p-4 sm:mb-10 md:p-6">
               {program && (
                 <HeroBackground
                   logo={program.logo}
@@ -101,7 +101,7 @@ export default function ProgramPageClient() {
               <span className="text-base font-semibold text-neutral-800">
                 Referral link
               </span>
-              <div className="xs:flex-row xs:items-center relative mt-3 flex flex-col gap-2 md:max-w-[50%]">
+              <div className="xs:flex-row xs:items-center relative mt-3 flex flex-col gap-4">
                 {masterLink ? (
                   <input
                     type="text"
@@ -146,7 +146,7 @@ export default function ProgramPageClient() {
               <span className="mt-12 text-base font-semibold text-neutral-800">
                 Rewards
               </span>
-              <div className="relative mt-2 text-lg text-neutral-900 md:max-w-[50%]">
+              <div className="relative mt-2 text-lg text-neutral-900">
                 {program && programEnrollment?.rewards ? (
                   <ProgramRewardList
                     rewards={programEnrollment?.rewards}
@@ -170,14 +170,14 @@ export default function ProgramPageClient() {
       >
         <ChartTooltipSync>
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <div className="group rounded-lg border border-neutral-300 p-5 pb-3 lg:col-span-2">
+            <div className="group rounded-xl border-[6px] border-neutral-200 p-5 pb-3 lg:col-span-2">
               <EarningsChart />
             </div>
 
             <PayoutsCard programId={program?.id} />
             <NumberFlowGroup>
               <StatCard title="Clicks" event="clicks" />
-              <StatCard title="Leads" event="leads" />
+              <StatCard title="Conversions" event="leads" />
               <StatCard title="Sales" event="sales" />
             </NumberFlowGroup>
           </div>
@@ -191,7 +191,7 @@ export default function ProgramPageClient() {
               href={`/programs/${programSlug}/earnings${getQueryString()}`}
               className={cn(
                 buttonVariants({ variant: "secondary" }),
-                "flex h-7 items-center rounded-lg border px-2 text-sm",
+                "flex h-7 items-center rounded-xl border-[3px] px-2 text-sm",
               )}
             >
               View all
@@ -311,7 +311,7 @@ function StatCard({
   });
 
   return (
-    <div className="group block rounded-lg border border-neutral-300 bg-white p-5 pb-3">
+    <div className="group block rounded-xl border-[6px] border-neutral-200 bg-white p-5 pb-3">
       <div className="flex justify-between">
         <div>
           <span className="mb-1 block text-base font-semibold leading-none text-neutral-800">

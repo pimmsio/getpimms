@@ -68,25 +68,25 @@ export function useLinkFilters() {
             hideDuringSearch,
           })) ?? null,
       },
-      {
-        key: "domain",
-        icon: Globe,
-        label: "Domain",
-        getOptionIcon: (value) => (
-          <BlurImage
-            src={`${GOOGLE_FAVICON_URL}${value}`}
-            alt={value}
-            className="h-4 w-4 rounded-full"
-            width={16}
-            height={16}
-          />
-        ),
-        options: domains.map(({ slug, count }) => ({
-          value: slug,
-          label: slug,
-          right: count,
-        })),
-      },
+      // {
+      //   key: "domain",
+      //   icon: Globe,
+      //   label: "Domain",
+      //   getOptionIcon: (value) => (
+      //     <BlurImage
+      //       src={`${GOOGLE_FAVICON_URL}${value}`}
+      //       alt={value}
+      //       className="h-4 w-4 rounded-full"
+      //       width={16}
+      //       height={16}
+      //     />
+      //   ),
+      //   options: domains.map(({ slug, count }) => ({
+      //     value: slug,
+      //     label: slug,
+      //     right: count,
+      //   })),
+      // },
       {
         key: "userId",
         icon: User,

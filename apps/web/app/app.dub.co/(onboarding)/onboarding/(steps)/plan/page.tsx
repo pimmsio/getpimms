@@ -18,30 +18,30 @@ export default function Plan() {
           .
         </>
       }
-      className="max-w-screen-lg"
+      className="max-w-2xl"
     >
       <PlanSelector />
-      <div className="mx-auto mt-8 flex w-fit flex-col items-center justify-center gap-6 text-sm md:flex-row">
-        <a
+      <div className="mt-8 flex flex-col gap-3">
+        {/* <a
           href="https://dub.co/enterprise"
           target="_blank"
           className="flex items-center text-gray-500 underline-offset-4 transition-colors hover:text-gray-800 hover:underline"
         >
           Looking for enterprise? ↗
-        </a>
+        </a> */}
         <LaterButton
           next="finish"
           className="underline-offset-4 hover:underline"
         >
           Start for free, pick a plan later
         </LaterButton>
-        <a
-          href="https://dub.co/pricing"
+        {/* <a
+          href="https://pimms.io/pricing"
           target="_blank"
           className="flex items-center text-gray-500 underline-offset-4 transition-colors hover:text-gray-800 hover:underline"
         >
           Compare all plans ↗
-        </a>
+        </a> */}
       </div>
     </StepPage>
   );

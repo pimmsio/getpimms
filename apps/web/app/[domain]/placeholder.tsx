@@ -1,7 +1,6 @@
 "use client";
 
 import { ButtonLink } from "@/ui/placeholders/button-link";
-import { CTA } from "@/ui/placeholders/cta";
 import { FeaturesSection } from "@/ui/placeholders/features-section";
 import { Hero } from "@/ui/placeholders/hero";
 import { Logo } from "@dub/ui";
@@ -34,7 +33,7 @@ export default function PlaceholderContent() {
               "animate-slide-up-fade motion-reduce:animate-fade-in [--offset:20px] [animation-duration:1s] [animation-fill-mode:both]",
             )}
           >
-            Welcome to Dub
+            Welcome to PIMMS
           </h1>
           <p
             className={cn(
@@ -42,8 +41,9 @@ export default function PlaceholderContent() {
               "animate-slide-up-fade motion-reduce:animate-fade-in [--offset:10px] [animation-delay:200ms] [animation-duration:1s] [animation-fill-mode:both]",
             )}
           >
-            This custom domain is powered by Dub &ndash; the link management
-            platform designed for modern marketing teams.
+            This custom domain is powered by PIMMS &ndash; the deep link
+            platform designed to open your prospecting content in the right
+            mobile apps, driving more conversion and growth.
           </p>
         </div>
 
@@ -53,12 +53,12 @@ export default function PlaceholderContent() {
             "animate-slide-up-fade motion-reduce:animate-fade-in [--offset:5px] [animation-delay:300ms] [animation-duration:1s] [animation-fill-mode:both]",
           )}
         >
-          <ButtonLink variant="primary" href="https://app.dub.co/register">
-            Try Dub today
+          <ButtonLink variant="primary" href="https://app.pimms.io/register">
+            Try PIMMS today
           </ButtonLink>
           <ButtonLink
             variant="secondary"
-            href={createHref("/home", domain, {
+            href={createHref("/", domain, {
               ...UTM_PARAMS,
               utm_campaign: domain,
               utm_content: "Learn more",
@@ -71,9 +71,9 @@ export default function PlaceholderContent() {
       <div className="mt-20">
         <FeaturesSection domain={domain} utmParams={UTM_PARAMS} />
       </div>
-      <div className="mt-32">
+      {/* <div className="mt-32">
         <CTA domain={domain} utmParams={UTM_PARAMS} />
-      </div>
+      </div> */}
     </div>
   );
 }

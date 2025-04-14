@@ -18,7 +18,7 @@ const sortDomains = (domains: any[], prioritySlug?: string) => {
 
 /**
  * @param {string} [options.currentDomain] The current domain of a link being updated (useful when the link's current domain has been archived)
- * @param {boolean} [options.onboarding] Whether the user is on the onboarding page (we can assume the user doesn't have any custom domains yet, so just show the Dub default domains)
+ * @param {boolean} [options.onboarding] Whether the user is on the onboarding page (we can assume the user doesn't have any custom domains yet, so just show the PiMMs default domains)
  * @returns {Array} An array of available domains for creating or updating a link.
  */
 export function useAvailableDomains(
@@ -60,7 +60,7 @@ export function useAvailableDomains(
         // If domain not found at all, return all active domains
         return [
           ...sortDomains(activeWorkspaceDomains || []),
-          ...sortDomains(activeDefaultDomains, "dub.link"),
+          ...sortDomains(activeDefaultDomains, "pim.ms"),
         ];
       }
 
@@ -71,7 +71,7 @@ export function useAvailableDomains(
       return [
         ...sortDomains(activeWorkspaceDomains || []),
         ...(isDefaultDomain ? [] : [domain]),
-        ...sortDomains(activeDefaultDomains, "dub.link"),
+        ...sortDomains(activeDefaultDomains, "pim.ms"),
         ...(isDefaultDomain ? [domain] : []),
       ];
     }
@@ -83,8 +83,8 @@ export function useAvailableDomains(
         ...domain,
         isWorkspaceDomain: true,
       })),
-      // Default domains next, with dub.link first, then alphabetically
-      ...sortDomains(activeDefaultDomains, "dub.link").map((domain) => ({
+      // Default domains next, with pim.ms first, then alphabetically
+      ...sortDomains(activeDefaultDomains, "pim.ms").map((domain) => ({
         ...domain,
         isWorkspaceDomain: false,
       })),

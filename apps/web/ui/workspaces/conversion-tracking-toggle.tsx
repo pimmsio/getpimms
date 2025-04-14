@@ -11,7 +11,7 @@ export function ConversionTrackingToggle() {
   const id = useId();
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-lg border border-neutral-200 bg-white p-5">
+    <div className="flex items-center justify-between gap-4 rounded-xl border-[6px] border-neutral-100 bg-white p-5">
       <div className="flex min-w-0 items-center gap-4">
         <div className="overflow-hidden">
           <label
@@ -22,7 +22,6 @@ export function ConversionTrackingToggle() {
           </label>
           <p className="mt-1 flex items-center gap-1 text-sm text-neutral-500">
             Enable conversion tracking for all future links in this workspace.
-            This only affects links made with the link builder.
           </p>
         </div>
       </div>
@@ -58,17 +57,17 @@ export function ConversionTrackingToggleSwitch(
   return (
     <Switch
       disabled={isSubmitting}
-      disabledTooltip={
-        plan === "free" || plan === "pro" ? (
-          <TooltipContent
-            title="You can only enable conversion tracking on Business plans and above."
-            cta="Upgrade to Business"
-            href={`/${workspaceSlug}/upgrade`}
-          />
-        ) : (
-          permissionsError
-        )
-      }
+      // disabledTooltip={
+      //   plan === "free" ? (
+      //     <TooltipContent
+      //       title="You can only enable conversion tracking on Pro plans and above."
+      //       cta="Upgrade to Pro"
+      //       href={`/${workspaceSlug}/upgrade`}
+      //     />
+      //   ) : (
+      //     permissionsError
+      //   )
+      // }
       checked={conversionEnabled}
       fn={(checked) => {
         const oldConversionEnabled = conversionEnabled;

@@ -35,9 +35,9 @@ function SignUp({ program }: { program?: PartialProgram }) {
   return (
     <>
       {program && <PartnerBanner program={program} />}
-      <div className="rounded-lg border border-neutral-200 bg-white p-8 pb-10">
+      <div className="rounded-xl border-[6px] border-neutral-100 bg-white p-8 pb-10">
         <h1 className="text-lg font-medium text-neutral-800">
-          Create a Dub Partner account
+          Create a PIMMS Partner account
         </h1>
         <div className="mt-8">
           <SignUpForm methods={["email", "google"]} />
@@ -61,7 +61,7 @@ function Verify() {
 
   return (
     <>
-      <div className="rounded-lg border border-neutral-200 bg-white p-8 pb-10">
+      <div className="rounded-xl border-[6px] border-neutral-100 bg-white p-8 pb-10">
         <h1 className="text-lg font-medium text-neutral-800">
           Verify your email address
         </h1>

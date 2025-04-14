@@ -107,7 +107,7 @@ export const FolderUsersPageClient = ({ folderId }: { folderId: string }) => {
         <p className="text-sm font-medium text-neutral-500">Folders</p>
       </Link>
 
-      <div className="rounded-lg border border-neutral-200 bg-white">
+      <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
         <div className="flex items-center justify-between border-b px-5 py-6 sm:flex-row sm:space-y-0">
           {folder ? (
             <>
@@ -138,7 +138,7 @@ export const FolderUsersPageClient = ({ folderId }: { folderId: string }) => {
                   />
 
                   <select
-                    className="appearance-none rounded-md border border-neutral-200 bg-white pl-10 pr-8 text-sm text-neutral-900 focus:border-neutral-300 focus:ring-neutral-300"
+                    className="appearance-none rounded-xl border-[2px] border-neutral-100 bg-white pl-10 pr-8 text-sm text-neutral-900 focus:border-neutral-300 focus:ring-neutral-300"
                     value={workspaceAccessLevel || folder?.accessLevel || ""}
                     disabled={isUpdating}
                     onChange={(e) => {
@@ -169,7 +169,7 @@ export const FolderUsersPageClient = ({ folderId }: { folderId: string }) => {
           )}
         </div>
 
-        <div className="grid divide-y divide-neutral-200">
+        <div className="grid divide-y-[6px] divide-neutral-100">
           {isUsersValidating || isUsersLoading
             ? Array.from({ length: 5 }).map((_, i) => (
                 <FolderUserPlaceholder key={i} />
@@ -232,7 +232,7 @@ const FolderUserRow = ({
       <div className="flex items-center gap-x-3">
         <select
           className={cn(
-            "rounded-md border border-neutral-200 text-xs text-neutral-900 focus:border-neutral-600 focus:ring-neutral-600",
+            "rounded-xl border-[2px] border-neutral-100 text-xs text-neutral-900 focus:border-neutral-600 focus:ring-neutral-600",
             {
               "cursor-not-allowed bg-neutral-100": disableRoleUpdate,
             },

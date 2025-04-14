@@ -30,7 +30,7 @@ export function CTA({
   domain,
   utmParams,
   title = "Supercharge your marketing efforts",
-  subtitle = "See why Dub is the link management platform of choice for modern marketing teams.",
+  subtitle = "See why PIMMS is the link management platform of choice for modern marketing teams.",
   className,
 }: {
   domain: string;
@@ -100,7 +100,7 @@ export function CTA({
       </div>
 
       <div className="relative mx-auto mt-10 flex max-w-fit space-x-4">
-        <ButtonLink variant="primary" href="https://app.dub.co/register">
+        <ButtonLink variant="primary" href="https://app.pimms.io/register">
           Start for free
         </ButtonLink>
         <ButtonLink

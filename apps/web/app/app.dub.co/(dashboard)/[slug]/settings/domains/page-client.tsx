@@ -107,18 +107,18 @@ export default function WorkspaceDomainsClient() {
             <h1 className="text-2xl font-semibold tracking-tight text-black">
               Domains
             </h1>
-            <InfoTooltip
+            {/* <InfoTooltip
               content={
                 <TooltipContent
-                  title="Learn more about how to add, configure, and verify custom domains on Dub."
+                  title="Learn more about how to add, configure, and verify custom domains on PiMMs."
                   href="https://dub.co/help/article/how-to-add-custom-domain"
                   target="_blank"
                   cta="Learn more"
                 />
               }
-            />
+            /> */}
           </div>
-          <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
+          {/* <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
             <div className="w-full sm:w-auto">
               <SearchBoxPersisted
                 loading={loading}
@@ -198,7 +198,7 @@ export default function WorkspaceDomainsClient() {
                 disabledTooltip={disabledTooltip}
               />
             </Popover>
-          </div>
+          </div> */}
         </div>
 
         {workspaceId && (
@@ -208,7 +208,7 @@ export default function WorkspaceDomainsClient() {
           </>
         )}
 
-        {!dotLinkClaimed && <FreeDotLinkBanner />}
+        {/* {!dotLinkClaimed && <FreeDotLinkBanner />} */}
 
         <div key={archived} className="animate-fade-in">
           {!loading ? (
@@ -221,7 +221,7 @@ export default function WorkspaceDomainsClient() {
                 ))}
               </ul>
             ) : archived || search ? (
-              <div className="flex flex-col items-center gap-4 rounded-xl border border-neutral-200 py-10">
+              <div className="flex flex-col items-center gap-4 rounded-xl border-[6px] border-neutral-100 py-10">
                 <EmptyState
                   icon={Globe}
                   title={
@@ -235,7 +235,7 @@ export default function WorkspaceDomainsClient() {
             ) : (
               <AnimatedEmptyState
                 title="No domains found"
-                description="Use custom domains for better brand recognition and click-through rates"
+                description="Use custom domains for better to share branded deeplinks"
                 cardContent={
                   <>
                     <Globe className="size-4 text-neutral-700" />
@@ -246,7 +246,7 @@ export default function WorkspaceDomainsClient() {
                   </>
                 }
                 addButton={<AddDomainButton />}
-                learnMoreHref="https://dub.co/help/article/how-to-add-custom-domain"
+                // learnMoreHref="https://dub.co/help/article/how-to-add-custom-domain"
               />
             )
           ) : (
@@ -259,7 +259,7 @@ export default function WorkspaceDomainsClient() {
             </ul>
           )}
         </div>
-        <div className="sticky bottom-0 rounded-b-[inherit] border-t border-neutral-200 bg-white px-3.5 py-2">
+        <div className="sticky bottom-0 rounded-b-[inherit] border-t-[6px] border-neutral-100 bg-white px-3.5 py-2">
           <PaginationControls
             pagination={pagination}
             setPagination={setPagination}
@@ -269,7 +269,7 @@ export default function WorkspaceDomainsClient() {
         </div>
       </div>
 
-      <DefaultDomains />
+      {/* <DefaultDomains /> */}
     </>
   );
 }

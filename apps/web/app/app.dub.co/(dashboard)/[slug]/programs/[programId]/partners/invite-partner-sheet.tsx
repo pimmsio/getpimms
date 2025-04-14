@@ -125,7 +125,7 @@ function InvitePartnerSheetContent({ setIsOpen }: InvitePartnerSheetProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col">
-      <div className="sticky top-0 z-10 border-b border-neutral-200 bg-white">
+      <div className="sticky top-0 z-10 border-b-[6px] border-neutral-100 bg-white">
         <div className="flex items-start justify-between p-6">
           <Sheet.Title className="text-xl font-semibold">
             Invite partner
@@ -142,7 +142,7 @@ function InvitePartnerSheetContent({ setIsOpen }: InvitePartnerSheetProps) {
 
       <div className="flex-1 overflow-y-auto">
         <div className="p-6">
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid gap-6">
             <div>
               <label htmlFor="name" className="flex items-center space-x-2">
                 <h2 className="text-sm font-medium text-neutral-900">Name</h2>
@@ -167,7 +167,7 @@ function InvitePartnerSheetContent({ setIsOpen }: InvitePartnerSheetProps) {
                 <input
                   {...register("email", { required: true })}
                   className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
-                  placeholder="panic@thedis.co"
+                  placeholder="cheers@pimms.io"
                   type="email"
                   autoComplete="off"
                 />
@@ -239,7 +239,7 @@ function InvitePartnerSheetContent({ setIsOpen }: InvitePartnerSheetProps) {
 
               <AnimatedSizeContainer height>
                 {showAdvancedOptions && (
-                  <div className="grid grid-cols-1 gap-6 py-6">
+                  <div className="grid gap-6 py-6">
                     <div>
                       <label
                         htmlFor="rewardId"
@@ -310,7 +310,7 @@ function InvitePartnerSheetContent({ setIsOpen }: InvitePartnerSheetProps) {
         </div>
       </div>
 
-      <div className="sticky bottom-0 z-10 border-t border-neutral-200 bg-white">
+      <div className="sticky bottom-0 z-10 border-t-[6px] border-neutral-100 bg-white">
         <div className="flex items-center justify-end gap-2 p-5">
           <Button
             type="button"
@@ -343,10 +343,10 @@ function EmailPreview() {
   );
 
   return (
-    <div className="mt-8 rounded-md border border-neutral-200 bg-neutral-100 p-2 pt-2.5">
+    <div className="mt-8 rounded-xl border-[2px] border-neutral-100 bg-neutral-100 p-2 pt-2.5">
       <div className="flex justify-between px-2">
         <h2 className="text-sm font-medium text-neutral-900">Email preview</h2>
-        <button
+        {/* <button
           type="button"
           className="flex items-center gap-2 text-sm font-medium text-neutral-500 transition-colors duration-100 hover:text-neutral-600"
           onClick={() => setShowPreview(!showPreview)}
@@ -357,7 +357,7 @@ function EmailPreview() {
             <Eye className="size-4" />
           )}
           {showPreview ? "Hide" : "Show"}
-        </button>
+        </button> */}
       </div>
       <motion.div
         animate={{
@@ -365,35 +365,42 @@ function EmailPreview() {
         }}
         className="overflow-hidden"
       >
-        <div className="mt-2 overflow-hidden rounded-md border border-neutral-200 bg-white">
-          <div className="grid grid-cols-1 gap-4 p-6 pb-10">
+        <div className="mt-2 overflow-hidden rounded-xl border-[2px] border-neutral-100 bg-white">
+          <div className="grid gap-4 p-6 pb-10">
             <MemoBlurImage
-              src={program?.logo || "https://assets.dub.co/logo.png"}
-              alt={program?.name || "Dub"}
-              className="my-2 size-8 rounded-full"
+              src={program?.logo || "https://assets.pimms.io/logo.png"}
+              alt={program?.name || "PiMMs"}
+              className="my-2 size-8"
               width={48}
               height={48}
             />
-            <h3 className="font-medium text-neutral-900">
-              {program?.name || "Dub"} invited you to join Dub Partners
+            <h3 className="font-medium text-black">
+              {program?.name || "PiMMs"} invited you to join their Affiliate Program!
             </h3>
             <p className="text-sm text-neutral-500">
-              {program?.name || "Dub"} uses Dub Partners to power their
-              affiliate program and wants to partner with great people like
-              yourself!
+              The {program?.name || "PiMMs"} Affiliate Program, powered by
+              PiMMs, invites you to help spread the word and grow with us.
             </p>
-            <Button type="button" text="Accept invite" className="w-fit" />
+            <p className="text-sm text-neutral-500">
+              With easy-to-use affiliate tools, intuitive tracking, and dedicated
+              support, becoming a {program?.name || "PiMMs"} affiliate is simple
+              and rewarding.
+            </p>
+            <p className="text-sm text-neutral-500">
+              Join today and start turning your recommendations into results.
+            </p>
+            <Button type="button" text="Accept Invite" className="w-fit" />
           </div>
-          <div className="grid gap-1 border-t border-neutral-200 bg-neutral-50 px-6 py-4">
+          <div className="grid gap-1 border-t-[6px] border-neutral-100 bg-neutral-50 px-6 py-4">
             <p className="text-sm text-neutral-500">
               <strong className="font-medium text-neutral-900">From: </strong>
-              system@dub.co
+              alexandre@pimms.io
             </p>
             <p className="text-sm text-neutral-500">
               <strong className="font-medium text-neutral-900">
                 Subject:{" "}
               </strong>
-              You've been invited to Dub Partners
+              You're Invited! Join {program?.name || "PiMMs"}'s Affiliate Network
             </p>
           </div>
         </div>

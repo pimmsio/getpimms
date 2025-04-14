@@ -10,8 +10,8 @@ export function TopPartners() {
   const { partners, loading } = usePartners();
 
   return (
-    <div className="rounded-md border border-neutral-200">
-      <div className="flex items-center justify-between border-b border-neutral-200 p-5">
+    <div className="rounded-xl border-[6px] border-neutral-100">
+      <div className="flex items-center justify-between border-b-[6px] border-neutral-100 p-5">
         <h2 className="text-base font-semibold text-neutral-900">
           Top partners
         </h2>
@@ -20,7 +20,7 @@ export function TopPartners() {
           href={`/${slug}/programs/${programId}/partners`}
           className={cn(
             buttonVariants({ variant: "secondary" }),
-            "flex h-7 items-center rounded-lg border px-2 text-sm",
+            "flex h-7 items-center rounded-xl border-[3px] px-2 text-sm",
           )}
         >
           View all

@@ -243,7 +243,7 @@ export function AddEditDomainForm({
         if (error.message.includes("Upgrade to Pro")) {
           toast.custom(() => (
             <UpgradeRequiredToast
-              planToUpgradeTo="Pro"
+              title="You've discovered a Pro feature!"
               message={error.message}
             />
           ));
@@ -269,7 +269,7 @@ export function AddEditDomainForm({
             <h2 className="text-sm font-medium text-neutral-700">
               Your domain
             </h2>
-            <InfoTooltip
+            {/* <InfoTooltip
               content={
                 <SimpleTooltipContent
                   title="Not sure which domain to use?"
@@ -277,7 +277,7 @@ export function AddEditDomainForm({
                   href="https://dub.co/help/article/choosing-a-custom-domain"
                 />
               }
-            />
+            /> */}
           </label>
           {props && lockDomain && !isDubProvisioned && (
             <button
@@ -295,7 +295,7 @@ export function AddEditDomainForm({
           )}
         </div>
         {props && lockDomain ? (
-          <div className="mt-2 cursor-not-allowed rounded-md border border-neutral-300 bg-neutral-100 px-3 py-2 text-sm text-neutral-500 shadow-sm">
+          <div className="mt-2 cursor-not-allowed rounded-xl border-[2px] border-neutral-300 bg-neutral-100 px-3 py-2 text-sm text-neutral-500 shadow-sm">
             {domain}
           </div>
         ) : (
@@ -307,7 +307,7 @@ export function AddEditDomainForm({
                   "bg-neutral-200 text-neutral-500",
               )}
             >
-              <div className="flex rounded-md border border-neutral-300 bg-white">
+              <div className="flex rounded-xl border-[2px] border-neutral-300 bg-white">
                 <input
                   {...register("slug", {
                     onChange: (e) => {
@@ -316,7 +316,7 @@ export function AddEditDomainForm({
                     },
                   })}
                   className="block w-full rounded-md border-0 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-0 sm:text-sm"
-                  placeholder="go.acme.com"
+                  placeholder="go.domain.io"
                   autoFocus={!isMobile}
                 />
               </div>
@@ -359,7 +359,7 @@ export function AddEditDomainForm({
         <>
           <div className="h-0.5 w-full bg-neutral-200" />
           <div className="flex flex-col gap-y-6">
-            {DOMAIN_OPTIONS.map(
+            {[...DOMAIN_OPTIONS, ...ADVANCED_OPTIONS].map(
               ({ id, title, description, icon: Icon, proFeature }) => {
                 const showOption = showOptionStates[id] || !!watch(id);
 
@@ -367,7 +367,7 @@ export function AddEditDomainForm({
                   <div key={id}>
                     <label className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
-                        <div className="hidden rounded-lg border border-neutral-200 bg-white p-2 sm:block">
+                        <div className="hidden rounded-xl border-[6px] border-neutral-100 bg-white p-2 sm:block">
                           <Icon className="size-5 text-neutral-500" />
                         </div>
                         <div>
@@ -411,7 +411,7 @@ export function AddEditDomainForm({
                     >
                       <div className="relative mt-2 rounded-md shadow-sm">
                         {id === "logo" ? (
-                          <div className="flex h-24 items-center justify-center overflow-hidden rounded-md border border-neutral-300">
+                          <div className="flex h-24 items-center justify-center overflow-hidden rounded-xl border-[2px] border-neutral-300">
                             {!isMobile && (
                               <ShimmerDots className="pointer-events-none z-10 opacity-30 [mask-image:radial-gradient(40%_80%,transparent_50%,black)]" />
                             )}
@@ -434,7 +434,7 @@ export function AddEditDomainForm({
                                   }}
                                   customPreview={
                                     <QRCode
-                                      url="https://dub.co"
+                                      url="https://pimms.io"
                                       fgColor="#000"
                                       logo={field.value || ""}
                                       scale={0.6}
@@ -459,7 +459,7 @@ export function AddEditDomainForm({
             )}
           </div>
 
-          <div className="flex flex-col">
+          {/* <div className="flex flex-col">
             <button
               type="button"
               className="flex w-full items-center gap-2"
@@ -484,7 +484,7 @@ export function AddEditDomainForm({
                       <div key={id} className="mt-4 flex flex-col space-y-3">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="hidden rounded-lg border border-neutral-200 bg-white p-2 sm:block">
+                            <div className="hidden rounded-xl border-[6px] border-neutral-100 bg-white p-2 sm:block">
                               <Icon className="size-5 text-neutral-500" />
                             </div>
                             <div>
@@ -523,7 +523,7 @@ export function AddEditDomainForm({
                         </div>
 
                         {showOptionStates[id] && (
-                          <div className="rounded-md border border-neutral-200 bg-white">
+                          <div className="rounded-xl border-[2px] border-neutral-100 bg-white">
                             <textarea
                               {...register(id)}
                               className="w-full resize-none rounded-md border-0 bg-transparent px-3 py-2 font-mono text-xs text-neutral-700 focus:outline-none focus:ring-0"
@@ -564,7 +564,7 @@ export function AddEditDomainForm({
                   },
                 )}
             </AnimatedSizeContainer>
-          </div>
+          </div> */}
         </>
       )}
 
@@ -584,33 +584,33 @@ const DOMAIN_OPTIONS: {
   icon: any;
   proFeature?: boolean;
 }[] = [
-  {
-    id: "logo",
-    title: "Custom QR code logo",
-    description: "Which logo to use for shortlink QR codes",
-    icon: QrCode,
-    proFeature: true,
-  },
-  {
-    id: "expiredUrl",
-    title: "Default expiration URL",
-    description: "Where to redirect when shortlinks expire",
-    icon: Milestone,
-    proFeature: true,
-  },
-  {
-    id: "notFoundUrl",
-    title: "Not found URL",
-    description: "Where to redirect when shortlinks don't exist",
-    icon: Binoculars,
-    proFeature: true,
-  },
-  {
-    id: "placeholder",
-    title: "Input placeholder URL",
-    description: "Which placeholder URL to show in the link builder",
-    icon: TextCursorInput,
-  },
+  // {
+  //   id: "logo",
+  //   title: "Custom QR code logo",
+  //   description: "Which logo to use for shortlink QR codes",
+  //   icon: QrCode,
+  //   proFeature: true,
+  // },
+  // {
+  //   id: "expiredUrl",
+  //   title: "Default expiration URL",
+  //   description: "Where to redirect when shortlinks expire",
+  //   icon: Milestone,
+  //   proFeature: true,
+  // },
+  // {
+  //   id: "notFoundUrl",
+  //   title: "Not found URL",
+  //   description: "Where to redirect when shortlinks don't exist",
+  //   icon: Binoculars,
+  //   proFeature: true,
+  // },
+  // {
+  //   id: "placeholder",
+  //   title: "Input placeholder URL",
+  //   description: "Which placeholder URL to show in the link builder",
+  //   icon: TextCursorInput,
+  // },
 ];
 
 const ADVANCED_OPTIONS = [

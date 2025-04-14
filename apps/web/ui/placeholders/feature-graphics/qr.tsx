@@ -20,13 +20,13 @@ export function QR() {
   return (
     <div className="size-full [mask-image:linear-gradient(black_70%,transparent)]">
       <div
-        className="mx-3.5 flex origin-top scale-95 cursor-default flex-col gap-6 rounded-xl border border-neutral-200 bg-white p-4 shadow-[0_20px_20px_0_#00000017]"
+        className="mx-3.5 flex origin-top scale-95 cursor-default flex-col gap-6 rounded-xl border-[6px] border-neutral-100 bg-white p-4 shadow-[0_20px_20px_0_#00000017]"
         aria-hidden
       >
         <div className="flex items-center justify-between">
           <h3 className="text-base font-medium">QR Code Design</h3>
           <div className="max-md:hidden" aria-hidden>
-            <kbd className="flex size-6 cursor-default items-center justify-center rounded-md border border-neutral-200 font-sans text-xs text-neutral-950">
+            <kbd className="flex size-6 cursor-default items-center justify-center rounded-xl border-[2px] border-neutral-100 font-sans text-xs text-neutral-950">
               Q
             </kbd>
           </div>
@@ -45,7 +45,7 @@ export function QR() {
               <Copy className="size-4 text-neutral-500" />
             </div>
           </div>
-          <div className="relative mt-2 flex h-40 items-center justify-center overflow-hidden rounded-md border border-neutral-300">
+          <div className="relative mt-2 flex h-40 items-center justify-center overflow-hidden rounded-xl border-[2px] border-neutral-300">
             <ClientOnly>
               {!isMobile && (
                 <ShimmerDots className="opacity-30 [mask-image:radial-gradient(40%_80%,transparent_50%,black)]" />

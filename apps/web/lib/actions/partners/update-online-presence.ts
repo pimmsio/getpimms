@@ -59,7 +59,7 @@ export const updateOnlinePresenceAction = authPartnerActionClient
         website: parsedInput.website,
         ...(domainChanged && {
           websiteVerifiedAt: null,
-          websiteTxtRecord: `dub-domain-verification=${uuid()}`,
+          websiteTxtRecord: `pimms-domain-verification=${uuid()}`,
         }),
       }),
       ...(parsedInput.youtube !== undefined && {

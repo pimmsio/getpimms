@@ -28,7 +28,7 @@ export default async function ResetPasswordPage({ params: { token } }: Props) {
 
   return (
     <div className="mx-auto my-10 w-full max-w-md md:mt-16 lg:mt-20">
-      <div className="rounded-lg border border-neutral-200 bg-white p-8 pb-10">
+      <div className="rounded-xl border-[6px] border-neutral-100 bg-white p-8 pb-10">
         <h1 className="text-lg font-medium text-neutral-800">
           Reset your password
         </h1>

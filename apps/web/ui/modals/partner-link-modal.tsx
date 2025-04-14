@@ -111,7 +111,7 @@ function QRCodePreview({
       <LinkQRModal />
       <div className="flex items-center gap-2">
         <h4 className="text-sm font-medium text-neutral-700">QR Code</h4>
-        <InfoTooltip
+        {/* <InfoTooltip
           content={
             <SimpleTooltipContent
               title="Set a custom QR code design to improve click-through rates."
@@ -119,9 +119,9 @@ function QRCodePreview({
               href="https://dub.co/help/article/custom-qr-codes"
             />
           }
-        />
+        /> */}
       </div>
-      <div className="relative mt-2 h-24 overflow-hidden rounded-md border border-neutral-300">
+      <div className="relative mt-2 h-24 overflow-hidden rounded-xl border-[2px] border-neutral-300">
         <Button
           type="button"
           variant="secondary"
@@ -170,9 +170,9 @@ function PartnerLinkModalContent({
 }) {
   const { programEnrollment } = useProgramEnrollment();
   const destinationDomain =
-    getDomainWithoutWWW(programEnrollment?.program?.url || "https://dub.co") ??
-    "dub.co";
-  const shortLinkDomain = programEnrollment?.program?.domain ?? "dub.sh";
+    getDomainWithoutWWW(programEnrollment?.program?.url || "https://pimms.io") ??
+    "pimms.io";
+  const shortLinkDomain = programEnrollment?.program?.domain ?? "pim.ms";
 
   const [lockKey, setLockKey] = useState(Boolean(link));
   const [isLoading, setIsLoading] = useState(false);
@@ -292,7 +292,7 @@ function PartnerLinkModalContent({
               >
                 Destination URL
               </label>
-              <InfoTooltip
+              {/* <InfoTooltip
                 content={
                   <SimpleTooltipContent
                     title="The URL your users will get redirected to when they visit your short link."
@@ -300,11 +300,11 @@ function PartnerLinkModalContent({
                     href="https://dub.co/help/article/how-to-create-link"
                   />
                 }
-              />
+              /> */}
             </div>
             {isDefaultLink ? (
               <Tooltip content="You cannot edit the default link destination">
-                <div className="mt-2 block w-full rounded-md border border-neutral-300 bg-neutral-50 px-3 py-2 text-neutral-500 sm:text-sm">
+                <div className="mt-2 block w-full rounded-xl border-[2px] border-neutral-300 bg-neutral-50 px-3 py-2 text-neutral-500 sm:text-sm">
                   {getPrettyUrl(link?.url)}
                 </div>
               </Tooltip>
@@ -345,7 +345,7 @@ function PartnerLinkModalContent({
                 >
                   Short Link
                 </label>
-                <InfoTooltip
+                {/* <InfoTooltip
                   content={
                     <SimpleTooltipContent
                       title="This is the short link that will redirect to your destination URL."
@@ -353,7 +353,7 @@ function PartnerLinkModalContent({
                       href="https://dub.co/help/article/how-to-create-link"
                     />
                   }
-                />
+                /> */}
               </div>
               {lockKey && (
                 <button
@@ -398,7 +398,7 @@ function PartnerLinkModalContent({
               >
                 Comments
               </label>
-              <InfoTooltip
+              {/* <InfoTooltip
                 content={
                   <SimpleTooltipContent
                     title="Use comments to add context to your short links – for you and your team."
@@ -406,7 +406,7 @@ function PartnerLinkModalContent({
                     href="https://dub.co/help/article/link-comments"
                   />
                 }
-              />
+              /> */}
             </div>
             <TextareaAutosize
               {...register("comments")}
@@ -429,7 +429,7 @@ function PartnerLinkModalContent({
         </div>
       </div>
 
-      <div className="flex items-center justify-end border-t border-neutral-200 bg-neutral-50 p-4">
+      <div className="flex items-center justify-end border-t-[6px] border-neutral-100 bg-neutral-50 p-4">
         <Button
           type="submit"
           disabled={saveDisabled}

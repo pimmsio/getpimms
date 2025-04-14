@@ -168,9 +168,31 @@ function UTMModalInner({ setShowUTMModal }: UTMModalProps) {
       }}
     >
       <div className="flex items-center justify-between">
+        {utmData ? (
+          <div className="text-sm">
+            <div className="max-w-64">
+              <UTMTemplateList
+                enabledParams={enabledParams}
+                data={utmData}
+                onLoad={(params) => {
+                  onLoad(params);
+                }}
+                disabled={!isUrlValid}
+              />
+            </div>
+          </div>
+        ) : isUtmLoading ? (
+          <div className="flex w-full items-center justify-center py-2 md:w-32">
+            <LoadingSpinner className="size-4" />
+          </div>
+        ) : (
+          <div className="flex w-full items-center justify-center p-2 text-center text-xs text-neutral-500 md:w-32">
+            Failed to load templates
+          </div>
+        )}
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-medium">UTM Builder</h3>
-          <InfoTooltip
+          {/* <h3 className="text-lg font-medium">UTM Builder</h3> */}
+          {/* <InfoTooltip
             content={
               <SimpleTooltipContent
                 title="Add UTM parameters to your short links for conversion tracking."
@@ -178,7 +200,7 @@ function UTMModalInner({ setShowUTMModal }: UTMModalProps) {
                 href="https://dub.co/help/article/utm-builder"
               />
             }
-          />
+          /> */}
         </div>
         <div className="max-md:hidden">
           <Tooltip
@@ -191,14 +213,14 @@ function UTMModalInner({ setShowUTMModal }: UTMModalProps) {
             }
             side="right"
           >
-            <kbd className="flex size-6 cursor-default items-center justify-center rounded-md border border-neutral-200 font-sans text-xs text-neutral-950">
+            <kbd className="flex size-6 cursor-default items-center justify-center rounded-xl border-[2px] border-neutral-100 font-sans text-xs text-neutral-950">
               U
             </kbd>
           </Tooltip>
         </div>
       </div>
 
-      <div className="py-4">
+      <div className="py-1">
         <UTMBuilder
           values={enabledParams}
           onChange={(key, value) => {
@@ -227,14 +249,14 @@ function UTMModalInner({ setShowUTMModal }: UTMModalProps) {
           <span className="block text-sm font-medium text-neutral-700">
             URL Preview
           </span>
-          <div className="scrollbar-hide mt-2 overflow-scroll break-words rounded-lg border border-neutral-200 bg-neutral-50 px-2.5 py-2 font-mono text-xs text-neutral-500">
+          <div className="scrollbar-hide mt-2 overflow-scroll break-words rounded-lg border-[6px] border-neutral-100 bg-neutral-50 px-2.5 py-2 font-mono text-xs text-neutral-500">
             {url}
           </div>
         </div>
       )}
 
       <div className="mt-6 flex items-center justify-between gap-2">
-        <div>
+        {/* <div>
           <FormProvider {...form}>
             <UTMTemplatesCombo
               onLoad={(params) => {
@@ -249,7 +271,7 @@ function UTMModalInner({ setShowUTMModal }: UTMModalProps) {
               }
             />
           </FormProvider>
-        </div>
+        </div> */}
         <div className="flex items-center gap-2">
           <Button
             type="button"
@@ -263,8 +285,8 @@ function UTMModalInner({ setShowUTMModal }: UTMModalProps) {
           />
           <Button
             type="submit"
-            variant="primary"
-            text="Save"
+            variant="secondary"
+            text="Close"
             className="h-9 w-fit"
             disabled={!isDirty}
           />
@@ -297,10 +319,10 @@ function UTMButton({
       text="UTM"
       icon={
         <DiamondTurnRight
-          className={cn("size-4", enabled && "text-blue-500")}
+          className={cn("size-4", enabled && "text-[#08272E]")}
         />
       }
-      className="h-8 w-fit gap-1.5 px-2.5 text-xs font-medium text-neutral-700"
+      className="flex h-auto w-full items-center gap-2 rounded-md border-0 px-1 py-1 text-neutral-700 outline-none hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-neutral-500 active:bg-neutral-200 group-hover:bg-neutral-100"
       onClick={() => setShowUTMModal(true)}
     />
   );

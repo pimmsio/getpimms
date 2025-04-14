@@ -16,8 +16,8 @@ export default function IntegrationPageLoading() {
 
       <div className="h-24 w-full rounded-lg bg-neutral-100" />
 
-      <div className="w-full rounded-lg border border-neutral-200 bg-white">
-        <div className="flex items-center gap-x-2 border-b border-neutral-200 px-6 py-4">
+      <div className="w-full rounded-xl border-[6px] border-neutral-100 bg-white">
+        <div className="flex items-center gap-x-2 border-b-[6px] border-neutral-100 px-6 py-4">
           <div className="h-4 w-4 rounded-full bg-neutral-100" />
           <div className="h-5 w-20 rounded-full bg-neutral-100" />
         </div>

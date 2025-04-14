@@ -141,7 +141,7 @@ function ImportRewardfulModal({
         })
       }
     >
-      <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-200 px-4 py-8 sm:px-16">
+      <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-8 sm:px-16">
         <div className="flex items-center space-x-3 py-4">
           <img
             src="https://assets.dub.co/misc/icons/rewardful.svg"
@@ -220,7 +220,7 @@ function TokenStep({
           autoFocus={!isMobile}
           onChange={(e) => setApiToken(e.target.value)}
           placeholder="Enter your Rewardful API token"
-          className="mt-1 block w-full rounded-md border border-neutral-200 px-3 py-2 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+          className="mt-1 block w-full rounded-xl border-[2px] border-neutral-100 px-3 py-2 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
           required
         />
         <p className="mt-1.5 text-xs text-neutral-500">
@@ -229,7 +229,7 @@ function TokenStep({
             href="https://app.getrewardful.com/company/edit"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-500 hover:text-blue-600"
+            className="text-[#08272E] hover:text-[#08272e]"
           >
             Company settings page
           </a>
@@ -284,7 +284,7 @@ function CampaignsStep({
           id="campaign"
           value={selectedCampaign?.id || ""}
           onChange={handleCampaignChange}
-          className="mt-1 block w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500"
+          className="mt-1 block w-full rounded-xl border-[2px] border-neutral-100 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500"
         >
           <option value="">Select a campaign</option>
           {campaigns.map((campaign) => (
@@ -296,7 +296,7 @@ function CampaignsStep({
       </div>
 
       {selectedCampaign && (
-        <dl className="grid grid-cols-2 gap-3 rounded-md border border-neutral-200 bg-white p-4 text-xs">
+        <dl className="grid grid-cols-2 gap-3 rounded-xl border-[2px] border-neutral-100 bg-white p-4 text-xs">
           <div>
             <dt className="text-neutral-500">Affiliates</dt>
             <dd className="font-medium text-neutral-700">

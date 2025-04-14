@@ -69,11 +69,11 @@ export function PageContent({
           {titleControls && (
             <div className="hidden md:block">{titleControls}</div>
           )}
-          <div className="flex items-center gap-4 md:hidden">
+          {/* <div className="flex items-center gap-4 md:hidden">
             {!hideReferButton && <ReferButton />}
             <HelpButtonRSC />
             <UserDropdown />
-          </div>
+          </div> */}
         </div>
       </MaxWidthWrapper>
       <div

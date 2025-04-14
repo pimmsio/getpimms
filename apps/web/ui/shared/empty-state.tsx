@@ -20,13 +20,11 @@ export default function EmptyState({
           href={buttonLink}
           {...(buttonLink.startsWith("http") ? { target: "_blank" } : {})}
           className={cn(
-            buttonVariants({ variant: "secondary" }),
-            "flex h-8 items-center justify-center gap-2 rounded-md border px-4 text-sm",
+            buttonVariants(),
+            "mt-4 flex h-9 items-center justify-center rounded-md border px-4 text-sm",
           )}
         >
-          <span className="bg-gradient-to-r from-violet-600 to-pink-600 bg-clip-text text-transparent">
             {buttonText}
-          </span>
         </Link>
       )}
     </EmptyStateBlock>

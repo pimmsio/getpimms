@@ -1,9 +1,9 @@
 export function Background() {
   return (
     <div style={styles.backgroundMain}>
-      <div style={styles.backgroundMainBefore} />
+      {/* <div style={styles.backgroundMainBefore} />
       <div style={styles.backgroundMainAfter} />
-      <div style={styles.backgroundContent} />
+      <div style={styles.backgroundContent} /> */}
     </div>
   );
 }

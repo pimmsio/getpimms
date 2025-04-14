@@ -26,7 +26,7 @@ export function ReferralsEmbedActivity({
   );
 
   return (
-    <div className="border-border-subtle bg-bg-default rounded-lg border sm:col-span-2">
+    <div className="border-border-subtle bg-bg-default rounded-xl border-[6px] sm:col-span-2">
       {isEmpty ? (
         <EmptyState />
       ) : (
@@ -39,7 +39,7 @@ export function ReferralsEmbedActivity({
                 "Total number of unique clicks your link has received",
             },
             {
-              label: "Leads",
+              label: "Conversions",
               value: leads,
               description: "Total number of signups that came from your link",
             },
@@ -63,7 +63,7 @@ export function ReferralsEmbedActivity({
                   {nFormatter(value, { full: true })}
                 </span>
               </div>
-              <div className="xs:block hidden h-12">
+              {/* <div className="xs:block hidden h-12">
                 <MiniAreaChart
                   data={
                     analytics?.map((a) => ({
@@ -72,7 +72,7 @@ export function ReferralsEmbedActivity({
                     })) ?? []
                   }
                 />
-              </div>
+              </div> */}
             </div>
           ))}
         </div>
@@ -84,21 +84,12 @@ export function ReferralsEmbedActivity({
 function EmptyState() {
   return (
     <div className="relative flex h-full items-center justify-center overflow-hidden rounded-[inherit]">
-      <div
-        className={cn(
-          "pointer-events-none absolute inset-x-4 top-1/2 -translate-y-1/2 [mask-composite:intersect]",
-          "[mask-image:linear-gradient(90deg,transparent,black_10%,black_90%,transparent),linear-gradient(transparent,black_10%,black_90%,transparent)]",
-        )}
-      >
-        <EmptyStateBackground className="w-full opacity-40 dark:opacity-70" />
-      </div>
       <div className="relative flex flex-col items-center p-4 text-center">
-        <CursorRays className="text-content-subtle size-5" />
         <p className="text-content-default mt-3 text-sm font-semibold">
           No activity yet
         </p>
         <p className="text-content-subtle mt-1 text-sm font-medium">
-          After your first click, your stats will show
+          Stats will show after a first click
         </p>
       </div>
     </div>

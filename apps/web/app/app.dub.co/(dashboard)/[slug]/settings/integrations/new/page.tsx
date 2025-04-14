@@ -8,9 +8,9 @@ export default function NewIntegrationsPage({
 }: {
   params: { slug: string };
 }) {
-  // this is only available for Dub workspace for now
+  // this is only available for PiMMs workspace for now
   // we might open this up to other workspaces in the future
-  if (params.slug !== "dub") {
+  if (params.slug !== "pimms" && params.slug !== "pimms-staging") {
     notFound();
   }
   return (

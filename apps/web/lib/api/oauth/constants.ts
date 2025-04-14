@@ -10,9 +10,9 @@ export const OAUTH_CONFIG = {
   REFRESH_TOKEN_LENGTH: 40,
   CODE_LENGTH: 40,
 
-  CLIENT_ID_PREFIX: "dub_app_",
-  CLIENT_SECRET_PREFIX: "dub_app_secret_",
-  ACCESS_TOKEN_PREFIX: "dub_access_token_",
+  CLIENT_ID_PREFIX: "pimms_app_",
+  CLIENT_SECRET_PREFIX: "pimms_app_secret_",
+  ACCESS_TOKEN_PREFIX: "pimms_access_token_",
 };
 
 // These are the scopes an OAuth app can request on behalf of an user
@@ -31,6 +31,8 @@ export const OAUTH_SCOPES = [
   "webhooks.read",
   "webhooks.write",
   "user.read", // default scope, no need to request it
+  "lead.write",
+  "sale.write",
 ];
 
 // Scope descriptions
@@ -47,4 +49,6 @@ export const OAUTH_SCOPE_DESCRIPTIONS = {
   "user.read": "Read your name, email and profile image",
   "webhooks.read": "Read access to webhooks",
   "webhooks.write": "Read and Write access to webhooks",
+  "lead.write": "Create a lead",
+  "sale.write": "Create a sale",
 };

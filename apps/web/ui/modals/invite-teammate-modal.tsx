@@ -41,7 +41,7 @@ function InviteTeammateModal({
       setShowModal={setShowInviteTeammateModal}
       className="max-h-[95dvh]"
     >
-      <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-200 px-4 py-4 pt-8 sm:px-16">
+      <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-4 pt-8 sm:px-16">
         {logo ? (
           <BlurImage
             src={logo}
@@ -55,15 +55,7 @@ function InviteTeammateModal({
         )}
         <h3 className="text-lg font-medium">Invite Teammates</h3>
         <p className="text-center text-sm text-neutral-500">
-          Invite teammates with{" "}
-          <a
-            href="https://dub.co/help/article/workspace-roles"
-            target="_blank"
-            className="underline hover:text-neutral-900"
-          >
-            different roles and permissions
-          </a>
-          . Invitations will be valid for 14 days.
+          Invite teammates with different roles and permissions. Invitations will be valid for 14 days.
         </p>
       </div>
       {isLoading ? (

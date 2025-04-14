@@ -4,6 +4,7 @@ import { onboardProgramAction } from "@/lib/actions/partners/onboard-program";
 import useDomains from "@/lib/swr/use-domains";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { ProgramData } from "@/lib/types";
+import { useAvailableDomains } from "@/ui/links/use-available-domains";
 import {
   Badge,
   Button,
@@ -23,8 +24,10 @@ import { toast } from "sonner";
 export function Form() {
   const router = useRouter();
   const { isMobile } = useMediaQuery();
-  const { activeWorkspaceDomains, loading } = useDomains();
+  const { domains: availableDomains, activeWorkspaceDomains, loading } = useAvailableDomains();
   const { id: workspaceId, slug: workspaceSlug, mutate } = useWorkspace();
+
+  const domains = (workspaceSlug === "pimms" || workspaceSlug === "pimms-staging") ? availableDomains : activeWorkspaceDomains;
 
   const {
     register,
@@ -106,15 +109,15 @@ export function Form() {
     {
       id: "short",
       label: "Short link",
-      example: `${domain || "refer.dub.co"}/steven`,
+      example: `${watch("domain") || "refer.pimms.io"}/alexandre`,
       comingSoon: false,
     },
-    {
-      id: "dynamic",
-      label: "Dynamic path",
-      example: `${(url && getDomainWithoutWWW(url)) || "dub.co"}/refer/steven`,
-      comingSoon: true,
-    },
+    // {
+    //   id: "dynamic",
+    //   label: "Dynamic path",
+    //   example: `${(url && getDomainWithoutWWW(url)) || "pimms.io"}/refer/alexandre`,
+    //   comingSoon: true,
+    // },
   ];
 
   return (
@@ -138,7 +141,7 @@ export function Form() {
         <p className="mb-4 mt-1 text-sm text-neutral-600">
           A square logo that will be used in various parts of your program
         </p>
-        <div className="flex w-full items-center justify-center gap-2 rounded-lg border border-neutral-200 p-1">
+        <div className="flex w-full items-center justify-center gap-2 rounded-xl border-[6px] border-neutral-100 p-1">
           <Controller
             control={control}
             name="logo"
@@ -181,9 +184,9 @@ export function Form() {
           ) : (
             <select
               {...register("domain", { required: true })}
-              className="mt-2 block w-full rounded-md border border-neutral-300 bg-white py-2 pl-3 pr-10 text-sm text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500"
+              className="mt-2 block w-full rounded-xl border-[2px] border-neutral-300 bg-white py-2 pl-3 pr-10 text-sm text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500"
             >
-              {activeWorkspaceDomains?.map(({ slug }) => (
+              {domains?.map(({ slug }) => (
                 <option value={slug} key={slug}>
                   {slug}
                 </option>
@@ -199,7 +202,7 @@ export function Form() {
           <Input
             {...register("url", { required: true })}
             type="url"
-            placeholder="https://dub.co"
+            placeholder="https://pimms.io"
             className={"mt-2 max-w-full"}
           />
         </div>
@@ -221,7 +224,7 @@ export function Form() {
               <label
                 key={type.id}
                 className={cn(
-                  "relative flex w-full cursor-pointer items-start gap-0.5 rounded-md border border-neutral-200 bg-white p-3 text-neutral-600 hover:bg-neutral-50",
+                  "relative flex w-full cursor-pointer items-start gap-0.5 rounded-xl border-[2px] border-neutral-100 bg-white p-3 text-neutral-600 hover:bg-neutral-50",
                   "transition-all duration-150",
                   isSelected &&
                     "border-black bg-neutral-50 text-neutral-900 ring-1 ring-black",

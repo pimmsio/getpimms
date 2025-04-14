@@ -40,7 +40,7 @@ const navigation = {
       name: title,
       href,
     })),
-    { name: "Dub Enterprise", href: "/enterprise" },
+    { name: "PiMMs Enterprise", href: "/enterprise" },
     { name: "Pricing", href: "/pricing" },
   ],
   solutions: [
@@ -83,7 +83,7 @@ export function Footer({
   staticDomain?: string;
   className?: string;
 }) {
-  let { domain = "dub.co" } = useParams() as { domain: string };
+  let { domain = "pimms.io" } = useParams() as { domain: string };
   if (staticDomain) {
     domain = staticDomain;
   }
@@ -96,7 +96,7 @@ export function Footer({
       )}
     >
       <footer>
-        <div className="xl:grid xl:grid-cols-3 xl:gap-8">
+        {/* <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="flex flex-col gap-6">
             <div className="grow">
               <Link
@@ -273,10 +273,10 @@ export function Footer({
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Bottom row (status, SOC2, copyright) */}
-        <div className="mt-12 grid grid-cols-1 items-center gap-8 sm:grid-cols-3">
+        {/* <div className="mt-12 grid grid-cols-1 items-center gap-8 sm:grid-cols-3">
           <StatusBadge />
           <Link
             href={createHref("/blog/soc2", domain, {
@@ -298,7 +298,7 @@ export function Footer({
           <p className="text-xs text-neutral-500 sm:text-right">
             © {new Date().getFullYear()} Dub Technologies, Inc.
           </p>
-        </div>
+        </div> */}
       </footer>
     </MaxWidthWrapper>
   );
@@ -313,7 +313,7 @@ function StatusBadge() {
         | "partial_outage"
         | "full_outage";
     }[];
-  }>("https://status.dub.co/api/v1/summary", fetcher);
+  }>("https://status.pimms.io/api/v1/summary", fetcher);
 
   const [color, setColor] = useState("bg-neutral-200");
   const [status, setStatus] = useState("Loading status...");
@@ -337,9 +337,9 @@ function StatusBadge() {
 
   return (
     <Link
-      href="https://status.dub.co"
+      href="https://status.pimms.io"
       target="_blank"
-      className="group flex max-w-fit items-center gap-2 rounded-lg border border-neutral-200 bg-white py-2 pl-2 pr-2.5 transition-colors hover:bg-neutral-50 active:bg-neutral-100"
+      className="group flex max-w-fit items-center gap-2 rounded-xl border-[6px] border-neutral-100 bg-white py-2 pl-2 pr-2.5 transition-colors hover:bg-neutral-50 active:bg-neutral-100"
     >
       <div className="relative size-2">
         <div

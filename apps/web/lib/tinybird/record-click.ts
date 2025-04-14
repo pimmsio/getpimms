@@ -54,8 +54,8 @@ export async function recordClick({
 }) {
   const searchParams = new URL(req.url).searchParams;
 
-  // only track the click when there is no `dub-no-track` header or query param
-  if (req.headers.has("dub-no-track") || searchParams.has("dub-no-track")) {
+  // only track the click when there is no `pimms-no-track` header or query param
+  if (req.headers.has("pimms-no-track") || searchParams.has("pimms-no-track")) {
     return null;
   }
 

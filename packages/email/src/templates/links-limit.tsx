@@ -16,11 +16,11 @@ import { WorkspaceProps } from "../../../../apps/web/lib/types";
 import { Footer } from "../components/footer";
 
 export function LinksLimitAlert({
-  email = "panic@thedis.co",
+  email = "cheers@pimms.io",
   workspace = {
     id: "ckqf1q3xw0000gk5u2q1q2q1q",
-    name: "Acme",
-    slug: "acme",
+    name: "PIMMS",
+    slug: "pimms",
     linksUsage: 800,
     linksLimit: 1000,
     plan: "pro",
@@ -43,22 +43,22 @@ export function LinksLimitAlert({
     <Html>
       <Head />
       <Preview>
-        Your Dub workspace, {name} has used {percentage.toString()}% of its
+        Your PiMMs workspace, {name} has used {percentage.toString()}% of its
         links limit for the month.
       </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[600px] rounded border border-solid border-neutral-200 px-10 py-5">
-            <Section className="mt-8">
-              <Img src={DUB_WORDMARK} height="32" alt="Dub" />
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+            <Section className="my-8">
+              <Img src={DUB_WORDMARK} height="14" alt="PIMMS" className="my-0" />
             </Section>
             <Heading className="mx-0 my-7 p-0 text-lg font-medium text-black">
-              Dub Links Limit Alert
+              PiMMs Links Limit Alert
             </Heading>
             <Text className="text-sm leading-6 text-black">
-              Your Dub workspace,{" "}
+              Your PiMMs workspace,{" "}
               <Link
-                href={`https://app.dub.co/${slug}`}
+                href={`https://app.pimms.io/${slug}`}
                 className="text-black underline"
               >
                 <strong>{name}</strong>
@@ -82,31 +82,17 @@ export function LinksLimitAlert({
             ) : percentage === 100 ? (
               <Text className="text-sm leading-6 text-black">
                 All your existing links will continue to work, and we are still
-                collecting data on them, but you'll need to upgrade the{" "}
-                <Link
-                  href={nextPlan.link}
-                  className="font-medium text-blue-600 no-underline"
-                >
-                  {nextPlan.name} plan
-                </Link>{" "}
-                add more links.
+                collecting data on them, but you'll need to upgrade the plan add more links.
               </Text>
             ) : (
               <Text className="text-sm leading-6 text-black">
-                Once you hit your limit, you'll need to upgrade to the{" "}
-                <Link
-                  href={nextPlan.link}
-                  className="font-medium text-blue-600 no-underline"
-                >
-                  {nextPlan.name} plan
-                </Link>{" "}
-                to add more links.
+                Once you hit your limit, you'll need to upgrade to the plan to add more links.
               </Text>
             )}
             <Section className="mb-8">
               <Link
-                className="rounded-lg bg-black px-6 py-3 text-center text-[12px] font-semibold text-white no-underline"
-                href={`https://app.dub.co/${slug}/upgrade`}
+                className="px-5 py-3 bg-[#dc2e65] text-white font-semibold outline outline-[6px] transition outline-[#ffeaf1] cursor-pointer no-underline rounded-xl"
+                href={`https://app.pimms.io/${slug}/upgrade`}
               >
                 Upgrade my plan
               </Link>

@@ -33,7 +33,7 @@ export function NavWordmark({
   isInApp?: boolean;
   className?: string;
 }) {
-  const { domain = "dub.co" } = useParams() as { domain: string };
+  const { domain = "pimms.io" } = useParams() as { domain: string };
 
   const { theme } = useContext(NavContext);
 
@@ -53,80 +53,81 @@ export function NavWordmark({
     });
   }
 
-  return (
-    <Popover.Root open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-      <Popover.Anchor asChild>
-        <div onContextMenu={handleContextMenu} className="max-w-fit">
-          {variant === "full" ? (
-            <Wordmark className={className} />
-          ) : (
-            <Logo
-              className={cn(
-                "h-8 w-8 transition-all duration-75 active:scale-95",
-                className,
-              )}
-            />
-          )}
-        </div>
-      </Popover.Anchor>
-      <Popover.Portal>
-        <Popover.Content
-          sideOffset={14}
-          align="start"
-          className={cn(
-            "z-50 -mt-1.5",
-            !isInApp && "-translate-x-8",
-            theme === "dark" && "dark",
-          )}
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsPopoverOpen(false);
-          }}
-        >
-          <div className="grid gap-1 rounded-lg border border-neutral-200 bg-white p-2 drop-shadow-sm sm:min-w-[240px] dark:border-white/[0.15] dark:bg-black">
-            <ContextMenuButton
-              text="Copy Logo as SVG"
-              variant="outline"
-              onClick={() => copy(logoSvg)}
-              icon={<Logo className="h-4 w-4" />}
-            />
-            <ContextMenuButton
-              text="Copy Wordmark as SVG"
-              variant="outline"
-              onClick={() => copy(wordmarkSvg)}
-              icon={<Type strokeWidth={2} className="h-4 w-4" />}
-            />
-            <ContextMenuButton
-              text="Brand Guidelines"
-              variant="outline"
-              onClick={() => window.open("https://dub.co/brand", "_blank")}
-              icon={<BoxSelect strokeWidth={2} className="h-4 w-4" />}
-            />
-            {/* If it's in the app or it's a domain placeholder page (not dub.co homepage), show the home button */}
-            {isInApp || domain != "dub.co" ? (
-              <ContextMenuButton
-                text="Home Page"
-                variant="outline"
-                onClick={() =>
-                  window.open(
-                    `https://dub.co${isInApp ? "/home" : ""}`,
-                    "_blank",
-                  )
-                }
-                icon={<Home strokeWidth={2} className="h-4 w-4" />}
-              />
-            ) : (
-              <ContextMenuButton
-                text="Dashboard"
-                variant="outline"
-                onClick={() => window.open("https://app.dub.co", "_blank")}
-                icon={<LayoutGrid strokeWidth={2} className="h-4 w-4" />}
-              />
-            )}
-          </div>
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
+  return (    
+    <Wordmark className={className} />
+    // <Popover.Root open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+    //   <Popover.Anchor asChild>
+    //     <div onContextMenu={handleContextMenu} className="max-w-fit">
+    //       {variant === "full" ? (
+    //         <Wordmark className={className} />
+    //       ) : (
+    //         <Logo
+    //           className={cn(
+    //             "h-8 w-8 transition-all duration-75 active:scale-95",
+    //             className,
+    //           )}
+    //         />
+    //       )}
+    //     </div>
+    //   </Popover.Anchor>
+    //   <Popover.Portal>
+    //     <Popover.Content
+    //       sideOffset={14}
+    //       align="start"
+    //       className={cn(
+    //         "z-50 -mt-1.5",
+    //         !isInApp && "-translate-x-8",
+    //         theme === "dark" && "dark",
+    //       )}
+    //       onClick={(e) => {
+    //         e.stopPropagation();
+    //         setIsPopoverOpen(false);
+    //       }}
+    //     >
+    //       <div className="grid gap-1 rounded-xl border-[6px] border-neutral-100 bg-white p-2 drop-shadow-sm sm:min-w-[240px] dark:border-white/[0.15] dark:bg-black">
+    //         <ContextMenuButton
+    //           text="Copy Logo as SVG"
+    //           variant="outline"
+    //           onClick={() => copy(logoSvg)}
+    //           icon={<Logo className="h-4 w-4" />}
+    //         />
+    //         <ContextMenuButton
+    //           text="Copy Wordmark as SVG"
+    //           variant="outline"
+    //           onClick={() => copy(wordmarkSvg)}
+    //           icon={<Type strokeWidth={2} className="h-4 w-4" />}
+    //         />
+    //         <ContextMenuButton
+    //           text="Brand Guidelines"
+    //           variant="outline"
+    //           onClick={() => window.open("https://dub.co/brand", "_blank")}
+    //           icon={<BoxSelect strokeWidth={2} className="h-4 w-4" />}
+    //         />
+    //         {/* If it's in the app or it's a domain placeholder page (not dub.co homepage), show the home button */}
+    //         {isInApp || domain != "dub.co" ? (
+    //           <ContextMenuButton
+    //             text="Home Page"
+    //             variant="outline"
+    //             onClick={() =>
+    //               window.open(
+    //                 `https://dub.co${isInApp ? "/home" : ""}`,
+    //                 "_blank",
+    //               )
+    //             }
+    //             icon={<Home strokeWidth={2} className="h-4 w-4" />}
+    //           />
+    //         ) : (
+    //           <ContextMenuButton
+    //             text="Dashboard"
+    //             variant="outline"
+    //             onClick={() => window.open("https://app.dub.co", "_blank")}
+    //             icon={<LayoutGrid strokeWidth={2} className="h-4 w-4" />}
+    //           />
+    //         )}
+    //       </div>
+    //     </Popover.Content>
+    //   </Popover.Portal>
+    // </Popover.Root>
   );
 }
 

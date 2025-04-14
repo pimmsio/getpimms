@@ -20,19 +20,24 @@ export const getFinalUrl = (
   if (clickId) {
     /*
        custom query param for stripe payment links + Dub Conversions
-       - if there is a clickId and dub_client_reference_id is 1
-       - then set client_reference_id to dub_id_${clickId} and drop the dub_client_reference_id param
-       - our Stripe integration will then detect `dub_id_${clickId}` as the dubClickId in the `checkout.session.completed` webhook
+       - if there is a clickId and pimms_client_reference_id is 1
+       - then set client_reference_id to pimms_id_${clickId} and drop the pimms_client_reference_id param
+       - our Stripe integration will then detect `pimms_id_${clickId}` as the dubClickId in the `checkout.session.completed` webhook
        - @see: https://github.com/dubinc/dub/blob/main/apps/web/app/api/stripe/integration/webhook/checkout-session-completed.ts
     */
-    if (urlObj.searchParams.get("dub_client_reference_id") === "1") {
-      urlObj.searchParams.set("client_reference_id", `dub_id_${clickId}`);
-      urlObj.searchParams.delete("dub_client_reference_id");
+    if (urlObj.searchParams.get("pimms_client_reference_id") === "1") {
+      urlObj.searchParams.set("client_reference_id", `pimms_id_${clickId}`);
+      urlObj.searchParams.delete("pimms_client_reference_id");
 
-      // if there's a clickId and no dub-no-track search param, then add clickId to the final url
+      // if there's a clickId and no pimms-no-track search param, then add clickId to the final url
       // reasoning: if you're skipping tracking, there's no point in passing the clickId anyway
-    } else if (!searchParams.has("dub-no-track")) {
-      urlObj.searchParams.set("dub_id", clickId);
+    } else if (!searchParams.has("pimms-no-track")) {
+      // if it's a calendly link, then set the pimms_id into the utm_term
+      if (urlObj.hostname.includes("calendly")) {
+        urlObj.searchParams.set("utm_term", `pimms_id_${clickId}`);
+      } else {
+        urlObj.searchParams.set("pimms_id", clickId);
+      }
     }
   }
 
@@ -42,8 +47,8 @@ export const getFinalUrl = (
 
   // if searchParams (type: `URLSearchParams`) has the same key as target url, then overwrite it
   for (const [key, value] of searchParams) {
-    // we will pass everything except internal query params (dub-no-track and redir_url)
-    if (["dub-no-track", REDIRECTION_QUERY_PARAM].includes(key)) continue;
+    // we will pass everything except internal query params (pimms-no-track and redir_url)
+    if (["pimms-no-track", REDIRECTION_QUERY_PARAM].includes(key)) continue;
     urlObj.searchParams.set(key, value);
   }
 

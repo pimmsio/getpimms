@@ -16,7 +16,7 @@ class DubEmbed {
   constructor(options: DubEmbedOptions) {
     this.options = options;
 
-    console.debug("[Dub] Initializing.", options);
+    console.debug("[PIMMS] Initializing.", options);
 
     this.container = this.renderEmbed();
   }
@@ -25,7 +25,7 @@ class DubEmbed {
    * Generates and renders all of the embed's DOM elements.
    */
   renderEmbed() {
-    console.debug("[Dub] Rendering embed.");
+    console.debug("[PIMMS] Rendering embed.");
 
     const { token, root, containerStyles, onError, data } = this.options;
 
@@ -34,7 +34,7 @@ class DubEmbed {
     if (existingContainer) return existingContainer;
 
     if (!token) {
-      console.error("[Dub] A link token is required to for the embed to work.");
+      console.error("[PIMMS] A link token is required to for the embed to work.");
       return null;
     }
 
@@ -48,7 +48,7 @@ class DubEmbed {
     const iframeUrl = data === "referrals" ? EMBED_REFERRALS_URL : "";
 
     if (!iframeUrl) {
-      console.error("[Dub] Invalid embed data type.");
+      console.error("[PIMMS] Invalid embed data type.");
       return null;
     }
 
@@ -59,7 +59,7 @@ class DubEmbed {
     window.addEventListener("message", (e) => {
       const { data, event } = e.data as IframeMessage;
 
-      console.debug("[Dub] Iframe message", data);
+      console.debug("[PIMMS] Iframe message", data);
 
       if (event === "ERROR") {
         onError?.(
@@ -110,7 +110,7 @@ const createIframe = (
 };
 
 /**
- * Initializes the Dub embed.
+ * Initializes the PiMMs embed.
  */
 export const init = (options: DubEmbedOptions): DubInitResult => {
   const embed = new DubEmbed(options);

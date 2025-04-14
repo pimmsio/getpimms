@@ -3,18 +3,13 @@
 import usePrograms from "@/lib/swr/use-programs";
 import { useRouterStuff } from "@dub/ui";
 import {
-  Books2,
-  CircleInfo,
   ConnectedDots,
   ConnectedDots4,
-  CubeSettings,
   Gear2,
   Gift,
   Globe,
   Key,
-  Receipt2,
   ShieldCheck,
-  Users2,
   Users6,
   Webhook,
 } from "@dub/ui/icons";
@@ -22,14 +17,11 @@ import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useParams, usePathname } from "next/navigation";
 import { ReactNode, useMemo } from "react";
-import UserSurveyButton from "../user-survey";
-import { CursorRays } from "./icons/cursor-rays";
-import { Gear } from "./icons/gear";
-import { Hyperlink } from "./icons/hyperlink";
-import { LinesY } from "./icons/lines-y";
 import { SidebarNav, SidebarNavAreas } from "./sidebar-nav";
 import { Usage } from "./usage";
 import { WorkspaceDropdown } from "./workspace-dropdown";
+import { BarChart2, CoinsIcon, Link, Settings, Settings2, Split, Target, TargetIcon, WalletCards } from "lucide-react";
+import { ReferralButton } from "./referral-button";
 
 const NAV_AREAS: SidebarNavAreas<{
   slug: string;
@@ -48,32 +40,36 @@ const NAV_AREAS: SidebarNavAreas<{
       {
         items: [
           {
-            name: "Links",
-            icon: Hyperlink,
-            href: `/${slug}/links${pathname === `/${slug}/links` ? "" : queryString}`,
+            name: "Deep links",
+            icon: Link,
+            href: `/${slug}${pathname === `/${slug}` ? "" : queryString}`,
+            exact: true,
           },
           {
             name: "Analytics",
-            icon: LinesY,
+            icon: BarChart2,
             href: `/${slug}/analytics${pathname === `/${slug}/analytics` ? "" : queryString}`,
           },
           {
-            name: "Events",
-            icon: CursorRays,
-            href: `/${slug}/events${pathname === `/${slug}/events` ? "" : queryString}`,
+            name: "Conversions",
+            icon: Target,
+            // href: `/${slug}/events${pathname === `/${slug}/events` ? "" : queryString}`,
+            href: `/${slug}/leads?event=leads`,
           },
-          ...(pathname.startsWith(`/${slug}/customers`)
-            ? [
-                {
-                  name: "Customers",
-                  icon: Users2,
-                  href: `/${slug}/customers`,
-                },
-              ]
-            : []),
+          {
+            name: "Sales",
+            icon: CoinsIcon,
+            // href: `/${slug}/events${pathname === `/${slug}/events` ? "" : queryString}`,
+            href: `/${slug}/sales?event=sales`,
+          },
+          {
+            name: "Integrations",
+            icon: ConnectedDots,
+            href: `/${slug}/settings/integrations`,
+          },
           {
             name: "Settings",
-            icon: Gear,
+            icon: Settings2,
             href: `/${slug}/settings`,
           },
         ],
@@ -81,7 +77,6 @@ const NAV_AREAS: SidebarNavAreas<{
       ...(programs?.length
         ? [
             {
-              name: "Programs",
               items: [
                 {
                   name: "Affiliate",
@@ -98,8 +93,8 @@ const NAV_AREAS: SidebarNavAreas<{
                       href: `/${slug}/programs/${programs[0].id}/partners`,
                     },
                     {
-                      name: "Commissions",
-                      href: `/${slug}/programs/${programs[0].id}/commissions`,
+                      name: "Sales",
+                      href: `/${slug}/programs/${programs[0].id}/sales`,
                     },
                     {
                       name: "Payouts",
@@ -132,14 +127,9 @@ const NAV_AREAS: SidebarNavAreas<{
         items: [
           {
             name: "General",
-            icon: Gear2,
+            icon: Settings,
             href: `/${slug}/settings`,
             exact: true,
-          },
-          {
-            name: "Billing",
-            icon: Receipt2,
-            href: `/${slug}/settings/billing`,
           },
           {
             name: "Domains",
@@ -147,9 +137,14 @@ const NAV_AREAS: SidebarNavAreas<{
             href: `/${slug}/settings/domains`,
           },
           {
-            name: "Library",
-            icon: Books2,
+            name: "UTM Templates",
+            icon: Split,
             href: `/${slug}/settings/library`,
+          },
+          {
+            name: "Conversions",
+            icon: TargetIcon,
+            href: `/${slug}/settings/analytics`,
           },
           {
             name: "People",
@@ -157,20 +152,20 @@ const NAV_AREAS: SidebarNavAreas<{
             href: `/${slug}/settings/people`,
           },
           {
+            name: "Billing",
+            icon: WalletCards,
+            href: `/${slug}/settings/billing`,
+          },
+          {
             name: "Integrations",
             icon: ConnectedDots,
             href: `/${slug}/settings/integrations`,
           },
-          {
-            name: "Analytics",
-            icon: LinesY,
-            href: `/${slug}/settings/analytics`,
-          },
-          {
-            name: "Security",
-            icon: ShieldCheck,
-            href: `/${slug}/settings/security`,
-          },
+          // {
+          //   name: "Security",
+          //   icon: ShieldCheck,
+          //   href: `/${slug}/settings/security`,
+          // },
         ],
       },
       {
@@ -181,11 +176,11 @@ const NAV_AREAS: SidebarNavAreas<{
             icon: Key,
             href: `/${slug}/settings/tokens`,
           },
-          {
-            name: "OAuth Apps",
-            icon: CubeSettings,
-            href: `/${slug}/settings/oauth-apps`,
-          },
+          // {
+          //   name: "OAuth Apps",
+          //   icon: CubeSettings,
+          //   href: `/${slug}/settings/oauth-apps`,
+          // },
           {
             name: "Webhooks",
             icon: Webhook,
@@ -193,16 +188,16 @@ const NAV_AREAS: SidebarNavAreas<{
           },
         ],
       },
-      {
-        name: "Account",
-        items: [
-          {
-            name: "Notifications",
-            icon: CircleInfo,
-            href: `/${slug}/settings/notifications`,
-          },
-        ],
-      },
+      // {
+      //   name: "Account",
+      //   items: [
+      //     {
+      //       name: "Notifications",
+      //       icon: CircleInfo,
+      //       href: `/${slug}/settings/notifications`,
+      //     },
+      //   ],
+      // },
     ],
   }),
 
@@ -276,7 +271,8 @@ export function AppSidebarNav({
       switcher={<WorkspaceDropdown />}
       bottom={
         <>
-          <UserSurveyButton />
+          <ReferralButton />
+          {/* <UserSurveyButton /> */}
           <Usage />
         </>
       }

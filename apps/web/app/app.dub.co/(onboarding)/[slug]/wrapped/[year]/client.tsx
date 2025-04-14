@@ -52,7 +52,7 @@ export default function WrappedPageClient() {
         Here's a look back at your activity in {year}:
       </p>
 
-      <div className="animate-slide-up-fade mb-4 mt-8 rounded-lg border border-neutral-200 bg-white p-2 shadow-md [animation-delay:450ms] [animation-duration:1s] [animation-fill-mode:both]">
+      <div className="animate-slide-up-fade mb-4 mt-8 rounded-xl border-[6px] border-neutral-100 bg-white p-2 shadow-md [animation-delay:450ms] [animation-duration:1s] [animation-fill-mode:both]">
         <div
           className="flex h-24 flex-col items-center justify-center rounded-lg"
           style={{
@@ -105,13 +105,13 @@ export default function WrappedPageClient() {
       </div>
 
       <Link
-        className="group flex flex-col gap-4 rounded-lg border border-neutral-200 bg-white p-4 sm:flex-row"
+        className="group flex flex-col gap-4 rounded-xl border-[6px] border-neutral-100 bg-white p-4 sm:flex-row"
         href="https://dub.co/blog/2024"
         target="_blank"
       >
         <Image
           src="https://assets.dub.co/blog/2024.jpg"
-          alt="Dub logo with confetti"
+          alt="PIMMS logo with confetti"
           width={1838}
           height={1172}
           className="w-1/3 rounded-md"
@@ -119,7 +119,7 @@ export default function WrappedPageClient() {
         />
         <div className="flex flex-col gap-2">
           <h3 className="font-display font-semibold text-black">
-            Dub {year} Year in Review 🎊
+          PIMMS {year} Year in Review 🎊
           </h3>
           <p className="text-sm text-neutral-500 group-hover:underline">
             A full recap of some of the top features we shipped this year – and
@@ -174,7 +174,7 @@ const StatTable = ({
         }}
         initial="hidden"
         animate="show"
-        className="grid divide-y divide-neutral-200 text-sm"
+        className="grid divide-y-[6px] divide-neutral-100 text-sm"
       >
         {value.map(({ item, count }, index) => {
           const [domain, ...pathParts] = item.split("/");

@@ -6,7 +6,6 @@ import { Shopify } from "@/ui/layout/sidebar/conversions/icons/shopify";
 import { Stripe } from "@/ui/layout/sidebar/conversions/icons/stripe";
 import { Button } from "@dub/ui";
 import { useAction } from "next-safe-action/hooks";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -15,12 +14,12 @@ const GUIDES = [
   {
     name: "Connecting to Stripe",
     icon: Stripe,
-    href: "https://dub.co/docs/conversions/sales/stripe",
+    // href: "https://dub.co/docs/conversions/sales/stripe",
   },
   {
     name: "Connecting to Shopify",
     icon: Shopify,
-    href: "https://dub.co/docs/conversions/sales/shopify",
+    // href: "https://dub.co/docs/conversions/sales/shopify",
   },
 ] as const;
 
@@ -54,14 +53,15 @@ export function PageClient() {
       <div className="space-y-6">
         <p className="text-sm text-neutral-600">
           Depending on your payment processor, select from the following guides
-          to learn how to connect Dub and start tracking conversions.
+          to learn how to connect PiMMs and start tracking conversions.
         </p>
 
         <div className="flex flex-col gap-4">
-          {GUIDES.map(({ name, icon: Icon, href }) => (
+          {/* {GUIDES.map(({ name, icon: Icon, href }) => ( */}
+          {GUIDES.map(({ name, icon: Icon }) => (
             <div
               key={name}
-              className="flex items-center justify-between rounded-lg border border-neutral-200 bg-neutral-50 p-4"
+              className="flex items-center justify-between rounded-xl border-[6px] border-neutral-100 bg-neutral-50 p-4"
             >
               <div className="flex items-center gap-3">
                 <Icon className="size-8" />
@@ -69,14 +69,14 @@ export function PageClient() {
                   {name}
                 </span>
               </div>
-              <Link href={href} target="_blank" rel="noopener noreferrer">
+              {/* <Link href={href} target="_blank" rel="noopener noreferrer">
                 <Button
                   type="button"
                   text="Read guide"
                   variant="secondary"
                   className="h-8 w-fit px-3"
                 />
-              </Link>
+              </Link> */}
             </div>
           ))}
         </div>

@@ -56,7 +56,7 @@ const SAMLSection = () => {
       return {
         status: "unconfigured",
         logo: (
-          <div className="rounded-full border border-neutral-200 p-2">
+          <div className="rounded-full border-[6px] border-neutral-100 p-2">
             <Lock className="h-4 w-4 text-neutral-600" />
           </div>
         ),
@@ -71,7 +71,7 @@ const SAMLSection = () => {
   return (
     <>
       {configured ? <RemoveSAMLModal /> : <SAMLModal />}
-      <div className="rounded-lg border border-neutral-200 bg-white">
+      <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
         <div className="relative flex flex-col space-y-6 p-5 sm:p-10">
           <div className="flex flex-col space-y-3">
             <h2 className="text-xl font-medium">SAML Single Sign-On</h2>
@@ -81,7 +81,7 @@ const SAMLSection = () => {
             </p>
           </div>
 
-          <div className="mt-2 flex items-center justify-between rounded-md border border-neutral-200 px-4 py-3">
+          <div className="mt-2 flex items-center justify-between rounded-xl border-[2px] border-neutral-100 px-4 py-3">
             <div className="flex items-center space-x-4">
               {data.logo || (
                 <div className="h-8 w-8 animate-pulse rounded-full bg-neutral-100" />
@@ -157,7 +157,7 @@ const SAMLSection = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between rounded-b-lg border-t border-neutral-200 bg-neutral-50 px-3 py-5 sm:px-10">
+        {/* <div className="flex items-center justify-between rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-50 px-3 py-5 sm:px-10">
           <a
             href="https://dub.co/help/category/saml-sso"
             target="_blank"
@@ -165,7 +165,7 @@ const SAMLSection = () => {
           >
             Learn more about SAML SSO.
           </a>
-        </div>
+        </div> */}
       </div>
     </>
   );
@@ -200,7 +200,7 @@ const SCIMSection = () => {
     } else
       return {
         logo: (
-          <div className="rounded-full border border-neutral-200 p-2">
+          <div className="rounded-full border-[6px] border-neutral-100 p-2">
             <FolderSync className="h-4 w-4 text-neutral-600" />
           </div>
         ),
@@ -215,7 +215,7 @@ const SCIMSection = () => {
     <>
       <SCIMModal />
       {configured && <RemoveSCIMModal />}
-      <div className="rounded-lg border border-neutral-200 bg-white">
+      <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
         <div className="relative flex flex-col space-y-6 p-5 sm:p-10">
           <div className="flex flex-col space-y-3">
             <h2 className="text-xl font-medium">Directory Sync</h2>
@@ -225,7 +225,7 @@ const SCIMSection = () => {
             </p>
           </div>
 
-          <div className="mt-2 flex items-center justify-between rounded-md border border-neutral-200 px-4 py-3">
+          <div className="mt-2 flex items-center justify-between rounded-xl border-[2px] border-neutral-100 px-4 py-3">
             <div className="flex items-center space-x-4">
               {data.logo || (
                 <div className="h-8 w-8 animate-pulse rounded-full bg-neutral-100" />
@@ -313,7 +313,7 @@ const SCIMSection = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between rounded-b-lg border-t border-neutral-200 bg-neutral-50 px-3 py-5 sm:px-10">
+        {/* <div className="flex items-center justify-between rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-50 px-3 py-5 sm:px-10">
           <a
             href="https://dub.co/help/category/saml-sso"
             target="_blank"
@@ -321,7 +321,7 @@ const SCIMSection = () => {
           >
             Learn more about SCIM Directory Sync.
           </a>
-        </div>
+        </div> */}
       </div>
     </>
   );

@@ -33,7 +33,7 @@ function AcceptInviteModal({
     >
       {error?.status === 409 ? (
         <>
-          <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-200 px-4 py-4 pt-8 sm:px-16">
+          <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-4 pt-8 sm:px-16">
             <Logo />
             <h3 className="text-lg font-medium">Workspace Invitation</h3>
             <p className="text-center text-sm text-neutral-500">
@@ -74,7 +74,7 @@ function AcceptInviteModal({
         </>
       ) : (
         <>
-          <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-200 px-4 py-4 pt-8 sm:px-16">
+          <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-4 pt-8 sm:px-16">
             <Logo />
             <h3 className="text-lg font-medium">
               Workspace Invitation Expired

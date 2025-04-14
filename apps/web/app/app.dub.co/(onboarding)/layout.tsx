@@ -7,7 +7,7 @@ export default function Layout({ children }: PropsWithChildren) {
     <>
       <NewBackground />
       {children}
-      <Toolbar show={["help"]} />
+      {/* <Toolbar show={["help"]} /> */}
     </>
   );
 }

@@ -7,82 +7,82 @@ const common = {
   os: "Mac OS",
 };
 
-const dubLink = {
+const pimmsLink = {
   id: "1",
-  domain: "dub.link",
-  key: "uxUrVCz",
-  shortLink: "https://dub.co/uxUrVCz",
-  url: "https://dub.co/",
+  domain: "pim.ms",
+  key: "try",
+  shortLink: "https://pim.ms/try",
+  url: "https://pimms.io/",
 };
 
-const githubLink = {
+const leadLink = {
   id: "3",
-  domain: "git.new",
-  key: "9XyzIho",
-  shortLink: "https://git.new/9XyzIho",
-  url: "https://github.com/dubinc/dub",
+  domain: "pim.ms",
+  key: "orkester",
+  shortLink: "https://pim.ms/orkester",
+  url: "https://orkester.fr/",
 };
 
-const steven = {
-  name: "Steven Tey",
-  email: "steven@dub.co",
+const alexandre = {
+  name: "Alexandre Sarfati",
+  email: "alexandre@pimms.io",
   avatar: "https://avatar.vercel.sh/s.png?text=S",
 };
 
-const tim = {
-  name: "Tim Wilson",
-  email: "tim@dub.co",
+const jean = {
+  name: "Jean Castets",
+  email: "jean@orkester.fr",
   avatar: "https://avatar.vercel.sh/t.png?text=T",
 };
 
-const kiran = {
-  name: "Kiran Kuriya",
-  email: "kiran@dub.co",
+const chloe = {
+  name: "Chloe Dullac",
+  email: "chloe@dullac.com",
   avatar: "https://avatar.vercel.sh/k.png?text=K",
 };
 
 export const EXAMPLE_EVENTS_DATA = {
-  clicks: [
-    {
-      event: "click",
-      timestamp: new Date().toISOString(),
-      click: {
-        id: "1",
-        country: "US",
-        city: "San Francisco",
-        region: "US-CA",
-        continent: "NA",
-        ...common,
-      },
-      link: dubLink,
-    },
-    {
-      event: "click",
-      timestamp: new Date(Date.now() - 3 * 60 * 1000).toISOString(),
-      click: {
-        id: "2",
-        country: "US",
-        city: "New York",
-        region: "US-NY",
-        continent: "NA",
-        ...common,
-      },
-      link: dubLink,
-    },
-    {
-      event: "click",
-      timestamp: new Date(Date.now() - 7 * 60 * 1000).toISOString(),
-      click: {
-        id: "3",
-        country: "US",
-        city: "Pittsburgh",
-        region: "US-PA",
-        continent: "NA",
-        ...common,
-      },
-      link: githubLink,
-    },
-  ],
+  // clicks: [
+  //   {
+  //     event: "click",
+  //     timestamp: new Date().toISOString(),
+  //     click: {
+  //       id: "1",
+  //       country: "US",
+  //       city: "San Francisco",
+  //       region: "US-CA",
+  //       continent: "NA",
+  //       ...common,
+  //     },
+  //     link: pimmsLink,
+  //   },
+  //   {
+  //     event: "click",
+  //     timestamp: new Date(Date.now() - 3 * 60 * 1000).toISOString(),
+  //     click: {
+  //       id: "2",
+  //       country: "US",
+  //       city: "New York",
+  //       region: "US-NY",
+  //       continent: "NA",
+  //       ...common,
+  //     },
+  //     link: pimmsLink,
+  //   },
+  //   {
+  //     event: "click",
+  //     timestamp: new Date(Date.now() - 7 * 60 * 1000).toISOString(),
+  //     click: {
+  //       id: "3",
+  //       country: "US",
+  //       city: "Pittsburgh",
+  //       region: "US-PA",
+  //       continent: "NA",
+  //       ...common,
+  //     },
+  //     link: leadLink,
+  //   },
+  // ],
   leads: [
     {
       event: "lead",
@@ -91,14 +91,14 @@ export const EXAMPLE_EVENTS_DATA = {
       eventName: "Sign up",
       click: {
         id: "1",
-        country: "US",
-        city: "San Francisco",
-        region: "US-CA",
-        continent: "NA",
+        country: "FR",
+        city: "Lyon",
+        region: "FR-RH",
+        continent: "EU",
         ...common,
       },
-      link: dubLink,
-      customer: steven,
+      link: pimmsLink,
+      customer: alexandre,
     },
     {
       event: "lead",
@@ -107,14 +107,14 @@ export const EXAMPLE_EVENTS_DATA = {
       eventName: "Sign up",
       click: {
         id: "1",
-        country: "IN",
-        city: "Kerala",
-        region: "IN-KL",
-        continent: "AS",
+        country: "CH",
+        city: "Zurich",
+        region: "CH-ZH",
+        continent: "EU",
         ...common,
       },
-      link: dubLink,
-      customer: kiran,
+      link: pimmsLink,
+      customer: chloe,
     },
     {
       event: "lead",
@@ -123,14 +123,14 @@ export const EXAMPLE_EVENTS_DATA = {
       eventName: "Sign up",
       click: {
         id: "3",
-        country: "US",
-        city: "Pittsburgh",
-        region: "US-PA",
-        continent: "NA",
+        country: "FR",
+        city: "Toulon",
+        region: "FR-PAC",
+        continent: "EU",
         ...common,
       },
-      link: githubLink,
-      customer: tim,
+      link: leadLink,
+      customer: jean,
     },
   ],
   sales: [
@@ -147,13 +147,13 @@ export const EXAMPLE_EVENTS_DATA = {
       click: {
         id: "1",
         country: "US",
-        city: "San Francisco",
-        region: "US-CA",
-        continent: "NA",
+        city: "Lyon",
+        region: "FR-RH",
+        continent: "EU",
         ...common,
       },
-      link: dubLink,
-      customer: steven,
+      link: pimmsLink,
+      customer: alexandre,
     },
     {
       event: "sale",
@@ -168,13 +168,13 @@ export const EXAMPLE_EVENTS_DATA = {
       click: {
         id: "2",
         country: "US",
-        city: "Pittsburgh",
-        region: "US-PA",
-        continent: "NA",
+        city: "Toulon",
+        region: "FR-PAC",
+        continent: "EU",
         ...common,
       },
-      link: dubLink,
-      customer: tim,
+      link: pimmsLink,
+      customer: jean,
     },
     {
       event: "sale",
@@ -189,13 +189,13 @@ export const EXAMPLE_EVENTS_DATA = {
       click: {
         id: "3",
         country: "IN",
-        city: "Kerala",
-        region: "IN-KL",
-        continent: "AS",
+        city: "Zurich",
+        region: "CH-ZH",
+        continent: "EU",
         ...common,
       },
-      link: dubLink,
-      customer: kiran,
+      link: pimmsLink,
+      customer: chloe,
     },
   ],
 };

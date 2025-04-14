@@ -119,7 +119,7 @@ function TargetingModal({
           }}
         >
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium">Targeting</h3>
+            <h3 className="text-lg font-medium">Apps targeting</h3>
             <div className="max-md:hidden">
               <Tooltip
                 content={
@@ -131,7 +131,7 @@ function TargetingModal({
                 }
                 side="right"
               >
-                <kbd className="flex size-6 cursor-default items-center justify-center gap-1 rounded-md border border-neutral-200 font-sans text-xs text-neutral-950">
+                <kbd className="flex size-6 cursor-default items-center justify-center gap-1 rounded-xl border-[2px] border-neutral-100 font-sans text-xs text-neutral-950">
                   G
                 </kbd>
               </Tooltip>
@@ -140,7 +140,7 @@ function TargetingModal({
 
           <div className="scrollbar-hide -m-1 mt-6 flex max-h-[calc(100dvh-250px)] flex-col gap-6 overflow-y-auto p-1">
             {/* Geo */}
-            <div>
+            {/* <div>
               <div className="flex items-center gap-2">
                 <span className="block text-sm font-medium text-neutral-700">
                   Geo Targeting
@@ -276,7 +276,7 @@ function TargetingModal({
                   disabled={Object.keys(geo || {}).includes("")}
                 />
               </div>
-            </div>
+            </div> */}
 
             {/* iOS */}
             <div>
@@ -285,9 +285,9 @@ function TargetingModal({
                   htmlFor={`${id}-ios-url`}
                   className="block text-sm font-medium text-neutral-700"
                 >
-                  iOS Targeting
+                  App Store
                 </label>
-                <ProBadgeTooltip
+                {/* <ProBadgeTooltip
                   content={
                     <SimpleTooltipContent
                       title="Redirect your iOS users to a different link."
@@ -295,7 +295,7 @@ function TargetingModal({
                       href="https://dub.co/help/article/device-targeting"
                     />
                   }
-                />
+                /> */}
               </div>
               <div className="mt-2 rounded-md shadow-sm">
                 <input
@@ -325,9 +325,9 @@ function TargetingModal({
                   htmlFor={`${id}-android-url`}
                   className="block text-sm font-medium text-neutral-700"
                 >
-                  Android Targeting
+                  Android Play Store
                 </label>
-                <ProBadgeTooltip
+                {/* <ProBadgeTooltip
                   content={
                     <SimpleTooltipContent
                       title="Redirect your Android users to a different link."
@@ -335,7 +335,7 @@ function TargetingModal({
                       href="https://dub.co/help/article/device-targeting"
                     />
                   }
-                />
+                /> */}
               </div>
               <div className="mt-2 rounded-md shadow-sm">
                 <input
@@ -390,7 +390,7 @@ function TargetingModal({
               <Button
                 type="submit"
                 variant="primary"
-                text={parentEnabled ? "Save" : "Add targeting"}
+                text={parentEnabled ? "Save" : "Add Apps targeting"}
                 className="h-9 w-fit"
                 disabled={!isDirty}
               />
@@ -407,24 +407,25 @@ export function getTargetingLabel({
   android,
   geo,
 }: Pick<LinkFormData, "ios" | "android" | "geo">) {
-  const geoEnabled = Object.keys(geo || {}).length > 0;
+  return "Apps"
+  // const geoEnabled = Object.keys(geo || {}).length > 0;
 
-  const targets = [Boolean(ios), Boolean(android), geoEnabled];
-  const count = targets.filter(Boolean).length;
-  const countries = Object.keys(geo || {});
+  // const targets = [Boolean(ios), Boolean(android), geoEnabled];
+  // const count = targets.filter(Boolean).length;
+  // const countries = Object.keys(geo || {});
 
-  if (count === 0) return "Targeting";
-  if (count === 1) {
-    const index = targets.findIndex(Boolean);
-    if (index <= 1) return ["iOS", "Android"][index];
-    if (!geoEnabled) return "Targeting";
+  // if (count === 0) return "Apps";
+  // if (count === 1) {
+  //   const index = targets.findIndex(Boolean);
+  //   if (index <= 1) return ["iOS", "Android"][index];
+  //   if (!geoEnabled) return "Targeting";
 
-    // Geo
-    if (countries.length === 1 && countries[0]) return countries[0];
-    return `${countries.length} ${pluralize("Target", countries.length)}`;
-  }
+  //   // Geo
+  //   if (countries.length === 1 && countries[0]) return countries[0];
+  //   return `${countries.length} ${pluralize("Target", countries.length)}`;
+  // }
 
-  return `${count + (countries.length > 1 ? countries.length - 1 : 0)} Targets`;
+  // return `${count + (countries.length > 1 ? countries.length - 1 : 0)} Targets`;
 }
 
 function TargetingButton({
@@ -450,9 +451,9 @@ function TargetingButton({
       variant="secondary"
       text={label}
       icon={
-        <Crosshairs3 className={cn("size-4", enabled && "text-blue-500")} />
+        <Box className={cn("size-4", enabled && "text-[#08272E]")} />
       }
-      className="h-8 w-fit gap-1.5 px-2.5 text-xs font-medium text-neutral-700"
+      className="flex h-auto w-full items-center gap-2 rounded-md border-0 px-1 py-1 text-neutral-700 outline-none hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-neutral-500 active:bg-neutral-200 group-hover:bg-neutral-100"
       onClick={() => setShowTargetingModal(true)}
     />
   );

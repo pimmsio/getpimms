@@ -1,7 +1,8 @@
 import useUsage from "@/lib/swr/use-usage";
 import { EmptyState, LoadingSpinner } from "@dub/ui";
 import { Bars, TimeSeriesChart, XAxis, YAxis } from "@dub/ui/charts";
-import { CircleDollar, CursorRays, Hyperlink } from "@dub/ui/icons";
+import { CircleDollar, Hyperlink } from "@dub/ui/icons";
+import { CursorRays } from "@/ui/layout/sidebar/icons/cursor-rays";
 import { formatDate, nFormatter } from "@dub/utils";
 import { LinearGradient } from "@visx/gradient";
 import { useSearchParams } from "next/navigation";
@@ -71,7 +72,7 @@ export function UsageChart() {
             tooltipContent={(d) => {
               return (
                 <>
-                  <p className="border-b border-neutral-200 px-4 py-3 text-sm text-neutral-900">
+                  <p className="border-b-[6px] border-neutral-100 px-4 py-3 text-sm text-neutral-900">
                     {formatDate(d.date)}
                   </p>
                   <div className="grid grid-cols-2 gap-x-6 gap-y-2 px-4 py-3 text-sm">

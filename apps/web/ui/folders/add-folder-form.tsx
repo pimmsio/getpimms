@@ -77,7 +77,7 @@ export const AddFolderForm = ({ onSuccess, onCancel }: AddFolderFormProps) => {
 
   return (
     <>
-      <div className="space-y-2 border-b border-neutral-200 px-4 py-4 sm:px-6">
+      <div className="space-y-2 border-b-[6px] border-neutral-100 px-4 py-4 sm:px-6">
         <h3 className="text-lg font-medium">
           {step === 1 ? "Create new folder" : `${name} access`}
         </h3>
@@ -98,7 +98,7 @@ export const AddFolderForm = ({ onSuccess, onCancel }: AddFolderFormProps) => {
                 <label className="text-sm font-normal text-neutral-500">
                   Name
                 </label>
-                <div className="mt-2 flex rounded-md border border-neutral-300 bg-white">
+                <div className="mt-2 flex rounded-xl border-[2px] border-neutral-300 bg-white">
                   <input
                     type="text"
                     required
@@ -123,7 +123,7 @@ export const AddFolderForm = ({ onSuccess, onCancel }: AddFolderFormProps) => {
                 <label className="text-sm font-normal text-neutral-500">
                   Workspace access
                 </label>
-                <div className="mt-2 flex h-10 items-center justify-between rounded-md border border-neutral-300 bg-white">
+                <div className="mt-2 flex h-10 items-center justify-between rounded-xl border-[2px] border-neutral-300 bg-white">
                   <div className="flex items-center gap-2 pl-2">
                     <BlurImage
                       src={workspace.logo || `${OG_AVATAR_URL}${name}`}
@@ -157,7 +157,7 @@ export const AddFolderForm = ({ onSuccess, onCancel }: AddFolderFormProps) => {
             )}
           </div>
 
-          <div className="mt-8 flex items-center justify-between border-t border-neutral-200 px-4 py-4 sm:px-6">
+          <div className="mt-8 flex items-center justify-between border-t-[6px] border-neutral-100 px-4 py-4 sm:px-6">
             <StepProgressBar step={step} />
             <div className="flex gap-2">
               <Button

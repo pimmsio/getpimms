@@ -46,7 +46,7 @@ export function HelpArticles({
           />
           <Command.List
             ref={commandListRef}
-            className="scrollbar-hide h-[22rem] overflow-scroll border-t border-neutral-200 py-2 transition-all"
+            className="scrollbar-hide h-[22rem] overflow-scroll border-t-[6px] border-neutral-100 py-2 transition-all"
           >
             <Command.Empty
               onClick={() => setScreen("contact")}
@@ -67,7 +67,7 @@ export function HelpArticles({
           </Command.List>
         </Command>
       </div>
-      <div className="flex justify-between border-t border-neutral-200 px-3 py-4 sm:px-6">
+      <div className="flex justify-between border-t-[6px] border-neutral-100 px-3 py-4 sm:px-6">
         {session ? (
           <button
             onClick={() => setScreen("contact")}

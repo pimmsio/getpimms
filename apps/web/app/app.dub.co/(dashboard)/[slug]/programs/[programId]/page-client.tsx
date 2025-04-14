@@ -23,13 +23,12 @@ export default function ProgramOverviewPageClient() {
 
   return (
     <div className="mb-10">
-      <div className="rounded-lg border border-neutral-200 bg-neutral-50 p-3">
+      <div className="rounded-xl border-[6px] border-neutral-100 bg-neutral-50 p-3">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,3fr)] lg:gap-10">
           <OverviewChart />
-          <div className="relative flex flex-col overflow-hidden rounded-lg bg-neutral-800">
-            <Grid className="text-white/5" cellSize={20} />
+          <div className="relative flex flex-col overflow-hidden rounded-3xl bg-[#3970ff]">
             <div className="relative flex items-center justify-between p-5">
-              <h3 className="text-base font-semibold text-neutral-50">
+              <h3 className="text-base font-semibold text-white">
                 Program
               </h3>
               <Link
@@ -44,16 +43,16 @@ export default function ProgramOverviewPageClient() {
             </div>
             <div className="relative flex grow flex-col justify-end">
               <div className="relative p-5 pt-10">
-                <div className="absolute inset-0 bg-neutral-800 [mask-image:linear-gradient(to_bottom,transparent,black_30%)]" />
+                <div className="absolute inset-0 bg-[#3970ff] [mask-image:linear-gradient(to_bottom,transparent,black_30%)]" />
                 {program.rewards?.[0] && (
                   <div className="relative">
-                    <h4 className="text-sm font-semibold text-neutral-200">
+                    <h4 className="text-sm font-semibold text-white">
                       Rewards
                     </h4>
                     <ProgramRewardList
                       rewards={program.rewards}
                       discount={program.discounts?.[0]}
-                      className="mt-2 border-neutral-600 bg-neutral-700 text-neutral-300 [&_li>svg]:text-neutral-50"
+                      className="mt-2 rounded-xl border-0 bg-white text-[#08272e] [&_li>svg]:text-neutral-50"
                     />
                   </div>
                 )}
@@ -80,7 +79,7 @@ export default function ProgramOverviewPageClient() {
             href={`/${slug}/programs/${programId}/sales${getQueryString()}`}
             className={cn(
               buttonVariants({ variant: "secondary" }),
-              "flex h-8 items-center rounded-lg border px-2 text-sm",
+              "flex h-8 items-center rounded-xl border-[3px] px-2 text-sm",
             )}
           >
             View all

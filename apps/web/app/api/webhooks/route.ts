@@ -48,6 +48,7 @@ export const GET = withWorkspace(
   {
     requiredPermissions: ["webhooks.read"],
     requiredPlan: [
+      "pro",
       "business",
       "business plus",
       "business extra",
@@ -190,6 +191,7 @@ export const POST = withWorkspace(
   {
     requiredPermissions: ["webhooks.write"],
     requiredPlan: [
+      "pro",
       "business",
       "business plus",
       "business extra",

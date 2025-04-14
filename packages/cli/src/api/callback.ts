@@ -56,7 +56,7 @@ export function oauthCallbackServer({
         access_token: accessToken.trim(),
         refresh_token: refreshToken,
         expires_at: expiresAt,
-        domain: "dub.sh",
+        domain: "pim.ms",
       };
 
       await setConfig(configInfo);

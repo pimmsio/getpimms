@@ -39,11 +39,11 @@ function InviteReferralModal({
       showModal={showInviteReferralModal}
       setShowModal={setShowInviteReferralModal}
     >
-      <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-200 px-4 py-4 pt-8 sm:px-16">
+      <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-4 pt-8 sm:px-16">
         <Logo />
         <h3 className="text-lg font-medium">Invite via Email</h3>
         <p className="text-center text-sm text-neutral-500">
-          Invite a friend or colleague to use Dub with your referral link.
+          Invite a friend or colleague to use PIMMS with your referral link.
         </p>
       </div>
       <form
@@ -62,7 +62,7 @@ function InviteReferralModal({
               type="email"
               name="email"
               id="email"
-              placeholder="panic@thedis.co"
+              placeholder="cheers@pimms.io"
               autoFocus={!isMobile}
               autoComplete="off"
               required

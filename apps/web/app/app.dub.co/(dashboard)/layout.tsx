@@ -16,13 +16,13 @@ export default async function Layout({ children }: { children: ReactNode }) {
       <div className="min-h-screen w-full bg-white">
         <MainNav
           sidebar={AppSidebarNav}
-          toolContent={
-            <>
-              <ReferButton />
-              <HelpButtonRSC />
-            </>
-          }
-          newsContent={<NewsRSC />}
+          // toolContent={
+          //   <>
+          //     <ReferButton />
+          //     <HelpButtonRSC />
+          //   </>
+          // }
+          // newsContent={<NewsRSC />}
         >
           {children}
         </MainNav>

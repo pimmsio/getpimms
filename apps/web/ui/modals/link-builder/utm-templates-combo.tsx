@@ -134,7 +134,7 @@ const NoUTMTemplatesFound = () => {
 
   return (
     <div className="flex h-full flex-col items-center justify-center gap-2 px-2 py-4 text-center text-sm">
-      <div className="flex items-center justify-center rounded-2xl border border-neutral-200 bg-neutral-50 p-3">
+      <div className="flex items-center justify-center rounded-2xl border-[6px] border-neutral-100 bg-neutral-50 p-3">
         <DiamondTurnRight className="size-6 text-neutral-700" />
       </div>
       <p className="mt-2 font-medium text-neutral-950">

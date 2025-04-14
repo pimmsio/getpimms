@@ -50,7 +50,7 @@ const verifyBulkLinks = ({
     projectId,
     workspaceId,
     shortLink: `https://${domain}/${firstLink?.key}`,
-    qrCode: `https://api.dub.co/qr?url=https://${domain}/${firstLink?.key}?qr=1`,
+    qrCode: `https://api.pimms.io/qr?url=https://${domain}/${firstLink?.key}?qr=1`,
     ...(expectedTags ? { tags: expectedTags, tagId: expectedTags[0].id } : {}),
   });
   expect(secondLink).toStrictEqual({
@@ -60,7 +60,7 @@ const verifyBulkLinks = ({
     projectId,
     workspaceId,
     shortLink: `https://${domain}/${secondLink?.key}`,
-    qrCode: `https://api.dub.co/qr?url=https://${domain}/${secondLink?.key}?qr=1`,
+    qrCode: `https://api.pimms.io/qr?url=https://${domain}/${secondLink?.key}?qr=1`,
     ...(expectedTags ? { tags: expectedTags, tagId: expectedTags[0].id } : {}),
   });
   expect(z.array(LinkSchema.strict()).parse(links)).toBeTruthy();

@@ -32,7 +32,7 @@ function NotFoundHintChild() {
         {session ? (
           <b className="text-neutral-800">{session.user?.email}.</b>
         ) : (
-          <span className="h-5 w-40 rounded-md border border-neutral-300 bg-neutral-200" />
+          <span className="h-5 w-40 rounded-xl border-[2px] border-neutral-300 bg-neutral-200" />
         )}
       </div>
       <Button

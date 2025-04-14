@@ -53,7 +53,7 @@ function SetDefaultFolderModal({
       showModal={showDefaultFolderModal}
       setShowModal={setShowDefaultFolderModal}
     >
-      <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-200 px-4 py-4 pt-8 text-center sm:px-16">
+      <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-4 pt-8 text-center sm:px-16">
         <FolderIcon folder={folder} />
         <h3 className="text-lg font-medium">
           Set "{folder.name}" as your default folder
@@ -61,7 +61,7 @@ function SetDefaultFolderModal({
         <p className="text-sm text-neutral-500">
           This will make this folder the default folder for your links
           dashboard.{" "}
-          <a
+          {/* <a
             // TODO: Update help article when ready
             href="https://dub.co/help"
             className="underline"
@@ -69,7 +69,7 @@ function SetDefaultFolderModal({
             rel="noreferrer"
           >
             Learn more ↗
-          </a>
+          </a> */}
         </p>
       </div>
 

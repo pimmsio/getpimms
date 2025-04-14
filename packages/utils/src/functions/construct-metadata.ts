@@ -4,26 +4,49 @@ import { HOME_DOMAIN } from "../constants";
 export function constructMetadata({
   title,
   fullTitle,
-  description = "Dub.co is the open-source link management platform for modern marketing teams to create marketing campaigns, link sharing features, and referral programs.",
-  image = "https://assets.dub.co/thumbnail.jpg",
+  description = "PIMMS",
+  image = "https://assets.pimms.io/thumbnail.jpg?v=3",
   video,
   icons = [
     {
       rel: "apple-touch-icon",
-      sizes: "32x32",
-      url: "https://assets.dub.co/favicons/apple-touch-icon.png",
+      sizes: "180x180",
+      url: "https://assets.pimms.io/apple-icon.png?v=2",
     },
     {
       rel: "icon",
       type: "image/png",
       sizes: "32x32",
-      url: "https://assets.dub.co/favicons/favicon-32x32.png",
+      url: "https://assets.pimms.io/favicon-32x32.png?v=2",
+    },
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "48x48",
+      url: "https://assets.pimms.io/favicon-48x48.png?v=2",
+    },
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "96x96",
+      url: "https://assets.pimms.io/favicon-96x96.png?v=2",
     },
     {
       rel: "icon",
       type: "image/png",
       sizes: "16x16",
-      url: "https://assets.dub.co/favicons/favicon-16x16.png",
+      url: "https://assets.pimms.io/favicon-16x16.png?v=2",
+    },
+    {
+      rel: "icon",
+      type: "image/svg+xml",
+      url: "https://assets.pimms.io/favicon.svg?v=2",
+    },
+    {
+      rel: "icon",
+      type: "image/ico",
+      sizes: "16x16",
+      url: "https://assets.pimms.io/favicon.ico?v=2",
     },
   ],
   url,
@@ -46,8 +69,8 @@ export function constructMetadata({
     title:
       fullTitle ||
       (title
-        ? `${title} | Dub.co`
-        : "Dub.co - Link Management for Modern Marketing Teams"),
+        ? `${title} | PIMMS`
+        : "PIMMS | Deep links that boost your conversions on social media"),
     description,
     openGraph: {
       title,
@@ -70,7 +93,7 @@ export function constructMetadata({
       ...(video && {
         player: video,
       }),
-      creator: "@dubdotco",
+      // creator: "@pimmsio",
     },
     icons,
     metadataBase: new URL(HOME_DOMAIN),

@@ -36,7 +36,7 @@ const subscriptionInvoices = async (stripeId: string) => {
         id: invoice.id,
         total: invoice.amount_paid,
         createdAt: new Date(invoice.created * 1000),
-        description: "Dub subscription",
+        description: "PIMMS subscription",
         pdfUrl: invoice.invoice_pdf,
       };
     });

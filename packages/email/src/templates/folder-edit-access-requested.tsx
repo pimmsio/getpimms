@@ -15,14 +15,14 @@ import {
 import { Footer } from "../components/footer";
 
 export function FolderEditAccessRequested({
-  email = "panic@thedis.co",
-  folderUrl = "http://localhost:8888/acme/settings/library/folders/cm1elre430005nf59czif340u/members",
+  email = "cheers@pimms.io",
+  folderUrl = "http://localhost:8888/pimms/settings/library/folders/cm1elre430005nf59czif340u/members",
   folder = {
     name: "Social Media",
   },
   requestor = {
     name: "Brendon Urie",
-    email: "panic@thedis.co",
+    email: "cheers@pimms.io",
   },
 }: {
   email: string;
@@ -38,12 +38,12 @@ export function FolderEditAccessRequested({
   return (
     <Html>
       <Head />
-      <Preview>Request to edit folder {folder.name} on Dub</Preview>
+      <Preview>Request to edit folder {folder.name} on PiMMs</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[600px] rounded border border-solid border-neutral-200 px-10 py-5">
-            <Section className="mt-8">
-              <Img src={DUB_WORDMARK} height="32" alt="Dub" />
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+            <Section className="my-8">
+              <Img src={DUB_WORDMARK} height="14" alt="PIMMS" className="my-0" />
             </Section>
             <Heading className="mx-0 my-7 p-0 text-lg font-medium text-black">
               Request to edit {folder.name}
@@ -59,9 +59,9 @@ export function FolderEditAccessRequested({
               ) is requesting edit access to the folder&nbsp;
               <strong>{folder.name}</strong>.
             </Text>
-            <Section className="mb-8 mt-8">
+            <Section className="my-8 text-center">
               <Link
-                className="rounded-lg bg-black px-6 py-3 text-center text-[12px] font-semibold text-white no-underline"
+                className="px-5 py-3 bg-[#dc2e65] text-white font-semibold outline outline-[6px] transition outline-[#ffeaf1] cursor-pointer no-underline rounded-xl"
                 href={folderUrl}
               >
                 View folder

@@ -34,8 +34,7 @@ export function CreateProgramCard() {
   )?.href;
 
   return (
-    <div className="relative mt-6 overflow-hidden rounded-[8px] bg-white p-px shadow-sm">
-      <div className="absolute inset-0 rounded-[inherit] border border-black/10" />
+    <div className="relative mt-6 overflow-hidden rounded-xl bg-white p-px shadow-xs">
       <div
         className={cn(
           "pointer-events-none absolute inset-0 opacity-50 blur-[50px]",
@@ -44,23 +43,23 @@ export function CreateProgramCard() {
         <div
           className={cn(
             "absolute inset-x-0 top-1/3 h-full",
-            "bg-[conic-gradient(#F35066_117deg,#9071F9_180deg,#5182FC_240deg,#F35066_360deg)]",
-            "[mask-image:radial-gradient(black_80%,transparent_50%)]",
+            // "bg-[conic-gradient(#F35066_117deg,#9071F9_180deg,#5182FC_240deg,#F35066_360deg)]",
+            // "[mask-image:radial-gradient(black_80%,transparent_50%)]",
           )}
         />
       </div>
 
-      <div className="relative flex flex-col gap-3 rounded-[7px] bg-white/70 p-3">
-        <div className="flex items-center gap-2">
+      <div className="relative flex flex-col gap-3 rounded-xl bg-white/70 p-3">
+        {/* <div className="flex items-center gap-2">
           <ConnectedDots4 className="size-4 text-neutral-900" />
-        </div>
+        </div> */}
 
         <div className="flex flex-col gap-1">
-          <h1 className="text-sm font-semibold text-neutral-900">
-            Dub Partners
+          <h1 className="text-sm font-semibold uppercase text-neutral-900">
+            PiMMs Affiliate
           </h1>
           <p className="text-sm text-neutral-600">
-            Grow your revenue on autopilot with Dub Partners
+            Grow your revenue
           </p>
         </div>
 
@@ -71,7 +70,7 @@ export function CreateProgramCard() {
             "flex h-8 items-center justify-center rounded-md border px-3 text-sm",
           )}
         >
-          {store?.programOnboarding ? "Finish creating" : "Create program"}
+          {store?.programOnboarding ? "Finish creating" : "Start your program"}
         </Link>
       </div>
     </div>

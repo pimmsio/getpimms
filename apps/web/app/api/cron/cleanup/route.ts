@@ -73,7 +73,7 @@ export async function GET(req: Request) {
       prisma.partner.findMany({
         where: {
           email: {
-            endsWith: "@dub-internal-test.com",
+            endsWith: "@pimms-internal-test.com",
           },
           createdAt: {
             lt: oneHourAgo,

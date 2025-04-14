@@ -31,7 +31,7 @@ function DeleteDomainModal({
       showModal={showDeleteDomainModal}
       setShowModal={setShowDeleteDomainModal}
     >
-      <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-200 px-4 py-4 pt-8 text-center sm:px-16">
+      <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-4 pt-8 text-center sm:px-16">
         <LinkLogo apexDomain={domain} />
         <h3 className="text-lg font-medium">Delete {domain}</h3>
         <div className="space-y-2 text-sm text-neutral-500">
@@ -40,7 +40,7 @@ function DeleteDomainModal({
             their anaytics, permanently.
           </p>
           {Boolean(props.registeredDomain) && (
-            <p>The domain will also be provisioned back to Dub.</p>
+            <p>The domain will also be provisioned back to PiMMs.</p>
           )}
           <p>
             <strong className="font-semibold text-neutral-700">

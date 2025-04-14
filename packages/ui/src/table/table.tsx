@@ -309,7 +309,7 @@ export function Table<T>({
   return (
     <div
       className={cn(
-        "border-border-subtle bg-bg-default relative rounded-xl border",
+        "relative rounded-xl border-[6px] border-neutral-100 bg-white",
         containerClassName,
       )}
     >

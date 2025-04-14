@@ -114,19 +114,19 @@ export default function LoginForm({
       component: GoogleButton,
       props: { next },
     },
-    {
-      method: "github",
-      component: GitHubButton,
-    },
+    // {
+    //   method: "github",
+    //   component: GitHubButton,
+    // },
     {
       method: "email",
       component: EmailSignIn,
       props: { next },
     },
-    {
-      method: "saml",
-      component: SSOSignIn,
-    },
+    // {
+    //   method: "saml",
+    //   component: SSOSignIn,
+    // },
   ];
 
   const currentAuthProvider = authProviders.find(

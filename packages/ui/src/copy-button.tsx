@@ -12,7 +12,7 @@ const copyButtonVariants = cva(
     variants: {
       variant: {
         default: "bg-transparent hover:bg-neutral-100 active:bg-neutral-200",
-        neutral: "bg-transparent hover:bg-neutral-100 active:bg-neutral-200",
+        neutral: "bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300",
       },
     },
     defaultVariants: {
@@ -27,11 +27,13 @@ export function CopyButton({
   className,
   icon,
   successMessage,
+  withText = true,
 }: {
   value: string;
   className?: string;
   icon?: LucideIcon;
   successMessage?: string;
+  withText?: boolean;
 } & VariantProps<typeof copyButtonVariants>) {
   const [copied, copyToClipboard] = useCopyToClipboard();
   const Comp = icon || Copy;
@@ -43,10 +45,15 @@ export function CopyButton({
           success: successMessage || "Copied to clipboard!",
         });
       }}
-      className={cn(copyButtonVariants({ variant }), className)}
+      className={cn(
+        copyButtonVariants({ variant }),
+        withText && "flex items-center gap-1",
+        className,
+      )}
       type="button"
     >
       <span className="sr-only">Copy</span>
+      {withText && <span className="hidden text-xs sm:block">Copy</span>}
       {copied ? (
         <Tick className="h-3.5 w-3.5" />
       ) : (

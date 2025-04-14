@@ -66,7 +66,7 @@ export const updatePartnerProfileAction = authPartnerActionClient
 
       if (sentPayoutsCount > 0) {
         throw new Error(
-          "Since you've already received payouts on Dub, you cannot change your country. If you need to update your country, please contact support.",
+          "Since you've already received payouts on PiMMs, you cannot change your country. If you need to update your country, please contact support.",
         );
       }
 

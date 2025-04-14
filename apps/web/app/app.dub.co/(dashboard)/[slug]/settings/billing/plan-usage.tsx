@@ -85,8 +85,8 @@ export default function PlanUsage() {
   }, [billingCycleStart]);
 
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white">
-      <div className="flex flex-col items-start justify-between gap-y-4 p-6 md:px-8 lg:flex-row">
+    <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
+      <div className="flex flex-col items-start justify-between gap-y-4 p-6 md:p-8 lg:flex-row">
         <div>
           <h2 className="text-xl font-medium">{capitalize(plan)} Plan</h2>
           {billingStart && billingEnd && (
@@ -100,7 +100,7 @@ export default function PlanUsage() {
             </p>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           {plan !== "enterprise" && (
             <Link
               href={`/${slug}/settings/billing/upgrade`}
@@ -124,9 +124,9 @@ export default function PlanUsage() {
           {stripeId && plan !== "free" && <SubscriptionMenu />}
         </div>
       </div>
-      <div className="grid grid-cols-[minmax(0,1fr)] divide-y divide-neutral-200 border-t border-neutral-200">
+      <div className="grid grid-cols-[minmax(0,1fr)] divide-y-[6px] divide-neutral-100 border-t-[6px] border-neutral-100">
         <div>
-          <div className="grid gap-4 p-6 sm:grid-cols-3 md:p-8 lg:gap-6">
+          <div className="grid gap-4 p-6 md:p-8 lg:gap-6 grid-cols-1 md:grid-cols-2">
             <UsageTabCard
               id="events"
               icon={CursorRays}
@@ -141,7 +141,7 @@ export default function PlanUsage() {
               usage={linksUsage}
               limit={linksLimit}
             />
-            <UsageTabCard
+            {/* <UsageTabCard
               id="revenue"
               icon={CircleDollar}
               title="Revenue tracked"
@@ -149,13 +149,13 @@ export default function PlanUsage() {
               limit={salesLimit}
               unit="$"
               requiresUpgrade={plan === "free" || plan === "pro"}
-            />
+            /> */}
           </div>
-          <div className="w-full px-2 pb-8 md:px-8">
+          {/* <div className="w-full px-2 pb-8 md:px-8">
             <UsageChart />
-          </div>
+          </div> */}
         </div>
-        <div
+        {/* <div
           className={cn(
             "grid grid-cols-1 gap-[1px] overflow-hidden rounded-b-lg bg-neutral-200 md:grid-cols-3",
             flags?.linkFolders &&
@@ -193,9 +193,9 @@ export default function PlanUsage() {
             usageLimit={usersLimit}
             href={`/${slug}/settings/people`}
           />
-        </div>
-        {partnersEnabled && (
-          <div className="grid grid-cols-1 gap-[1px] overflow-hidden rounded-b-lg bg-neutral-200 md:grid-cols-2">
+        </div> */}
+        {/* {partnersEnabled && (
+        <div className="flex flex-col items-center justify-between space-y-3 border-t-[6px] border-neutral-100 px-6 py-4 text-center md:flex-row md:space-y-0 md:px-8 md:text-left">
             <UsageCategory
               title="Partners"
               icon={Users6}
@@ -217,10 +217,10 @@ export default function PlanUsage() {
                     : "-"
                   : undefined
               }
-              href="https://dub.co/help/article/partner-payouts#payout-fees-and-timing"
+              // href="https://dub.co/help/article/partner-payouts#payout-fees-and-timing"
             />
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
@@ -265,9 +265,9 @@ function UsageTabCard({
   return (
     <button
       className={cn(
-        "rounded-lg border border-neutral-300 bg-white px-4 py-3 text-left transition-colors duration-75",
+        "rounded-xl border-[6px] border-neutral-200 bg-white px-4 py-3 text-left transition-colors duration-75",
         "outline-none focus-visible:border-blue-600 focus-visible:ring-1 focus-visible:ring-blue-600",
-        isActive && "border-neutral-900 ring-1 ring-neutral-900",
+        isActive && "border-neutral-200 ring-1 ring-neutral-200",
         requiresUpgrade
           ? "border-neutral-100 bg-neutral-100 hover:bg-neutral-100"
           : "hover:bg-neutral-50 lg:px-5 lg:py-4",
@@ -293,7 +293,7 @@ function UsageTabCard({
               </div>
             }
           >
-            <span className="flex items-center gap-1 rounded-full border border-neutral-300 px-2 py-0.5 text-xs text-neutral-500">
+            <span className="flex items-center gap-1 rounded-full border-[2px] border-neutral-300 px-2 py-0.5 text-xs text-neutral-500">
               <CrownSmall className="size-" />
               Business
             </span>
@@ -339,7 +339,7 @@ function UsageTabCard({
                   "size-full rounded-full",
                   requiresUpgrade
                     ? "bg-neutral-900/10"
-                    : "bg-gradient-to-r from-blue-500/80 to-blue-600",
+                    : "bg-gradient-to-r from-neutral-500/80 to-neutral-600",
                   warning && "from-neutral-900/10 via-red-500 to-red-600",
                 )}
                 style={{

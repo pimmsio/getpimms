@@ -6,7 +6,7 @@ export const InvoiceSchema = z.object({
   total: z.number(),
   status: z.nativeEnum(InvoiceStatus).optional(),
   createdAt: z.date(),
-  description: z.string().default("Dub payout"),
+  description: z.string().default("PIMMS payout"),
   pdfUrl: z.string().nullable(),
   failedReason: z.string().nullish().default(null),
 });

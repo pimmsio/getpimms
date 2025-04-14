@@ -62,10 +62,10 @@ const ErrorSchema = z.object({
       description: "A human readable error message.",
       example: "The requested resource was not found.",
     }),
-    doc_url: z.string().optional().openapi({
-      description: "A URL to more information about the error code reported.",
-      example: "https://dub.co/docs/api-reference",
-    }),
+    // doc_url: z.string().optional().openapi({
+    //   description: "A URL to more information about the error code reported.",
+    //   example: "https://dub.co/docs/api-reference",
+    // }),
   }),
 });
 
@@ -116,7 +116,7 @@ export function fromZodError(error: ZodError): ErrorResponse {
           label: "",
         },
       }),
-      doc_url: `${docErrorUrl}#unprocessable-entity`,
+      // doc_url: `${docErrorUrl}#unprocessable-entity`,
     },
   };
 }
@@ -138,7 +138,7 @@ export function handleApiError(error: any): ErrorResponse & { status: number } {
       error: {
         code: error.code,
         message: error.message,
-        doc_url: error.docUrl,
+        // doc_url: error.docUrl,
       },
       status: errorCodeToHttpStatus[error.code],
     };
@@ -153,7 +153,7 @@ export function handleApiError(error: any): ErrorResponse & { status: number } {
           error?.meta?.cause ||
           error.message ||
           "The requested resource was not found.",
-        doc_url: `${docErrorUrl}#not-found`,
+        // doc_url: `${docErrorUrl}#not-found`,
       },
       status: 404,
     };
@@ -166,7 +166,7 @@ export function handleApiError(error: any): ErrorResponse & { status: number } {
       code: "internal_server_error",
       message:
         "An internal server error occurred. Please contact our support if the problem persists.",
-      doc_url: `${docErrorUrl}#internal-server-error`,
+      // doc_url: `${docErrorUrl}#internal-server-error`,
     },
     status: 500,
   };
@@ -209,12 +209,12 @@ export const errorSchemaFactory = (
                     "A human readable explanation of what went wrong.",
                   example: "The requested resource was not found.",
                 },
-                doc_url: {
-                  type: "string",
-                  description:
-                    "A link to our documentation with more details about this error code",
-                  example: `${docErrorUrl}#${code.replace("_", "-")}`,
-                },
+                // doc_url: {
+                //   type: "string",
+                //   description:
+                //     "A link to our documentation with more details about this error code",
+                //   example: `${docErrorUrl}#${code.replace("_", "-")}`,
+                // },
               },
               required: ["code", "message"],
             },

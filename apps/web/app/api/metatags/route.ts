@@ -23,13 +23,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         ...metatags,
-        poweredBy: "Dub.co - Link management for modern marketing teams",
+        poweredBy: "PIMMS | Deep links that boost your conversions on social media",
       },
       {
         headers: CORS_HEADERS,
       },
     );
   } catch (error) {
+    console.error("error generating metatags", error);
     return handleAndReturnErrorResponse(error, CORS_HEADERS);
   }
 }

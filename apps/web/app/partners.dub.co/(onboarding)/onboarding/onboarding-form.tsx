@@ -122,7 +122,7 @@ export function OnboardingForm({
               <FileUpload
                 accept="images"
                 className={cn(
-                  "mt-2 size-20 rounded-full border border-neutral-300",
+                  "mt-2 size-20 rounded-full border-[2px] border-neutral-300",
                   errors.image && "border-0 ring-2 ring-red-500",
                 )}
                 iconClassName="size-5"

@@ -81,7 +81,7 @@ function AddEditTagModal({
       showModal={showAddEditTagModal}
       setShowModal={setShowAddEditTagModal}
     >
-      <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-200 px-4 py-4 pt-8 sm:px-16">
+      <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-4 pt-8 sm:px-16">
         <Logo />
         <div className="flex flex-col space-y-1 text-center">
           <h3 className="text-lg font-medium">
@@ -89,14 +89,14 @@ function AddEditTagModal({
           </h3>
           <p className="text-sm text-neutral-500">
             Use tags to organize your links.{" "}
-            <a
+            {/* <a
               href="https://dub.co/help/article/how-to-use-tags#what-is-a-tag"
               target="_blank"
               rel="noopener noreferrer"
               className="underline underline-offset-4 hover:text-neutral-800"
             >
               Learn more
-            </a>
+            </a> */}
           </p>
         </div>
       </div>

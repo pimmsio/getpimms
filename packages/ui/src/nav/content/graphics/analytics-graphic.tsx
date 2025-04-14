@@ -97,7 +97,7 @@ export function AnalyticsGraphic(props: SVGProps<SVGSVGElement>) {
         style={{ whiteSpace: "pre" }}
       >
         <tspan x="213.667" y="171.909">
-          Leads
+          Conversions
         </tspan>
       </text>
       <text

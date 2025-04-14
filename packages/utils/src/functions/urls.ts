@@ -84,7 +84,8 @@ export const constructURLFromUTMParams = (
 ) => {
   if (!url) return "";
   try {
-    const newURL = new URL(url);
+    const parsedUrl = getUrlFromString(url);
+    const newURL = new URL(parsedUrl);
     for (const [key, value] of Object.entries(utmParams)) {
       if (value === "") {
         newURL.searchParams.delete(key);
@@ -109,7 +110,8 @@ export const paramsMetadata = [
 
 export const getUrlWithoutUTMParams = (url: string) => {
   try {
-    const newURL = new URL(url);
+    const parsedUrl = getUrlFromString(url);
+    const newURL = new URL(parsedUrl);
     paramsMetadata.forEach((param) => newURL.searchParams.delete(param.key));
     return newURL.toString();
   } catch (e) {
@@ -133,8 +135,8 @@ export const createHref = (
   // any params, doesn't have to be all of them
   utmParams?: Partial<Record<(typeof UTMTags)[number], string>>,
 ) => {
-  if (domain === "dub.co") return href;
-  const url = new URL(href.startsWith("/") ? `https://dub.co${href}` : href);
+  if (domain === "pimms.io") return href;
+  const url = new URL(href.startsWith("/") ? `https://pimms.io${href}` : href);
   if (utmParams) {
     Object.entries(utmParams).forEach(([key, value]) => {
       url.searchParams.set(key, value);

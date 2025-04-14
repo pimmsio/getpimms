@@ -16,6 +16,7 @@ export const POST = withWorkspace(async ({ session, req, workspace }) => {
     scope,
     client_id: clientId,
     redirect_uri: redirectUri,
+    code: oauthCode,
     code_challenge: codeChallenge,
     code_challenge_method: codeChallengeMethod,
   } = authorizeRequestSchema.parse(await parseRequestBody(req));
@@ -49,12 +50,12 @@ export const POST = withWorkspace(async ({ session, req, workspace }) => {
     [STRIPE_INTEGRATION_ID, SHOPIFY_INTEGRATION_ID].includes(
       app.integrationId,
     ) &&
-    (workspace.plan === "free" || workspace.plan === "pro")
+    (workspace.plan === "free")
   ) {
     throw new DubApiError({
       code: "bad_request",
       message:
-        "This integration is only available for workspaces with a Business plan or higher. Please upgrade your plan to continue.",
+        "This integration is only available for workspaces with a Pro plan or higher. Please upgrade your plan to continue.",
     });
   }
 
@@ -82,7 +83,7 @@ export const POST = withWorkspace(async ({ session, req, workspace }) => {
       projectId: workspace.id,
       userId: session.user.id,
       scopes: scope.join(" "),
-      code: createToken({ length: OAUTH_CONFIG.CODE_LENGTH }),
+      code: oauthCode ?? createToken({ length: OAUTH_CONFIG.CODE_LENGTH }),
       expiresAt: new Date(Date.now() + OAUTH_CONFIG.CODE_LIFETIME * 1000),
       ...(app.pkce && { codeChallenge, codeChallengeMethod }),
     },

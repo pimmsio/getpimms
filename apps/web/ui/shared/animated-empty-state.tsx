@@ -29,7 +29,7 @@ export function AnimatedEmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-6 rounded-lg border border-neutral-200 px-4 py-10 md:min-h-[500px]",
+        "flex flex-col items-center justify-center gap-6 rounded-xl border-[6px] border-neutral-100 px-4 py-10 mx-3 lg:mx-10 md:min-h-[500px]",
         className,
       )}
     >
@@ -62,7 +62,7 @@ export function AnimatedEmptyState({
             target="_blank"
             className={cn(
               buttonVariants({ variant: addButton ? "secondary" : "primary" }),
-              "flex h-9 items-center whitespace-nowrap rounded-lg border px-4 text-sm",
+              "flex h-9 items-center whitespace-nowrap rounded-xl border-[6px] px-4 text-sm",
               learnMoreClassName,
             )}
           >
@@ -76,7 +76,7 @@ export function AnimatedEmptyState({
 
 function Card({ children }: PropsWithChildren) {
   return (
-    <div className="mt-4 flex items-center gap-3 rounded-lg border border-neutral-200 bg-white p-4 shadow-[0_4px_12px_0_#0000000D]">
+    <div className="mt-4 flex items-center gap-3 rounded-xl border-[6px] border-neutral-100 bg-white p-4 shadow-[0_4px_12px_0_#0000000D]">
       {children}
     </div>
   );

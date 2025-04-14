@@ -5,7 +5,7 @@ export default async function ProgramSettingsRewardsPage() {
   return (
     <>
       <Rewards />
-      <RewardSettings />
+      {/* <RewardSettings /> */}
     </>
   );
 }

@@ -8,7 +8,7 @@ import ora from "ora";
 
 export const login = new Command()
   .name("login")
-  .description("Log into the Dub platform")
+  .description("Log into the PiMMs platform")
   .action(async () => {
     try {
       const codeVerifier = getNanoid(64);

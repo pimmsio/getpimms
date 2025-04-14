@@ -70,7 +70,7 @@ export function ProgramOnboardingHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-neutral-200 bg-white px-4">
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b-[6px] border-neutral-100 bg-white px-4">
       <div className="flex items-center gap-5">
         <button
           onClick={() => setIsOpen(true)}

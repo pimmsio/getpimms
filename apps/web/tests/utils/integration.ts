@@ -41,8 +41,8 @@ export class IntegrationHarness {
 
     const workspace = {
       id: E2E_WORKSPACE_ID,
-      slug: "acme",
-      name: "Acme, Inc.",
+      slug: "pimms",
+      name: "Pimms",
       webhookEnabled: true,
     };
 

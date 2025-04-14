@@ -82,7 +82,7 @@ function PartnerProfileSheetContent({
             </Sheet.Close>
           </div>
         </div>
-        <div className="border-t border-neutral-200 p-6 text-sm text-neutral-600">
+        <div className="border-t-[6px] border-neutral-100 p-6 text-sm text-neutral-600">
           <div className="grid grid-cols-1 gap-4">
             {basicFields.map((field) => (
               <div

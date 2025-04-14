@@ -2,7 +2,7 @@ import { FileX2 } from "lucide-react";
 
 export default function LinkNotFound() {
   return (
-    <div className="flex flex-col items-center justify-center rounded-md border border-neutral-200 bg-white py-12">
+    <div className="flex flex-col items-center justify-center rounded-xl border-[2px] border-neutral-100 bg-white py-12">
       <div className="rounded-full bg-neutral-100 p-3">
         <FileX2 className="h-6 w-6 text-neutral-600" />
       </div>

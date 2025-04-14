@@ -101,16 +101,16 @@ export function ReferralsEmbedPageClient({
       className="bg-bg-default flex min-h-screen flex-col"
     >
       <div className="relative z-0 p-5">
-        <div className="border-border-default relative flex flex-col overflow-hidden rounded-lg border p-4 md:p-6">
-          <HeroBackground
+        <div className="border-border-default relative flex flex-col overflow-hidden rounded-xl border-[6px] p-4 md:p-6">
+          {/* <HeroBackground
             logo={program.logo}
             color={program.brandColor}
             embed
-          />
+          /> */}
           <span className="text-content-emphasis text-base font-semibold">
             Referral link
           </span>
-          <div className="xs:flex-row xs:items-center relative mt-3 flex flex-col gap-2 sm:max-w-[50%]">
+          <div className="xs:flex-row xs:items-center relative mt-3 flex flex-col gap-4">
             <input
               type="text"
               readOnly
@@ -143,7 +143,7 @@ export function ReferralsEmbedPageClient({
               onClick={() => copyToClipboard(links[0].shortLink)}
             />
           </div>
-          <div className="mt-12 sm:max-w-[50%]">
+          <div className="mt-12">
             <div className="flex items-end justify-between">
               <span className="text-content-emphasis text-base font-semibold leading-none">
                 Rewards
@@ -162,7 +162,7 @@ export function ReferralsEmbedPageClient({
               <ProgramRewardList rewards={rewards} discount={discount} />
             </div>
           </div>
-          <div className="mt-4 flex justify-center md:absolute md:bottom-3 md:right-3 md:mt-0">
+          {/* <div className="mt-4 flex justify-center md:absolute md:bottom-3 md:right-3 md:mt-0">
             <a
               href="https://dub.partners"
               target="_blank"
@@ -173,7 +173,7 @@ export function ReferralsEmbedPageClient({
               </p>
               <Wordmark className="text-content-emphasis h-3.5" />
             </a>
-          </div>
+          </div> */}
         </div>
         <div className="mt-4 grid gap-2 sm:h-32 sm:grid-cols-3">
           <ReferralsEmbedActivity
@@ -183,7 +183,7 @@ export function ReferralsEmbedPageClient({
           />
           <ReferralsEmbedPayouts payouts={payouts} programSlug={program.slug} />
         </div>
-        <div className="mt-4">
+        {/* <div className="mt-4">
           <div className="border-border-subtle flex items-center border-b">
             <TabSelect
               options={tabs.map((tab) => ({
@@ -230,7 +230,7 @@ export function ReferralsEmbedPageClient({
               ) : null}
             </AnimatePresence>
           </div>
-        </div>
+        </div> */}
         <ReferralsReferralsEmbedToken />
       </div>
     </div>

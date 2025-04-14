@@ -18,42 +18,42 @@ export const UTM_PARAMETERS = [
     key: "utm_source",
     icon: GlobePointer,
     label: "Source",
-    placeholder: "google",
+    placeholder: "linkedin",
     description: "Where the traffic is coming from",
   },
   {
     key: "utm_medium",
     icon: SatelliteDish,
     label: "Medium",
-    placeholder: "cpc",
+    placeholder: "post",
     description: "How the traffic is coming",
   },
   {
     key: "utm_campaign",
     icon: Flag6,
     label: "Campaign",
-    placeholder: "summer sale",
+    placeholder: "top_clients",
     description: "The name of the campaign",
   },
   {
     key: "utm_term",
     icon: InputSearch,
     label: "Term",
-    placeholder: "running shoes",
+    placeholder: "growth_hacking",
     description: "The term of the campaign",
   },
   {
     key: "utm_content",
     icon: Page2,
     label: "Content",
-    placeholder: "logo link",
+    placeholder: "monday_post",
     description: "The content of the campaign",
   },
   {
     key: "ref",
     icon: Gift,
     label: "Referral",
-    placeholder: "yoursite.com",
+    placeholder: "linkedin.com",
     description: "The referral of the campaign",
   },
 ] as const;
@@ -93,7 +93,7 @@ export function UTMBuilder({
   }, []);
 
   return (
-    <div className={cn("grid gap-y-3", className)}>
+    <div className={cn("grid gap-y-1", className)}>
       {UTM_PARAMETERS.map(
         ({ key, icon: Icon, label, placeholder, description }, idx) => {
           return (
@@ -116,7 +116,7 @@ export function UTMBuilder({
                     )}
                     onClick={() => setShowParams((s) => !s)}
                   >
-                    <Icon className="size-4 shrink-0" />
+                    {/* <Icon className="size-4 shrink-0" /> */}
                     <label
                       htmlFor={`${id}-${key}`}
                       className="select-none text-sm"

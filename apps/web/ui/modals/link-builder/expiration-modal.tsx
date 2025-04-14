@@ -96,7 +96,7 @@ function ExpirationModal({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h3 className="text-lg font-medium">Link Expiration</h3>
-            <ProBadgeTooltip
+            {/* <ProBadgeTooltip
               content={
                 <SimpleTooltipContent
                   title="Set an expiration date for your links – after which it won't be accessible."
@@ -104,7 +104,7 @@ function ExpirationModal({
                   href="https://dub.co/help/article/link-expiration"
                 />
               }
-            />
+            /> */}
           </div>
           <div className="max-md:hidden">
             <Tooltip
@@ -117,7 +117,7 @@ function ExpirationModal({
               }
               side="right"
             >
-              <kbd className="flex size-6 cursor-default items-center justify-center rounded-md border border-neutral-200 font-sans text-xs text-neutral-950">
+              <kbd className="flex size-6 cursor-default items-center justify-center rounded-xl border-[2px] border-neutral-100 font-sans text-xs text-neutral-950">
                 E
               </kbd>
             </Tooltip>
@@ -134,7 +134,7 @@ function ExpirationModal({
               Date and Time
             </label>
           </div>
-          <div className="mt-2 flex w-full items-center justify-between rounded-md border border-neutral-300 bg-white shadow-sm transition-all focus-within:border-neutral-800 focus-within:outline-none focus-within:ring-1 focus-within:ring-neutral-500">
+          <div className="mt-2 flex w-full items-center justify-between rounded-xl border-[2px] border-neutral-300 bg-white shadow-sm transition-all focus-within:border-neutral-800 focus-within:outline-none focus-within:ring-1 focus-within:ring-neutral-500">
             <input
               ref={inputRef}
               id={`${id}-expiresAt`}
@@ -192,7 +192,7 @@ function ExpirationModal({
             >
               Expiration URL
             </label>
-            <InfoTooltip
+            {/* <InfoTooltip
               content={
                 <SimpleTooltipContent
                   title="Redirect users to a specific URL when the link has expired."
@@ -200,7 +200,7 @@ function ExpirationModal({
                   href="https://dub.co/help/article/link-expiration#setting-a-custom-expiration-url"
                 />
               }
-            />
+            /> */}
           </div>
           <div className="mt-2 rounded-md shadow-sm">
             <input
@@ -218,13 +218,13 @@ function ExpirationModal({
           </div>
         </div>
 
-        <a
+        {/* <a
           href="https://dub.co/help/article/link-expiration#setting-a-default-expiration-url-for-all-links-under-a-domain"
           target="_blank"
           className="group mt-2 flex items-center text-xs text-neutral-500 hover:text-neutral-700"
         >
           Set a default expiration URL for your domain
-        </a>
+        </a> */}
 
         <div className="mt-6 flex items-center justify-between">
           <div>
@@ -291,10 +291,10 @@ function ExpirationButton({
       text={getExpirationLabel({ expiresAt })}
       icon={
         <CircleHalfDottedClock
-          className={cn("size-4", expiresAt && "text-blue-500")}
+          className={cn("size-4", expiresAt && "text-[#08272E]")}
         />
       }
-      className="h-8 w-fit gap-1.5 px-2.5 text-xs font-medium text-neutral-700"
+      className="h-9 w-fit px-2.5 font-medium text-neutral-700"
       onClick={() => setShowExpirationModal(true)}
     />
   );

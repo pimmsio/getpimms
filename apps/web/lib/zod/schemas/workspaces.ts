@@ -69,16 +69,16 @@ export const WorkspaceSchema = z
     conversionEnabled: z
       .boolean()
       .describe(
-        "Whether the workspace has conversion tracking enabled automatically for new links (d.to/conversions).",
+        "Whether the workspace has conversion tracking enabled automatically for new links.",
       ),
     dotLinkClaimed: z
       .boolean()
       .describe(
-        "Whether the workspace has claimed a free .link domain. (dub.link/free)",
+        "Whether the workspace has claimed a free domain.",
       ),
     partnersEnabled: z
       .boolean()
-      .describe("Whether the workspace has Dub Partners enabled."),
+      .describe("Whether the workspace has PiMMs Partners enabled."),
 
     createdAt: z
       .date()
@@ -119,7 +119,7 @@ export const WorkspaceSchema = z
       .array(z.string())
       .nullable()
       .describe("Specifies hostnames permitted for client-side click tracking.")
-      .openapi({ example: ["dub.sh"] }),
+      .openapi({ example: ["pim.ms"] }),
   })
   .openapi({
     title: "Workspace",

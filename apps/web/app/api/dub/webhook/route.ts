@@ -3,12 +3,12 @@ import crypto from "crypto";
 import { leadCreated } from "./lead-created";
 import { saleCreated } from "./sale-created";
 
-// POST /api/dub/webhook - receive webhooks for Dub
+// POST /api/dub/webhook - receive webhooks for PiMMs
 export const POST = async (req: Request) => {
   const body = await req.json();
   const { event, data } = webhookPayloadSchema.parse(body);
 
-  const webhookSignature = req.headers.get("Dub-Signature");
+  const webhookSignature = req.headers.get("Pimms-Signature");
 
   if (!webhookSignature) {
     return new Response("No signature provided", { status: 401 });

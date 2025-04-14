@@ -70,7 +70,7 @@ export function ProgramLinksPageClient() {
           defaultInterval={DUB_PARTNERS_ANALYTICS_INTERVAL}
         />
         {/* TODO: Add this to Program table */}
-        {["dub", "acme", "tella", "testimonial"].includes(programSlug) && (
+        {["pimms"].includes(programSlug) && (
           <Button
             text="Create Link"
             className="w-fit"
@@ -137,7 +137,7 @@ function LinkCardSkeleton() {
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="h-[156px] rounded-lg border border-neutral-100"
+              className="h-[156px] rounded-xl border-[6px] border-neutral-100"
             />
           ))}
         </div>

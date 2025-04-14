@@ -87,7 +87,7 @@ export function PageClient() {
     },
     {
       title: "Referral link type",
-      content: `${data.domain}/steven`,
+      content: `${data.domain}/alexandre`,
       href: `/${workspaceSlug}/programs/new`,
     },
     {
@@ -102,7 +102,7 @@ export function PageClient() {
       {SECTIONS.map(({ title, content, href }) => (
         <div
           key={title}
-          className="rounded-lg border border-neutral-200 bg-neutral-50 p-6"
+          className="rounded-xl border-[6px] border-neutral-100 bg-neutral-50 p-6"
         >
           <div className="flex items-center justify-between">
             <div className="text-sm font-semibold text-neutral-800">

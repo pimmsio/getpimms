@@ -51,7 +51,7 @@ export default function SettingsPageClient() {
           name: "email",
           type: "email",
           defaultValue: session?.user?.email || undefined,
-          placeholder: "panic@thedis.co",
+          placeholder: "cheers@pimms.io",
         }}
         helpText={<UpdateSubscription />}
         handleSubmit={(data) =>
@@ -75,7 +75,7 @@ export default function SettingsPageClient() {
       />
       <UploadAvatar />
       <UserId />
-      <UpdateDefaultWorkspace />
+      {/* <UpdateDefaultWorkspace /> */}
       <DeleteAccountSection />
     </>
   );

@@ -19,7 +19,7 @@ import { toast } from "sonner";
 
 export function ResourceCardSkeleton() {
   return (
-    <div className="border-border-subtle flex w-full items-center gap-4 rounded-lg border p-4">
+    <div className="border-border-subtle flex w-full items-center gap-4 rounded-xl border-[6px] p-4">
       <div className="bg-bg-emphasis flex size-10 shrink-0 animate-pulse items-center justify-center rounded-md" />
       <div className="flex min-w-0 animate-pulse flex-col gap-1">
         <div className="bg-bg-emphasis h-4 w-32 max-w-full rounded-md" />
@@ -52,7 +52,7 @@ export function ResourceCard({
   const [copied, copyToClipboard] = useCopyToClipboard();
 
   return (
-    <div className="border-border-subtle flex w-full items-center justify-between gap-4 rounded-lg border p-4 shadow-sm">
+    <div className="border-border-subtle flex w-full items-center justify-between gap-4 rounded-xl border-[6px] p-4 shadow-sm">
       <div className="flex min-w-0 items-center gap-4">
         <div className="border-border-subtle flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md border">
           {icon}

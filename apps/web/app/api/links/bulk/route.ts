@@ -262,7 +262,7 @@ export const PATCH = withWorkspace(
   async ({ req, workspace, headers, session }) => {
     const { linkIds, externalIds, data } = bulkUpdateLinksBodySchema.parse(
       await parseRequestBody(req),
-    );
+    ) as any;
 
     if (linkIds.length === 0 && externalIds.length === 0) {
       return NextResponse.json("No links to update", { headers });

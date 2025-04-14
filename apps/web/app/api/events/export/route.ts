@@ -116,6 +116,7 @@ export const GET = withWorkspace(
   },
   {
     requiredPlan: [
+      "pro",
       "business",
       "business plus",
       "business extra",

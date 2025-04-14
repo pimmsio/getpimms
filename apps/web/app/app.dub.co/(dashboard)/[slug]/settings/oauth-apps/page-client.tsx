@@ -32,20 +32,20 @@ export default function OAuthAppsPageClient() {
           <h1 className="text-2xl font-semibold tracking-tight text-black">
             OAuth Applications
           </h1>
-          <InfoTooltip
+          {/* <InfoTooltip
             content={
               <TooltipContent
-                title="Learn how to use OAuth applications to build integrations with Dub."
+                title="Learn how to use OAuth applications to build integrations with PIMMS."
                 href="https://dub.co/docs/integrations/quickstart"
                 target="_blank"
                 cta="Learn more"
               />
             }
-          />
+          /> */}
         </div>
         <div className="flex w-full items-center gap-3 sm:w-auto">
           <Button
-            className="flex h-10 items-center justify-center whitespace-nowrap rounded-lg border px-4 text-sm"
+            className="flex h-10 items-center justify-center whitespace-nowrap rounded-xl border-[6px] px-4 text-sm"
             text="Create OAuth App"
             onClick={() => router.push(`/${slug}/settings/oauth-apps/new`)}
             disabledTooltip={permissionsError}
@@ -62,7 +62,7 @@ export default function OAuthAppsPageClient() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-4 rounded-xl border border-neutral-200 py-10">
+            <div className="flex flex-col items-center gap-4 rounded-xl border-[6px] border-neutral-100 py-10">
               <EmptyState icon={Cube} title={"No OAuth applications found"} />
             </div>
           )

@@ -8,7 +8,7 @@ export const getContentAPI: () => Promise<{
   latestNewsArticles: NewsArticle[];
 }> = cache(async () => {
   try {
-    return await fetch("https://dub.co/api/content", {
+    return await fetch("https://pimms.io/api/content", {
       next: {
         revalidate: 60 * 60 * 24, // cache for 24 hours
       },

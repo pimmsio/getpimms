@@ -27,9 +27,9 @@ import type Stripe from "stripe";
 // Handle event "checkout.session.completed"
 export async function checkoutSessionCompleted(event: Stripe.Event) {
   let charge = event.data.object as Stripe.Checkout.Session;
-  const dubCustomerId = charge.metadata?.dubCustomerId;
+  const pimmsCustomerId = charge.metadata?.pimmsCustomerId;
   const clientReferenceId = charge.client_reference_id;
-  const stripeAccountId = event.account as string;
+  const stripeAccountId = event.account as string || "acct_1OKQowBN5sOoOmBU";
   const stripeCustomerId = charge.customer as string;
   const stripeCustomerName = charge.customer_details?.name;
   const stripeCustomerEmail = charge.customer_details?.email;
@@ -43,18 +43,18 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
 
   /*
     for regular stripe checkout setup:
-    - if dubCustomerId is found, we update the customer with the stripe customerId
-    - we then find the lead event using the customer's unique ID on Dub
+    - if pimmsCustomerId is found, we update the customer with the stripe customerId
+    - we then find the lead event using the customer's unique ID on PiMMs
     - the lead event will then be passed to the remaining logic to record a sale
   */
-  if (dubCustomerId) {
+  if (pimmsCustomerId) {
     try {
       // Update customer with stripe customerId if exists
       customer = await prisma.customer.update({
         where: {
           projectConnectId_externalId: {
             projectConnectId: stripeAccountId,
-            externalId: dubCustomerId,
+            externalId: pimmsCustomerId,
           },
         },
         data: {
@@ -64,7 +64,7 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
     } catch (error) {
       // Skip if customer not found
       console.log(error);
-      return `Customer with dubCustomerId ${dubCustomerId} not found, skipping...`;
+      return `Customer with pimmsCustomerId ${pimmsCustomerId} not found, skipping...`;
     }
 
     // Find lead
@@ -76,19 +76,19 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
 
     /*
       for stripe checkout links:
-      - if client_reference_id is a dub_id, we find the click event
+      - if client_reference_id is a pimms_id, we find the click event
       - the click event will be used to create a lead event + customer
       - the lead event will then be passed to the remaining logic to record a sale
     */
-  } else if (clientReferenceId?.startsWith("dub_id_")) {
-    const dubClickId = clientReferenceId.split("dub_id_")[1];
+  } else if (clientReferenceId?.startsWith("pimms_id_")) {
+    const pimmsClickId = clientReferenceId.split("pimms_id_")[1];
 
-    clickEvent = await getClickEvent({ clickId: dubClickId }).then(
+    clickEvent = await getClickEvent({ clickId: pimmsClickId }).then(
       (res) => res.data[0],
     );
 
     if (!clickEvent) {
-      return `Click event with dub_id ${dubClickId} not found, skipping...`;
+      return `Click event with pimms_id ${pimmsClickId} not found, skipping...`;
     }
 
     const workspace = await prisma.project.findUnique({
@@ -155,7 +155,7 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
     leadEvent = {
       ...rest,
       event_id: nanoid(16),
-      event_name: "Sign up",
+      event_name: "Register",
       customer_id: customer.id,
       metadata: "",
     };
@@ -169,7 +169,7 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
     // if it's not either a regular stripe checkout setup or a stripe checkout link,
     // we skip the event
   } else {
-    return `Customer ID not found in Stripe checkout session metadata and client_reference_id is not a dub_id, skipping...`;
+    return `Customer ID not found in Stripe checkout session metadata and client_reference_id is not a pimms_id, skipping...`;
   }
 
   if (charge.amount_total === 0) {
@@ -182,7 +182,7 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
 
   if (invoiceId) {
     // Skip if invoice id is already processed
-    const ok = await redis.set(`dub_sale_events:invoiceId:${invoiceId}`, 1, {
+    const ok = await redis.set(`pimms_sale_events:invoiceId:${invoiceId}`, 1, {
       ex: 60 * 60 * 24 * 7,
       nx: true,
     });
@@ -337,5 +337,5 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
     })(),
   );
 
-  return `Checkout session completed for customer with external ID ${dubCustomerId} and invoice ID ${invoiceId}`;
+  return `Checkout session completed for customer with external ID ${pimmsCustomerId} and invoice ID ${invoiceId}`;
 }

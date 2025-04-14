@@ -6,7 +6,6 @@ import { ratelimit } from "@/lib/upstash";
 import { sendEmail } from "@dub/email";
 import { subscribe } from "@dub/email/resend/subscribe";
 import { LoginLink } from "@dub/email/templates/login-link";
-import { WelcomeEmail } from "@dub/email/templates/welcome-email";
 import { prisma } from "@dub/prisma";
 import { PrismaClient } from "@dub/prisma/client";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
@@ -196,7 +195,7 @@ export const authOptions: NextAuthOptions = {
     // Sign in with email and password
     CredentialsProvider({
       id: "credentials",
-      name: "Dub.co",
+      name: "PIMMS",
       type: "credentials",
       credentials: {
         email: { type: "email" },
@@ -488,48 +487,48 @@ export const authOptions: NextAuthOptions = {
   },
   events: {
     async signIn(message) {
-      if (message.isNewUser) {
-        const email = message.user.email as string;
-        const user = await prisma.user.findUnique({
-          where: { email },
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
-            createdAt: true,
-          },
-        });
-        if (!user) {
-          return;
-        }
-        // only send the welcome email if the user was created in the last 10s
-        // (this is a workaround because the `isNewUser` flag is triggered when a user does `dangerousEmailAccountLinking`)
-        if (
-          user.createdAt &&
-          new Date(user.createdAt).getTime() > Date.now() - 10000 &&
-          process.env.NEXT_PUBLIC_IS_DUB
-        ) {
-          waitUntil(
-            Promise.allSettled([
-              subscribe({ email, name: user.name || undefined }),
-              sendEmail({
-                email,
-                replyTo: "steven.tey@dub.co",
-                subject: "Welcome to Dub.co!",
-                react: WelcomeEmail({
-                  email,
-                  name: user.name || null,
-                }),
-                // send the welcome email 5 minutes after the user signed up
-                scheduledAt: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
-                variant: "marketing",
-              }),
-              trackLead(user),
-            ]),
-          );
-        }
+      // if (message.isNewUser) {
+      const email = message.user.email as string;
+      const user = await prisma.user.findUnique({
+        where: { email },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          createdAt: true,
+        },
+      });
+      if (!user) {
+        return;
       }
+      // only send the welcome email if the user was created in the last 10s
+      // (this is a workaround because the `isNewUser` flag is triggered when a user does `dangerousEmailAccountLinking`)
+      if (
+        user.createdAt &&
+        new Date(user.createdAt).getTime() > Date.now() - 10000
+        // && process.env.NEXT_PUBLIC_IS_DUB
+      ) {
+        waitUntil(
+          Promise.allSettled([
+            subscribe({ email, name: user.name || undefined }),
+            // sendEmail({
+            //   email,
+            //   replyTo: "steven.tey@dub.co",
+            //   subject: "Welcome to PiMMs!",
+            //   react: WelcomeEmail({
+            //     email,
+            //     name: user.name || null,
+            //   }),
+            //   // send the welcome email 5 minutes after the user signed up
+            //   scheduledAt: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+            //   variant: "marketing",
+            // }),
+            trackLead(user),
+          ]),
+        );
+      }
+      // }
       // lazily backup user avatar to R2
       const currentImage = message.user.image;
       if (currentImage && !isStored(currentImage)) {

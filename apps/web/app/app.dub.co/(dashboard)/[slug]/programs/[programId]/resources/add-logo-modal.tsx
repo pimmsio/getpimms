@@ -86,7 +86,7 @@ function AddLogoModalInner({ setShowAddLogoModal }: AddLogoModalProps) {
 
   return (
     <>
-      <div className="space-y-2 border-b border-neutral-200 p-4 sm:p-6">
+      <div className="space-y-2 border-b-[6px] border-neutral-100 p-4 sm:p-6">
         <h3 className="text-lg font-medium leading-none">Add logo</h3>
       </div>
 
@@ -119,7 +119,7 @@ function AddLogoModalInner({ setShowAddLogoModal }: AddLogoModalProps) {
                   <FileUpload
                     accept="programResourceImages"
                     className={cn(
-                      "aspect-[4.2] w-full rounded-md border border-neutral-300",
+                      "aspect-[4.2] w-full rounded-xl border-[2px] border-neutral-300",
                       errors.file && "border-red-300 ring-1 ring-red-500",
                     )}
                     iconClassName="size-5"
@@ -179,7 +179,7 @@ function AddLogoModalInner({ setShowAddLogoModal }: AddLogoModalProps) {
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2 border-t border-neutral-200 bg-neutral-50 px-4 py-5 sm:px-6">
+        <div className="flex items-center justify-end gap-2 border-t-[6px] border-neutral-100 bg-neutral-50 px-4 py-5 sm:px-6">
           <Button
             onClick={() => setShowAddLogoModal(false)}
             variant="secondary"

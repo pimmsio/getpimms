@@ -70,7 +70,7 @@ export function ProgramRewardList({
 const Item = ({ icon: Icon, children }: PropsWithChildren<{ icon: Icon }>) => {
   return (
     <li className="flex items-start gap-2 text-sm leading-tight">
-      <Icon className="size-4 shrink-0 translate-y-px" />
+      {/* <Icon className="size-4 shrink-0 translate-y-px" /> */}
       <div>{children}</div>
     </li>
   );

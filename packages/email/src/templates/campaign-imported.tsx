@@ -15,7 +15,7 @@ import {
 import { Footer } from "../components/footer";
 
 export function CampaignImported({
-  email = "panic@thedis.co",
+  email = "cheers@pimms.io",
   provider = "Rewardful",
   workspace = {
     slug: "acme",
@@ -41,9 +41,9 @@ export function CampaignImported({
       <Preview>Your {provider} campaign has been imported</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[600px] rounded border border-solid border-neutral-200 px-10 py-5">
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
             <Section className="mb-8 mt-6">
-              <Img src={DUB_WORDMARK} height="32" alt="Dub" />
+              <Img src={DUB_WORDMARK} height="14" alt="PIMMS" className="my-0" />
             </Section>
             <Heading className="mx-0 my-7 p-0 text-lg font-medium text-black">
               Your {provider} campaign has been imported
@@ -51,12 +51,12 @@ export function CampaignImported({
             <Text className="text-sm leading-6 text-black">
               We have successfully imported your {provider} campaign{" "}
               <Link
-                href={`https://app.dub.co/${workspace.slug}/programs/${program.id}/partners`}
+                href={`https://app.pimms.io/${workspace.slug}/programs/${program.id}/partners`}
                 className="font-medium text-blue-600 no-underline"
               >
                 {program.name}↗
               </Link>{" "}
-              into Dub.
+              into PiMMs.
             </Text>
             <Footer email={email} />
           </Container>

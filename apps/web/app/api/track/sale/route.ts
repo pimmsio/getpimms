@@ -258,6 +258,7 @@ export const POST = withWorkspace(
   },
   {
     requiredPlan: [
+      "pro",
       "business",
       "business plus",
       "business extra",
@@ -265,5 +266,6 @@ export const POST = withWorkspace(
       "advanced",
       "enterprise",
     ],
+    requiredPermissions: ["sale.write"],
   },
 );

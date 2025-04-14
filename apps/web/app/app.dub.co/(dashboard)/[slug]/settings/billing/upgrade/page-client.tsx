@@ -33,7 +33,7 @@ const COMPARE_FEATURE_ICONS: Record<
   API: Plug2,
 };
 
-const plans = ["Pro", "Business", "Advanced", "Enterprise"].map(
+const plans = ["Pro", "Business", /*"Advanced", "Enterprise"*/].map(
   (p) => PLANS.find(({ name }) => name === p)!,
 );
 
@@ -77,7 +77,7 @@ export function WorkspaceBillingUpgradePageClient() {
           <div className="overflow-x-hidden rounded-b-[12px] from-neutral-200 [container-type:inline-size] lg:bg-gradient-to-t lg:p-px">
             <div
               className={cn(
-                "grid grid-cols-4 gap-px overflow-hidden rounded-b-[11px] text-sm text-neutral-800 [&_strong]:font-medium",
+                "grid grid-cols-4 lg:grid-cols-2 gap-px overflow-hidden rounded-b-[11px] text-sm text-neutral-800 [&_strong]:font-medium",
 
                 // Mobile
                 "max-lg:w-[calc(400cqw+3*32px)] max-lg:translate-x-[calc(-1*var(--index)*(100cqw+32px))] max-lg:gap-x-8 max-lg:transition-transform",
@@ -127,13 +127,15 @@ export function WorkspaceBillingUpgradePageClient() {
                                 className="text-sm font-medium tabular-nums text-neutral-700"
                                 format={{
                                   style: "currency",
-                                  currency: "USD",
+                                  currency: "EUR",
                                   minimumFractionDigits: 0,
                                 }}
                                 continuous
                               />
                               <span className="text-sm font-medium text-neutral-400">
-                                per month
+                                {period === "yearly"
+                                  ? "billed yearly"
+                                  : "per month"}
                               </span>
                             </>
                           )}
@@ -151,11 +153,11 @@ export function WorkspaceBillingUpgradePageClient() {
                       </button>
                       {plan.name === "Enterprise" ? (
                         <Link
-                          href="https://dub.co/contact"
+                          href="https://pimms.io/contact"
                           target="_blank"
                           className={cn(
                             "flex h-8 w-full items-center justify-center rounded-md text-center text-sm ring-gray-200 transition-all duration-200 ease-in-out",
-                            "border border-neutral-200 bg-white text-neutral-900 shadow-sm hover:bg-neutral-50",
+                            "border-[6px] border-neutral-100 bg-white text-neutral-900 shadow-sm hover:bg-neutral-50",
                           )}
                         >
                           {plan.name === "Enterprise"
@@ -206,7 +208,7 @@ export function WorkspaceBillingUpgradePageClient() {
                 <a
                   href={href}
                   target="_blank"
-                  className="flex items-center gap-2 border-b border-neutral-200 px-5 pb-4 pt-2"
+                  className="flex items-center gap-2 border-b-[6px] border-neutral-100 px-5 pb-4 pt-2"
                 >
                   {Icon && <Icon className="size-4 text-neutral-600" />}
                   <h3 className="text-base font-medium text-black">
@@ -216,7 +218,7 @@ export function WorkspaceBillingUpgradePageClient() {
                 </a>
                 <table
                   className={cn(
-                    "grid grid-cols-4 overflow-hidden text-sm text-neutral-800 [&_strong]:font-medium",
+                    "grid grid-cols-4 lg:grid-cols-2 overflow-hidden text-sm text-neutral-800 [&_strong]:font-medium",
 
                     // Mobile
                     "max-lg:w-[calc(400cqw+3*32px)] max-lg:translate-x-[calc(-1*var(--index)*(100cqw+32px))] max-lg:gap-x-8 max-lg:transition-transform",
@@ -252,7 +254,7 @@ export function WorkspaceBillingUpgradePageClient() {
                               <td
                                 key={id}
                                 className={cn(
-                                  "flex items-center gap-2 border-b border-neutral-200 bg-white px-5 py-4",
+                                  "flex items-center gap-2 border-b-[6px] border-neutral-100 bg-white px-5 py-4",
                                   !isChecked && "text-neutral-300",
                                 )}
                               >

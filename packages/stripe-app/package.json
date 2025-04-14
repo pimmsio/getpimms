@@ -1,7 +1,7 @@
 {
-  "name": "com.example.dub",
-  "version": "0.0.5",
-  "description": "Dub Conversions",
+  "name": "com.example.pimms",
+  "version": "0.0.8",
+  "description": "PIMMS",
   "private": true,
   "license": "~~proprietary~~",
   "dependencies": {

@@ -11,7 +11,7 @@ export default function BanLink() {
       <form
         action={async (data) =>
           await fetch(
-            `/api/admin/links/ban?domain=dub.sh&key=${data.get("key")}`,
+            `/api/admin/links/ban?domain=pim.ms&key=${data.get("key")}`,
             {
               method: "DELETE",
             },
@@ -38,7 +38,7 @@ const Form = () => {
   return (
     <div className="relative flex w-full rounded-md shadow-sm">
       <span className="inline-flex items-center rounded-l-md border border-r-0 border-neutral-300 bg-neutral-50 px-5 text-neutral-500 sm:text-sm">
-        dub.sh
+        pim.ms
       </span>
       <input
         name="key"
@@ -58,12 +58,12 @@ const Form = () => {
           // if pasting in https://dub.sh/xxx or dub.sh/xxx, extract xxx
           const text = e.clipboardData.getData("text/plain");
           if (
-            text.startsWith("https://dub.sh/") ||
-            text.startsWith("dub.sh/")
+            text.startsWith("https://pim.ms/") ||
+            text.startsWith("pim.ms/")
           ) {
             e.currentTarget.value = text
-              .replace("https://dub.sh/", "")
-              .replace("dub.sh/", "");
+              .replace("https://pim.ms/", "")
+              .replace("pim.ms/", "");
           } else {
             e.currentTarget.value = text;
           }

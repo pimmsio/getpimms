@@ -40,7 +40,7 @@ export function Switch({
       {...(fn && { onCheckedChange: fn })}
       disabled={switchDisabled}
       className={cn(
-        "radix-state-checked:bg-blue-500 radix-state-unchecked:bg-neutral-200 relative inline-flex h-4 w-8 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out",
+        "radix-state-checked:bg-[#3971ff] radix-state-unchecked:bg-neutral-400 relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out",
         "focus:outline-none focus-visible:ring focus-visible:ring-blue-500 focus-visible:ring-opacity-75",
         "data-[disabled]:cursor-not-allowed",
         trackDimensions,
@@ -50,7 +50,7 @@ export function Switch({
         className={cn(
           `radix-state-checked:${thumbTranslate}`,
           "radix-state-unchecked:translate-x-0",
-          `pointer-events-none h-3 w-3 translate-x-4 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`,
+          `pointer-events-none h-4 w-4 translate-x-4 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`,
           thumbDimensions,
           thumbTranslate,
         )}

@@ -89,7 +89,7 @@ export function ReferralsEmbedQuickstart({
               : undefined
           }
           onClick={() =>
-            window.open("https://partners.dub.co/settings/payouts", "_blank")
+            window.open("https://partners.pimms.io/settings/payouts", "_blank")
           }
           text="Connect payouts"
         />
@@ -99,7 +99,7 @@ export function ReferralsEmbedQuickstart({
 
   return (
     <motion.div
-      className="border-border-muted bg-bg-default rounded-lg border p-2"
+      className="border-border-muted bg-bg-default rounded-xl border-[6px] p-2"
       {...TAB_ITEM_ANIMATION_SETTINGS}
     >
       {isMobile ? (

@@ -57,7 +57,7 @@ export default function LinksContainer({
   });
 
   return (
-    <MaxWidthWrapper className="grid gap-y-2">
+    <MaxWidthWrapper className="grid gap-y-2 px-0 lg:px-0 max-w-full">
       <LinksList
         CreateLinkButton={CreateLinkButton}
         links={links}
@@ -130,7 +130,7 @@ function LinksList({
             description={
               isFiltered
                 ? "Bummer! There are no links that match your filters. Adjust your filters to yield more results."
-                : "Start creating short links for your marketing campaigns, referral programs, and more."
+                : "Start creating your first link."
             }
             cardContent={
               <>
@@ -141,15 +141,15 @@ function LinksList({
                 </div>
               </>
             }
-            {...(!isFiltered && {
-              addButton: (
-                <div>
-                  <CreateLinkButton />
-                </div>
-              ),
-              learnMoreHref: "https://dub.co/help/article/how-to-create-link",
-              learnMoreClassName: "h-10",
-            })}
+            // {...(!isFiltered && {
+            //   addButton: (
+            //     <div>
+            //       <CreateLinkButton />
+            //     </div>
+            //   ),
+            //   learnMoreHref: "https://dub.co/help/article/how-to-create-link",
+            //   learnMoreClassName: "h-10",
+            // })}
           />
         )}
 

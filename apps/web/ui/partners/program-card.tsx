@@ -36,14 +36,14 @@ export function ProgramCard({
   const card = (
     <div
       className={cn(
-        "block rounded-md border border-neutral-300 bg-white p-4",
+        "block rounded-xl border-[2px] border-neutral-300 bg-white p-4",
         status === "approved"
           ? "hover:drop-shadow-card-hover transition-[filter]"
           : "",
       )}
     >
       <div className="flex items-center gap-4">
-        <div className="flex size-10 items-center justify-center rounded-full border border-neutral-200 bg-gradient-to-t from-neutral-100">
+        <div className="flex size-10 items-center justify-center rounded-full border-[6px] border-neutral-100 bg-gradient-to-t from-neutral-100">
           <BlurImage
             width={96}
             height={96}
@@ -121,18 +121,18 @@ function ProgramCardEarnings({ program }: { program: ProgramProps }) {
           <div className="mt-1 h-6 w-20 animate-pulse rounded-md bg-neutral-200" />
         )}
       </div>
-      {chartData && (
+      {/* {chartData && (
         <div className="relative h-full">
           <MiniAreaChart data={chartData} />
         </div>
-      )}
+      )} */}
     </div>
   );
 }
 
 export function ProgramCardSkeleton() {
   return (
-    <div className="rounded-md border border-neutral-300 p-4">
+    <div className="rounded-xl border-[2px] border-neutral-300 p-4">
       <div className="flex items-center gap-4">
         <div className="size-12 rounded-full bg-neutral-200" />
         <div className="flex flex-col gap-0.5">

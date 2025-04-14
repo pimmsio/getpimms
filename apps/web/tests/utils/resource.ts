@@ -2,8 +2,8 @@ export const E2E_USER_ID = "clxz1q7c7000hbqx5ckv4r82h";
 export const E2E_WORKSPACE_ID = "ws_clrei1gld0002vs9mzn93p8ik";
 
 export const E2E_LINK = {
-  domain: "dub.sh",
-  url: "https://github.com/dubinc",
+  domain: "pimms.io",
+  url: "https://github.com/getpimms",
 };
 
 export const E2E_TAG = {
@@ -38,7 +38,7 @@ export const E2E_CUSTOMER_WITH_DISCOUNT = {
 };
 
 export const E2E_DISCOUNT = {
-  id: "disc_1JRJTFDB885T5TREVKXHTPXXR",
+  id: "disc_1JNSF8QPX3N964DB7JSCFR4K6",
   amount: 20,
   type: "percentage",
   maxDuration: 3,

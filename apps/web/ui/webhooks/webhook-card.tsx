@@ -10,10 +10,10 @@ export default function WebhookCard(webhook: WebhookProps) {
   return (
     <Link
       href={`/${slug}/settings/webhooks/${webhook.id}`}
-      className="hover:drop-shadow-card-hover relative rounded-xl border border-neutral-200 bg-white px-5 py-4 transition-[filter]"
+      className="hover:drop-shadow-card-hover relative rounded-xl border-[6px] border-neutral-100 bg-white px-5 py-4 transition-[filter]"
     >
       <div className="flex items-center gap-x-3">
-        <div className="flex-shrink-0 rounded-md border border-neutral-200 bg-gradient-to-t from-neutral-100 p-2.5">
+        <div className="flex-shrink-0 rounded-xl border-[2px] border-neutral-100 bg-gradient-to-t from-neutral-100 p-2.5">
           <TokenAvatar id={webhook.name} className="size-6" />
         </div>
         <div className="overflow-hidden">

@@ -80,7 +80,7 @@ export const analyticsQuerySchema = z
     linkId: z
       .string()
       .optional()
-      .describe("The unique ID of the short link on Dub."),
+      .describe("The unique ID of the short link on PiMMs."),
     externalId: z
       .string()
       .optional()
@@ -187,7 +187,7 @@ export const analyticsQuerySchema = z
       .string()
       .optional()
       .describe("The full referer URL to retrieve analytics for.")
-      .openapi({ example: "https://dub.co/blog" }),
+      .openapi({ example: "https://pimms.io/blog" }),
     url: z.string().optional().describe("The URL to retrieve analytics for."),
     tagId: z
       .string()

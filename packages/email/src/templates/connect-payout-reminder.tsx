@@ -1,4 +1,8 @@
-import { currencyFormatter, DUB_WORDMARK, OG_AVATAR_URL } from "@dub/utils";
+import {
+  currencyFormatter,
+  DICEBEAR_AVATAR_URL,
+  DUB_WORDMARK,
+} from "@dub/utils";
 import {
   Body,
   Column,
@@ -17,11 +21,11 @@ import {
 import { Footer } from "../components/footer";
 
 export default function ConnectPayoutReminder({
-  email = "panic@thedis.co",
+  email = "cheers@pimms.io",
   programs = [
     {
       id: "1",
-      name: "Acme",
+      name: "PiMMs",
       logo: "https://dubassets.com/logos/clrei1gld0002vs9mzn93p8ik_384uSfo",
       amount: 120_00,
     },
@@ -50,7 +54,7 @@ export default function ConnectPayoutReminder({
       </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[600px] rounded border border-solid border-neutral-200 px-10 py-5">
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
             <Section className="mb-8 mt-6">
               <Img src={DUB_WORDMARK} width="65" height="32" alt="dub" />
             </Section>
@@ -60,7 +64,7 @@ export default function ConnectPayoutReminder({
             </Heading>
 
             <Text className="text-sm leading-6 text-neutral-600">
-              You have pending rewards on Dub Partners, but you need to connect
+              You have pending rewards on PiMMs Partners, but you need to connect
               your payout details (bank account) to receive them.
             </Text>
 
@@ -76,12 +80,13 @@ export default function ConnectPayoutReminder({
                       <Column width="32">
                         <Img
                           src={
-                            program.logo || `${OG_AVATAR_URL}${program.name}`
+                            program.logo ||
+                            `${DICEBEAR_AVATAR_URL}${program.name}`
                           }
                           width="20"
                           height="20"
                           alt="Program logo"
-                          className="rounded-full border border-neutral-200"
+                          className="rounded-full border-[6px] border-neutral-100"
                         />
                       </Column>
                       <Column className="text-sm font-semibold text-neutral-800">
@@ -101,7 +106,7 @@ export default function ConnectPayoutReminder({
 
             <Section className="mt-8 text-center">
               <Link
-                href="https://partners.dub.co/register?next=/settings/payouts"
+                href="https://partners.pimms.io/settings/payouts"
                 className="box-border block w-full rounded-md bg-black px-0 py-4 text-center text-sm font-medium leading-none text-white no-underline"
               >
                 Connect payout details

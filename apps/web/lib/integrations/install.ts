@@ -71,30 +71,30 @@ export const installIntegration = async ({
         },
       });
 
-      const email =
-        workspace.users.length > 0 ? workspace.users[0].user.email : null;
-      const integration =
-        workspace.installedIntegrations.length > 0
-          ? workspace.installedIntegrations[0].integration
-          : null;
+      // const email =
+      //   workspace.users.length > 0 ? workspace.users[0].user.email : null;
+      // const integration =
+      //   workspace.installedIntegrations.length > 0
+      //     ? workspace.installedIntegrations[0].integration
+      //     : null;
 
-      if (email && integration) {
-        await sendEmail({
-          email: email!,
-          subject: `The "${integration.name}" integration has been added to your workspace`,
-          react: IntegrationInstalled({
-            email: email!,
-            workspace: {
-              name: workspace.name,
-              slug: workspace.slug,
-            },
-            integration: {
-              name: integration.name,
-              slug: integration.slug,
-            },
-          }),
-        });
-      }
+      // if (email && integration) {
+      //   await sendEmail({
+      //     email: email!,
+      //     subject: `The "${integration.name}" integration has been added to your workspace`,
+      //     react: IntegrationInstalled({
+      //       email: email!,
+      //       workspace: {
+      //         name: workspace.name,
+      //         slug: workspace.slug,
+      //       },
+      //       integration: {
+      //         name: integration.name,
+      //         slug: integration.slug,
+      //       },
+      //     }),
+      //   });
+      // }
     })(),
   );
 

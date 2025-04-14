@@ -26,9 +26,9 @@ describe.sequential("PATCH /links/{linkId}", async () => {
 
   const toUpdate: Partial<Link> = {
     key: randomId(),
-    url: "https://github.com/dubinc/dub",
-    title: "Dub Inc",
-    description: "Open-source link management infrastructure.",
+    url: "https://github.com/getpimms/pimms",
+    title: "PiMMs",
+    description: "Deeplink for PiMMs",
     comments: "This is a comment.",
     expiresAt: new Date("2030-04-16T17:00:00.000Z"),
     expiredUrl: "https://github.com/expired",
@@ -201,9 +201,9 @@ describe.sequential(
 
     const toUpdate: Partial<Link> = {
       key: randomId(),
-      url: "https://github.com/dubinc/dub",
-      title: "Dub Inc",
-      description: "Open-source link management infrastructure.",
+      url: "https://github.com/getpimms/pimms",
+      title: "PiMMs",
+      description: "Deeplink for PiMMs",
       comments: "This is a comment.",
       expiresAt: new Date("2030-04-16T17:00:00.000Z"),
       expiredUrl: "https://github.com/expired",

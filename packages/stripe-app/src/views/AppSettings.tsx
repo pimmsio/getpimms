@@ -41,12 +41,12 @@ const AppSettings = ({ userContext, oauthContext }: ExtensionContextValue) => {
     await Promise.all([
       deleteSecret({
         stripe,
-        name: "dub_workspace",
+        name: "pimms_workspace",
       }),
 
       deleteSecret({
         stripe,
-        name: "dub_token",
+        name: "pimms_token",
       }),
     ]);
 
@@ -80,7 +80,7 @@ const AppSettings = ({ userContext, oauthContext }: ExtensionContextValue) => {
 
     await setSecret({
       stripe,
-      name: "dub_token",
+      name: "pimms_token",
       payload: JSON.stringify(token),
     });
 
@@ -97,7 +97,7 @@ const AppSettings = ({ userContext, oauthContext }: ExtensionContextValue) => {
 
     await setSecret({
       stripe,
-      name: "dub_workspace",
+      name: "pimms_workspace",
       payload: JSON.stringify(workspace),
     });
 
@@ -136,7 +136,7 @@ const AppSettings = ({ userContext, oauthContext }: ExtensionContextValue) => {
     <Box css={{ width: "6/12", stack: "y", gap: "large" }}>
       {workspace ? (
         <Banner
-          title="Dub workspace"
+          title="PIMMS workspace"
           description={`Connected to ${workspace.name}`}
           actions={
             <Button
@@ -156,7 +156,7 @@ const AppSettings = ({ userContext, oauthContext }: ExtensionContextValue) => {
         />
       ) : (
         <SignInView
-          description="Connect your Dub workspace with Stripe to start tracking the conversions."
+          description="Connect your PIMMS workspace with Stripe to start tracking conversions."
           primaryAction={{
             label: connecting
               ? "Connecting please wait..."
@@ -167,13 +167,17 @@ const AppSettings = ({ userContext, oauthContext }: ExtensionContextValue) => {
           }}
           footerContent={
             <>
-              Don&apos;t have an Dub account?{" "}
-              <Link href="https://app.dub.co/register" target="_blank" external>
-                Sign up
+              Don&apos;t have an PIMMS account?{" "}
+              <Link
+                href="https://app.pimms.io/register"
+                target="_blank"
+                external
+              >
+                Register
               </Link>
             </>
           }
-          brandColor="#000000"
+          brandColor="#3971ff"
           brandIcon={appIcon}
         />
       )}

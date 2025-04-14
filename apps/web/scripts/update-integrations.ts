@@ -9,7 +9,7 @@ async function main() {
     },
     {
       slug: "zapier",
-      installUrl: "https://zapier.com/apps/dub/integrations",
+      installUrl: "https://zapier.com/apps/pimms/integrations",
     },
   ];
 

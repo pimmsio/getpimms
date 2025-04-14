@@ -114,7 +114,7 @@ export function InviteTeammatesForm({
               <div className="relative flex rounded-md shadow-sm">
                 <input
                   type="email"
-                  placeholder="panic@thedis.co"
+                  placeholder="cheers@pimms.io"
                   autoFocus={index === 0 && !isMobile}
                   autoComplete="off"
                   className="z-10 block w-full rounded-l-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
@@ -175,13 +175,13 @@ function InviteSavedToast({ teammates }: { teammates: number }) {
       <p className="text-[13px] font-medium text-neutral-900">
         {pluralize("Invitation", teammates)} saved. You'll need a pro plan to
         invite teammates.{" "}
-        <a
+        {/* <a
           href="https://dub.co/help/article/how-to-invite-teammates"
           target="_blank"
           className="text-neutral-500 underline transition-colors hover:text-neutral-800"
         >
           Learn more
-        </a>
+        </a> */}
       </p>
     </div>
   );

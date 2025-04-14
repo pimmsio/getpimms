@@ -18,14 +18,14 @@ import { Footer } from "../components/footer";
 
 export function PartnerApplicationApproved({
   program = {
-    name: "Acme",
+    name: "PiMMs",
     logo: DUB_WORDMARK,
     slug: "acme",
     supportEmail: "support@acme.com",
   },
   partner = {
     name: "John Doe",
-    email: "panic@thedis.co",
+    email: "cheers@pimms.io",
     payoutsEnabled: false,
   },
   rewardDescription = "Earn 30% for each sale and again every month for 12 months.",
@@ -52,10 +52,10 @@ export function PartnerApplicationApproved({
       </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[600px] rounded border border-solid border-neutral-200 px-10 py-5">
-            <Section className="mt-8">
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+            <Section className="my-8">
               <Img
-                src={program.logo || "https://assets.dub.co/logo.png"}
+                src={program.logo || "https://assets.pimms.io/logo.png"}
                 height="32"
                 alt={program.name}
               />
@@ -84,7 +84,7 @@ export function PartnerApplicationApproved({
             <Text className="ml-1 text-sm leading-5 text-black">
               1. Find your unique referral links in the{" "}
               <Link
-                href={`https://partners.dub.co/programs/${program.slug}/links`}
+                href={`https://partners.pimms.io/programs/${program.slug}/links`}
               >
                 Links
               </Link>{" "}
@@ -98,12 +98,12 @@ export function PartnerApplicationApproved({
 
             <Text className="ml-1 text-sm leading-5 text-black">
               3. Track your{" "}
-              <Link href={`https://partners.dub.co/programs/${program.slug}`}>
+              <Link href={`https://partners.pimms.io/programs/${program.slug}`}>
                 link performance
               </Link>{" "}
               and{" "}
               <Link
-                href={`https://partners.dub.co/programs/${program.slug}/earnings`}
+                href={`https://partners.pimms.io/programs/${program.slug}/earnings`}
               >
                 earnings
               </Link>{" "}
@@ -113,7 +113,7 @@ export function PartnerApplicationApproved({
             {!partner.payoutsEnabled && (
               <Text className="ml-1 text-sm leading-5 text-black">
                 4. Connect your Stripe account to{" "}
-                <Link href="https://partners.dub.co/settings/payouts">
+                <Link href="https://partners.pimms.io/settings/payouts">
                   enable payouts
                 </Link>
                 .
@@ -122,10 +122,10 @@ export function PartnerApplicationApproved({
 
             <Hr className="my-6 border-neutral-200" />
 
-            <Section className="mb-8 mt-8">
+            <Section className="my-8 text-center">
               <Link
                 className="rounded-lg bg-neutral-900 px-6 py-3 text-[13px] font-semibold text-white no-underline"
-                href={`https://partners.dub.co/programs/${program.slug}`}
+                href={`https://partners.pimms.io/programs/${program.slug}`}
               >
                 Go to your dashboard
               </Link>

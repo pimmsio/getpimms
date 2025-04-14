@@ -49,7 +49,7 @@ export function FilterList({
                     key={`loader-${filterValue}`}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="h-9 w-48 animate-pulse rounded-md border border-neutral-200 bg-white"
+                    className="h-9 w-48 animate-pulse rounded-xl border-[6px] border-neutral-100 bg-white"
                   />
                 );
               }
@@ -96,17 +96,17 @@ export function FilterList({
                     key={`${key}-${value}`}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center divide-x rounded-md border border-neutral-200 bg-white text-sm text-black"
+                    className="flex items-center divide-x rounded-xl border-[6px] border-neutral-100 bg-white text-sm text-black"
                   >
                     {/* Filter */}
                     <div className="flex items-center gap-2.5 px-3 py-2">
-                      <span className="shrink-0 text-neutral-600">
+                      {/* <span className="shrink-0 text-neutral-600">
                         {isReactNode(filter.icon) ? (
                           filter.icon
                         ) : (
                           <filter.icon className="h-4 w-4" />
                         )}
-                      </span>
+                      </span> */}
                       {filter.label}
                     </div>
 
@@ -137,7 +137,7 @@ export function FilterList({
                           )}
                         </>
                       ) : (
-                        <div className="h-5 w-12 animate-pulse rounded-md bg-neutral-200" />
+                        <div className="h-5 w-12 animate-pulse rounded-xl bg-neutral-200" />
                       )}
                     </div>
 
@@ -158,13 +158,10 @@ export function FilterList({
         {activeFilters?.length !== 0 && (
           <button
             type="button"
-            className="group mt-px flex items-center gap-2 whitespace-nowrap rounded-lg border border-transparent px-3 py-2 text-sm text-neutral-500 ring-inset ring-neutral-500 transition-colors hover:border-neutral-200 hover:bg-white hover:text-black focus:outline-none"
+            className="group mt-px flex items-center gap-2 whitespace-nowrap rounded-xl border-[6px] border-transparent px-3 py-2 text-sm text-neutral-500 ring-inset ring-neutral-500 transition-colors hover:border-neutral-200 hover:bg-white hover:text-black focus:outline-none"
             onClick={onRemoveAll}
           >
-            Clear Filters
-            <kbd className="rounded-md border border-neutral-200 px-1.5 py-0.5 text-xs text-neutral-950 group-hover:bg-neutral-50">
-              ESC
-            </kbd>
+            Clear
           </button>
         )}
       </div>

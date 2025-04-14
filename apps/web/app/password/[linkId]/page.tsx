@@ -43,7 +43,7 @@ export async function generateMetadata({
   return constructMetadata({
     title:
       isDubDomain(link.domain) || link.project?.plan === "free"
-        ? `${title} - Dub.co`
+        ? `${title} - PIMMS`
         : title,
     description,
     image,
@@ -97,8 +97,8 @@ export default async function PasswordProtectedLinkPage({
       <NewBackground />
       <main className="relative mb-10 flex w-screen flex-col items-center">
         <Wordmark className="mt-6 h-8" />
-        <div className="z-10 mt-8 w-full max-w-[400px] overflow-hidden rounded-2xl border border-neutral-200 shadow-sm md:mt-24">
-          <div className="flex flex-col items-center justify-center gap-3 border-b border-neutral-200 bg-white px-4 py-6 text-center">
+        <div className="z-10 mt-8 w-full max-w-[400px] overflow-hidden rounded-2xl border-[6px] border-neutral-100 shadow-sm md:mt-24">
+          <div className="flex flex-col items-center justify-center gap-3 border-b-[6px] border-neutral-100 bg-white px-4 py-6 text-center">
             {link.project?.logo ? (
               <BlurImage
                 src={link.project.logo}
@@ -120,16 +120,16 @@ export default async function PasswordProtectedLinkPage({
           <PasswordForm />
         </div>
         <Link
-          href={createHref("/home", link.domain, {
+          href={createHref("/", link.domain, {
             utm_source: "Password Protected Link",
             utm_medium: "Link Password Page",
             utm_campaign: link.domain,
-            utm_content: "What is Dub?",
+            utm_content: "What is PIMMS?",
           })}
           target="_blank"
           className="mt-4 block text-sm font-medium text-neutral-600 underline transition-colors duration-75 hover:text-neutral-800"
         >
-          What is Dub?
+          What is PIMMS?
         </Link>
       </main>
     </>

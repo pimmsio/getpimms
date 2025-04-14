@@ -66,7 +66,7 @@ export default function SurveyForm({
     <div className="grid gap-4">
       <Wordmark className="h-8" />
       <p className="text-sm font-medium text-neutral-800">
-        Where did you hear about Dub?
+        Where did you hear about PiMMs?
       </p>
       <form
         onSubmit={(e) => {
@@ -88,7 +88,7 @@ export default function SurveyForm({
             <div
               key={option.value}
               className={cn(
-                "group flex flex-col rounded-md border border-neutral-200 bg-white transition-all active:scale-[0.98]",
+                "group flex flex-col rounded-xl border-[2px] border-neutral-100 bg-white transition-all active:scale-[0.98]",
                 source === option.value
                   ? "border-white ring-2 ring-neutral-600"
                   : "hover:border-neutral-500 hover:ring hover:ring-neutral-200 active:ring-2",

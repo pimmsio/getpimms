@@ -14,7 +14,7 @@ export function processKey({ domain, key }: { domain: string; key: string }) {
   if (!validKeyRegex.test(key)) {
     return null;
   }
-  // if key starts with _, return null (reserved route for Dub internals)
+  // if key starts with _, return null (reserved route for PiMMs internals)
   if (key.startsWith("_")) {
     return null;
   }

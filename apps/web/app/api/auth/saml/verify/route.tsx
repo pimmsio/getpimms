@@ -28,7 +28,7 @@ export async function POST(req: Request) {
 
   const connections = await apiController.getConnections({
     tenant: workspace.id,
-    product: "Dub",
+    product: "PIMMS",
   });
 
   if (!connections || connections.length === 0) {

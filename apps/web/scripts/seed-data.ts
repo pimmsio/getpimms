@@ -4,34 +4,34 @@ import "dotenv-flow/config";
 const links = [
   {
     id: "clqo10sum0006js08vutzfxt3",
-    shortLink: "d.to/try",
-    url: "https://app.dub.co/",
-    domain: "d.to",
+    shortLink: "pim.ms/try",
+    url: "https://app.pimms.io/",
+    domain: "pim.ms",
   },
-  {
-    id: "clvpdmrx40008i19yee46djta",
-    shortLink: "d.to/brand",
-    url: "https://dub.co/brand",
-    domain: "d.to",
-  },
-  {
-    id: "clvl08a4r0001itsl3shc931x",
-    shortLink: "d.to/gallery",
-    url: "https://dub.co/blog/product-discovery-platform",
-    domain: "d.to",
-  },
-  {
-    id: "clu718gfe0001tfinipqgznrz",
-    shortLink: "d.to/playbook",
-    url: "https://dub.co/blog/product-hunt",
-    domain: "d.to",
-  },
-  {
-    id: "clur35t670003ux28e0cgxjjc",
-    shortLink: "d.to/datetime",
-    url: "https://dub.co/blog/smart-datetime-picker",
-    domain: "d.to",
-  },
+  // {
+  //   id: "clvpdmrx40008i19yee46djta",
+  //   shortLink: "d.to/brand",
+  //   url: "https://dub.co/brand",
+  //   domain: "d.to",
+  // },
+  // {
+  //   id: "clvl08a4r0001itsl3shc931x",
+  //   shortLink: "d.to/gallery",
+  //   url: "https://dub.co/blog/product-discovery-platform",
+  //   domain: "d.to",
+  // },
+  // {
+  //   id: "clu718gfe0001tfinipqgznrz",
+  //   shortLink: "d.to/playbook",
+  //   url: "https://dub.co/blog/product-hunt",
+  //   domain: "d.to",
+  // },
+  // {
+  //   id: "clur35t670003ux28e0cgxjjc",
+  //   shortLink: "d.to/datetime",
+  //   url: "https://dub.co/blog/smart-datetime-picker",
+  //   domain: "d.to",
+  // },
 ];
 
 const countries = [

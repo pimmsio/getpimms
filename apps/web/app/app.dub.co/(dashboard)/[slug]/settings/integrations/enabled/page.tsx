@@ -65,7 +65,7 @@ async function EnabledIntegrationsPageRSC({ slug }: { slug: string }) {
             <Link
               href={`/${slug}/settings/integrations/${integration?.slug}`}
               className={cn(
-                "group flex items-center justify-between rounded-lg border border-neutral-200 p-3 pr-5 text-sm",
+                "group flex items-center justify-between rounded-lg border-[6px] border-neutral-100 p-3 pr-5 text-sm",
                 "transition-colors duration-75 hover:bg-neutral-50",
               )}
             >

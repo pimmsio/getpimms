@@ -26,7 +26,7 @@ export function ProgressBar({
         }}
         transition={{ duration: 0.5, type: "spring", delay: 0.2 }}
         className={`${
-          value && max && value > max ? "bg-red-500" : "bg-blue-500"
+          value && max && value > max ? "bg-red-500" : "bg-[#3971ff]"
         } h-full`}
       />
     </div>

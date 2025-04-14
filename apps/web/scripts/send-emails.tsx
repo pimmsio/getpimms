@@ -5,25 +5,25 @@ import "dotenv-flow/config";
 const attemptCount = 2;
 const amountDue = 2400;
 const user = {
-  name: "Steven",
-  email: "stevensteel97@gmail.com",
+  name: "Alexandre",
+  email: "alexandre.sarfati@gmail.com",
 };
 const workspace = {
-  name: "Dub",
-  slug: "dub",
+  name: "PIMMS",
+  slug: "pimms",
 };
 
 async function main() {
   const res = await sendEmail({
     email: user.email as string,
-    from: "steven@dub.co",
+    from: "alexandre@pimms.io",
     subject: `${
       attemptCount == 2
         ? "2nd notice: "
         : attemptCount == 3
           ? "3rd notice: "
           : ""
-    }Your payment for Dub.co failed`,
+    }Your payment for PIMMS failed`,
     react: (
       <FailedPayment
         attemptCount={attemptCount}

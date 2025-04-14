@@ -15,8 +15,8 @@ export function InvitePartnerButton() {
       <Button
         type="button"
         onClick={() => setShowInvitePartnerSheet(true)}
-        text="Invite partner"
-        shortcut="P"
+        text="Invite"
+        // shortcut="P"
       />
     </>
   );

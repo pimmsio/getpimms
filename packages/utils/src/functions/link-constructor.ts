@@ -1,4 +1,5 @@
-import { punycode } from ".";
+import { getApexDomain, punycode } from ".";
+import { GOOGLE_FAVICON_URL } from "../constants";
 
 export function linkConstructor({
   domain,
@@ -37,3 +38,13 @@ export function linkConstructorSimple({
 }) {
   return `https://${domain}${key === "_root" ? "" : `/${key}`}`;
 }
+
+
+export const getGoogleFavicon = (url: string, withApexDomain = true) => {
+  let finalUrl = url;
+  if (url.includes("pim.ms")) {
+    finalUrl = url.replace("pim.ms", "pimms.io");
+  }
+
+  return `${GOOGLE_FAVICON_URL}${withApexDomain ? getApexDomain(finalUrl) : finalUrl}`;
+};

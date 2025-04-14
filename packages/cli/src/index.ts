@@ -15,8 +15,8 @@ async function main() {
   const packageInfo = await getPackageInfo();
 
   const program = new Command()
-    .name("dub")
-    .description("A CLI for shortening links with the Dub.co API.")
+    .name("pimms")
+    .description("A CLI for shortening links with the PIMMS API.")
     .version(
       packageInfo.version || "1.0.0",
       "-v, --version",

@@ -24,7 +24,7 @@ export function BrowserGraphic({ domain }: { domain: string }) {
           </div>
           <div className="hidden grow basis-0 sm:block" />
         </div>
-        <div className="h-12 border-t border-neutral-200 bg-neutral-100/50" />
+        <div className="h-12 border-t-[6px] border-neutral-100 bg-neutral-100/50" />
       </div>
     </div>
   );

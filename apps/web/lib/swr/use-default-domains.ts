@@ -19,9 +19,7 @@ export default function useDefaultDomains(opts: { search?: string } = {}) {
   );
 
   const defaultDomains = useMemo(() => {
-    return flags?.noDubLink
-      ? data?.filter((domain) => domain !== "dub.link")
-      : data;
+    return data;
   }, [data, flags]);
 
   return {

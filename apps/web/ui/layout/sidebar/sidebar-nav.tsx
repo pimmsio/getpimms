@@ -4,15 +4,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  PropsWithChildren,
-  ReactNode,
-  Suspense,
-  useMemo,
-  useState,
-} from "react";
+import { PropsWithChildren, ReactNode, useMemo, useState } from "react";
 import { CreateProgramCard } from "./create-program-card";
-import UserDropdown from "./user-dropdown";
 
 export type NavItemCommon = {
   name: string;
@@ -61,8 +54,8 @@ export function SidebarNav<T extends Record<any, any>>({
 }) {
   return (
     <ClientOnly className="scrollbar-hide relative flex h-full w-full flex-col overflow-y-auto overflow-x-hidden">
-      <nav className="relative flex grow flex-col p-3 text-neutral-500">
-        <div className="relative flex items-start justify-between gap-1 pb-3">
+      <nav className="relative flex grow flex-col px-3 sm:py-3 text-neutral-500">
+        <div className="relative flex items-center justify-between gap-1 mt-2">
           {Object.entries(areas).map(([area, areaConfig]) => {
             const { title, backHref } = areaConfig(data);
 
@@ -75,26 +68,19 @@ export function SidebarNav<T extends Record<any, any>>({
                   area === currentArea
                     ? "relative opacity-100"
                     : "pointer-events-none absolute opacity-0",
-                  (!title || !backHref) && "mb-1",
                 )}
                 aria-hidden={area !== currentArea ? true : undefined}
                 {...{ inert: area !== currentArea ? "" : undefined }}
               >
-                {title && backHref ? (
+                {title && backHref && (
                   <div className="py group -my-1 -ml-1 flex items-center gap-2 py-2 pr-1 text-sm font-medium text-neutral-900">
                     <ChevronLeft className="size-4 text-neutral-500 transition-transform duration-100 group-hover:-translate-x-0.5" />
                     {title}
                   </div>
-                ) : (
-                  <NavWordmark className="h-6" isInApp />
                 )}
               </Link>
             );
           })}
-          <div className="hidden items-center gap-3 md:flex">
-            <Suspense fallback={null}>{toolContent}</Suspense>
-            <UserDropdown />
-          </div>
         </div>
         <div className="relative w-full grow">
           {Object.entries(areas).map(([area, areaConfig]) => {
@@ -110,9 +96,9 @@ export function SidebarNav<T extends Record<any, any>>({
                   <div className="pt-2">{switcher}</div>
                 )}
 
-                <div className="flex flex-col gap-4 pt-4">
+                <div className="flex flex-col gap-1 sm:gap-2 pt-4">
                   {content.map(({ name, items }, idx) => (
-                    <div key={idx} className="flex flex-col gap-0.5">
+                    <div key={idx} className="flex flex-col gap-1 sm:gap-2">
                       {name && (
                         <div className="mb-2 pl-1 text-sm text-neutral-500">
                           {name}
@@ -151,6 +137,9 @@ export function SidebarNav<T extends Record<any, any>>({
       {bottom && (
         <div className="relative flex flex-col justify-end">{bottom}</div>
       )}
+      <div className="relative mx-auto flex items-center justify-between gap-1 pb-2 pt-1">
+        <NavWordmark className="h-2.5" isInApp />
+      </div>
     </ClientOnly>
   );
 }
@@ -180,18 +169,17 @@ function NavItem({ item }: { item: NavItemType | NavSubItemType }) {
         onPointerEnter={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}
         className={cn(
-          "group flex items-center gap-2.5 rounded-md p-2 text-sm leading-none text-neutral-600 transition-[background-color,color,font-weight] duration-75 hover:bg-neutral-200/50 active:bg-neutral-200/80",
+          "group flex items-center gap-2.5 rounded-full p-0.5 sm:p-2 text-sm leading-none text-neutral-600 transition-[background-color,color,font-weight] duration-75 hover:bg-neutral-200/50 active:bg-neutral-200/80",
           "outline-none focus-visible:ring-2 focus-visible:ring-black/50",
           isActive &&
             !items &&
-            "bg-blue-100/50 font-medium text-blue-600 hover:bg-blue-100/80 active:bg-blue-100",
+            "bg-zinc-600 font-medium text-white hover:bg-zinc-700 active:bg-zinc-800",
         )}
       >
         {Icon && (
           <Icon
             className={cn(
-              "size-4 text-neutral-500 transition-colors duration-75",
-              !items && "group-data-[active=true]:text-blue-600",
+              "size-8 overflow-visible rounded-full bg-white p-1.5 text-[#08272E] transition-colors duration-75",
             )}
             data-hovered={hovered}
           />
@@ -219,7 +207,7 @@ function NavItem({ item }: { item: NavItemType | NavSubItemType }) {
           >
             <div className="pl-px pt-1">
               <div className="pl-3.5">
-                <div className="flex flex-col gap-0.5 border-l border-neutral-200 pl-2">
+                <div className="flex flex-col gap-1 sm:gap-2 border-l border-neutral-200 pl-2">
                   {items.map((item) => (
                     <NavItem key={item.name} item={item} />
                   ))}

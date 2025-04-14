@@ -47,7 +47,7 @@ export async function ordersPaid({
   if (clickId === "") {
     await redis.del(`shopify:checkout:${checkoutToken}`);
 
-    return "[Shopify] Order is not from a Dub link. Skipping...";
+    return "[Shopify] Order is not from a PIMMS link. Skipping...";
   }
 
   // clickId is found, process the order for the new customer

@@ -37,6 +37,7 @@ export function UpgradePlanButton({
 
   return (
     <Button
+      variant="secondary"
       text={
         isCurrentPlan
           ? "Your current plan"
@@ -44,6 +45,7 @@ export function UpgradePlanButton({
             ? `Get started with ${selectedPlan.name} ${capitalize(period)}`
             : `Switch to ${selectedPlan.name} ${capitalize(period)}`
       }
+      className="text-sm"
       loading={clicked}
       disabled={!workspaceSlug || isCurrentPlan}
       onClick={() => {

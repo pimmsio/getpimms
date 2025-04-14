@@ -91,7 +91,7 @@ export const banPartnerAction = authActionClient
           return;
         }
 
-        const supportEmail = program.supportEmail || "support@dub.co";
+        const supportEmail = program.supportEmail || "alexandre@pimms.io";
 
         await sendEmail({
           subject: `You've been banned from the ${program.name} Partner Program`,

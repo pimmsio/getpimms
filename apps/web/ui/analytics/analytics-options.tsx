@@ -21,7 +21,7 @@ export default function AnalyticsOptions() {
       <button
         onClick={() => setOpenPopover(!openPopover)}
         className={cn(
-          "flex h-10 items-center rounded-md border px-1.5 outline-none transition-all",
+          "flex h-10 items-center rounded-xl border-[2px] px-1.5 outline-none transition-all",
           "border-neutral-200 bg-white text-neutral-900 placeholder-neutral-400",
           "focus-visible:border-neutral-500 data-[state=open]:border-neutral-500 data-[state=open]:ring-4 data-[state=open]:ring-neutral-200",
         )}

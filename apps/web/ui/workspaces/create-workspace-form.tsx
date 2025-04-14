@@ -87,11 +87,11 @@ export function CreateWorkspaceForm({
       <div>
         <label htmlFor="name" className="flex items-center space-x-2">
           <p className="block text-sm font-medium text-neutral-700">
-            Workspace Name
+            Workspace name
           </p>
-          <InfoTooltip
+          {/* <InfoTooltip
             content={`This is the name of your workspace on ${process.env.NEXT_PUBLIC_APP_NAME}.`}
-          />
+          /> */}
         </label>
         <div className="mt-2 flex rounded-md shadow-sm">
           <input
@@ -100,7 +100,7 @@ export function CreateWorkspaceForm({
             autoFocus={!isMobile}
             autoComplete="off"
             className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
-            placeholder="Acme, Inc."
+            placeholder="Apple"
             {...register("name", {
               required: true,
               onChange: (e) => setValue("slug", slugify(e.target.value)),
@@ -112,11 +112,11 @@ export function CreateWorkspaceForm({
       <div>
         <label htmlFor="slug" className="flex items-center space-x-2">
           <p className="block text-sm font-medium text-neutral-700">
-            Workspace Slug
+            Workspace slug
           </p>
-          <InfoTooltip
+          {/* <InfoTooltip
             content={`This is your workspace's unique slug on ${process.env.NEXT_PUBLIC_APP_NAME}.`}
-          />
+          /> */}
         </label>
         <div className="relative mt-2 flex rounded-md shadow-sm">
           <span className="inline-flex items-center rounded-l-md border border-r-0 border-neutral-300 bg-neutral-50 px-5 text-neutral-500 sm:text-sm">
@@ -132,7 +132,7 @@ export function CreateWorkspaceForm({
                 ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
                 : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-500"
             } block w-full rounded-r-md focus:outline-none sm:text-sm`}
-            placeholder="acme"
+            placeholder="apple"
             {...register("slug", {
               required: true,
               minLength: 3,

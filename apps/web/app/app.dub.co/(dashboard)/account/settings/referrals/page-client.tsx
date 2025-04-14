@@ -25,7 +25,7 @@ export function ReferralsPageClient() {
     return (
       <AnimatedEmptyState
         title="Refer a friend"
-        description="Activate your referral link to share the word about Dub and earn cash rewards"
+        description="Activate your referral link to share the word about PIMMS and earn cash rewards"
         cardContent={
           <>
             <Hyperlink className="size-4 text-neutral-700" />

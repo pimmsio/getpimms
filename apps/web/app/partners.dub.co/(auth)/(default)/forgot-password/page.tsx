@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function ForgotPasswordPage() {
   return (
     <div className="mx-auto my-10 w-full max-w-[480px] md:mt-16 lg:mt-20">
-      <div className="rounded-lg border border-neutral-200 bg-white p-8 pb-10">
+      <div className="rounded-xl border-[6px] border-neutral-100 bg-white p-8 pb-10">
         <h1 className="text-lg font-medium text-neutral-800">
           Reset your password
         </h1>
@@ -18,7 +18,7 @@ export default function ForgotPasswordPage() {
           href="register"
           className="font-semibold text-neutral-500 underline underline-offset-2 transition-colors hover:text-black"
         >
-          Sign up
+          Register
         </Link>
       </p>
     </div>

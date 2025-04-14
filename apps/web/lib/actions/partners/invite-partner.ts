@@ -90,7 +90,7 @@ export const invitePartnerAction = authActionClient
 
     waitUntil(
       sendEmail({
-        subject: `${program.name} invited you to join Dub Partners`,
+        subject: `You're Invited! Join ${program.name}'s Affiliate Network`,
         email,
         react: PartnerInvite({
           email,

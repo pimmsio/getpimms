@@ -218,7 +218,7 @@ function FieldRow({
           <ArrowRight className="size-4 text-neutral-500" />
         </div>
       )}
-      <span className="flex h-9 items-center gap-1 rounded-md border border-neutral-200 bg-neutral-100 px-3">
+      <span className="flex h-9 items-center gap-1 rounded-xl border-[2px] border-neutral-100 bg-neutral-100 px-3">
         <span className="grow whitespace-nowrap text-sm font-normal text-neutral-700">
           {label} {required && <span className="text-red-700">*</span>}
         </span>

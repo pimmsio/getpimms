@@ -1,5 +1,5 @@
 import { openApiErrorResponses } from "@/lib/openapi/responses";
-import { LinkSchema, createLinkBodySchema } from "@/lib/zod/schemas/links";
+import { createLinkBodySchema, LinkSchema } from "@/lib/zod/custom_for_api/links";
 import { ZodOpenApiOperationObject } from "zod-openapi";
 
 export const upsertLink: ZodOpenApiOperationObject = {

@@ -50,7 +50,7 @@ export default function TokensPageClient() {
         </AlertDescription>
       </Alert>
 
-      <div className="rounded-lg border border-neutral-200 bg-white">
+      <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
         <div className="flex flex-col space-y-3 p-5 sm:p-10">
           <h2 className="text-xl font-medium">Your API Keys</h2>
           <p className="text-sm text-neutral-500">
@@ -66,12 +66,12 @@ export default function TokensPageClient() {
           </div>
         ) : tokens.length > 0 ? (
           <div>
-            <div className="grid grid-cols-5 border-b border-neutral-200 px-5 py-2 text-sm font-medium text-neutral-500 sm:px-10">
+            <div className="grid grid-cols-5 border-b-[6px] border-neutral-100 px-5 py-2 text-sm font-medium text-neutral-500 sm:px-10">
               <div className="col-span-3">Name</div>
               <div>Key</div>
               <div className="text-center">Last used</div>
             </div>
-            <div className="divide-y divide-neutral-200">
+            <div className="divide-y-[6px] divide-neutral-100">
               {tokens.map((token) => (
                 <TokenRow key={token.id} {...token} />
               ))}

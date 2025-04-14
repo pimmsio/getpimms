@@ -10,7 +10,7 @@ export const trackLeadRequestSchema = z.object({
     .trim()
     .min(1, "clickId is required")
     .describe(
-      "The ID of the click in Dub. You can read this value from `dub_id` cookie.",
+      "The ID of the click in PIMMS. You can read this value from `pimms_id` cookie.",
     ),
   eventName: z
     .string({ required_error: "eventName is required" })

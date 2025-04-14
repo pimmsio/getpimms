@@ -35,7 +35,7 @@ export function PayoutsCard({ programId }: { programId?: string }) {
           payout={detailsSheetState.payout}
         />
       )}
-      <div className="flex flex-col gap-4 rounded-lg border border-neutral-300 p-5 pb-3">
+      <div className="flex flex-col gap-4 rounded-xl border-[6px] border-neutral-200 p-5 pb-3">
         <div className="flex justify-between">
           <span className="block text-base font-semibold leading-none text-neutral-800">
             Payouts
@@ -51,7 +51,7 @@ export function PayoutsCard({ programId }: { programId?: string }) {
         </div>
         {payouts ? (
           payouts.length ? (
-            <div className="-mx-2 flex flex-col divide-y divide-neutral-200">
+            <div className="-mx-2 flex flex-col divide-y-[6px] divide-neutral-100">
               {payouts?.map((payout) => {
                 const badge = PayoutStatusBadges[payout.status];
                 return (
@@ -96,7 +96,7 @@ export function PayoutsCard({ programId }: { programId?: string }) {
           </div>
         ) : (
           // Loading state
-          <div className="flex flex-col divide-y divide-neutral-200">
+          <div className="flex flex-col divide-y-[6px] divide-neutral-100">
             {[...Array(4)].map((_, idx) => (
               <div
                 key={idx}

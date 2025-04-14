@@ -10,7 +10,7 @@ export default function WorkspaceExceededClicks() {
 
   return (
     <MaxWidthWrapper>
-      <div className="my-10 flex flex-col items-center justify-center rounded-md border border-neutral-200 bg-white py-12">
+      <div className="my-10 flex flex-col items-center justify-center rounded-xl border-[2px] border-neutral-100 bg-white py-12">
         <AnimatedEmptyState
           title="Stats Locked"
           description="Your workspace has exceeded your monthly clicks limits. We're still collecting data on your links, but you need to upgrade to view them."
@@ -25,7 +25,7 @@ export default function WorkspaceExceededClicks() {
             nextPlan ? `Upgrade to ${nextPlan.name}` : "Contact support"
           }
           learnMoreHref={
-            nextPlan ? `/${slug}/upgrade` : "https://dub.co/contact"
+            nextPlan ? `/${slug}/upgrade` : "https://pimms.io/contact"
           }
         />
       </div>

@@ -16,9 +16,9 @@ import { Footer } from "../components/footer";
 import { WorkspaceProps } from "../types";
 
 export function DomainTransferred({
-  email = "panic@thedis.co",
-  domain = "dub.sh",
-  newWorkspace = { name: "Dub", slug: "dub" },
+  email = "cheers@pimms.io",
+  domain = "pim.ms",
+  newWorkspace = { name: "PIMMS", slug: "pimms" },
   linksCount = 50,
 }: {
   email: string;
@@ -32,9 +32,9 @@ export function DomainTransferred({
       <Preview>Domain Transferred</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[600px] rounded border border-solid border-neutral-200 px-10 py-5">
-            <Section className="mt-8">
-              <Img src={DUB_WORDMARK} height="32" alt="Dub" />
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+            <Section className="my-8">
+              <Img src={DUB_WORDMARK} height="14" alt="PIMMS" className="my-0" />
             </Section>
             <Heading className="mx-0 my-7 p-0 text-lg font-medium text-black">
               Domain Transferred
@@ -46,7 +46,7 @@ export function DomainTransferred({
               )}
               has been transferred to the workspace{" "}
               <Link
-                href={`https://app.dub.co/${newWorkspace.slug}/settings/domains`}
+                href={`https://app.pimms.io/${newWorkspace.slug}/settings/domains`}
                 className="font-medium text-blue-600 no-underline"
               >
                 {newWorkspace.name}↗

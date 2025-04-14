@@ -7,7 +7,7 @@ export async function PartnerBanner({
   program: Pick<Program, "name" | "logo" | "slug">;
 }) {
   return (
-    <div className="-mb-2 flex items-center justify-center gap-2 rounded-t-lg border border-neutral-200 bg-neutral-50 p-3 pb-5">
+    <div className="-mb-2 flex items-center justify-center gap-2 rounded-t-lg border-[6px] border-neutral-100 bg-neutral-50 p-3 pb-5">
       {program.logo && (
         <div className="relative size-6 shrink-0 overflow-hidden rounded-full">
           <BlurImage
@@ -20,21 +20,13 @@ export async function PartnerBanner({
       )}
       <p className="text-left text-sm text-neutral-800">
         <a
-          href={`https://partners.dub.co/${program.slug}`}
+          href={`https://partners.pimms.io/${program.slug}`}
           target="_blank"
           className="font-semibold underline-offset-2 transition-colors hover:underline"
         >
           {program.name}
         </a>{" "}
-        uses{" "}
-        <a
-          href="https://dub.partners"
-          target="_blank"
-          className="font-semibold underline-offset-2 transition-colors hover:underline"
-        >
-          Dub Partners
-        </a>{" "}
-        to power their affiliate program
+        uses PiMMs Partners to power their affiliate program
       </p>
     </div>
   );

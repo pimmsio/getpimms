@@ -16,7 +16,7 @@ import { Footer } from "../components/footer";
 
 export function UpgradeEmail({
   name = "Brendon Urie",
-  email = "panic@thedis.co",
+  email = "cheers@pimms.io",
   plan = "Business",
 }: {
   name: string | null;
@@ -27,53 +27,29 @@ export function UpgradeEmail({
   return (
     <Html>
       <Head />
-      <Preview>Thank you for upgrading to Dub {plan}!</Preview>
+      <Preview>Thank you for upgrading to PiMMs {plan}!</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[600px] rounded border border-solid border-neutral-200 px-10 py-5">
-            <Section className="mt-8">
-              <Img src={DUB_WORDMARK} height="32" alt="Dub" />
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+            <Section className="my-8">
+              <Img src={DUB_WORDMARK} height="14" alt="PIMMS" className="my-0" />
             </Section>
             <Heading className="mx-0 my-7 p-0 text-xl font-medium text-black">
-              Thank you for upgrading to Dub {plan}!
+              Thank you for upgrading to PiMMs {plan}!
             </Heading>
-            <Section className="my-8">
-              <Img
-                src="https://assets.dub.co/misc/thank-you-thumbnail.jpg"
-                alt="Thank you"
-                className="max-w-[500px]"
-              />
-            </Section>
             <Text className="text-sm leading-6 text-black">
               Hey{name && ` ${name}`}!
             </Text>
             <Text className="text-sm leading-6 text-black">
-              My name is Steven, and I'm the founder of Dub.
+              My name is Alexandre, and I'm the founder of PIMMS. I wanted to
+              personally reach out to thank you for upgrading.
             </Text>
             <Text className="text-sm leading-6 text-black">
-              I wanted to personally reach out to thank you for upgrading to{" "}
-              <strong>Dub {plan}</strong>! Your support means the world to us
-              and helps us continue to build and improve Dub.
-            </Text>
-            <Text className="text-sm leading-6 text-black">
-              On the {plan} plan, you now have access to:
-            </Text>
-            {planDetails.features?.map((feature) => (
-              <Text className="ml-1 text-sm leading-4 text-black">
-                ◆{" "}
-                {feature.tooltip?.href ? (
-                  <Link href={feature.tooltip.href}>{feature.text}</Link>
-                ) : (
-                  feature.text
-                )}
-              </Text>
-            ))}
-            <Text className="text-sm leading-6 text-black">
-              If you have any questions or feedback about Dub, please don't
+              If you have any questions or feedback about PIMMS, please don't
               hesitate to reach out – I'm always happy to help!
             </Text>
             <Text className="text-sm font-light leading-6 text-neutral-400">
-              Steven from Dub
+              Alexandre from PIMMS
             </Text>
             <Footer email={email} marketing />
           </Container>

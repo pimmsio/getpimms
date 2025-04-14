@@ -130,7 +130,7 @@ function PartnerLinkQRModalInner({
     >
       <div className="flex items-center gap-2">
         <h3 className="text-lg font-medium">QR Code</h3>
-        <InfoTooltip
+        {/* <InfoTooltip
           content={
             <SimpleTooltipContent
               title="Set a custom QR code design to improve click-through rates."
@@ -138,7 +138,7 @@ function PartnerLinkQRModalInner({
               href="https://dub.co/help/article/custom-qr-codes"
             />
           }
-        />
+        /> */}
       </div>
 
       <div>
@@ -147,7 +147,7 @@ function PartnerLinkQRModalInner({
             <span className="text-sm font-medium text-neutral-700">
               QR Code Preview
             </span>
-            <InfoTooltip
+            {/* <InfoTooltip
               content={
                 <SimpleTooltipContent
                   title="Customize your QR code to fit your brand."
@@ -155,7 +155,7 @@ function PartnerLinkQRModalInner({
                   href="https://dub.co/help/article/custom-qr-codes"
                 />
               }
-            />
+            /> */}
           </div>
           {url && qrData && (
             <div className="flex items-center gap-2">
@@ -184,7 +184,7 @@ function PartnerLinkQRModalInner({
             </div>
           )}
         </div>
-        <div className="relative mt-2 flex h-44 items-center justify-center overflow-hidden rounded-md border border-neutral-300">
+        <div className="relative mt-2 flex h-44 items-center justify-center overflow-hidden rounded-xl border-[2px] border-neutral-300">
           {!isMobile && (
             <ShimmerDots className="opacity-30 [mask-image:radial-gradient(40%_80%,transparent_50%,black)]" />
           )}

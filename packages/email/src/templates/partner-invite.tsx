@@ -15,9 +15,9 @@ import {
 import { Footer } from "../components/footer";
 
 export function PartnerInvite({
-  email = "panic@thedis.co",
+  email = "cheers@pimms.io",
   program = {
-    name: "Acme",
+    name: "PiMMs",
     logo: DUB_WORDMARK,
   },
 }: {
@@ -30,39 +30,42 @@ export function PartnerInvite({
   return (
     <Html>
       <Head />
-      <Preview>Sign up for {program.name}</Preview>
+      <Preview>
+        You're invited: Join the {program.name} Affiliate Program and start
+        earning!
+      </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[600px] rounded border border-solid border-neutral-200 px-10 py-5">
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
             <Section className="mb-8 mt-6">
               <Img
-                src={program.logo || "https://assets.dub.co/logo.png"}
+                src={program.logo || "https://assets.pimms.io/logo.png"}
                 height="32"
                 alt={program.name}
               />
             </Section>
 
             <Heading className="mx-0 p-0 text-lg font-medium text-black">
-              {program.name} invited you to join Dub Partners
+              {program.name} invited you to join their Affiliate Program!
             </Heading>
 
             <Text className="text-sm leading-6 text-neutral-600">
-              {program.name} uses{" "}
-              <Link
-                href="https://dub.co/help/article/dub-partners"
-                target="_blank"
-                className="font-semibold text-neutral-800 underline underline-offset-2"
-              >
-                Dub Partners
-              </Link>{" "}
-              to power their affiliate program and wants to partner with great
-              people like yourself!
+              The {program.name} Affiliate Program, powered by PiMMs, invites
+              you to help spread the word and grow with us.
+            </Text>
+            <Text className="text-sm leading-6 text-neutral-600">
+              With easy-to-use affiliate tools, intuitive tracking, and
+              dedicated support, becoming a {program.name} affiliate is simple
+              and rewarding.
+            </Text>
+            <Text className="text-sm leading-6 text-neutral-600">
+              Join today and start turning your recommendations into results.
             </Text>
 
             <Section className="mb-12 mt-8">
               <Link
-                className="rounded-lg bg-neutral-900 px-4 py-3 text-[12px] font-semibold text-white no-underline"
-                href="https://partners.dub.co/register"
+                className="cursor-pointer rounded-xl bg-[#dc2e65] px-5 py-3 font-semibold text-white no-underline outline outline-[6px] outline-[#ffeaf1] transition"
+                href="https://partners.pimms.io/register"
               >
                 Accept Invite
               </Link>

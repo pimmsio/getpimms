@@ -1,4 +1,4 @@
-import { GOOGLE_FAVICON_URL, cn } from "@dub/utils";
+import { getGoogleFavicon, cn } from "@dub/utils";
 import { ImageProps } from "next/image";
 import { BlurImage } from "./blur-image";
 import { Globe2 } from "./icons";
@@ -14,9 +14,9 @@ export function LinkLogo({
 }) {
   return apexDomain ? (
     <BlurImage
-      src={`${GOOGLE_FAVICON_URL}${apexDomain}`}
+      src={getGoogleFavicon(apexDomain, false)}
       alt={apexDomain}
-      className={cn("h-8 w-8 rounded-full sm:h-10 sm:w-10", className)}
+      className={cn("h-8 w-8 sm:h-10 sm:w-10 rounded-md", className)}
       width={20}
       height={20}
       draggable={false}

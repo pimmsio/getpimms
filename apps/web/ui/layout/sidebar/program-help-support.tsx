@@ -44,7 +44,7 @@ export const ProgramHelpSupport = memo(() => {
   if (supportItems.length === 0) return null;
 
   return (
-    <div className="m-2 grid gap-1 rounded-md border border-neutral-300/80 p-1">
+    <div className="m-2 grid gap-1 rounded-xl border-[2px] border-neutral-300/80 p-1">
       <div className="grid gap-2 p-2.5">
         {program.logo && (
           <img

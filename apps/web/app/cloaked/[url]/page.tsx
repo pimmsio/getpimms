@@ -1,5 +1,5 @@
 import {
-  GOOGLE_FAVICON_URL,
+  getGoogleFavicon,
   constructMetadata,
   getApexDomain,
 } from "@dub/utils";
@@ -23,7 +23,7 @@ export async function generateMetadata({
     fullTitle: metatags.title,
     description: metatags.description,
     image: metatags.image,
-    icons: `${GOOGLE_FAVICON_URL}${apexDomain}`,
+    icons: getGoogleFavicon(apexDomain, false),
     noIndex: true,
   });
 }

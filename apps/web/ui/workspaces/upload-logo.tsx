@@ -42,7 +42,7 @@ export default function UploadLogo() {
           setUploading(false);
         });
       }}
-      className="rounded-lg border border-neutral-200 bg-white"
+      className="rounded-xl border-[6px] border-neutral-100 bg-white"
     >
       <div className="flex flex-col space-y-3 p-5 sm:p-10">
         <h2 className="text-xl font-medium">Workspace Logo</h2>
@@ -52,7 +52,7 @@ export default function UploadLogo() {
         <div className="mt-1">
           <FileUpload
             accept="images"
-            className="h-24 w-24 rounded-full border border-neutral-300"
+            className="h-24 w-24 rounded-full border-[2px] border-neutral-300"
             iconClassName="w-5 h-5"
             variant="plain"
             imageSrc={image}
@@ -65,7 +65,7 @@ export default function UploadLogo() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between space-x-4 rounded-b-lg border-t border-neutral-200 bg-neutral-50 p-3 sm:px-10">
+      <div className="flex items-center justify-between space-x-4 rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-50 p-3 sm:px-10">
         <p className="text-sm text-neutral-500">
           Square image recommended. Accepted file types: .png, .jpg. Max file
           size: 2MB.

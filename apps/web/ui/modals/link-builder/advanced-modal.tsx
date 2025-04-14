@@ -1,11 +1,10 @@
-import { LinkFormData } from "@/ui/links/link-builder/link-builder-provider";
-import { useLinkBuilderKeyboardShortcut } from "@/ui/links/link-builder/use-link-builder-keyboard-shortcut";
 import {
   Button,
   InfoTooltip,
   Modal,
   SimpleTooltipContent,
   Tooltip,
+  useKeyboardShortcut,
 } from "@dub/ui";
 import {
   Dispatch,
@@ -16,6 +15,7 @@ import {
   useState,
 } from "react";
 import { useForm, useFormContext } from "react-hook-form";
+import { LinkFormData } from ".";
 
 function AdvancedModal({
   showAdvancedModal,
@@ -48,9 +48,11 @@ function AdvancedModal({
     "tenantId",
   ]);
 
-  const parentEnabled = Boolean(externalIdParent || tenantIdParent);
+  useKeyboardShortcut("a", () => setShowAdvancedModal(true), {
+    modal: true,
+  });
 
-  useLinkBuilderKeyboardShortcut("v", () => setShowAdvancedModal(true));
+  const parentEnabled = Boolean(externalIdParent || tenantIdParent);
 
   return (
     <Modal
@@ -80,14 +82,14 @@ function AdvancedModal({
               content={
                 <div className="px-2 py-1 text-xs text-neutral-700">
                   Press{" "}
-                  <strong className="font-medium text-neutral-950">V</strong> to
+                  <strong className="font-medium text-neutral-950">A</strong> to
                   open this quickly
                 </div>
               }
               side="right"
             >
-              <kbd className="flex size-6 cursor-default items-center justify-center gap-1 rounded-md border border-neutral-200 font-sans text-xs text-neutral-950">
-                V
+              <kbd className="flex size-6 cursor-default items-center justify-center gap-1 rounded-xl border-[2px] border-neutral-100 font-sans text-xs text-neutral-950">
+                A
               </kbd>
             </Tooltip>
           </div>
@@ -102,7 +104,7 @@ function AdvancedModal({
                 className="flex items-center gap-2 text-sm font-medium text-neutral-700"
               >
                 External ID{" "}
-                <InfoTooltip
+                {/* <InfoTooltip
                   content={
                     <SimpleTooltipContent
                       title="A unique identifier for this link in your database."
@@ -110,9 +112,9 @@ function AdvancedModal({
                       href="https://d.to/externalId"
                     />
                   }
-                />
+                /> */}
               </label>
-              <Tooltip
+              {/* <Tooltip
                 content={
                   <SimpleTooltipContent
                     title="A unique identifier for this link in your system."
@@ -120,7 +122,7 @@ function AdvancedModal({
                     href="https://d.to/externalId"
                   />
                 }
-              />
+              /> */}
             </div>
             <div className="mt-2 rounded-md shadow-sm">
               <input

@@ -62,7 +62,7 @@ function BrandingSettingsForm({ program }: { program: ProgramProps }) {
 
   return (
     <form
-      className="rounded-lg border border-neutral-200 bg-white"
+      className="rounded-xl border-[6px] border-neutral-100 bg-white"
       onSubmit={handleSubmit(async (data) => {
         await executeAsync({
           workspaceId: workspaceId || "",
@@ -81,7 +81,7 @@ function BrandingSettingsForm({ program }: { program: ProgramProps }) {
               Branding styles
             </h2>
             <p className="mt-2 text-sm text-neutral-600">
-              Change the default styles to match your brand across the Dub
+              Change the default styles to match your brand across the PIMMS
               Partner experiences.
             </p>
           </div>
@@ -101,7 +101,7 @@ function BrandingSettingsForm({ program }: { program: ProgramProps }) {
                   <FileUpload
                     id={id}
                     accept="images"
-                    className="size-14 rounded-lg border border-neutral-300 p-1"
+                    className="size-14 rounded-xl border-[6px] border-neutral-200 p-1"
                     iconClassName="size-4 text-neutral-800"
                     icon={Plus}
                     variant="plain"
@@ -131,7 +131,7 @@ function BrandingSettingsForm({ program }: { program: ProgramProps }) {
                   <FileUpload
                     id={id}
                     accept="images"
-                    className="h-14 rounded-lg border border-neutral-300 p-1"
+                    className="h-14 rounded-xl border-[6px] border-neutral-200 p-1"
                     iconClassName="size-4 text-neutral-800"
                     icon={Plus}
                     variant="plain"
@@ -173,7 +173,7 @@ function BrandingSettingsForm({ program }: { program: ProgramProps }) {
         <BrandingPreview />
       </div>
 
-      <div className="flex items-center justify-end rounded-b-lg border-t border-neutral-200 bg-neutral-50 px-6 py-5">
+      <div className="flex items-center justify-end rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-50 px-6 py-5">
         <div>
           <Button
             text="Save changes"

@@ -15,10 +15,10 @@ import {
 import { Footer } from "../components/footer";
 
 export function PartnerPayoutSent({
-  email = "panic@thedis.co",
+  email = "cheers@pimms.io",
   program = {
     id: "prog_CYCu7IMAapjkRpTnr8F1azjN",
-    name: "Acme",
+    name: "PiMMs",
     logo: DUB_WORDMARK,
   },
   payout = {
@@ -68,10 +68,10 @@ export function PartnerPayoutSent({
       <Preview>You've been paid!</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[600px] rounded border border-solid border-neutral-200 px-10 py-5">
-            <Section className="mt-8">
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+            <Section className="my-8">
               <Img
-                src={program.logo || "https://assets.dub.co/logo.png"}
+                src={program.logo || "https://assets.pimms.io/logo.png"}
                 height="32"
                 alt={program.name}
               />
@@ -101,8 +101,8 @@ export function PartnerPayoutSent({
 
             <Section className="mb-12 mt-8">
               <Link
-                className="rounded-lg bg-neutral-900 px-4 py-3 text-[12px] font-semibold text-white no-underline"
-                href={`https://partners.dub.co/settings/payouts?payoutId=${payout.id}`}
+                className="px-5 py-3 bg-[#dc2e65] text-white font-semibold outline outline-[6px] transition outline-[#ffeaf1] cursor-pointer no-underline rounded-xl"
+                href={`https://partners.pimms.io/settings/payouts?payoutId=${payout.id}`}
               >
                 View payout
               </Link>

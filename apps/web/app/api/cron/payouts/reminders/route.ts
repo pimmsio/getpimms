@@ -103,7 +103,7 @@ export async function GET(req: Request) {
       partnerPrograms.map(([partnerEmail, data]) =>
         limiter.schedule(async () => {
           const res = await sendEmail({
-            subject: `Connect your payout details on Dub Partners`,
+            subject: `Connect your payout details on PiMMs Partners`,
             email: partnerEmail,
             react: ConnectPayoutReminder({
               email: partnerEmail,

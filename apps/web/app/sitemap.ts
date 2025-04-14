@@ -8,7 +8,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const headersList = headers();
   let domain = headersList.get("host") as string;
 
-  if (domain === "dub.localhost:8888" || domain.endsWith(".vercel.app")) {
+  if (domain === "pimms.localhost:8888" || domain.endsWith(".vercel.app")) {
     // for local development and preview URLs
     domain = SHORT_DOMAIN;
   }
@@ -23,7 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
 
     return programs.map((program) => ({
-      url: `https://partners.dub.co/${program.slug}`,
+      url: `https://partners.pimms.io/${program.slug}`,
       lastModified: new Date(),
     }));
   }

@@ -198,7 +198,7 @@ function DiscountSheetContent({
         onSubmit={handleSubmit(onSubmit)}
         className="flex h-full flex-col"
       >
-        <div className="flex items-start justify-between border-b border-neutral-200 p-6">
+        <div className="flex items-start justify-between border-b-[6px] border-neutral-100 p-6">
           <Sheet.Title className="text-xl font-semibold">
             {discount ? "Edit" : "Create"} {isDefault ? "default" : ""} discount
           </Sheet.Title>
@@ -238,7 +238,7 @@ function DiscountSheetContent({
                               <label
                                 key={label}
                                 className={cn(
-                                  "relative flex w-full cursor-pointer items-start gap-0.5 rounded-md border border-neutral-200 bg-white p-3 text-neutral-600 hover:bg-neutral-50",
+                                  "relative flex w-full cursor-pointer items-start gap-0.5 rounded-xl border-[2px] border-neutral-100 bg-white p-3 text-neutral-600 hover:bg-neutral-50",
                                   "transition-all duration-150",
                                   isSelected &&
                                     "border-black bg-neutral-50 text-neutral-900 ring-1 ring-black",
@@ -431,7 +431,7 @@ function DiscountSheetContent({
           </div>
         </div>
 
-        <div className="flex items-center justify-between border-t border-neutral-200 p-5">
+        <div className="flex items-center justify-between border-t-[6px] border-neutral-100 p-5">
           <div>
             {discount && (
               <Button

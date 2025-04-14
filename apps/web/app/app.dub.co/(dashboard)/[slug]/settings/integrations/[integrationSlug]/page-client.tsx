@@ -103,13 +103,13 @@ export default function IntegrationPageClient({
                 {integration.name}
               </h1>
               {integration.projectId === DUB_WORKSPACE_ID ? (
-                <Tooltip content="This is an official integration built and maintained by Dub">
+                <Tooltip content="This is an official integration built and maintained by PIMMS">
                   <div>
                     <DubCraftedShield className="size-4 -translate-y-px" />
                   </div>
                 </Tooltip>
               ) : !integration.verified ? (
-                <Tooltip content="Dub hasn't verified this integration. Install it at your own risk.">
+                <Tooltip content="PIMMS hasn't verified this integration. Install it at your own risk.">
                   <div>
                     <CircleWarning className="size-5 text-neutral-500" invert />
                   </div>
@@ -140,7 +140,7 @@ export default function IntegrationPageClient({
                       <TooltipContent
                         title="You cannot uninstall the Stripe integration from here. Please visit the Stripe dashboard to uninstall the app."
                         cta="Go to Stripe"
-                        href="https://dashboard.stripe.com/settings/apps/dub.co"
+                        href="https://dashboard.stripe.com/settings/apps/pimms.io"
                         target="_blank"
                       />
                     ),
@@ -154,7 +154,7 @@ export default function IntegrationPageClient({
             <button
               onClick={() => setOpenPopover(!openPopover)}
               className={cn(
-                "flex h-10 items-center rounded-md border px-1.5 outline-none transition-all",
+                "flex h-10 items-center rounded-xl border-[2px] px-1.5 outline-none transition-all",
                 "border-neutral-200 bg-white text-neutral-900 placeholder-neutral-400",
                 "focus-visible:border-neutral-500 data-[state=open]:border-neutral-500 data-[state=open]:ring-4 data-[state=open]:ring-neutral-200",
               )}
@@ -165,7 +165,7 @@ export default function IntegrationPageClient({
         )}
       </div>
 
-      <div className="flex flex-col justify-between gap-4 rounded-lg border border-neutral-200 bg-white p-4 sm:flex-row sm:gap-0">
+      <div className="flex flex-col justify-between gap-4 rounded-xl border-[6px] border-neutral-100 bg-white p-4 sm:flex-row sm:gap-0">
         <div className="flex flex-col gap-4 sm:flex-row sm:gap-8">
           {[
             ...(integration.installed
@@ -198,29 +198,29 @@ export default function IntegrationPageClient({
               label: "Built by",
               content: (
                 <div className="flex items-center gap-1.5 text-sm font-medium text-neutral-700">
-                  {integration.projectId === DUB_WORKSPACE_ID ? (
+                  {/* {integration.projectId === DUB_WORKSPACE_ID ? (
                     <Logo className="size-3.5" />
                   ) : (
                     <OfficeBuilding className="size-3.5" />
-                  )}
+                  )} */}
                   {integration.developer}
                 </div>
               ),
             },
-            {
-              label: "Website",
-              content: (
-                <a
-                  href={integration.website}
-                  className="flex items-center gap-1.5 text-sm text-neutral-700 transition-colors duration-100 hover:text-neutral-900"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Globe className="size-3.5" />
-                  {getDomainWithoutWWW(integration.website)}
-                </a>
-              ),
-            },
+            // {
+            //   label: "Website",
+            //   content: (
+            //     <a
+            //       href={integration.website}
+            //       className="flex items-center gap-1.5 text-sm text-neutral-700 transition-colors duration-100 hover:text-neutral-900"
+            //       target="_blank"
+            //       rel="noopener noreferrer"
+            //     >
+            //       <Globe className="size-3.5" />
+            //       {getDomainWithoutWWW(integration.website)}
+            //     </a>
+            //   ),
+            // },
           ].map(({ label, content }) => (
             <div key={label} className="flex flex-col gap-1">
               <span className="text-xs uppercase text-neutral-500">
@@ -233,8 +233,8 @@ export default function IntegrationPageClient({
           ))}
         </div>
 
-        <div className="flex items-center gap-x-2">
-          {slug === "dub" && (
+        <div className="flex items-center gap-x-4">
+          {(slug === "pimms" || slug === "pimms-staging") && (
             <Link
               href={`/${slug}/settings/integrations/${integration.slug}/manage`}
               className={cn(
@@ -271,7 +271,7 @@ export default function IntegrationPageClient({
         </div>
       </div>
 
-      <div className="w-full rounded-lg border border-neutral-200 bg-white">
+      <div className="w-full rounded-xl border-[6px] border-neutral-100 bg-white">
         {integration.screenshots && integration.screenshots.length > 0 ? (
           <Carousel autoplay={{ delay: 5000 }}>
             <div className="relative rounded-t-lg bg-white p-4">
@@ -283,7 +283,7 @@ export default function IntegrationPageClient({
                       alt={`Screenshot ${idx + 1} of ${integration.name}`}
                       width={900}
                       height={580}
-                      className="aspect-[900/580] w-[5/6] overflow-hidden rounded-md border border-neutral-200 object-cover object-top"
+                      className="aspect-[900/580] w-[5/6] overflow-hidden rounded-xl border-[2px] border-neutral-100 object-cover object-top"
                     />
                   </CarouselItem>
                 ))}

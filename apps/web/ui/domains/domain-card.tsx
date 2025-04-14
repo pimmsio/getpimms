@@ -96,11 +96,11 @@ export default function DomainCard({ props }: { props: DomainProps }) {
     <>
       <div
         ref={domainRef}
-        className="hover:drop-shadow-card-hover group rounded-xl border border-neutral-200 bg-white transition-[filter]"
+        className="hover:drop-shadow-card-hover group rounded-xl border-[6px] border-neutral-100 bg-white transition-[filter]"
         onPointerEnter={() => setGroupHover(true)}
         onPointerLeave={() => setGroupHover(false)}
       >
-        {isDubProvisioned && (
+        {/* {isDubProvisioned && (
           <div className="flex items-center justify-between gap-2 rounded-t-xl border-b border-neutral-100 bg-neutral-50 px-5 py-2 text-xs">
             <div className="flex items-center gap-1.5">
               <Wordmark className="h-4" />
@@ -116,7 +116,7 @@ export default function DomainCard({ props }: { props: DomainProps }) {
               Learn more
             </a>
           </div>
-        )}
+        )} */}
         <div className="p-4 sm:p-5">
           <div className="grid grid-cols-[1.5fr_1fr] items-center gap-3 sm:grid-cols-[3fr_1fr_1.5fr] sm:gap-4 md:grid-cols-[2fr_1fr_0.5fr_1.5fr]">
             <DomainCardTitleColumn
@@ -131,7 +131,7 @@ export default function DomainCard({ props }: { props: DomainProps }) {
               <NumberTooltip value={props.link?.clicks || 0}>
                 <Link
                   href={`/${slug}/analytics?domain=${domain}&key=_root`}
-                  className="flex items-center space-x-1 whitespace-nowrap rounded-md border border-neutral-200 bg-neutral-50 px-3 py-1 transition-colors hover:bg-neutral-100"
+                  className="flex items-center space-x-1 whitespace-nowrap rounded-xl border-[2px] border-neutral-100 bg-neutral-50 px-3 py-1 transition-colors hover:bg-neutral-100"
                 >
                   <CursorRays className="h-4 w-4 text-neutral-700" />
                   <p className="text-xs font-medium text-neutral-900">
@@ -233,13 +233,13 @@ export default function DomainCard({ props }: { props: DomainProps }) {
                   <div>
                     Good news! Your DNS records are set up correctly, but it can
                     take some time for them to propagate globally.{" "}
-                    <Link
+                    {/* <Link
                       href="https://dub.co/help/article/how-to-add-custom-domain#how-long-do-i-have-to-wait-for-my-domain-to-work"
                       target="_blank"
                       className="underline transition-colors hover:text-green-800"
                     >
                       Learn more.
-                    </Link>
+                    </Link> */}
                   </div>
                 </div>
               ) : (
@@ -332,20 +332,20 @@ function Menu({
 
   return (
     <>
-      <LinkBuilder />
-      <LinkQRModal />
+      {/* <LinkBuilder />
+      <LinkQRModal /> */}
       <AddEditDomainModal />
       <PrimaryDomainModal />
       <ArchiveDomainModal />
       <DeleteDomainModal />
-      <TransferDomainModal />
+      {/* <TransferDomainModal /> */}
 
       <motion.div
         animate={{
           width: groupHover && !isMobile ? "auto" : isMobile ? 79 : 39,
         }}
         initial={false}
-        className="flex items-center justify-end divide-x divide-neutral-200 overflow-hidden rounded-md border border-neutral-200 sm:divide-transparent sm:group-hover:divide-neutral-200"
+        className="flex items-center justify-end divide-x divide-neutral-200 overflow-hidden rounded-xl border-[2px] border-neutral-100 sm:divide-transparent sm:group-hover:divide-neutral-200"
       >
         <Button
           icon={<PenWriting className={cn("h-4 w-4 shrink-0")} />}
@@ -371,7 +371,7 @@ function Menu({
         <Popover
           content={
             <div className="w-full sm:w-48">
-              <div className="grid gap-px p-2">
+              {/* <div className="grid gap-px p-2">
                 <p className="mb-1.5 mt-1 flex items-center gap-2 px-1 text-xs font-medium text-neutral-500">
                   Link Settings
                 </p>
@@ -418,7 +418,7 @@ function Menu({
                   className="h-9 justify-start px-2 font-medium"
                 />
               </div>
-              <div className="border-t border-neutral-200" />
+              <div className="border-t-[6px] border-neutral-100" /> */}
               <div className="grid gap-px p-2">
                 <p className="mb-1.5 mt-1 flex items-center gap-2 px-1 text-xs font-medium text-neutral-500">
                   Domain Settings
@@ -445,7 +445,7 @@ function Menu({
                     className="h-9 justify-start px-2 font-medium"
                   />
                 )}
-                {!isDubProvisioned && (
+                {/* {!isDubProvisioned && (
                   <Button
                     text="Transfer"
                     variant="outline"
@@ -461,7 +461,7 @@ function Menu({
                         : undefined
                     }
                   />
-                )}
+                )} */}
                 <Button
                   text={archived ? "Unarchive" : "Archive"}
                   variant="outline"

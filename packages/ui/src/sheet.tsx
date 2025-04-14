@@ -33,7 +33,7 @@ function SheetRoot({
             contentProps?.onPointerDownOutside?.(e);
           }}
           className={cn(
-            "fixed bottom-2 right-2 top-2 z-10 flex w-[calc(100%-16px)] outline-none md:w-[540px]",
+            "fixed bottom-0 right-0 top-0 z-10 flex w-full outline-none md:w-[540px]",
             contentProps?.className,
           )}
           style={
@@ -45,7 +45,7 @@ function SheetRoot({
             } as React.CSSProperties
           }
         >
-          <div className="scrollbar-hide flex size-full grow flex-col overflow-y-auto rounded-lg bg-white">
+          <div className="scrollbar-hide flex size-full grow flex-col overflow-y-auto bg-white">
             {children}
           </div>
         </Drawer.Content>

@@ -53,7 +53,7 @@ export default function UserSurveyButton() {
                     "outline-none focus-visible:ring-2 focus-visible:ring-black/50",
                   )}
                 >
-                  Where did you hear about Dub?
+                  Where did you hear about PiMMs?
                 </button>
               </Popover>
             </motion.div>

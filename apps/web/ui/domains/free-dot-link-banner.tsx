@@ -18,7 +18,7 @@ export function FreeDotLinkBanner() {
     show && (
       <>
         <RegisterDomainModal />
-        <div className="relative isolate flex flex-col justify-between gap-3 overflow-hidden rounded-lg border border-green-600/15 bg-gradient-to-r from-lime-100/80 to-emerald-100/80 py-3 pl-4 pr-12 sm:flex-row sm:items-center sm:py-2">
+        <div className="relative isolate flex flex-col justify-between gap-3 overflow-hidden rounded-xl border-[6px] border-green-600/15 bg-gradient-to-r from-lime-100/80 to-emerald-100/80 py-3 pl-4 pr-12 sm:flex-row sm:items-center sm:py-2">
           <Grid
             cellSize={13}
             patternOffset={[0, -1]}
@@ -26,7 +26,7 @@ export function FreeDotLinkBanner() {
           />
 
           <div className="flex items-center gap-3">
-            <div className="hidden rounded-full border border-green-600/50 bg-white/50 p-1 shadow-[inset_0_0_1px_1px_#fff] sm:block">
+            <div className="hidden rounded-full border-[2px] border-green-600/50 bg-white/50 p-1 shadow-[inset_0_0_1px_1px_#fff] sm:block">
               <LinkBroken className="m-px size-4 text-green-800" />
             </div>
             <p className="text-sm text-neutral-900">

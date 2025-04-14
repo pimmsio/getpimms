@@ -135,8 +135,8 @@ export const confirmPayoutsAction = authActionClient
         confirmation_method: "automatic",
         confirm: true,
         transfer_group: invoice.id,
-        statement_descriptor: "Dub Partners",
-        description: `Dub Partners payout invoice (${invoice.id})`,
+        statement_descriptor: "PiMMs Partners",
+        description: `PiMMs Partners payout invoice (${invoice.id})`,
       });
 
       await tx.payout.updateMany({
@@ -167,7 +167,7 @@ export const confirmPayoutsAction = authActionClient
                 sendEmail({
                   subject: "You've got money coming your way!",
                   email: payout.partner.email!,
-                  from: "Dub Partners <system@dub.co>",
+                  from: "PiMMs Partners <alexandre@pimms.io>",
                   react: PartnerPayoutConfirmed({
                     email: payout.partner.email!,
                     program: payout.program,

@@ -44,12 +44,12 @@ export default function PaymentMethods() {
   }
 
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white">
+    <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
       <div className="flex flex-col items-start justify-between gap-y-4 p-6 md:flex-row md:items-center md:p-8">
         <div>
           <h2 className="text-xl font-medium">Payment methods</h2>
           <p className="text-balance text-sm leading-normal text-neutral-500">
-            Manage your payment methods on Dub
+            Manage your payment methods on PIMMS
           </p>
         </div>
         {stripeId && (
@@ -62,7 +62,7 @@ export default function PaymentMethods() {
           />
         )}
       </div>
-      <div className="grid gap-4 border-t border-neutral-200 bg-neutral-100 p-6">
+      <div className="grid gap-4 border-t-[6px] border-neutral-100 bg-neutral-100 p-6">
         {regularPaymentMethods ? (
           regularPaymentMethods.length > 0 ? (
             regularPaymentMethods.map((paymentMethod) => (
@@ -91,7 +91,7 @@ export default function PaymentMethods() {
             <PaymentMethodCardSkeleton />
           </>
         )}
-        {partnersEnabled && (
+        {/* {partnersEnabled && (
           <>
             {achPaymentMethods && achPaymentMethods.length > 0 ? (
               achPaymentMethods.map((paymentMethod) => (
@@ -105,7 +105,7 @@ export default function PaymentMethods() {
               <PaymentMethodCard type="us_bank_account" />
             )}
           </>
-        )}
+        )} */}
       </div>
     </div>
   );
@@ -146,7 +146,7 @@ const PaymentMethodCard = ({
 
   return (
     <RecommendedForPayoutsWrapper recommended={type === "us_bank_account"}>
-      <div className="flex items-center justify-between rounded-lg border border-neutral-200 bg-white p-4 drop-shadow-sm">
+      <div className="flex items-center justify-between rounded-xl border-[6px] border-neutral-100 bg-white p-4 drop-shadow-sm">
         <div className="flex items-center gap-4">
           <div
             className={cn(
@@ -196,14 +196,14 @@ const RecommendedForPayoutsWrapper = ({
       <span className="flex items-center gap-2 px-3 pb-1 pt-1.5 text-xs text-neutral-800">
         <MoneyBill2 className="size-3.5 shrink-0" />
         <span>
-          Recommended for Dub Partner payouts.{" "}
-          <Link
+          Recommended for PIMMS Partner payouts.{" "}
+          {/* <Link
             href="https://dub.co/help/article/how-to-set-up-bank-account"
             target="_blank"
             className="underline underline-offset-2 transition-colors duration-75 hover:text-neutral-900"
           >
             Learn more
-          </Link>
+          </Link> */}
         </span>
       </span>
     </div>
@@ -214,7 +214,7 @@ const RecommendedForPayoutsWrapper = ({
 
 const PaymentMethodCardSkeleton = () => {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-neutral-200 p-4">
+    <div className="flex items-center justify-between rounded-lg border-[6px] border-neutral-100 p-4">
       <div className="flex items-center gap-4">
         <div className="flex size-12 animate-pulse items-center justify-center rounded-lg bg-neutral-200" />
         <div>

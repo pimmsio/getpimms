@@ -104,12 +104,12 @@ function Calendar({
         ),
         day_today: "font-semibold",
         day_selected:
-          "rounded aria-selected:bg-blue-500 aria-selected:text-white",
+          "rounded aria-selected:bg-[#3971ff] aria-selected:text-white",
         day_disabled:
           "!text-neutral-300 line-through disabled:hover:bg-transparent",
         day_outside: "text-neutral-400",
         day_range_middle:
-          "!rounded-none aria-selected:!bg-blue-100 aria-selected:!text-blue-900",
+          "!rounded-none aria-selected:!bg-[#3971ff] aria-selected:!text-white",
         day_range_start: "rounded-r-none !rounded-l",
         day_range_end: "rounded-l-none !rounded-r",
         day_hidden: "invisible",
@@ -249,9 +249,8 @@ function Calendar({
                   className={cn(
                     "absolute inset-x-1/2 bottom-1.5 h-0.5 w-4 -translate-x-1/2 rounded-[2px]",
                     {
-                      "bg-blue-500": !selected,
+                      "bg-[#3971ff]": !selected,
                       "!bg-white": selected,
-                      "!bg-blue-400": selected && range_middle,
                       "text-neutral-400": disabled,
                     },
                   )}

@@ -118,7 +118,7 @@ export const analyticsResponse = {
     .object({
       country: z
         .enum(COUNTRY_CODES)
-        .describe("The 2-letter country code of the region: https://d.to/geo"),
+        .describe("The 2-letter country code of the region"),
       region: z
         .string()
         .describe(
@@ -148,7 +148,7 @@ export const analyticsResponse = {
     .object({
       country: z
         .enum(COUNTRY_CODES)
-        .describe("The 2-letter country code of the city: https://d.to/geo"),
+        .describe("The 2-letter country code of the city"),
       region: z.literal("*").default("*"),
       city: z.string().describe("The name of the city"),
       clicks: z

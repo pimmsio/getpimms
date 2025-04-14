@@ -13,7 +13,7 @@ export function LinkPreview({ defaultUrl }: { defaultUrl?: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const url =
-    defaultUrl || searchParams?.get("url") || "https://github.com/dubinc/dub";
+    defaultUrl || searchParams?.get("url") || "https://github.com/getpimms/pim.ms";
   const [debouncedUrl] = useDebounce(getUrlFromString(url), 500);
   const hostname = useMemo(() => {
     return getDomainWithoutWWW(debouncedUrl || "");
@@ -68,7 +68,7 @@ export function LinkPreview({ defaultUrl }: { defaultUrl?: string }) {
         </div>
       )}
 
-      <div className="relative overflow-hidden rounded-md border border-neutral-300 bg-neutral-50">
+      <div className="relative overflow-hidden rounded-xl border-[2px] border-neutral-300 bg-neutral-50">
         {isValidating && (
           <div className="absolute flex h-[250px] w-full flex-col items-center justify-center space-y-4 border-b border-neutral-300 bg-neutral-50">
             <LoadingCircle />
@@ -131,10 +131,10 @@ export function LinkPreviewPlaceholder({
           disabled
           className="block w-full rounded-md border-neutral-200 pl-10 text-sm text-neutral-900 placeholder-neutral-400 shadow-lg focus:border-neutral-500 focus:outline-none focus:ring-neutral-500"
           placeholder="Enter your URL"
-          defaultValue={defaultUrl || "https://github.com/dubinc/dub"}
+          defaultValue={defaultUrl || "https://github.com/getpimms/pim.ms"}
         />
       </div>
-      <div className="relative overflow-hidden rounded-md border border-neutral-300 bg-neutral-50">
+      <div className="relative overflow-hidden rounded-xl border-[2px] border-neutral-300 bg-neutral-50">
         <div className="absolute flex h-[250px] w-full flex-col items-center justify-center space-y-4 border-b border-neutral-300 bg-neutral-50">
           <LoadingCircle />
         </div>

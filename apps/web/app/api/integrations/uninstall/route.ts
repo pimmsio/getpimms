@@ -1,10 +1,12 @@
 import { DubApiError } from "@/lib/api/errors";
 import { withWorkspace } from "@/lib/auth";
+import { uninstallCalendlyIntegration } from "@/lib/integrations/calendly/uninstall";
 import { uninstallSlackIntegration } from "@/lib/integrations/slack/uninstall";
 import { webhookCache } from "@/lib/webhook/cache";
 import { isLinkLevelWebhook } from "@/lib/webhook/utils";
 import { prisma } from "@dub/prisma";
 import { SLACK_INTEGRATION_ID } from "@dub/utils";
+import { CALENDLY_INTEGRATION_ID } from "@dub/utils/src";
 import { waitUntil } from "@vercel/functions";
 import { NextResponse } from "next/server";
 
@@ -57,7 +59,9 @@ export const DELETE = withWorkspace(
         ...(integrationId === SLACK_INTEGRATION_ID
           ? [uninstallSlackIntegration({ installation })]
           : []),
-
+        ...(integrationId === CALENDLY_INTEGRATION_ID
+          ? [uninstallCalendlyIntegration({ installation })]
+          : []),
         ...(webhook && isLinkLevelWebhook(webhook)
           ? [webhookCache.delete(webhook.id)]
           : []),

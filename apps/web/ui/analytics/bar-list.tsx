@@ -122,7 +122,7 @@ export default function BarList({
           <input
             type="text"
             autoFocus={!isMobile}
-            className="w-full rounded-md border border-neutral-300 py-2 pl-10 text-black placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-4 focus:ring-neutral-200 sm:text-sm"
+            className="w-full rounded-xl border-[2px] border-neutral-300 py-2 pl-10 text-black placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-4 focus:ring-neutral-200 sm:text-sm"
             placeholder={`Search ${tab}...`}
             onChange={(e) => setSearch(e.target.value)}
           />

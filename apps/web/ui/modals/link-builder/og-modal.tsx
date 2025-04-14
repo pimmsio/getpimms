@@ -222,7 +222,7 @@ function OGModalInner({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-medium">Link Preview</h3>
-              <ProBadgeTooltip
+              {/* <ProBadgeTooltip
                 content={
                   <SimpleTooltipContent
                     title="Customize how your links look when shared on social media to improve click-through rates. When enabled, the preview settings below will be shown publicly (instead of the URL's original metatags)."
@@ -230,7 +230,7 @@ function OGModalInner({
                     href="https://dub.co/help/article/custom-link-previews"
                   />
                 }
-              />
+              /> */}
             </div>
             <div className="max-md:hidden">
               <Tooltip
@@ -243,7 +243,7 @@ function OGModalInner({
                 }
                 side="right"
               >
-                <kbd className="flex size-6 cursor-default items-center justify-center rounded-md border border-neutral-200 font-sans text-xs text-neutral-950">
+                <kbd className="flex size-6 cursor-default items-center justify-center rounded-xl border-[2px] border-neutral-100 font-sans text-xs text-neutral-950">
                   L
                 </kbd>
               </Tooltip>
@@ -364,9 +364,9 @@ function OGModalInner({
                   </ButtonTooltip>
                 </div>
               </div>
-              <div className="relative mt-1 flex rounded-md shadow-sm">
+              <div className="relative mt-1 flex rounded-xl shadow-sm">
                 {generatingMetatags && (
-                  <div className="absolute flex h-full w-full items-center justify-center rounded-md border border-neutral-300 bg-white">
+                  <div className="absolute flex h-full w-full items-center justify-center rounded-xl border-[2px] border-neutral-300 bg-white">
                     <LoadingCircle />
                   </div>
                 )}
@@ -420,9 +420,9 @@ function OGModalInner({
                   </ButtonTooltip>
                 </div>
               </div>
-              <div className="relative mt-1 flex rounded-md shadow-sm">
+              <div className="relative mt-1 flex rounded-xl shadow-sm">
                 {generatingMetatags && (
-                  <div className="absolute flex h-full w-full items-center justify-center rounded-md border border-neutral-300 bg-white">
+                  <div className="absolute flex h-full w-full items-center justify-center rounded-xl border-[2px] border-neutral-300 bg-white">
                     <LoadingCircle />
                   </div>
                 )}

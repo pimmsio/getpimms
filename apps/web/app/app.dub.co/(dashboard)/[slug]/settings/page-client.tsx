@@ -25,8 +25,8 @@ export default function WorkspaceSettingsClient() {
   return (
     <>
       <Form
-        title="Workspace Name"
-        description={`This is the name of your workspace on ${process.env.NEXT_PUBLIC_APP_NAME}.`}
+        title="Workspace name"
+        // description={`This is the name of your workspace on ${process.env.NEXT_PUBLIC_APP_NAME}.`}
         inputAttrs={{
           name: "name",
           defaultValue: name,
@@ -57,8 +57,8 @@ export default function WorkspaceSettingsClient() {
         }
       />
       <Form
-        title="Workspace Slug"
-        description={`This is your workspace's unique slug on ${process.env.NEXT_PUBLIC_APP_NAME}.`}
+        title="Workspace slug"
+        // description={`This is your workspace's unique slug on ${process.env.NEXT_PUBLIC_APP_NAME}.`}
         inputAttrs={{
           name: "slug",
           defaultValue: slug,
@@ -91,7 +91,7 @@ export default function WorkspaceSettingsClient() {
           })
         }
       />
-      <UploadLogo />
+      {/* <UploadLogo /> */}
       <WorkspaceId />
       <DeleteWorkspace />
     </>

@@ -18,7 +18,7 @@ export function NavMobile({
   theme?: NavTheme;
   staticDomain?: string;
 }) {
-  let { domain = "dub.co" } = useParams() as { domain: string };
+  let { domain = "pimms.io" } = useParams() as { domain: string };
   if (staticDomain) {
     domain = staticDomain;
   }
@@ -34,7 +34,7 @@ export function NavMobile({
   }, [open]);
 
   const { data: session } = useSWR(
-    domain.endsWith("dub.co") && "/api/auth/session",
+    domain.endsWith("pimms.io") && "/api/auth/session",
     fetcher,
     {
       dedupingInterval: 60000,
@@ -48,7 +48,7 @@ export function NavMobile({
         theme === "dark" && "dark",
       )}
     >
-      {session && Object.keys(session).length > 0 ? (
+      {/* {session && Object.keys(session).length > 0 ? (
         <AuthButton href={APP_DOMAIN} className="max-[280px]:hidden">
           Dashboard
         </AuthButton>
@@ -80,7 +80,7 @@ export function NavMobile({
           open && "block",
         )}
       >
-        <ul className="grid divide-y divide-neutral-200 dark:divide-white/[0.15]">
+        <ul className="grid divide-y-[6px] divide-neutral-100 dark:divide-white/[0.15]">
           {navItems.map(({ name, href, childItems }, idx) => (
             <MobileNavItem
               key={idx}
@@ -122,7 +122,7 @@ export function NavMobile({
             </>
           )}
         </ul>
-      </nav>
+      </nav> */}
     </div>
   );
 }
@@ -138,73 +138,73 @@ const MobileNavItem = ({
   childItems?: NavItemChildren;
   setOpen: (open: boolean) => void;
 }) => {
-  const { domain = "dub.co" } = useParams() as { domain: string };
+  const { domain = "pimms.io" } = useParams() as { domain: string };
   const [expanded, setExpanded] = useState(false);
 
-  if (childItems) {
-    return (
-      <li className="py-3">
-        <AnimatedSizeContainer height>
-          <button
-            className="flex w-full justify-between"
-            onClick={() => setExpanded(!expanded)}
-          >
-            <p className="font-semibold">{name}</p>
-            <ChevronDown
-              className={cn(
-                "h-5 w-5 text-neutral-500 transition-all dark:text-white/50",
-                expanded && "rotate-180",
-              )}
-            />
-          </button>
-          {expanded && (
-            <div className="grid grid-cols-1 gap-4 overflow-hidden py-4">
-              {childItems.map((item, idx) =>
-                "items" in item ? (
-                  <div key={idx} className="grid grid-cols-1 gap-3">
-                    <span className="text-xs font-medium uppercase text-neutral-500 dark:text-white/50">
-                      {item.label}
-                    </span>
-                    {item.items.map((childItem, childIdx) => (
-                      <ChildItem
-                        key={childIdx}
-                        item={childItem}
-                        setOpen={setOpen}
-                        size="small"
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <ChildItem key={idx} item={item} setOpen={setOpen} />
-                ),
-              )}
-            </div>
-          )}
-        </AnimatedSizeContainer>
-      </li>
-    );
-  }
+  // if (childItems) {
+  //   return (
+  //     <li className="py-3">
+  //       <AnimatedSizeContainer height>
+  //         <button
+  //           className="flex w-full justify-between"
+  //           onClick={() => setExpanded(!expanded)}
+  //         >
+  //           <p className="font-semibold">{name}</p>
+  //           <ChevronDown
+  //             className={cn(
+  //               "h-5 w-5 text-neutral-500 transition-all dark:text-white/50",
+  //               expanded && "rotate-180",
+  //             )}
+  //           />
+  //         </button>
+  //         {expanded && (
+  //           <div className="grid grid-cols-1 gap-4 overflow-hidden py-4">
+  //             {childItems.map((item, idx) =>
+  //               "items" in item ? (
+  //                 <div key={idx} className="grid grid-cols-1 gap-3">
+  //                   <span className="text-xs font-medium uppercase text-neutral-500 dark:text-white/50">
+  //                     {item.label}
+  //                   </span>
+  //                   {item.items.map((childItem, childIdx) => (
+  //                     <ChildItem
+  //                       key={childIdx}
+  //                       item={childItem}
+  //                       setOpen={setOpen}
+  //                       size="small"
+  //                     />
+  //                   ))}
+  //                 </div>
+  //               ) : (
+  //                 <ChildItem key={idx} item={item} setOpen={setOpen} />
+  //               ),
+  //             )}
+  //           </div>
+  //         )}
+  //       </AnimatedSizeContainer>
+  //     </li>
+  //   );
+  // }
 
-  if (!href) {
+  // if (!href) {
     return null;
-  }
+  // }
 
-  return (
-    <li className="py-3">
-      <Link
-        href={createHref(href, domain, {
-          utm_source: "Custom Domain",
-          utm_medium: "Navbar",
-          utm_campaign: domain,
-          utm_content: name,
-        })}
-        onClick={() => setOpen(false)}
-        className="flex w-full font-semibold capitalize"
-      >
-        {name}
-      </Link>
-    </li>
-  );
+  // return (
+  //   <li className="py-3">
+  //     <Link
+  //       href={createHref(href, domain, {
+  //         utm_source: "Custom Domain",
+  //         utm_medium: "Navbar",
+  //         utm_campaign: domain,
+  //         utm_content: name,
+  //       })}
+  //       onClick={() => setOpen(false)}
+  //       className="flex w-full font-semibold capitalize"
+  //     >
+  //       {name}
+  //     </Link>
+  //   </li>
+  // );
 };
 
 const ChildItem = ({
@@ -231,7 +231,7 @@ const ChildItem = ({
     >
       <div
         className={cn(
-          "flex size-10 items-center justify-center rounded-lg border border-neutral-200 bg-gradient-to-t from-neutral-100",
+          "flex size-10 items-center justify-center rounded-xl border-[6px] border-neutral-100 bg-gradient-to-t from-neutral-100",
           size === "small" && "size-8",
         )}
       >
@@ -263,7 +263,7 @@ export function AuthButton({
     <Link
       {...rest}
       className={cn(
-        "flex h-8 w-fit items-center whitespace-nowrap rounded-lg border px-3 text-[0.8125rem]",
+        "flex h-8 w-fit items-center whitespace-nowrap rounded-xl border-[6px] px-3 text-[0.8125rem]",
         buttonVariants({ variant }),
         className,
       )}

@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { mutate } from "swr";
 import { SettingsRow } from "../settings-row";
+import { useAvailableDomains } from "@/ui/links/use-available-domains";
 
 type FormData = Pick<
   ProgramProps,
@@ -37,34 +38,22 @@ export function LinksSettings() {
 }
 
 function LinksSettingsForm({ program }: { program: ProgramProps }) {
-  const { id: workspaceId } = useWorkspace();
+  const { id: workspaceId, slug } = useWorkspace();
   const { folders, loading: loadingFolders } = useFolders();
 
-  const shortDomain = program.domain || "refer.dub.co";
+  const shortDomain = program.domain || "refer.pimms.io";
   const websiteDomain = program.url
     ? getDomainWithoutWWW(program.url)
-    : "dub.co";
+    : "pimms.io";
 
-  const LINK_TYPES = [
-    {
-      label: "Short link",
-      example: `${shortDomain}/steven`,
-      comingSoon: false,
-    },
-    // {
-    //   label: "Query parameter",
-    //   example: `${websiteDomain}?via=steven`,
-    //   comingSoon: true,
-    // },
-    {
-      label: "Dynamic path",
-      example: `${websiteDomain}/refer/steven`,
-      comingSoon: true,
-    },
-  ];
 
-  const { activeWorkspaceDomains: domains, loading: loadingDomains } =
-    useDomains();
+  const { domains: availableDomains, activeWorkspaceDomains, loading: loadingDomains } =
+  useAvailableDomains();
+
+  const domains =
+    slug === "pimms" || slug === "pimms-staging"
+      ? availableDomains
+      : activeWorkspaceDomains;
 
   const form = useForm<FormData>({
     mode: "onBlur",
@@ -83,6 +72,24 @@ function LinksSettingsForm({ program }: { program: ProgramProps }) {
     formState: { isDirty, isValid, isSubmitting },
   } = form;
 
+  const LINK_TYPES = [
+    {
+      label: "Short link",
+      example: `${form.watch("domain")}/alexandre`,
+      comingSoon: false,
+    },
+    // {
+    //   label: "Query parameter",
+    //   example: `${websiteDomain}?via=alexandre`,
+    //   comingSoon: true,
+    // },
+    // {
+    //   label: "Dynamic path",
+    //   example: `${websiteDomain}/refer/alexandre`,
+    //   comingSoon: true,
+    // },
+  ];
+
   const { executeAsync } = useAction(updateProgramAction, {
     async onSuccess() {
       toast.success("Program updated successfully.");
@@ -96,7 +103,7 @@ function LinksSettingsForm({ program }: { program: ProgramProps }) {
 
   return (
     <form
-      className="rounded-lg border border-neutral-200 bg-white"
+      className="rounded-xl border-[6px] border-neutral-100 bg-white"
       onSubmit={handleSubmit(async (data) => {
         await executeAsync({
           ...data,
@@ -108,7 +115,7 @@ function LinksSettingsForm({ program }: { program: ProgramProps }) {
         reset({}, { keepValues: true });
       })}
     >
-      <div className="divide-y divide-neutral-200 px-6">
+      <div className="divide-y-[6px] divide-neutral-100 px-6">
         <SettingsRow heading="Default Referral Link">
           <div className="flex flex-col gap-6">
             <div>
@@ -172,7 +179,7 @@ function LinksSettingsForm({ program }: { program: ProgramProps }) {
                 <label
                   key={type.label}
                   className={cn(
-                    "relative flex w-full cursor-pointer items-start gap-0.5 rounded-md border border-neutral-200 bg-white p-3 text-neutral-600",
+                    "relative flex w-full cursor-pointer items-start gap-0.5 rounded-xl border-[2px] border-neutral-100 bg-white p-3 text-neutral-600",
                     type.comingSoon
                       ? "cursor-default opacity-80"
                       : "hover:bg-neutral-50",
@@ -237,7 +244,7 @@ function LinksSettingsForm({ program }: { program: ProgramProps }) {
             <span className="text-sm font-medium text-neutral-800">
               Installation
             </span>
-            <p className="mt-2 text-sm text-neutral-500">
+            {/* <p className="mt-2 text-sm text-neutral-500">
               View our{" "}
               <a
                 href="https://dub.co/docs/sdks/client-side/introduction"
@@ -246,8 +253,8 @@ function LinksSettingsForm({ program }: { program: ProgramProps }) {
               >
                 installation guides
               </a>{" "}
-              to add Dub Conversions to your website.
-            </p>
+              to add PIMMS Conversions to your website.
+            </p> */}
           </div>
         </SettingsRow>
 
@@ -288,7 +295,7 @@ function LinksSettingsForm({ program }: { program: ProgramProps }) {
         </SettingsRow>
       </div>
 
-      <div className="flex items-center justify-end rounded-b-lg border-t border-neutral-200 bg-neutral-50 px-6 py-5">
+      <div className="flex items-center justify-end rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-50 px-6 py-5">
         <div>
           <Button
             text="Save changes"

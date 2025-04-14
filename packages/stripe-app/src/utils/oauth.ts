@@ -1,6 +1,5 @@
 import Stripe from "stripe";
 import {
-  DUB_API_HOST,
   DUB_CLIENT_ID,
   DUB_HOST,
   STRIPE_REDIRECT_URL,
@@ -37,7 +36,7 @@ export async function getToken({
   code: string;
   verifier: string;
 }) {
-  const url = `${DUB_API_HOST}/oauth/token`;
+  const url = `${DUB_HOST}/api/oauth/token`;
 
   try {
     const response = await fetch(url, {
@@ -62,13 +61,13 @@ export async function getToken({
 
     return data as Token;
   } catch (e) {
-    console.error("Unable to retrieve Dub access token:", (e as Error).message);
+    console.error("Unable to retrieve PiMMs access token:", (e as Error).message);
   }
 }
 
 // Returns the user info from Dub using the access token
 export async function getUserInfo({ token }: { token: Token }) {
-  const response = await fetch(`${DUB_API_HOST}/oauth/userinfo`, {
+  const response = await fetch(`${DUB_HOST}/api/oauth/userinfo`, {
     headers: {
       Authorization: `Bearer ${token.access_token}`,
     },
@@ -77,7 +76,7 @@ export async function getUserInfo({ token }: { token: Token }) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error("Failed to fetch user info from Dub.", {
+    throw new Error("Failed to fetch user info from PiMMs.", {
       cause: data.error,
     });
   }
@@ -91,7 +90,7 @@ export async function getUserInfo({ token }: { token: Token }) {
 export async function getValidToken({ stripe }: { stripe: Stripe }) {
   const token = await getSecret<Token>({
     stripe,
-    name: "dub_token",
+    name: "pimms_token",
   });
 
   if (!token) {
@@ -110,7 +109,7 @@ export async function getValidToken({ stripe }: { stripe: Stripe }) {
 
     await setSecret({
       stripe,
-      name: "dub_token",
+      name: "pimms_token",
       payload: JSON.stringify(refreshedToken),
     });
 
@@ -121,7 +120,7 @@ export async function getValidToken({ stripe }: { stripe: Stripe }) {
 }
 
 export async function refreshToken({ token }: { token: Token }) {
-  const url = `${DUB_API_HOST}/oauth/token`;
+  const url = `${DUB_HOST}/api/oauth/token`;
 
   try {
     const response = await fetch(url, {
@@ -144,6 +143,6 @@ export async function refreshToken({ token }: { token: Token }) {
 
     return data as Token;
   } catch (e) {
-    console.error("Unable to refresh Dub access token:", (e as Error).message);
+    console.error("Unable to refresh PiMMs access token:", (e as Error).message);
   }
 }

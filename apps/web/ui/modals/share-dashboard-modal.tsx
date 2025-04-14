@@ -182,7 +182,7 @@ function ShareDashboardModalInner({
 
   return (
     <>
-      <h3 className="border-b border-neutral-200 px-4 py-4 text-lg font-medium sm:px-6">
+      <h3 className="border-b-[6px] border-neutral-100 px-4 py-4 text-lg font-medium sm:px-6">
         Share dashboard
       </h3>
       <div className="bg-neutral-50 px-6 pb-6 pt-4">
@@ -207,7 +207,7 @@ function ShareDashboardModalInner({
               {checked &&
                 (dashboard ? (
                   <div className="pt-4 text-sm">
-                    <div className="divide-x-200 flex items-center justify-between divide-x overflow-hidden rounded-md border border-neutral-200 bg-neutral-100">
+                    <div className="divide-x-200 flex items-center justify-between divide-x overflow-hidden rounded-xl border-[2px] border-neutral-100 bg-neutral-100">
                       <div className="scrollbar-hide overflow-scroll pl-3">
                         <p className="whitespace-nowrap text-neutral-400">
                           {getPrettyUrl(`${APP_DOMAIN}/share/${dashboard.id}`)}
@@ -230,7 +230,7 @@ function ShareDashboardModalInner({
                         Copy link
                       </button>
                     </div>
-                    <form
+                    {/* <form
                       className="grid w-full gap-3 px-px pt-4"
                       onSubmit={handleSubmit(handleUpdate)}
                     >
@@ -276,7 +276,7 @@ function ShareDashboardModalInner({
                         text="Save changes"
                         className="h-9"
                       />
-                    </form>
+                    </form> */}
                   </div>
                 ) : (
                   <div className="mt-4 h-7 w-full animate-pulse rounded-md bg-neutral-200" />
@@ -302,7 +302,7 @@ function LinkCard({
   isError: boolean;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-neutral-300 bg-white p-3">
+    <div className="flex items-center gap-3 rounded-xl border-[6px] border-neutral-200 bg-white p-3">
       {isError ? (
         <span className="text-sm text-neutral-400">Failed to load link</span>
       ) : link === undefined ? (
@@ -315,7 +315,7 @@ function LinkCard({
         </>
       ) : (
         <>
-          <div className="relative flex shrink-0 items-center justify-center rounded-full border border-neutral-200">
+          <div className="relative flex shrink-0 items-center justify-center rounded-full border-[6px] border-neutral-100">
             {/* Background gradient + white border */}
             <div className="absolute inset-0 rounded-full border border-white bg-gradient-to-t from-neutral-100" />
             <div className="shrink-0 p-2">

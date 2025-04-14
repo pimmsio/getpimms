@@ -13,6 +13,6 @@ export default async function OldLinksStatsPage({
     redirect("/");
   }
   redirect(
-    `/${defaultWorkspace.slug}/analytics?domain=dub.sh&key=${params.key}`,
+    `/${defaultWorkspace.slug}/analytics?domain=pim.ms&key=${params.key}`,
   );
 }

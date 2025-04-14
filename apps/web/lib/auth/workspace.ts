@@ -78,7 +78,7 @@ export const withWorkspace = (
             throw new DubApiError({
               code: "bad_request",
               message:
-                "Misconfigured authorization header. Did you forget to add 'Bearer '? Learn more: https://d.to/auth",
+                "Misconfigured authorization header. Did you forget to add 'Bearer '?",
             });
           }
           apiKey = authorizationHeader.replace("Bearer ", "");
@@ -89,7 +89,7 @@ export const withWorkspace = (
         let workspaceSlug: string | undefined;
         let permissions: PermissionAction[] = [];
         let token: any | null = null;
-        const isRestrictedToken = apiKey?.startsWith("dub_");
+        const isRestrictedToken = apiKey?.startsWith("pimms_");
 
         const idOrSlug =
           params?.idOrSlug ||
@@ -106,7 +106,7 @@ export const withWorkspace = (
         if (!idOrSlug && !isRestrictedToken) {
           // special case for anonymous link creation
           if (
-            req.headers.has("dub-anonymous-link-creation") &&
+            req.headers.has("pimms-anonymous-link-creation") &&
             ["/links", "/api/links"].includes(req.nextUrl.pathname)
           ) {
             // @ts-expect-error
@@ -127,7 +127,7 @@ export const withWorkspace = (
             throw new DubApiError({
               code: "not_found",
               message:
-                "Workspace ID not found. Did you forget to include a `workspaceId` query parameter? It looks like you might be using personal API keys, we also recommend refactoring to workspace API keys: https://d.to/keys",
+                "Workspace ID not found. Did you forget to include a `workspaceId` query parameter? It looks like you might be using personal API keys, we also recommend refactoring to workspace API keys",
             });
           }
         }

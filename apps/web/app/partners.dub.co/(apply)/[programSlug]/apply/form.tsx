@@ -123,7 +123,7 @@ export function ProgramApplicationForm({
               ? "border-red-400 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
               : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-[var(--brand)] focus:ring-[var(--brand)]",
           )}
-          placeholder="panic@thedis.co"
+          placeholder="cheers@pimms.io"
           {...register("email", {
             required: true,
           })}

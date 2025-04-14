@@ -6,7 +6,7 @@ import * as fs from "fs";
 async function main() {
   const links = await prisma.link.findMany({
     where: {
-      domain: "dub.sh",
+      domain: "pim.ms",
     },
     select: {
       url: true,

@@ -25,12 +25,12 @@ export default function WebhooksPageClient() {
 
   if (needsHigherPlan) {
     return (
-      <div className="rounded-md border border-neutral-200 bg-white p-10">
+      <div className="rounded-xl border-[2px] border-neutral-100 bg-white p-10">
         <EmptyState
           icon={Webhook}
           title="Webhooks"
-          description="Webhooks allow you to receive HTTP requests whenever a specific event (eg: someone clicked your link) occurs in Dub."
-          learnMore="https://d.to/webhooks"
+          description="Webhooks allow you to receive HTTP requests whenever a specific event (eg: someone clicked your link) occurs in PIMMS."
+          // learnMore="https://d.to/webhooks"
           buttonText="Upgrade to Business"
           buttonLink={`/${slug}/upgrade`}
         />
@@ -45,7 +45,7 @@ export default function WebhooksPageClient() {
           <h1 className="text-2xl font-semibold tracking-tight text-black">
             Webhooks
           </h1>
-          <InfoTooltip
+          {/* <InfoTooltip
             content={
               <TooltipContent
                 title="Webhooks allow you to receive HTTP requests whenever a specific event (eg: someone clicked your link) occurs in Dub."
@@ -54,11 +54,11 @@ export default function WebhooksPageClient() {
                 cta="Learn more"
               />
             }
-          />
+          /> */}
         </div>
         <div className="flex w-full items-center gap-3 sm:w-auto">
           <Button
-            className="flex h-10 items-center justify-center whitespace-nowrap rounded-lg border px-4 text-sm"
+            className="flex h-10 items-center justify-center whitespace-nowrap rounded-xl border-[6px] px-4 text-sm"
             text="Create Webhook"
             onClick={() => router.push(`/${slug}/settings/webhooks/new`)}
             disabledTooltip={permissionsError}
@@ -75,12 +75,12 @@ export default function WebhooksPageClient() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-4 rounded-xl border border-neutral-200 py-10">
+            <div className="flex flex-col items-center gap-4 rounded-xl border-[6px] border-neutral-100 py-10">
               <EmptyState
                 icon={Webhook}
                 title="You haven't set up any webhooks yet."
-                description="Webhooks allow you to receive HTTP requests whenever a specific event (eg: someone clicked your link) occurs in Dub."
-                learnMore="https://d.to/webhooks"
+                description="Webhooks allow you to receive HTTP requests whenever a specific event (eg: someone clicked your link) occurs in PIMMS."
+                // learnMore="https://d.to/webhooks"
               />
             </div>
           )

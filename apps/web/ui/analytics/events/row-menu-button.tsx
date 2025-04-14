@@ -74,7 +74,7 @@ function MenuItem({
       )}
       onSelect={onSelect}
     >
-      <IconComp className="h-4 w-4 shrink-0 text-neutral-600" />
+      {/* <IconComp className="h-4 w-4 shrink-0 text-neutral-600" /> */}
       {label}
     </Command.Item>
   );

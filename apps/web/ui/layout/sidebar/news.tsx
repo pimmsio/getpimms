@@ -89,7 +89,7 @@ export function News({ articles }: { articles: NewsArticle[] }) {
             className="animate-slide-up-fade absolute inset-0 flex size-full flex-col items-center justify-center gap-3 [animation-duration:1s]"
             style={{ "--offset": "10px" } as CSSProperties}
           >
-            <div className="animate-fade-in absolute inset-0 rounded-lg border border-neutral-300 [animation-delay:2.3s] [animation-direction:reverse] [animation-duration:0.2s]" />
+            <div className="animate-fade-in absolute inset-0 rounded-xl border-[6px] border-neutral-200 [animation-delay:2.3s] [animation-direction:reverse] [animation-duration:0.2s]" />
             <AnimatedLogo className="w-1/3 text-neutral-500" />
             <span className="animate-fade-in text-xs font-medium text-neutral-500 [animation-delay:2.3s] [animation-direction:reverse] [animation-duration:0.2s]">
               You're all caught up!
@@ -223,7 +223,7 @@ function NewsCard({
     <div
       ref={ref}
       className={cn(
-        "relative select-none gap-2 rounded-lg border border-neutral-200 bg-white p-3 text-[0.8125rem]",
+        "relative select-none gap-2 rounded-xl border-[6px] border-neutral-100 bg-white p-3 text-[0.8125rem]",
         "translate-x-[calc(var(--dx)*1px)] rotate-[calc(var(--dx)*0.05deg)] opacity-[calc(1-max(var(--dx),-1*var(--dx))/var(--w)/2)]",
         "transition-shadow data-[dragging=true]:shadow-[0_4px_12px_0_#0000000D]",
       )}
@@ -240,7 +240,7 @@ function NewsCard({
             {description}
           </p>
         </div>
-        <div className="relative mt-3 aspect-[16/9] w-full shrink-0 overflow-hidden rounded border border-neutral-200 bg-neutral-100">
+        <div className="relative mt-3 aspect-[16/9] w-full shrink-0 overflow-hidden rounded border-[6px] border-neutral-100 bg-neutral-100">
           {image && (
             <Image
               src={image}

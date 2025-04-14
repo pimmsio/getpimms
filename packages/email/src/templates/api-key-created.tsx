@@ -15,10 +15,10 @@ import {
 import { Footer } from "../components/footer";
 
 export function APIKeyCreated({
-  email = "panic@thedis.co",
+  email = "cheers@pimms.io",
   workspace = {
-    name: "Acme, Inc",
-    slug: "acme",
+    name: "PIMMS",
+    slug: "pimms",
   },
   token = {
     name: "Acme API Key",
@@ -43,15 +43,15 @@ export function APIKeyCreated({
       <Preview>New Workspace API Key Created</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[600px] rounded border border-solid border-neutral-200 px-10 py-5">
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
             <Section className="mb-8 mt-6">
-              <Img src={DUB_WORDMARK} height="32" alt="Dub" />
+              <Img src={DUB_WORDMARK} height="14" alt="PIMMS" className="my-0" />
             </Section>
             <Heading className="mx-0 my-6 p-0 text-lg font-medium text-black">
               New Workspace API Key Created
             </Heading>
             <Text className="text-sm leading-6 text-black">
-              You've created a new API key for your Dub workspace{" "}
+              You've created a new API key for your PiMMs workspace{" "}
               <strong>{workspace.name}</strong> with the name{" "}
               <strong>"{token.name}"</strong> on{" "}
               {formatDate(new Date().toString())}.
@@ -60,10 +60,10 @@ export function APIKeyCreated({
               Since this is a <strong>{token.type}</strong> token, it has{" "}
               {token.permissions}.
             </Text>
-            <Section className="mb-8 mt-8">
+            <Section className="my-8 text-center">
               <Link
-                className="rounded-lg bg-black px-6 py-3 text-center text-[12px] font-semibold text-white no-underline"
-                href={`https://app.dub.co/${workspace.slug}/settings/tokens`}
+                className="px-5 py-3 bg-[#dc2e65] text-white font-semibold outline outline-[6px] transition outline-[#ffeaf1] cursor-pointer no-underline rounded-xl"
+                href={`https://app.pimms.io/${workspace.slug}/settings/tokens`}
               >
                 View API Keys
               </Link>
@@ -71,7 +71,7 @@ export function APIKeyCreated({
             <Text className="text-sm leading-6 text-black">
               If you did not create this API key, you can{" "}
               <Link
-                href={`https://app.dub.co/${workspace.slug}/settings/tokens`}
+                href={`https://app.pimms.io/${workspace.slug}/settings/tokens`}
                 className="text-black underline"
               >
                 <strong>delete this key</strong>

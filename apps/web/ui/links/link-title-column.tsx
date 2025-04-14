@@ -48,21 +48,20 @@ import { CommentsBadge } from "./comments-badge";
 import { useLinkSelection } from "./link-selection-provider";
 import { ResponseLink } from "./links-container";
 import { LinksDisplayContext } from "./links-display-provider";
-import { TestsBadge } from "./tests-badge";
 
 const quickViewSettings = [
-  { label: "Conversion Tracking", icon: SquareChart, key: "trackConversion" },
-  { label: "Custom Link Preview", icon: Cards, key: "proxy" },
-  { label: "Link Cloaking", icon: Incognito, key: "rewrite" },
-  { label: "Password Protection", icon: InputPassword, key: "password" },
-  { label: "Link Expiration", icon: CircleHalfDottedClock, key: "expiresAt" },
-  { label: "iOS Targeting", icon: AppleLogo, key: "ios" },
-  { label: "Android Targeting", icon: Robot, key: "android" },
-  { label: "Geo Targeting", icon: EarthPosition, key: "geo" },
+  { label: "Conversion Tracking", icon: TargetIcon, key: "trackConversion" },
+  // { label: "Custom Link Preview", icon: Cards, key: "proxy" },
+  // { label: "Link Cloaking", icon: Incognito, key: "rewrite" },
+  // { label: "Password Protection", icon: InputPassword, key: "password" },
+  // { label: "Link Expiration", icon: CircleHalfDottedClock, key: "expiresAt" },
+  { label: "Open in Apple Store", icon: Apple, key: "ios" },
+  { label: "Open in Google Play Store", icon: Robot, key: "android" },
+  // { label: "Geo Targeting", icon: EarthPosition, key: "geo" },
 ];
 
 const LOGO_SIZE_CLASS_NAME =
-  "size-4 sm:size-6 group-data-[variant=loose]/card-list:sm:size-5";
+  "size-4 sm:size-6 group-data-[variant=loose]/card-list:sm:size-6";
 
 export function LinkTitleColumn({ link }: { link: ResponseLink }) {
   const { domain, key } = link;
@@ -138,6 +137,7 @@ export function LinkTitleColumn({ link }: { link: ResponseLink }) {
                 })}
                 variant="neutral"
                 className="p-1.5"
+                withText
               />
               {hasQuickViewSettings && <SettingsBadge link={link} />}
               {link.comments && <CommentsBadge comments={link.comments} />}
@@ -209,7 +209,7 @@ function SettingsBadge({ link }: { link: ResponseLink }) {
           <HoverCard.Content
             side="bottom"
             sideOffset={8}
-            className="animate-slide-up-fade z-[99] items-center overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm"
+            className="animate-slide-up-fade z-[99] items-center overflow-hidden rounded-xl border-[6px] border-neutral-100 bg-white shadow-sm"
           >
             <div className="flex w-[340px] flex-col p-3 text-sm">
               {settings.map(({ label, icon: Icon }) => (
@@ -260,10 +260,8 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
       )}
     >
       {/* Link logo background circle */}
-      <div className="absolute inset-0 shrink-0 rounded-full border border-neutral-200 opacity-0 transition-opacity group-data-[variant=loose]/card-list:sm:opacity-100">
-        <div className="h-full w-full rounded-full border border-white bg-gradient-to-t from-neutral-100" />
-      </div>
-      <div className="relative transition-[padding,transform] group-hover:scale-90 group-data-[variant=loose]/card-list:sm:p-2">
+      <div className="absolute inset-0 shrink-0 rounded-xl border-[2px] border-neutral-100 opacity-100" />
+      <div className="relative transition-[padding,transform] group-hover:scale-90 group-data-[variant=loose]/card-list:sm:p-1">
         <div className="hidden sm:block">
           {link.archived ? (
             <BoxArchive
@@ -290,7 +288,7 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
       {/* Checkbox */}
       <div
         className={cn(
-          "pointer-events-none absolute inset-0 flex items-center justify-center rounded-full border border-neutral-400 bg-white ring-0 ring-black/5",
+          "pointer-events-none absolute inset-0 flex items-center justify-center rounded-full border-[2px] border-neutral-400 bg-white ring-0 ring-black/5",
           "opacity-100 max-sm:ring sm:opacity-0",
           "transition-all duration-150 group-hover:opacity-100 group-hover:ring group-focus-visible:opacity-100 group-focus-visible:ring",
           "group-data-[checked=true]:opacity-100",
@@ -356,14 +354,14 @@ const Details = memo(
             </span>
           )}
         </div>
-        <div
+        {/* <div
           className={cn(
             "hidden shrink-0",
             displayProperties.includes("user") && "sm:block",
           )}
         >
           <UserAvatar link={link} />
-        </div>
+        </div> */}
         <div
           className={cn(
             "hidden shrink-0",

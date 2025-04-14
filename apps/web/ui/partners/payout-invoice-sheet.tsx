@@ -177,7 +177,7 @@ function PayoutInvoiceSheetContent({ setIsOpen }: PayoutInvoiceSheetProps) {
             <div className="h-[30px] w-full animate-pulse rounded-md bg-neutral-200" />
           ) : (
             <select
-              className="h-auto flex-1 rounded-md border border-neutral-200 py-1.5 text-xs focus:border-neutral-600 focus:ring-neutral-600"
+              className="h-auto flex-1 rounded-xl border-[2px] border-neutral-100 py-1.5 text-xs focus:border-neutral-600 focus:ring-neutral-600"
               value={selectedPaymentMethod?.id || ""}
               onChange={(e) =>
                 setSelectedPaymentMethod(
@@ -198,7 +198,7 @@ function PayoutInvoiceSheetContent({ setIsOpen }: PayoutInvoiceSheetProps) {
             href={`/${slug}/settings/billing`}
             className={cn(
               buttonVariants({ variant: "secondary" }),
-              "flex items-center rounded-md border border-neutral-200 px-2 py-1.5 text-sm",
+              "flex items-center rounded-xl border-[2px] border-neutral-100 px-2 py-1.5 text-sm",
             )}
             target="_blank"
           >
@@ -306,7 +306,7 @@ function PayoutInvoiceSheetContent({ setIsOpen }: PayoutInvoiceSheetProps) {
   return (
     <>
       <div>
-        <div className="flex items-start justify-between border-b border-neutral-200 p-6">
+        <div className="flex items-start justify-between border-b-[6px] border-neutral-100 p-6">
           <Sheet.Title className="text-xl font-semibold">
             Payout invoice
           </Sheet.Title>
@@ -339,7 +339,7 @@ function PayoutInvoiceSheetContent({ setIsOpen }: PayoutInvoiceSheetProps) {
         </div>
       </div>
       <div className="flex grow flex-col justify-end">
-        <div className="flex items-center justify-end gap-2 border-t border-neutral-200 p-5">
+        <div className="flex items-center justify-end gap-2 border-t-[6px] border-neutral-100 p-5">
           <Button
             type="button"
             variant="secondary"

@@ -56,8 +56,8 @@ export function SetWriteKey({
 
   return (
     <form className="mt-4 flex items-end gap-2" onSubmit={onSubmit}>
-      <div className="w-full rounded-lg border border-neutral-200 bg-white">
-        <div className="flex items-center gap-x-2 border-b border-neutral-200 px-6 py-4">
+      <div className="w-full rounded-xl border-[6px] border-neutral-100 bg-white">
+        <div className="flex items-center gap-x-2 border-b-[6px] border-neutral-100 px-6 py-4">
           <Lock className="size-4" />
           <p className="text-sm font-medium text-neutral-700">Write key</p>
         </div>
@@ -79,7 +79,7 @@ export function SetWriteKey({
 
           {plan === "free" || plan === "pro" ? (
             <Tooltip content={planDisabledTooltip}>
-              <div className="mt-4 cursor-not-allowed rounded-md border border-neutral-300 bg-neutral-50 px-3 py-2 text-sm text-neutral-400">
+              <div className="mt-4 cursor-not-allowed rounded-xl border-[2px] border-neutral-300 bg-neutral-50 px-3 py-2 text-sm text-neutral-400">
                 Enter your write key
               </div>
             </Tooltip>
@@ -100,7 +100,7 @@ export function SetWriteKey({
           )}
         </div>
 
-        <div className="flex items-center justify-end rounded-b-lg border-t border-neutral-200 bg-neutral-50 px-4 py-3">
+        <div className="flex items-center justify-end rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-50 px-4 py-3">
           <div className="shrink-0">
             <Button
               type="submit"

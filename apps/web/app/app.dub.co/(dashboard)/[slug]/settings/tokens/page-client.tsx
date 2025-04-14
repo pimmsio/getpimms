@@ -175,7 +175,7 @@ export default function TokensPageClient() {
           </>
         )}
         addButton={<AddTokenButton />}
-        learnMoreHref="https://dub.co/docs/api-reference/tokens"
+        // learnMoreHref="https://dub.co/docs/api-reference/tokens"
       />
     ),
     resourceName: (plural) => `token${plural ? "s" : ""}`,
@@ -190,16 +190,14 @@ export default function TokensPageClient() {
         Secret keys
       </h1>
       <p className="mb-2 mt-2 text-base text-neutral-600">
-        These API keys allow other apps to access your workspace. Use it with
-        caution – do not share your API key with others, or expose it in the
-        browser or other client-side code.{" "}
-        <a
+        These API keys allow other apps to access your workspace.
+        {/* <a
           href="https://dub.co/docs/api-reference/tokens"
           target="_blank"
           className="font-medium underline underline-offset-4 hover:text-black"
         >
           Learn more
-        </a>
+        </a> */}
       </p>
 
       <div className="flex w-full items-center justify-end pb-4">

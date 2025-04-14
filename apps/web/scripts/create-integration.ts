@@ -7,9 +7,9 @@ async function main() {
     data: {
       name: "Slack",
       slug: "slack",
-      description: "Create links from Slack messages easily with Dub.",
-      developer: "Dub",
-      website: "https://dub.co",
+      description: "Create links from Slack messages easily with PIMMS.",
+      developer: "PIMMS",
+      website: "https://pimms.io",
       verified: true,
       projectId: DUB_WORKSPACE_ID,
 

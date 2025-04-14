@@ -8,7 +8,7 @@ import {
   NavMobile,
 } from "@dub/ui";
 import {
-  GOOGLE_FAVICON_URL,
+  getGoogleFavicon,
   constructMetadata,
   getApexDomain,
 } from "@dub/utils";
@@ -39,7 +39,7 @@ export async function generateMetadata({
     title: unescape(data.title || ""),
     description: unescape(data.description || ""),
     image: data.image,
-    icons: `${GOOGLE_FAVICON_URL}${apexDomain}`,
+    icons: getGoogleFavicon(apexDomain, false),
     noIndex: true,
   });
 }
@@ -69,7 +69,7 @@ export default async function InspectPage({
             Link Inspector
           </h1>
           <h2 className="text-lg text-neutral-600 sm:text-xl">
-            Inspect a short link on Dub to make sure it's safe to click on. If
+            Inspect a short link on PIMMS to make sure it's safe to click on. If
             you think this link is malicious, please report it.
           </h2>
 
@@ -77,14 +77,14 @@ export default async function InspectPage({
           <Suspense fallback={<LinkPreviewPlaceholder />}>
             <LinkPreview defaultUrl={data.url} />
           </Suspense>
-          <a
+          {/* <a
             href="https://dub.co/tools/inspector"
             rel="noreferrer"
             target="_blank"
             className="mx-auto mt-2 flex items-center justify-center space-x-2 text-sm text-neutral-500 transition-all hover:text-black"
           >
             Inspect another short link →
-          </a>
+          </a> */}
         </div>
         <Footer />
         <Background />

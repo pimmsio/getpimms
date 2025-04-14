@@ -27,7 +27,7 @@ export default function IntegrationCard(
       ) : integration.comingSoon ? (
         <Badge className="bg-violet-100 text-violet-800">Coming Soon</Badge>
       ) : integration.guideUrl ? (
-        <Badge className="bg-blue-100 text-blue-800">
+        <Badge className="bg-[#3971ff] text-white">
           <span>Guide</span>
           <div className="flex w-0 justify-end overflow-hidden opacity-0 transition-[width,opacity] group-hover:w-3 group-hover:opacity-100">
             <ArrowUpRight className="size-2.5" strokeWidth={2.5} />
@@ -38,7 +38,7 @@ export default function IntegrationCard(
       <h3 className="mt-4 flex items-center gap-1.5 text-sm font-semibold text-neutral-800">
         {integration.name}
         {dubCrafted && (
-          <Tooltip content="This is an official integration built and maintained by Dub">
+          <Tooltip content="This is an official integration built and maintained by PIMMS">
             <div>
               <DubCraftedShield className="size-4 -translate-y-px" />
             </div>
@@ -61,7 +61,7 @@ function Wrapper({
   const { slug } = useWorkspace();
 
   const className = cn(
-    "group relative rounded-lg border border-neutral-200 bg-white p-4 transition-[filter]",
+    "group relative rounded-xl border-[6px] border-neutral-100 bg-white p-4 transition-[filter]",
     integration.comingSoon ? "cursor-default" : "hover:drop-shadow-card-hover",
   );
 

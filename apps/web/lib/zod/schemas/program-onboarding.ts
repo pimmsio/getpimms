@@ -135,7 +135,7 @@ export const PROGRAM_ONBOARDING_STEPS = [
   },
   {
     stepNumber: 4,
-    label: "Connect Dub",
+    label: "Connect PiMMs",
     href: "/programs/new/connect",
     step: "connect",
   },

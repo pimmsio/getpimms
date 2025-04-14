@@ -1,7 +1,7 @@
 import { getLinkViaEdge } from "@/lib/planetscale";
 import { BlurImage } from "@dub/ui";
 import {
-  GOOGLE_FAVICON_URL,
+  getGoogleFavicon,
   constructMetadata,
   getApexDomain,
 } from "@dub/utils";
@@ -31,7 +31,7 @@ export async function generateMetadata({
     description: unescape(data.description || ""),
     image: data.image,
     video: data.video,
-    icons: `${GOOGLE_FAVICON_URL}${apexDomain}`,
+    icons: getGoogleFavicon(apexDomain, false),
     noIndex: true,
   });
 }
@@ -59,7 +59,7 @@ export default async function ProxyPage({
 
   return (
     <main className="flex h-screen w-screen items-center justify-center">
-      <div className="mx-5 w-full max-w-lg overflow-hidden rounded-lg border border-neutral-200 sm:mx-0">
+      <div className="mx-5 w-full max-w-lg overflow-hidden rounded-xl border-[6px] border-neutral-100 sm:mx-0">
         <img
           src={data.image}
           alt={unescape(data.title || "")}
@@ -69,7 +69,7 @@ export default async function ProxyPage({
           <BlurImage
             width={20}
             height={20}
-            src={`${GOOGLE_FAVICON_URL}${apexDomain}`}
+            src={getGoogleFavicon(apexDomain, false)}
             alt={unescape(data.title || "")}
             className="mt-1 h-6 w-6"
           />

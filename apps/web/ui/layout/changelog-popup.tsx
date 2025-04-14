@@ -6,9 +6,9 @@ import { X } from "lucide-react";
 import Link from "next/link";
 import { useContext } from "react";
 
-const CHANGELOG_URL = "https://dub.link/builder";
-const CHANGELOG_IMAGE_URL = "https://assets.dub.co/blog/new-link-builder.jpg";
-const CHANGELOG_TITLE = "Introducing the new Dub Link Builder";
+const CHANGELOG_URL = "https://pimms.link/builder";
+const CHANGELOG_IMAGE_URL = "https://assets.pimms.io/blog/new-link-builder.jpg";
+const CHANGELOG_TITLE = "Introducing the new PIMMS Link Builder";
 const CHANGELOG_DESCRIPTION =
   "Today, we're launching our new Link Builder to help you manage your links better.";
 const CHANGELOG_ID = "hideChangelogPopup10032024";
@@ -32,7 +32,7 @@ export function ChangelogPopupInner() {
         translateY: 0,
       }}
       exit={{ opacity: 0, y: "100%" }}
-      className="group fixed bottom-4 z-40 mx-2 overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-md sm:left-4 sm:mx-auto sm:max-w-sm"
+      className="group fixed bottom-4 z-40 mx-2 overflow-hidden rounded-xl border-[6px] border-neutral-100 bg-white shadow-md sm:left-4 sm:mx-auto sm:max-w-sm"
     >
       <button
         className="absolute right-2.5 top-2.5 z-10 rounded-full p-1 transition-colors hover:bg-neutral-100 active:scale-90"
@@ -46,7 +46,7 @@ export function ChangelogPopupInner() {
         className="flex max-w-sm flex-col items-center justify-center"
         onClick={() => hidePopup()}
       >
-        <div className="border-b border-neutral-200">
+        <div className="border-b-[6px] border-neutral-100">
           <BlurImage
             src={CHANGELOG_IMAGE_URL}
             alt="Root Domain Links"

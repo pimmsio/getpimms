@@ -20,7 +20,7 @@ model Project {
   usage        Int @default(0)
   usageLimit   Int @default(1000)
   linksUsage   Int @default(0)
-  linksLimit   Int @default(25)
+  linksLimit   Int @default(10)
   salesUsage   Int @default(0)
   salesLimit   Int @default(0)
   domainsLimit Int @default(3)

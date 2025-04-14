@@ -35,9 +35,20 @@ export const sendOtpAction = actionClient
       throw new Error("Too many requests. Please try again later.");
     }
 
+    // 🔐 Prevent multiple signups with the same email
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      throw new Error(
+        "An account with this email already exists. Please sign in instead."
+      );
+    }
+
     if (email.includes("+") && email.endsWith("@gmail.com")) {
       throw new Error(
-        "Email addresses with + are not allowed. Please use your work email instead.",
+        "Email addresses with + are not allowed. Please use your work email instead."
       );
     }
 
@@ -51,20 +62,20 @@ export const sendOtpAction = actionClient
 
       if (isDisposable) {
         throw new Error(
-          "Invalid email address – please use your work email instead. If you think this is a mistake, please contact us at support@dub.co",
+          "Invalid email address – please use your work email instead. If you think this is a mistake, please contact us at support@pimms.io"
         );
       }
 
       if (emailDomainTerms && Array.isArray(emailDomainTerms)) {
         const blacklistedEmailDomainTermsRegex = new RegExp(
           emailDomainTerms
-            .map((term: string) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")) // replace special characters with escape sequences
-            .join("|"),
+            .map((term: string) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+            .join("|")
         );
 
         if (blacklistedEmailDomainTermsRegex.test(domain)) {
           throw new Error(
-            "Invalid email address – please use your work email instead. If you think this is a mistake, please contact us at support@dub.co",
+            "Invalid email address – please use your work email instead. If you think this is a mistake, please contact us at support@pimms.io"
           );
         }
       }
@@ -86,7 +97,6 @@ export const sendOtpAction = actionClient
           expires: new Date(Date.now() + EMAIL_OTP_EXPIRY_IN * 1000),
         },
       }),
-
       sendEmail({
         subject: `${process.env.NEXT_PUBLIC_APP_NAME}: OTP to verify your account`,
         email,

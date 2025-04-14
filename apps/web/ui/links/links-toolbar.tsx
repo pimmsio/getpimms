@@ -55,7 +55,7 @@ export const LinksToolbar = memo(
 
     const { canManageFolderPermissions } = getPlanCapabilities(plan);
     const { folders } = useFolderPermissions();
-    const conversionsEnabled = !!plan && plan !== "free" && plan !== "pro";
+    // const conversionsEnabled = !!plan && plan !== "free";
 
     const { openMenuLinkId } = useContext(LinksListContext);
     const {
@@ -117,59 +117,59 @@ export const LinksToolbar = memo(
           action: () => setShowTagLinkModal(true),
           keyboardShortcut: "t",
         },
-        ...(flags?.linkFolders
-          ? [
-              {
-                label: "Folder",
-                icon: Folder,
-                action: () => setShowMoveLinkToFolderModal(true),
-                disabledTooltip:
-                  plan === "free" ? (
-                    <TooltipContent
-                      title="You can only use Link Folders on a Pro plan and above. Upgrade to Pro to continue."
-                      cta="Upgrade to Pro"
-                      href={`/${slug}/upgrade`}
-                    />
-                  ) : undefined,
-                keyboardShortcut: "m",
-              },
-            ]
-          : []),
+        // ...(flags?.linkFolders
+        //   ? [
+        //       {
+        //         label: "Folder",
+        //         icon: Folder,
+        //         action: () => setShowMoveLinkToFolderModal(true),
+        //         disabledTooltip:
+        //           plan === "free" ? (
+        //             <TooltipContent
+        //               title="You can only use Link Folders on a Pro plan and above. Upgrade to Pro to continue."
+        //               cta="Upgrade to Pro"
+        //               href={`/${slug}/upgrade`}
+        //             />
+        //           ) : undefined,
+        //         keyboardShortcut: "m",
+        //       },
+        //     ]
+        //   : []),
         {
           label: "Conversion",
           icon: CircleDollar,
           action: () => setShowLinkConversionTrackingModal(true),
-          disabledTooltip: conversionsEnabled ? undefined : (
-            <TooltipContent
-              title="Conversion tracking is only available on Business plans and above."
-              cta="Upgrade to Business"
-              href={slug ? `/${slug}/upgrade` : "https://dub.co/pricing"}
-              target="_blank"
-            />
-          ),
-          keyboardShortcut: "c",
+          // disabledTooltip: conversionsEnabled ? undefined : (
+          //   <TooltipContent
+          //     title="Conversion tracking is only available on Pro plans and above."
+          //     cta="Upgrade to Pro"
+          //     href={slug ? `/${slug}/upgrade` : "https://pimms.io/pricing"}
+          //     target="_blank"
+          //   />
+          // ),
+          // keyboardShortcut: "c",
         },
-        {
-          label:
-            selectedLinks.length &&
-            selectedLinks.every(({ archived }) => archived)
-              ? "Unarchive"
-              : "Archive",
-          icon: BoxArchive,
-          action: () => setShowArchiveLinkModal(true),
-          keyboardShortcut: "a",
-        },
-        {
-          label: "Delete",
-          icon: Trash,
-          action: () => setShowDeleteLinkModal(true),
-          disabledTooltip: selectedLinks.some(({ programId }) => programId)
-            ? "You can't delete a link that's part of a program."
-            : undefined,
-          keyboardShortcut: "x",
-        },
+        // {
+        //   label:
+        //     selectedLinks.length &&
+        //     selectedLinks.every(({ archived }) => archived)
+        //       ? "Unarchive"
+        //       : "Archive",
+        //   icon: BoxArchive,
+        //   action: () => setShowArchiveLinkModal(true),
+        //   keyboardShortcut: "a",
+        // },
+        // {
+        //   label: "Delete",
+        //   icon: Trash,
+        //   action: () => setShowDeleteLinkModal(true),
+        //   disabledTooltip: selectedLinks.some(({ programId }) => programId)
+        //     ? "You can't delete a link that's part of a program."
+        //     : undefined,
+        //   keyboardShortcut: "x",
+        // },
       ],
-      [plan, conversionsEnabled, selectedLinks],
+      [plan, selectedLinks],
     );
 
     useKeyboardShortcut(
@@ -201,23 +201,23 @@ export const LinksToolbar = memo(
     return (
       <>
         <TagLinkModal />
-        <MoveLinkToFolderModal />
+        {/* <MoveLinkToFolderModal /> */}
         <LinkConversionTrackingModal />
-        <ArchiveLinkModal />
-        <DeleteLinkModal />
+        {/* <ArchiveLinkModal /> */}
+        {/* <DeleteLinkModal /> */}
         <LinkBuilder />
 
         {/* Leave room at bottom of list */}
         <div className="h-[90px]" />
 
-        <div className="fixed bottom-4 left-0 w-full sm:max-[1330px]:w-[calc(100%-150px)] md:left-[240px] md:w-[calc(100%-240px)] md:max-[1330px]:w-[calc(100%-240px-150px)]">
+        <div className="fixed bottom-0 left-0 w-full md:left-[240px] md:w-[calc(100%-240px)]">
           <div
             className={cn(
-              "relative left-1/2 w-full max-w-[768px] -translate-x-1/2 px-5",
-              "max-[1330px]:left-0 max-[1330px]:translate-x-0",
+              "relative w-full px-4",
+              // "max-[1330px]:left-0 max-[1330px]:translate-x-0",
             )}
           >
-            <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white [filter:drop-shadow(0_5px_8px_#222A351d)]">
+            <div className="ring-t-[6px] rounded-t-xl border-[6px] border-b-0 border-neutral-100 bg-zinc-50 p-0 ring-neutral-100">
               <AnimatedSizeContainer height>
                 <div
                   className={cn(
@@ -245,18 +245,15 @@ export const LinksToolbar = memo(
                       </>
                     )}
                   </PaginationControls>
-                  <div className="flex items-center gap-2 pt-3 sm:hidden">
-                    <CreateLinkButton
-                      className="h-8"
-                      textWrapperClassName="text-center"
-                    />
-                    <Button
+                  <div className="flex items-center sm:hidden">
+                    <CreateLinkButton />
+                    {/* <Button
                       variant="secondary"
                       className="h-8 w-fit px-3.5"
                       icon={<CircleCheck className="size-4" />}
                       text="Select"
                       onClick={() => setIsSelectMode(true)}
-                    />
+                    /> */}
                   </div>
                 </div>
 
@@ -267,7 +264,7 @@ export const LinksToolbar = memo(
                       "pointer-events-none absolute inset-0 translate-y-1/2 opacity-0",
                   )}
                 >
-                  <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
@@ -303,12 +300,15 @@ export const LinksToolbar = memo(
                           action,
                           disabledTooltip,
                           keyboardShortcut,
-                        }) => (
-                          <Button
-                            type="button"
-                            variant="secondary"
-                            className="xs:px-2.5 h-7 gap-1.5 px-2 text-xs min-[1120px]:pr-1.5"
-                            textWrapperClassName="max-[1120px]:hidden"
+                        },
+                        idx,
+                      ) => (
+                        <Button
+                          key={idx}
+                          type="button"
+                          variant="secondary"
+                          className="xs:px-2.5 h-7 gap-1.5 px-2 text-xs min-[1120px]:pr-1.5"
+                          textWrapperClassName="max-[1120px]:hidden"
                             icon={<Icon className="size-3.5" />}
                             text={label}
                             onClick={action}

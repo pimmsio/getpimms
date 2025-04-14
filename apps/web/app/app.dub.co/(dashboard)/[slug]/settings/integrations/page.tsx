@@ -10,7 +10,7 @@ export default function IntegrationsPage() {
           Integrations
         </h1>
         <p className="mb-2 mt-2 text-base text-neutral-600">
-          Use Dub with your existing favorite tools with our seamless
+          Use PIMMS with your existing favorite tools with our seamless
           integrations.
         </p>
       </div>

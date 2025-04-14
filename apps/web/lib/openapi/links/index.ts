@@ -14,23 +14,23 @@ import { upsertLink } from "./upsert-link";
 export const linksPaths: ZodOpenApiPathsObject = {
   "/links": {
     post: createLink,
-    get: getLinks,
+    // get: getLinks,
   },
-  "/links/count": {
-    get: getLinksCount,
-  },
-  "/links/info": {
-    get: getLinkInfo,
-  },
-  "/links/{linkId}": {
-    patch: updateLink,
-    delete: deleteLink,
-  },
-  "/links/bulk": {
-    post: bulkCreateLinks,
-    patch: bulkUpdateLinks,
-    delete: bulkDeleteLinks,
-  },
+  // "/links/count": {
+  //   get: getLinksCount,
+  // },
+  // "/links/info": {
+  //   get: getLinkInfo,
+  // },
+  // "/links/{linkId}": {
+  //   patch: updateLink,
+  //   delete: deleteLink,
+  // },
+  // "/links/bulk": {
+  //   post: bulkCreateLinks,
+  //   patch: bulkUpdateLinks,
+  //   delete: bulkDeleteLinks,
+  // },
   "/links/upsert": {
     put: upsertLink,
   },

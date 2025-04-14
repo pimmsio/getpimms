@@ -19,15 +19,14 @@ import { Footer } from "../components/footer";
 export function NewSaleAlertProgramOwner({
   user = {
     name: "Brendan Urie",
-    email: "panic@thedis.co",
+    email: "cheers@pimms.io",
   },
   workspace = {
-    name: "Acme",
-    slug: "acme",
-  },
+    name: "PIMMS",
+    slug: "pimms",  },
   program = {
     id: "prog_CYCu7IMAapjkRpTnr8F1azjN",
-    name: "Acme",
+    name: "PiMMs",
     logo: DUB_WORDMARK,
     holdingPeriodDays: 30,
   },
@@ -65,8 +64,8 @@ export function NewSaleAlertProgramOwner({
     earnings: number;
   };
 }) {
-  const salesLink = `https://app.dub.co/${workspace.slug}/programs/${program.id}/sales?partnerId=${partner.id}`;
-  const notificationPreferencesLink = `https://app.dub.co/${workspace.slug}/settings/notifications`;
+  const salesLink = `https://app.pimms.io/${workspace.slug}/programs/${program.id}/sales?partnerId=${partner.id}`;
+  const notificationPreferencesLink = `https://app.pimms.io/${workspace.slug}/settings/notifications`;
 
   const saleAmountInDollars = currencyFormatter(sale.amount / 100, {
     minimumFractionDigits: 2,
@@ -109,10 +108,10 @@ export function NewSaleAlertProgramOwner({
       <Preview>You received a sale from a customer referred! 💰</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[600px] rounded border border-solid border-neutral-200 px-10 py-5">
-            <Section className="mt-8">
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+            <Section className="my-8">
               <Img
-                src={program.logo || "https://assets.dub.co/logo.png"}
+                src={program.logo || "https://assets.pimms.io/logo.png"}
                 height="32"
                 alt={program.name}
               />
@@ -134,7 +133,7 @@ export function NewSaleAlertProgramOwner({
             </Text>
 
             <Section className="my-8 w-full">
-              <div className="rounded-lg border border-neutral-200">
+              <div className="rounded-xl border-[6px] border-neutral-100">
                 <Row>
                   <Column>
                     <Text className="m-0 text-sm leading-6 text-neutral-600">

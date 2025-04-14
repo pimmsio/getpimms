@@ -16,8 +16,8 @@ import { Footer } from "../components/footer";
 import { WorkspaceProps } from "../types";
 
 export function FailedPayment({
-  user = { name: "Brendon Urie", email: "panic@thedis.co" },
-  workspace = { name: "Dub", slug: "dub" },
+  user = { name: "Brendon Urie", email: "cheers@pimms.io" },
+  workspace = { name: "PIMMS", slug: "pimms" },
   amountDue = 2400,
   attemptCount = 2,
 }: {
@@ -28,7 +28,7 @@ export function FailedPayment({
 }) {
   const title = `${
     attemptCount == 2 ? "2nd notice: " : attemptCount == 3 ? "3rd notice: " : ""
-  }Your payment for Dub failed`;
+  }Your payment for PiMMs failed`;
 
   return (
     <Html>
@@ -36,13 +36,13 @@ export function FailedPayment({
       <Preview>{title}</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[600px] rounded border border-solid border-neutral-200 px-10 py-5">
-            <Section className="mt-8">
-              <Img src={DUB_WORDMARK} height="32" alt="Dub" />
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+            <Section className="my-8">
+              <Img src={DUB_WORDMARK} height="14" alt="PIMMS" className="my-0" />
             </Section>
             <Heading className="mx-0 my-7 p-0 text-lg font-medium text-black">
               {attemptCount == 2 ? "2nd " : attemptCount == 3 ? "3rd  " : ""}
-              Failed Payment for Dub
+              Failed Payment for PiMMs
             </Heading>
             <Text className="text-sm leading-6 text-black">
               Hey{user.name ? `, ${user.name}` : ""}!
@@ -50,21 +50,14 @@ export function FailedPayment({
             <Text className="text-sm leading-6 text-black">
               Your payment of{" "}
               <code className="text-purple-600">${amountDue / 100}</code> for
-              your Dub workspace{" "}
+              your PiMMs workspace{" "}
               <code className="text-purple-600">{workspace.name}</code> has
-              failed. Please{" "}
-              <Link
-                href="https://dub.co/help/article/how-to-change-billing-information"
-                className="font-medium text-blue-600 no-underline"
-              >
-                update your payment information
-              </Link>{" "}
-              using the link below:
+              failed. Please update your payment information using the link below:
             </Text>
-            <Section className="my-8">
+            <Section className="my-8 text-center">
               <Link
-                className="rounded-lg bg-black px-6 py-3 text-center text-[12px] font-semibold text-white no-underline"
-                href={`https://app.dub.co/${workspace.slug}/settings/billing`}
+                className="px-5 py-3 bg-[#dc2e65] text-white font-semibold outline outline-[6px] transition outline-[#ffeaf1] cursor-pointer no-underline rounded-xl"
+                href={`https://app.pimms.io/${workspace.slug}/settings/billing`}
               >
                 Update payment information
               </Link>

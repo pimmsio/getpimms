@@ -155,23 +155,23 @@ export async function processLink<T extends Record<string, any>>({
 
   // if domain is not defined, set it to the workspace's primary domain
   if (!domain) {
-    domain = domains?.find((d) => d.primary)?.slug || "dub.sh";
+    domain = domains?.find((d) => d.primary)?.slug || SHORT_DOMAIN;
   }
 
-  // checks for dub.sh and dub.link links
-  if (domain === "dub.sh" || domain === "dub.link") {
+  // checks for pim.ms links
+  if (domain === SHORT_DOMAIN) {
     // for dub.link: check if workspace plan is pro+
-    if (domain === "dub.link" && (!workspace || workspace.plan === "free")) {
-      return {
-        link: payload,
-        error:
-          "You can only use dub.link on a Pro plan and above. Upgrade to Pro to use this domain.",
-        code: "forbidden",
-      };
-    }
+    // if (domain === "dub.link" && (!workspace || workspace.plan === "free")) {
+    //   return {
+    //     link: payload,
+    //     error:
+    //       "You can only use dub.link on a Pro plan and above. Upgrade to Pro to use this domain.",
+    //     code: "forbidden",
+    //   };
+    // }
 
     // for dub.sh: check if user exists (if userId is passed)
-    if (domain === "dub.sh" && userId) {
+    if (domain === SHORT_DOMAIN && userId) {
       const userExists = await checkIfUserExists(userId);
       if (!userExists) {
         return {
@@ -193,7 +193,7 @@ export async function processLink<T extends Record<string, any>>({
     // checks for other Dub-owned domains (chatg.pt, spti.fi, etc.)
   } else if (isDubDomain(domain)) {
     // coerce type with ! cause we already checked if it exists
-    const { allowedHostnames } = DUB_DOMAINS.find((d) => d.slug === domain)!;
+    const { allowedHostnames } = DUB_DOMAINS.find((d) => d.slug === domain)! as any;
     const urlDomain = getDomainWithoutWWW(url) || "";
     const apexDomain = getApexDomain(url);
     if (

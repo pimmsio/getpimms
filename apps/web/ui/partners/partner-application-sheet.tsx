@@ -54,7 +54,7 @@ function PartnerApplicationSheetContent({
 
         {partner.status === "pending" && (
           <div className="flex grow flex-col justify-end">
-            <div className="border-t border-neutral-200 p-5">
+            <div className="border-t-[6px] border-neutral-100 p-5">
               <PartnerApproval partner={partner} setIsOpen={setIsOpen} />
             </div>
           </div>

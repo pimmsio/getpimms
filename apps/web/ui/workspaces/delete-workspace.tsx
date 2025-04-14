@@ -19,7 +19,7 @@ export default function DeleteWorkspace() {
 
   return (
     <div
-      className={cn("rounded-lg border border-red-600 bg-white", {
+      className={cn("rounded-xl border-[6px] border-red-400 bg-white", {
         "border-neutral-200": permissionsError,
       })}
     >
@@ -27,9 +27,7 @@ export default function DeleteWorkspace() {
       <div className="flex flex-col space-y-3 p-5 sm:p-10">
         <h2 className="text-xl font-medium">Delete Workspace</h2>
         <p className="text-sm text-neutral-500">
-          Permanently delete your workspace, custom domain, and all associated
-          links + their stats. This action cannot be undone - please proceed
-          with caution.
+          Permanently delete your workspace, and all of its data. This action cannot be undone.
         </p>
       </div>
       <div

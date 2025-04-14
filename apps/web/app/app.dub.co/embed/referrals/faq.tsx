@@ -56,7 +56,7 @@ export function ReferralsEmbedFAQ({
   ];
   return (
     <motion.div
-      className="border-border-muted bg-bg-default rounded-lg border px-4 py-2 sm:px-8 sm:py-4"
+      className="border-border-muted bg-bg-default rounded-xl border-[6px] px-4 py-2 sm:px-8 sm:py-4"
       {...TAB_ITEM_ANIMATION_SETTINGS}
     >
       <Accordion type="single" collapsible>

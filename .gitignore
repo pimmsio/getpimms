@@ -20,6 +20,10 @@ dist/
 
 # local env files
 .env*.local
+.env.production
+.env.development
+.env.test
+.env.staging
 .env
 
 # vercel

@@ -25,14 +25,14 @@ export function DomainSelector() {
     </div>
   ) : (
     <>
-      <div className="animate-fade-in mx-auto grid w-full max-w-[312px] gap-4 sm:max-w-2xl sm:grid-cols-2">
+      <div className="animate-fade-in mx-auto grid w-full max-w-[312px] gap-4 sm:max-w-2xl">
         <DomainOption
           title="Connect a custom domain"
-          example="acme.com"
+          example="apple.com"
           onClick={() => setSelectedOption("custom")}
           isSelected={selectedOption === "custom"}
         />
-        <DomainOption
+        {/* <DomainOption
           title={
             <>
               Claim a free{" "}
@@ -46,7 +46,7 @@ export function DomainSelector() {
           onClick={() => setSelectedOption("register")}
           isSelected={selectedOption === "register"}
           paidPlanRequired={true}
-        />
+        /> */}
       </div>
       <div className="mx-auto mt-8 w-full max-w-sm">
         <Button
@@ -96,7 +96,7 @@ function DomainOption({
   return (
     <div
       className={cn(
-        "relative flex flex-col gap-2 rounded-lg border border-neutral-300 px-10 pb-4 pt-9 transition-all",
+        "relative flex flex-col gap-2 rounded-xl border-[6px] border-neutral-200 px-10 pb-4 pt-9 transition-all",
         isSelected && "border-transparent bg-black/[0.03] ring-2 ring-black",
       )}
       role="button"
@@ -106,7 +106,7 @@ function DomainOption({
       {isSelected && (
         <CheckCircleFill className="absolute left-2 top-2 size-5 text-black" />
       )}
-      <div className="flex w-full flex-col gap-2 rounded-md border border-neutral-300 bg-neutral-100 p-2 [mask-image:linear-gradient(to_bottom,black_50%,transparent_95%)]">
+      <div className="flex w-full flex-col gap-2 rounded-xl border-[2px] border-neutral-300 bg-neutral-100 p-2 [mask-image:linear-gradient(to_bottom,black_50%,transparent_95%)]">
         <div className="relative rounded border-neutral-200 bg-white px-2 py-1.5 text-center text-sm font-medium text-neutral-800">
           <Globe2 className="absolute left-2 top-1/2 size-4 -translate-y-1/2" />
           {example}

@@ -137,7 +137,7 @@ export function Form() {
           const result = await res.json();
           posthog.capture("link_created", result);
 
-          await continueTo("domain");
+          await continueTo("plan");
         })}
       >
         <DestinationUrlInput
@@ -168,7 +168,7 @@ export function Form() {
           <span className="block text-sm font-medium text-neutral-700">
             Link Preview
           </span>
-          <div className="relative aspect-[1.91/1] w-full overflow-hidden rounded-md border border-neutral-300 bg-neutral-100">
+          <div className="relative aspect-[1.91/1] w-full overflow-hidden rounded-xl border-[2px] border-neutral-300 bg-neutral-100">
             {previewImage ? (
               <img
                 src={previewImage}
@@ -196,7 +196,8 @@ export function Form() {
           loading={isSubmitting || isSubmitSuccessful}
         />
       </form>
-      <LaterButton next="domain" className="mt-4" />
+      {/* <LaterButton next="domain" className="mt-4" /> */}
+      <LaterButton next="plan" className="mt-4" />
     </>
   );
 }

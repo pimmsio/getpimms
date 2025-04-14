@@ -8,7 +8,7 @@ import NumberFlow from "@number-flow/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CSSProperties, useState } from "react";
 
-const plans = [PRO_PLAN, BUSINESS_PLAN, ADVANCED_PLAN];
+const plans = [PRO_PLAN, BUSINESS_PLAN/*, ADVANCED_PLAN*/];
 
 export function PlanSelector() {
   const [period, setPeriod] = useState<"monthly" | "yearly">("yearly");
@@ -36,7 +36,7 @@ export function PlanSelector() {
       <div className="mt-5 overflow-hidden [container-type:inline-size]">
         <div
           className={cn(
-            "grid grid-cols-3 gap-x-4",
+            "grid grid-cols-3 lg:grid-cols-2 gap-x-4",
 
             // Mobile
             "max-lg:w-[calc(300cqw+2*32px)] max-lg:translate-x-[calc(-1*var(--index)*(100cqw+32px))] max-lg:gap-x-8 max-lg:transition-transform",
@@ -50,13 +50,13 @@ export function PlanSelector() {
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className="flex flex-col rounded-lg border border-neutral-200 bg-white p-6 pb-8"
+              className="flex flex-col rounded-xl border-[6px] border-neutral-100 bg-white p-6 pb-8"
             >
               <div className="flex items-center gap-2">
                 <h2 className="text-xl font-semibold text-neutral-800">
                   {plan.name}
                 </h2>
-                {plan.name === "Business" && (
+                {plan.name === "Pro" && (
                   <Badge variant="blue">Most popular</Badge>
                 )}
               </div>
@@ -66,14 +66,13 @@ export function PlanSelector() {
                   className="tabular-nums text-neutral-700"
                   format={{
                     style: "currency",
-                    currency: "USD",
+                    currency: "EUR",
                     maximumFractionDigits: 0,
                   }}
                   continuous
                 />
                 <span className="ml-1 font-medium">
-                  per month
-                  {period === "yearly" && ", billed yearly"}
+                  {period === "monthly" ? "per month" : "billed yearly"}
                 </span>
               </div>
               <div className="my-6 flex gap-2">

@@ -59,35 +59,28 @@ export function DefaultDomains() {
   const [submitting, setSubmitting] = useState(false);
 
   return (
-    <div className="my-10 grid gap-5 border-t border-neutral-200 py-10">
+    <div className="my-10 grid gap-5 border-t-[6px] border-neutral-100 py-10">
       <div>
         <h2 className="text-xl font-semibold tracking-tight text-black">
           Default Domains
         </h2>
         <p className="mt-3 text-sm text-neutral-500">
-          Leverage default branded domains from Dub for specific links.{" "}
-          <Link
+          Leverage default branded domains from PIMMS for specific links.{" "}
+          {/* <Link
             href="https://dub.co/help/article/default-dub-domains"
             target="_blank"
             className="underline transition-colors hover:text-neutral-800"
           >
             Learn more.
-          </Link>
+          </Link> */}
         </p>
       </div>
       <div className="mt-2 grid grid-cols-1 gap-3">
-        {DUB_DOMAINS.filter((domain) => {
-          if (domain.slug === "dub.link") {
-            return flags?.noDubLink ? false : true;
-          } else if (domain.slug === "loooooooo.ng") {
-            return false;
-          }
-          return true;
-        }).map(({ slug, description }) => {
+        {DUB_DOMAINS.map(({ slug, description }) => {
           return (
             <div
               key={slug}
-              className="flex items-center justify-between gap-4 rounded-xl border border-neutral-200 bg-white p-5"
+              className="flex items-center justify-between gap-4 rounded-xl border-[6px] border-neutral-100 bg-white p-5"
             >
               <DomainCardTitleColumn
                 domain={slug}
@@ -98,14 +91,7 @@ export function DefaultDomains() {
               <Switch
                 disabled={submitting}
                 disabledTooltip={
-                  permissionsError ||
-                  (slug === "dub.link" && plan === "free" ? (
-                    <TooltipContent
-                      title="You can only use dub.link on a Pro plan and above. Upgrade to Pro to use this domain."
-                      cta="Upgrade to Pro"
-                      href={`/${slug}/upgrade`}
-                    />
-                  ) : undefined)
+                  permissionsError || undefined
                 }
                 checked={defaultDomains?.includes(slug)}
                 fn={() => {

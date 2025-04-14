@@ -90,7 +90,7 @@ export default function WebhookHeader({ webhookId }: { webhookId: string }) {
         <div className="flex justify-between gap-8 sm:items-center">
           {isLoading || !webhook ? (
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="w-fit flex-none rounded-md border border-neutral-200 bg-gradient-to-t from-neutral-100 p-2">
+              <div className="w-fit flex-none rounded-xl border-[2px] border-neutral-100 bg-gradient-to-t from-neutral-100 p-2">
                 <div className="size-8 rounded-full bg-neutral-100" />
               </div>
               <div className="flex flex-col gap-2">
@@ -100,7 +100,7 @@ export default function WebhookHeader({ webhookId }: { webhookId: string }) {
             </div>
           ) : (
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="w-fit flex-none rounded-md border border-neutral-200 bg-gradient-to-t from-neutral-100 p-2">
+              <div className="w-fit flex-none rounded-xl border-[2px] border-neutral-100 bg-gradient-to-t from-neutral-100 p-2">
                 <TokenAvatar id={webhook.id} className="size-8" />
               </div>
               <div>
@@ -208,13 +208,13 @@ export default function WebhookHeader({ webhookId }: { webhookId: string }) {
           >
             <Button
               variant="outline"
-              className="flex w-8 rounded-md border border-neutral-200 px-2 transition-[border-color] duration-200"
+              className="flex w-8 rounded-xl border-[2px] border-neutral-100 px-2 transition-[border-color] duration-200"
               icon={<ThreeDots className="h-5 w-5 shrink-0 text-neutral-500" />}
               onClick={() => setOpenPopover(!openPopover)}
             />
           </Popover>
         </div>
-        <div className="-ml-1.5 border-b border-neutral-200">
+        <div className="-ml-1.5 border-b-[6px] border-neutral-100">
           <TabSelect
             options={[
               { id: "", label: "Event Logs" },

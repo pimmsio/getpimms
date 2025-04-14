@@ -43,13 +43,13 @@ const RegisterDomainSuccess = ({
             <p className="mt-4 text-sm text-neutral-500">
               Your domain is now registered and ready to use, though it may take
               some time for the domain configuration to propagate globally.{" "}
-              <a
+              {/* <a
                 href="https://dub.co/help/article/free-dot-link-domain#claim-your-domain-and-wait-for-it-to-be-provisioned"
                 target="_blank"
                 className="underline transition-colors hover:text-neutral-700"
               >
                 Learn more.
-              </a>
+              </a> */}
             </p>
           </div>
           <div className="mt-8">

@@ -15,9 +15,9 @@ import {
 import { Footer } from "../components/footer";
 
 export function ConfirmEmailChange({
-  email = "panic@thedis.co",
-  newEmail = "panic+1@thedis.co",
-  confirmUrl = "https://dub.co/auth/confirm-email-change",
+  email = "cheers@pimms.io",
+  newEmail = "cheers+2@pimms.io",
+  confirmUrl = "https://app.pimms.io/auth/confirm-email-change",
 }: {
   email: string;
   newEmail: string;
@@ -29,9 +29,9 @@ export function ConfirmEmailChange({
       <Preview>Confirm your email address change</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[600px] rounded border border-solid border-neutral-200 px-10 py-5">
-            <Section className="mt-8">
-              <Img src={DUB_WORDMARK} height="32" alt="Dub" />
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+            <Section className="my-8">
+              <Img src={DUB_WORDMARK} height="14" alt="PIMMS" className="my-0" />
             </Section>
             <Heading className="mx-0 my-7 p-0 text-lg font-medium text-black">
               Confirm your email address change
@@ -40,10 +40,10 @@ export function ConfirmEmailChange({
               Follow this link to confirm the update to your email from{" "}
               <strong>{email}</strong> to <strong>{newEmail}</strong>.
             </Text>
-            <Section className="my-8">
+            <Section className="my-8 text-center">
               <Link
                 href={confirmUrl}
-                className="rounded-lg bg-black px-6 py-3 text-center text-[12px] font-semibold text-white no-underline"
+                className="px-5 py-3 bg-[#dc2e65] text-white font-semibold outline outline-[6px] transition outline-[#ffeaf1] cursor-pointer no-underline rounded-xl"
               >
                 <strong>Confirm email change</strong>
               </Link>

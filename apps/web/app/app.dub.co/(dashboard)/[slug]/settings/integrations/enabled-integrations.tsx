@@ -47,7 +47,7 @@ export function EnabledIntegrations({
               View all ({enabledIntegrations.length})
             </Link>
           </div>
-          <ul className="mt-4 divide-y divide-neutral-200 overflow-hidden rounded-lg border border-neutral-200">
+          <ul className="mt-4 divide-y-[6px] divide-neutral-100 overflow-hidden rounded-lg border-[6px] border-neutral-100">
             {enabledIntegrations.slice(0, 3).map((integration) => (
               <li key={integration.id}>
                 <IntegrationRow integration={integration} />

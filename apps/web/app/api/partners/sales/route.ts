@@ -143,6 +143,7 @@ export const PATCH = withWorkspace(
   },
   {
     requiredPlan: [
+      "pro",
       "business",
       "business extra",
       "business max",

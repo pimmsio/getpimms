@@ -51,7 +51,7 @@ function PartnerDetailsSheetContent({ partner }: PartnerDetailsSheetProps) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="sticky top-0 z-10 border-b border-neutral-200 bg-white">
+      <div className="sticky top-0 z-10 border-b-[6px] border-neutral-100 bg-white">
         <div className="flex items-start justify-between p-6">
           <Sheet.Title className="text-xl font-semibold">
             Partner details
@@ -75,7 +75,7 @@ function PartnerDetailsSheetContent({ partner }: PartnerDetailsSheetProps) {
 
           {/* Stats */}
           {showPartnerDetails && (
-            <div className="xs:grid-cols-3 mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-neutral-200 bg-neutral-200">
+            <div className="xs:grid-cols-3 mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-xl border-[6px] border-neutral-100 bg-neutral-200">
               {[
                 [
                   "Clicks",
@@ -138,7 +138,7 @@ function PartnerDetailsSheetContent({ partner }: PartnerDetailsSheetProps) {
               target="_blank"
               className={cn(
                 buttonVariants({ variant: "secondary" }),
-                "flex h-8 items-center justify-center gap-2 rounded-lg border px-2 text-sm",
+                "flex h-8 items-center justify-center gap-2 rounded-xl border-[6px] px-2 text-sm",
               )}
             >
               <LinesY className="size-4 text-neutral-900" />
@@ -149,7 +149,7 @@ function PartnerDetailsSheetContent({ partner }: PartnerDetailsSheetProps) {
               target="_blank"
               className={cn(
                 buttonVariants({ variant: "secondary" }),
-                "flex h-8 items-center justify-center gap-2 rounded-lg border px-2 text-sm",
+                "flex h-8 items-center justify-center gap-2 rounded-xl border-[6px] px-2 text-sm",
               )}
             >
               <CursorRays className="size-4 text-neutral-900" />
@@ -197,7 +197,7 @@ function PartnerDetailsSheetContent({ partner }: PartnerDetailsSheetProps) {
       {showPartnerDetails && (
         <>
           {createPayoutSheet}
-          <div className="sticky bottom-0 z-10 border-t border-neutral-200 bg-white">
+          <div className="sticky bottom-0 z-10 border-t-[6px] border-neutral-100 bg-white">
             <div className="p-5">
               <Button
                 variant="primary"
@@ -279,7 +279,7 @@ function PartnerPayouts({ partner }: { partner: EnrolledPartnerProps }) {
           target="_blank"
           className={cn(
             buttonVariants({ variant: "secondary" }),
-            "flex h-7 items-center rounded-lg border px-2 text-sm",
+            "flex h-7 items-center rounded-xl border-[3px] px-2 text-sm",
           )}
         >
           View all
@@ -293,7 +293,7 @@ function PartnerPayouts({ partner }: { partner: EnrolledPartnerProps }) {
       description="When this partner is eligible for or has received payouts, they will appear here."
       cardContent={() => (
         <>
-          <div className="flex size-7 items-center justify-center rounded-md border border-neutral-200 bg-neutral-50">
+          <div className="flex size-7 items-center justify-center rounded-xl border-[2px] border-neutral-100 bg-neutral-50">
             <GreekTemple className="size-4 text-neutral-700" />
           </div>
           <div className="h-2.5 w-28 min-w-0 rounded-sm bg-neutral-200" />

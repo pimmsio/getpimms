@@ -13,10 +13,10 @@ import type Stripe from "stripe";
 export async function createNewCustomer(event: Stripe.Event) {
   const stripeCustomer = event.data.object as Stripe.Customer;
   const stripeAccountId = event.account as string;
-  const dubCustomerExternalId = stripeCustomer.metadata?.dubCustomerId;
-  const clickId = stripeCustomer.metadata?.dubClickId;
+  const pimmsCustomerExternalId = stripeCustomer.metadata?.pimmsCustomerId;
+  const clickId = stripeCustomer.metadata?.pimmsClickId;
 
-  // The client app should always send dubClickId (dub_id) via metadata
+  // The client app should always send pimmsClickId (pimms_id) via metadata
   if (!clickId) {
     return "Click ID not found in Stripe customer metadata, skipping...";
   }
@@ -49,7 +49,7 @@ export async function createNewCustomer(event: Stripe.Event) {
       email: stripeCustomer.email,
       stripeCustomerId: stripeCustomer.id,
       projectConnectId: stripeAccountId,
-      externalId: dubCustomerExternalId,
+      externalId: pimmsCustomerExternalId,
       projectId: link.projectId,
       linkId,
       clickId,
@@ -122,5 +122,5 @@ export async function createNewCustomer(event: Stripe.Event) {
     }),
   );
 
-  return `New Dub customer created: ${customer.id}. Lead event recorded: ${leadData.event_id}`;
+  return `New PIMMS customer created: ${customer.id}. Lead event recorded: ${leadData.event_id}`;
 }

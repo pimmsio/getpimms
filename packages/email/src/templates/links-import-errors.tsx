@@ -24,12 +24,12 @@ export function LinksImportErrors({
   provider = "CSV",
   errorLinks = [
     {
-      domain: "dub.sh",
+      domain: "pim.ms",
       key: "123",
       error: "Invalid URL",
     },
     {
-      domain: "dub.sh",
+      domain: "pim.ms",
       key: "456",
       error: "Invalid URL",
     },
@@ -53,9 +53,9 @@ export function LinksImportErrors({
       <Preview>Your {provider} links have been imported</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[600px] rounded border border-solid border-neutral-200 px-10 py-5">
-            <Section className="mt-8">
-              <Img src={DUB_WORDMARK} height="32" alt="Dub" />
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+            <Section className="my-8">
+              <Img src={DUB_WORDMARK} height="14" alt="PIMMS" className="my-0" />
             </Section>
             <Heading className="mx-0 my-7 p-0 text-lg font-medium text-black">
               Some {provider} links have failed to import
@@ -63,9 +63,9 @@ export function LinksImportErrors({
             <Text className="text-sm leading-6 text-black">
               The following{" "}
               {Intl.NumberFormat("en-us").format(errorLinks.length)} links from{" "}
-              {provider} failed to import into your Dub workspace,{" "}
+              {provider} failed to import into your PiMMs workspace,{" "}
               <Link
-                href={`https://app.dub.co/${workspaceSlug}`}
+                href={`https://app.pimms.io/${workspaceSlug}`}
                 className="font-medium text-blue-600 no-underline"
               >
                 {workspaceName}↗
@@ -101,7 +101,7 @@ export function LinksImportErrors({
                       </Column>
                     </Row>
                     {index !== errorLinks.length - 1 && (
-                      <Hr className="my-2 w-full border border-neutral-200" />
+                      <Hr className="my-2 w-full border-[6px] border-neutral-100" />
                     )}
                   </div>
                 ))}

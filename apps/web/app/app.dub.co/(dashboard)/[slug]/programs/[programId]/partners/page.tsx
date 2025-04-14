@@ -11,7 +11,7 @@ export default function ProgramPartners() {
       titleControls={
         <div className="flex items-center gap-2">
           <InvitePartnerButton />
-          <ImportExportButtons />
+          {/* <ImportExportButtons /> */}
         </div>
       }
     >

@@ -197,7 +197,7 @@ function TimeSeriesChartInner<T extends Datum>({
                         cx={xScale(tooltipData.date)}
                         cy={yScale(s.valueAccessor(tooltipData))}
                         r={4}
-                        className={s.colorClassName ?? "text-blue-800"}
+                        className={s.colorClassName ?? "text-[#3970ff]"}
                         fill="currentColor"
                       />
                     ))}
@@ -233,7 +233,7 @@ function TimeSeriesChartInner<T extends Datum>({
             >
               <div
                 className={cn(
-                  "pointer-events-none rounded-lg border border-neutral-200 bg-white px-4 py-2 text-base shadow-sm",
+                  "pointer-events-none rounded-xl border-[6px] border-neutral-100 bg-white px-4 py-2 text-base shadow-sm",
                   tooltipClassName,
                 )}
               >

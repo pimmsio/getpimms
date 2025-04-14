@@ -15,23 +15,23 @@ import { ModalHero } from "../shared/modal-hero";
 const NEXT_STEPS = [
   {
     text: "Set up a bank account for payouts",
-    href: "https://dub.co/help/article/how-to-set-up-bank-account",
+    // href: "https://dub.co/help/article/how-to-set-up-bank-account",
   },
   {
     text: "Create custom rewards for your partners",
-    href: "https://dub.co/help/article/partner-rewards",
+    // href: "https://dub.co/help/article/partner-rewards",
   },
   {
     text: "Create dual-sided incentives",
-    href: "https://dub.co/help/article/dual-sided-incentives",
+    // href: "https://dub.co/help/article/dual-sided-incentives",
   },
   {
     text: "Invite more partners to your program",
-    href: "https://dub.co/help/article/inviting-partners",
+    // href: "https://dub.co/help/article/inviting-partners",
   },
   {
     text: "Set up a program application form",
-    href: "https://dub.co/help/article/inviting-partners#via-a-branded-application-form",
+    // href: "https://dub.co/help/article/inviting-partners#via-a-branded-application-form",
   },
 ];
 
@@ -88,17 +88,17 @@ function ProgramWelcomeModal({
                 className="flex flex-col gap-2 pb-2"
               >
                 {NEXT_STEPS.map((step, idx) => (
-                  <motion.a
+                  <motion.div
                     key={idx}
                     variants={STAGGER_CHILD_VARIANTS}
-                    href={step.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    // href={step.href}
+                    // target="_blank"
+                    // rel="noopener noreferrer"
                     className="flex items-center gap-2 text-sm text-neutral-500 underline decoration-dotted"
                   >
                     <CheckCircleFill className="h-5 w-5 text-green-500" />
                     <p>{step.text}</p>
-                  </motion.a>
+                  </motion.div>
                 ))}
               </motion.div>
             </div>

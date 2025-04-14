@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { CSSProperties, forwardRef, useMemo, useState } from "react";
 import { ConversionsOnboarding } from "./conversions/conversions-onboarding";
+import UserDropdown from "./user-dropdown";
 
 export function Usage() {
   const { slug } = useParams() as { slug?: string };
@@ -80,17 +81,23 @@ function UsageInner() {
   return loading || usage !== undefined ? (
     <>
       <AnimatedSizeContainer height>
-        <div className="border-t border-neutral-300/80 p-3">
-          <Link
-            className="group flex items-center gap-0.5 text-sm font-normal text-neutral-500 transition-colors hover:text-neutral-700"
-            href={`/${slug}/settings/billing`}
-          >
-            Usage
-            <ChevronRight className="size-3 text-neutral-400 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-neutral-500" />
-          </Link>
+      <div className="p-3">
+          <div className="flex items-center justify-between gap-3">
+            <Link
+              className="group flex items-center gap-0.5 text-sm font-normal text-neutral-500 transition-colors hover:text-neutral-700"
+              href={`/${slug}/settings/billing`}
+            >
+              Usage
+              <ChevronRight className="size-3 text-neutral-400 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-neutral-500" />
+            </Link>
+            <div className="items-center gap-3 flex">
+              {/* <Suspense fallback={null}>{toolContent}</Suspense> */}
+              <UserDropdown />
+            </div>
+          </div>
 
           <div className="mt-4 flex flex-col gap-4">
-            <UsageRow
+            {/* <UsageRow
               icon={CursorRays}
               label="Events"
               usage={usage}
@@ -98,17 +105,17 @@ function UsageInner() {
               showNextPlan={hovered}
               nextPlanLimit={nextPlan?.limits.clicks}
               warning={warnings[0]}
-            />
+            /> */}
             <UsageRow
               icon={Hyperlink}
-              label="Links"
+              label="Deep links"
               usage={linksUsage}
               limit={linksLimit}
               showNextPlan={hovered}
               nextPlanLimit={nextPlan?.limits.links}
               warning={warnings[1]}
             />
-            {salesLimit && salesLimit > 0 ? (
+            {/* {salesLimit && salesLimit > 0 ? (
               <UsageRow
                 ref={setSalesRef}
                 icon={CircleDollar}
@@ -119,12 +126,12 @@ function UsageInner() {
                 nextPlanLimit={nextPlan?.limits.sales}
                 warning={warnings[2]}
               />
-            ) : null}
+            ) : null} */}
           </div>
 
           <ConversionsOnboarding referenceElement={salesRef} />
 
-          <div className="mt-3">
+          {paymentFailedAt && <div className="mt-3">
             {loading ? (
               <div className="h-4 w-2/3 animate-pulse rounded-md bg-neutral-500/10" />
             ) : (
@@ -135,11 +142,11 @@ function UsageInner() {
                 )}
               >
                 {paymentFailedAt
-                  ? "Your last payment failed. Please update your payment method to continue using Dub."
+                  ? "Your last payment failed. Please update your payment method to continue using PiMMs."
                   : `Usage will reset ${billingEnd}`}
               </p>
             )}
-          </div>
+          </div>}
 
           {paymentFailedAt ? (
             <ManageSubscriptionButton
@@ -167,7 +174,7 @@ function UsageInner() {
                 setHovered(false);
               }}
             >
-              {plan === "free" ? "Get Dub Pro" : "Upgrade plan"}
+              {plan === "free" ? "Get PIMMS Pro" : "Upgrade plan"}
             </Link>
           ) : null}
         </div>
@@ -206,7 +213,7 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
       <div ref={ref}>
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Icon className="size-3.5 text-neutral-600" />
+            {/* <Icon className="size-3.5 text-neutral-600" /> */}
             <span className="text-xs font-medium text-neutral-700">
               {label}
             </span>
@@ -250,7 +257,7 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
                   )}
                 </motion.span>
               </span>
-              <AnimatePresence>
+              {/* <AnimatePresence>
                 {showNextPlan && nextPlanLimit && (
                   <motion.div
                     className="flex items-center"
@@ -262,7 +269,7 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
                       ease: [0.4, 0, 0.2, 1], // Custom cubic-bezier for smooth movement
                     }}
                   >
-                    <motion.span className="ml-1 whitespace-nowrap text-xs font-medium text-blue-600">
+                    <motion.span className="ml-1 whitespace-nowrap text-xs font-medium text-[#08272e]">
                       {label === "Sales" ? "$" : ""}
                       {formatNumber(
                         label === "Sales" ? nextPlanLimit / 100 : nextPlanLimit,
@@ -270,7 +277,7 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
                     </motion.span>
                   </motion.div>
                 )}
-              </AnimatePresence>
+              </AnimatePresence> */}
             </div>
           ) : (
             <div className="h-4 w-16 animate-pulse rounded-md bg-neutral-500/10" />
@@ -280,7 +287,7 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
           <div className="mt-1.5">
             <div
               className={cn(
-                "h-0.5 w-full overflow-hidden rounded-full bg-neutral-900/10 transition-colors",
+                "h-[6px] w-full overflow-hidden rounded-full bg-neutral-900/10 transition-colors",
                 loading && "bg-neutral-900/5",
               )}
             >
@@ -291,8 +298,8 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
                 >
                   <div
                     className={cn(
-                      "size-full rounded-full bg-gradient-to-r from-transparent to-blue-600",
-                      warning && "to-rose-500",
+                      "size-full rounded-full bg-gradient-to-r from-transparent to-[#3971ff]",
+                      warning && "to-[#3971ff]",
                     )}
                     style={{
                       transform: `translateX(-${100 - Math.max(Math.floor((usage / Math.max(0, usage, limit)) * 100), usage === 0 ? 0 : 1)}%)`,

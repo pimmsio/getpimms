@@ -60,7 +60,7 @@ export function FeaturedIntegrations({
                       className="group relative block"
                     >
                       {/* Image */}
-                      <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
+                      <div className="overflow-hidden rounded-xl border-[6px] border-neutral-100 bg-white">
                         <BlurImage
                           src={integration.screenshots![0]}
                           alt={`Screenshot of ${integration.name}`}

@@ -1,28 +1,28 @@
 {
-  "id": "dub.co",
-  "version": "0.0.10",
-  "name": "Dub - Conversion Analytics",
+  "id": "pimms.io",
+  "version": "0.0.8",
+  "name": "PIMMS",
   "icon": "./stripe-icon.png",
   "permissions": [
     {
       "permission": "customer_read",
-      "purpose": "Allows Dub to read customer information."
+      "purpose": "Allows PIMMS to read customer information."
     },
     {
       "permission": "subscription_read",
-      "purpose": "Allows Dub to read subscription information."
+      "purpose": "Allows PIMMS to read subscription information."
     },
     {
       "permission": "invoice_read",
-      "purpose": "Allows Dub to read invoice information."
+      "purpose": "Allows PIMMS to read invoice information."
     },
     {
       "permission": "checkout_session_read",
-      "purpose": "Allows Dub to read checkout session information."
+      "purpose": "Allows PIMMS to read checkout session information."
     },
     {
       "permission": "user_email_read",
-      "purpose": "Access current user's email address to identify within Dub."
+      "purpose": "Access current user's email address to identify within PIMMS."
     },
     {
       "permission": "connected_account_read",
@@ -30,17 +30,18 @@
     },
     {
       "permission": "webhook_read",
-      "purpose": "Allows Dub to read webhook information."
+      "purpose": "Allows PIMMS to read webhook information."
     },
     {
       "permission": "event_read",
-      "purpose": "Allows Dub to read event information."
+      "purpose": "Allows PIMMS to read event information."
     },
     {
       "permission": "secret_write",
-      "purpose": "Allows storing Dub access tokens in Stripe for an account."
+      "purpose": "Allows storing PIMMS access tokens in Stripe for an account."
     }
   ],
+  "connect_permissions": null,
   "ui_extension": {
     "views": [
       {
@@ -50,10 +51,8 @@
     ],
     "content_security_policy": {
       "connect-src": [
-        "https://api.dub.co/oauth/",
-        "https://api-staging.dub.co/oauth/",
-        "https://api.dub.co/stripe/integration",
-        "https://api-staging.dub.co/stripe/integration"
+        "https://app.pimms.io/api/oauth/",
+        "https://app.pimms.io/api/stripe/integration"
       ],
       "image-src": null,
       "purpose": ""
@@ -64,8 +63,7 @@
     "url": ""
   },
   "allowed_redirect_uris": [
-    "https://app.dub.co/api/stripe/integration/callback",
-    "https://preview.dub.co/api/stripe/integration/callback"
+    "https://app.pimms.io/api/stripe/integration/callback"
   ],
   "stripe_api_access_type": "oauth",
   "distribution_type": "public"

@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 
-type SecretName = "dub_token" | "dub_workspace";
+type SecretName = "pimms_token" | "pimms_workspace";
 
 // Secrets are stored on account level
 const scope: Stripe.Apps.SecretCreateParams.Scope = {

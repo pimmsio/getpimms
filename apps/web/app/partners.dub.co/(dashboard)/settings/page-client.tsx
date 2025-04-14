@@ -29,8 +29,8 @@ export function ProfileSettingsPageClient() {
 
   return (
     <MaxWidthWrapper className="mb-20 flex flex-col gap-8">
-      <div className="max-w-screen-md rounded-lg border border-neutral-200 bg-white">
-        <div className="border-b border-neutral-200 p-6">
+      <div className="max-w-screen-md rounded-xl border-[6px] border-neutral-100 bg-white">
+        <div className="border-b-[6px] border-neutral-100 p-6">
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-medium text-neutral-800">About you</h2>
           </div>
@@ -52,10 +52,10 @@ export function ProfileSettingsPageClient() {
       </div>
 
       <div
-        className="max-w-screen-md rounded-lg border border-neutral-200 bg-white"
+        className="max-w-screen-md rounded-xl border-[6px] border-neutral-100 bg-white"
         id="online-presence"
       >
-        <div className="border-b border-neutral-200 p-6">
+        <div className="border-b-[6px] border-neutral-100 p-6">
           <h2 className="text-xl font-medium text-neutral-800">
             Online presence
           </h2>
@@ -163,7 +163,7 @@ function ProfileForm({ partner }: { partner: PartnerProps }) {
                   render={({ field }) => (
                     <FileUpload
                       accept="images"
-                      className="mt-2 size-14 shrink-0 rounded-full border border-neutral-300"
+                      className="mt-2 size-14 shrink-0 rounded-full border-[2px] border-neutral-300"
                       iconClassName="w-5 h-5"
                       previewClassName="size-14 rounded-full"
                       variant="plain"
@@ -235,7 +235,7 @@ function ProfileForm({ partner }: { partner: PartnerProps }) {
                       error={errors.country ? true : false}
                       disabledTooltip={
                         sentPayoutsCount > 0
-                          ? "Since you've already received payouts on Dub, you cannot change your country. If you need to update your country, please contact support."
+                          ? "Since you've already received payouts on PiMMs, you cannot change your country. If you need to update your country, please contact support."
                           : undefined
                       }
                     />
@@ -352,7 +352,7 @@ function ProfileForm({ partner }: { partner: PartnerProps }) {
           </AnimatePresence>
         </div>
       </div>
-      <div className="flex justify-end rounded-b-lg border-t border-neutral-200 bg-neutral-100 px-5 py-3.5">
+      <div className="flex justify-end rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-100 px-5 py-3.5">
         <Button
           type="submit"
           text="Save changes"

@@ -30,7 +30,7 @@ export function StatCard({
   return (
     <Wrapper
       href={href}
-      className="hover:drop-shadow-card-hover block rounded-md border border-neutral-300 bg-white p-5 transition-[filter]"
+      className="hover:drop-shadow-card-hover block rounded-xl border-[2px] border-neutral-300 bg-white p-5 transition-[filter]"
     >
       <span className="block text-sm text-neutral-500">{title}</span>
       {total !== undefined ? (
@@ -45,7 +45,7 @@ export function StatCard({
       ) : (
         <div className="h-8 w-16 animate-pulse rounded-md bg-neutral-200" />
       )}
-      <div className="mt-2 h-16 w-full">
+      {/* <div className="mt-2 h-16 w-full">
         {timeseries ? (
           <MiniAreaChart
             data={timeseries.map((d) => ({
@@ -66,7 +66,7 @@ export function StatCard({
             )}
           </div>
         )}
-      </div>
+      </div> */}
     </Wrapper>
   );
 }

@@ -23,7 +23,7 @@ export const GET = withWorkspace(
       analyticsPathParamsSchema.parse(params);
 
     // for backwards compatibility (we used to support /analytics/[endpoint] as well)
-    if (!oldType && oldEvent && VALID_ANALYTICS_ENDPOINTS.includes(oldEvent)) {
+    if (!oldType && oldEvent && VALID_ANALYTICS_ENDPOINTS.includes(oldEvent as any)) {
       oldType = oldEvent;
       oldEvent = undefined;
     }
@@ -45,8 +45,8 @@ export const GET = withWorkspace(
 
     let link: Link | null = null;
 
-    event = oldEvent || event;
-    groupBy = oldType || groupBy;
+    event = oldEvent || event as any;
+    groupBy = oldType || groupBy as any;
 
     if (domain) {
       await getDomainOrThrow({ workspace, domain });

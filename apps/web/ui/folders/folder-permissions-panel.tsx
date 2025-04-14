@@ -101,7 +101,7 @@ const FolderPermissionsPanel = ({
   const selectDropdown = (
     <select
       className={cn(
-        "appearance-none rounded-md border border-neutral-200 bg-white pl-3 pr-8 text-sm text-neutral-900 focus:border-neutral-300 focus:ring-neutral-300",
+        "appearance-none rounded-xl border-[2px] border-neutral-100 bg-white pl-3 pr-8 text-sm text-neutral-900 focus:border-neutral-300 focus:ring-neutral-300",
         !canUpdateFolder && "cursor-not-allowed bg-neutral-100",
       )}
       value={workspaceAccessLevel || folder?.accessLevel || ""}
@@ -136,7 +136,7 @@ const FolderPermissionsPanel = ({
           }
         >
           <div className="scrollbar-hide flex size-full grow flex-col overflow-y-auto rounded-lg bg-zinc-50">
-            <div className="flex items-center justify-between border-b border-neutral-200 px-8 py-5">
+            <div className="flex items-center justify-between border-b-[6px] border-neutral-100 px-8 py-5">
               <Drawer.Title className="text-xl font-medium text-zinc-900">
                 Folder permissions
               </Drawer.Title>
@@ -152,7 +152,7 @@ const FolderPermissionsPanel = ({
               </Drawer.Close>
             </div>
             <div className="px-8 py-6">
-              <div className="flex flex-col justify-between rounded-xl border border-neutral-200 bg-white px-5 py-4 sm:h-36">
+              <div className="flex flex-col justify-between rounded-xl border-[6px] border-neutral-100 bg-white px-5 py-4 sm:h-36">
                 <div className="flex items-start justify-between">
                   <FolderIcon folder={folder} />
                   {!isLoadingPermissions && !canCreateLinks && (
@@ -312,7 +312,7 @@ const FolderUserRow = ({
       <div className="flex items-center gap-3">
         <select
           className={cn(
-            "cursor-pointer appearance-none rounded-md border border-neutral-200 bg-white pl-3 pr-8 text-sm text-neutral-900 focus:border-neutral-300 focus:ring-neutral-300",
+            "cursor-pointer appearance-none rounded-xl border-[2px] border-neutral-100 bg-white pl-3 pr-8 text-sm text-neutral-900 focus:border-neutral-300 focus:ring-neutral-300",
             disableRoleUpdate && "cursor-not-allowed bg-neutral-100",
           )}
           value={role === null ? "" : role}

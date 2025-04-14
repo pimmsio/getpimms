@@ -82,7 +82,7 @@ function UnbanPartnerModal({
       showModal={showUnbanPartnerModal}
       setShowModal={setShowUnbanPartnerModal}
     >
-      <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-200 px-4 py-8 sm:px-10">
+      <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-8 sm:px-10">
         <img
           src={partner.image || `${OG_AVATAR_URL}${partner.name}`}
           alt={partner.name}

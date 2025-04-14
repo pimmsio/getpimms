@@ -29,7 +29,7 @@ export const useWorkspace = (stripe: Stripe) => {
 async function fetchWorkspace({ stripe }: { stripe: Stripe }) {
   const workspace = await getSecret<Workspace>({
     stripe,
-    name: "dub_workspace",
+    name: "pimms_workspace",
   });
 
   return workspace;

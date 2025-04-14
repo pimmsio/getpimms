@@ -27,7 +27,7 @@ export const navItems = [
     name: "Product",
     content: ProductContent,
     childItems: FEATURES_LIST,
-    segments: ["/home", "/analytics", "/features", "/compare"],
+    segments: ["/", "/analytics", "/features", "/compare"],
   },
   {
     name: "Solutions",
@@ -72,7 +72,7 @@ export function Nav({
   staticDomain?: string;
   maxWidthWrapperClassName?: string;
 }) {
-  let { domain = "dub.co" } = useParams() as { domain: string };
+  let { domain = "pimms.io" } = useParams() as { domain: string };
   if (staticDomain) {
     domain = staticDomain;
   }
@@ -82,7 +82,7 @@ export function Nav({
   const scrolled = useScroll(40);
   const pathname = usePathname();
   const { data: session, isLoading } = useSWR(
-    domain.endsWith("dub.co") && "/api/auth/session",
+    domain.endsWith("pimms.io") && "/api/auth/session",
     fetcher,
     {
       dedupingInterval: 60000,
@@ -111,7 +111,7 @@ export function Nav({
               <div className="grow basis-0">
                 <Link
                   className="block w-fit py-2 pr-2"
-                  href={createHref("/home", domain, {
+                  href={createHref("/", domain, {
                     utm_source: "Custom Domain",
                     utm_medium: "Navbar",
                     utm_campaign: domain,
@@ -121,7 +121,7 @@ export function Nav({
                   <NavWordmark />
                 </Link>
               </div>
-              <NavigationMenuPrimitive.Root
+              {/* <NavigationMenuPrimitive.Root
                 delayDuration={0}
                 className="relative hidden lg:block"
               >
@@ -173,21 +173,21 @@ export function Nav({
                 <div className="absolute left-1/2 top-full mt-3 -translate-x-1/2">
                   <NavigationMenuPrimitive.Viewport
                     className={cn(
-                      "relative flex origin-[top_center] justify-start overflow-hidden rounded-[20px] border border-neutral-200 bg-white shadow-md dark:border-white/[0.15] dark:bg-black",
+                      "relative flex origin-[top_center] justify-start overflow-hidden rounded-[20px] border-[6px] border-neutral-100 bg-white shadow-md dark:border-white/[0.15] dark:bg-black",
                       "data-[state=closed]:animate-scale-out-content data-[state=open]:animate-scale-in-content",
                       "h-[var(--radix-navigation-menu-viewport-height)] w-[var(--radix-navigation-menu-viewport-width)] transition-[width,height]",
                     )}
                   />
                 </div>
-              </NavigationMenuPrimitive.Root>
+              </NavigationMenuPrimitive.Root> */}
 
-              <div className="hidden grow basis-0 justify-end gap-2 lg:flex">
+              {/* <div className="hidden grow basis-0 justify-end gap-2 lg:flex">
                 {session && Object.keys(session).length > 0 ? (
                   <Link
                     href={APP_DOMAIN}
                     className={cn(
                       buttonVariants({ variant: "primary" }),
-                      "flex h-8 items-center rounded-lg border px-4 text-sm",
+                      "flex h-8 items-center rounded-xl border-[6px] px-4 text-sm",
                       "dark:border-white dark:bg-white dark:text-black dark:hover:bg-neutral-50 dark:hover:ring-white/10",
                     )}
                   >
@@ -196,28 +196,28 @@ export function Nav({
                 ) : !isLoading ? (
                   <>
                     <Link
-                      href="https://app.dub.co/login"
+                      href="https://app.pimms.io/login"
                       className={cn(
                         buttonVariants({ variant: "secondary" }),
-                        "flex h-8 items-center rounded-lg border px-4 text-sm",
+                        "flex h-8 items-center rounded-xl border-[6px] px-4 text-sm",
                         "dark:border-white/10 dark:bg-black dark:text-white dark:hover:bg-neutral-900",
                       )}
                     >
                       Log in
                     </Link>
                     <Link
-                      href="https://app.dub.co/register"
+                      href="https://app.pimms.io/register"
                       className={cn(
                         buttonVariants({ variant: "primary" }),
-                        "flex h-8 items-center rounded-lg border px-4 text-sm",
+                        "flex h-8 items-center rounded-xl border-[6px] px-4 text-sm",
                         "dark:border-white dark:bg-white dark:text-black dark:hover:bg-neutral-50 dark:hover:ring-white/10",
                       )}
                     >
-                      Sign up
+                      Register
                     </Link>
                   </>
                 ) : null}
-              </div>
+              </div> */}
             </div>
           </MaxWidthWrapper>
         </div>

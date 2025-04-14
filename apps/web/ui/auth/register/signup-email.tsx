@@ -63,7 +63,7 @@ export const SignUpEmail = () => {
         />
         <Button
           type="submit"
-          text={isPending ? "Submitting..." : "Sign Up"}
+          text={isPending ? "Submitting..." : "Create an account"}
           disabled={isPending}
           loading={isPending}
         />

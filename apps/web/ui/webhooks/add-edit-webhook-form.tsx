@@ -201,7 +201,7 @@ export default function AddEditWebhookForm({
           </div>
         </div>
 
-        <div className="rounded-md border border-neutral-200 p-4">
+        <div className="rounded-xl border-[2px] border-neutral-100 p-4">
           <label htmlFor="triggers" className="flex flex-col gap-1">
             <h2 className="text-sm font-medium text-neutral-900">
               Workspace level events
@@ -238,7 +238,7 @@ export default function AddEditWebhookForm({
           </div>
         </div>
 
-        <div className="rounded-md border border-neutral-200 p-4">
+        <div className="rounded-xl border-[2px] border-neutral-100 p-4">
           <label htmlFor="triggers" className="flex flex-col gap-1">
             <h2 className="text-sm font-medium text-neutral-900">
               Link level events{" "}

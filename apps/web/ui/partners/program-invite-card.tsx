@@ -25,7 +25,7 @@ export function ProgramInviteCard({
   });
 
   return (
-    <div className="hover:drop-shadow-card-hover relative flex flex-col items-center justify-center gap-2 rounded-md border border-neutral-300 bg-neutral-50 p-4 transition-[filter]">
+    <div className="hover:drop-shadow-card-hover relative flex flex-col items-center justify-center gap-2 rounded-xl border-[2px] border-neutral-300 bg-neutral-50 p-4 transition-[filter]">
       <StatusBadge
         variant="new"
         icon={null}
@@ -33,7 +33,7 @@ export function ProgramInviteCard({
       >
         Invited
       </StatusBadge>
-      <div className="flex size-10 items-center justify-center rounded-full border border-neutral-200 bg-white">
+      <div className="flex size-10 items-center justify-center rounded-full border-[6px] border-neutral-100 bg-white">
         <BlurImage
           width={96}
           height={96}

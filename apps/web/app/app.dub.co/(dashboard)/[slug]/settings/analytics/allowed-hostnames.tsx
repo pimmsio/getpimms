@@ -12,21 +12,20 @@ export const AllowedHostnames = () => {
   const { allowedHostnames, loading } = useWorkspace();
 
   return (
-    <div className="grid gap-5 rounded-lg border border-neutral-200 p-5">
+    <div className="grid gap-5 rounded-lg border-[6px] border-neutral-100 p-5">
       <div className="flex flex-col gap-1">
         <h2 className="text-xl font-semibold tracking-tight text-black">
-          Allowed Hostnames
+          Allowed hostnames
         </h2>
         <p className="text-sm text-neutral-500">
-          Specify a list of hostnames where client-side click tracking will be
-          allowed on.{" "}
-          <Link
+          Add your hostnames to enable client-side conversion tracking.
+          {/* <Link
             href="https://dub.co/docs/conversions/clicks/introduction#client-side-click-tracking"
             target="_blank"
             className="underline transition-colors hover:text-neutral-800"
           >
             Learn more.
-          </Link>
+          </Link> */}
         </p>
       </div>
       <div className="grid grid-cols-1 gap-3">

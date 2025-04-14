@@ -17,13 +17,13 @@ export function FilesBlock({
         {block.data.items.map((file, idx) => (
           <a
             key={idx}
-            className="group flex items-center justify-between gap-4 rounded-lg border border-neutral-200 bg-white p-3 transition-colors duration-75 hover:bg-neutral-50 active:bg-neutral-100"
+            className="group flex items-center justify-between gap-4 rounded-xl border-[6px] border-neutral-100 bg-white p-3 transition-colors duration-75 hover:bg-neutral-50 active:bg-neutral-100"
             href={file.url}
             {...(file.external ? { target: "_blank" } : { download: true })}
           >
             <div className="flex min-w-0 items-center gap-4">
-              <div className="rounded-full border border-neutral-200">
-                <div className="rounded-full border border-white bg-gradient-to-t from-neutral-100 p-1 md:p-2">
+              <div className="rounded-full border-[6px] border-neutral-100">
+                <div className="rounded-full border-[2px] border-white bg-gradient-to-t from-neutral-100 p-1 md:p-2">
                   {logo ? (
                     <img src={logo} alt="" className="size-4 rounded-full" />
                   ) : (

@@ -52,7 +52,7 @@ export function Areas({
                 key={`${s.id}_${startDate.toString()}_${endDate.toString()}`}
               >
                 {/* Area background mask gradient */}
-                <LinearGradient
+                {/* <LinearGradient
                   id={`${s.id}-mask-gradient`}
                   from="white"
                   to="white"
@@ -62,12 +62,12 @@ export function Areas({
                   x2={0}
                   y1={0}
                   y2={1}
-                />
+                /> */}
                 <mask id={`${s.id}-mask`} maskContentUnits="objectBoundingBox">
                   <rect
                     width="1"
                     height="1"
-                    fill={`url(#${s.id}-mask-gradient)`}
+                    fill="rgba(245, 245, 245, 0.05)"
                   />
                 </mask>
 
@@ -84,7 +84,7 @@ export function Areas({
                         initial={{ d: path(zeroedData) || "", opacity: 0 }}
                         animate={{ d: path(data) || "", opacity: 1 }}
                         className={cn(
-                          s.colorClassName ?? "text-blue-500",
+                          s.colorClassName ?? "text-[#3970ff]",
                           seriesStyle?.gradientClassName,
                         )}
                         mask={`url(#${s.id}-mask)`}
@@ -105,12 +105,12 @@ export function Areas({
                       initial={{ d: path(zeroedData) || "" }}
                       animate={{ d: path(data) || "" }}
                       className={cn(
-                        s.colorClassName ?? "text-blue-700",
+                        s.colorClassName ?? "text-[#3970ff]",
                         seriesStyle?.lineClassName,
                       )}
                       stroke={seriesStyle?.lineStroke ?? "currentColor"}
                       strokeOpacity={0.8}
-                      strokeWidth={2}
+                      strokeWidth={4}
                       fill="transparent"
                     />
                   )}

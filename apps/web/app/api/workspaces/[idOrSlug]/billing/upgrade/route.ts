@@ -1,6 +1,5 @@
 import { DubApiError } from "@/lib/api/errors";
 import { isDubAdmin, withWorkspace } from "@/lib/auth";
-import { getDubCustomer } from "@/lib/dub";
 import { stripe } from "@/lib/stripe";
 import { APP_DOMAIN } from "@dub/utils";
 import { NextResponse } from "next/server";
@@ -58,7 +57,7 @@ export const POST = withWorkspace(async ({ req, workspace, session }) => {
     });
     return NextResponse.json({ url });
   } else {
-    const customer = await getDubCustomer(session.user.id);
+    // const customer = await getPimmsCustomer(session.user.id);
 
     // For both new users and users with canceled subscriptions
     const stripeSession = await stripe.checkout.sessions.create({
@@ -78,19 +77,19 @@ export const POST = withWorkspace(async ({ req, workspace, session }) => {
       success_url: `${APP_DOMAIN}/${workspace.slug}?${onboarding ? "onboarded" : "upgraded"}=true&plan=${plan}&period=${period}`,
       cancel_url: baseUrl,
       line_items: [{ price: prices.data[0].id, quantity: 1 }],
-      ...(customer?.discount?.couponId
-        ? {
-            discounts: [
-              {
-                coupon:
-                  process.env.NODE_ENV !== "production" &&
-                  customer.discount.couponTestId
-                    ? customer.discount.couponTestId
-                    : customer.discount.couponId,
-              },
-            ],
-          }
-        : { allow_promotion_codes: true }),
+      // ...(customer?.discount?.couponId
+      //   ? {
+      //       discounts: [
+      //         {
+      //           coupon:
+      //             process.env.NODE_ENV !== "production" &&
+      //             customer.discount.couponTestId
+      //               ? customer.discount.couponTestId
+      //               : customer.discount.couponId,
+      //         },
+      //       ],
+      //     }
+      //   : { allow_promotion_codes: true }),
       automatic_tax: {
         enabled: true,
       },
@@ -100,7 +99,7 @@ export const POST = withWorkspace(async ({ req, workspace, session }) => {
       mode: "subscription",
       client_reference_id: workspace.id,
       metadata: {
-        dubCustomerId: session.user.id,
+        pimmsCustomerId: session.user.id,
       },
     });
 

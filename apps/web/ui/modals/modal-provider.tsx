@@ -111,8 +111,8 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
     );
   }, [searchParams]);
 
-  const [hashes, setHashes] = useCookies<SimpleLinkProps[]>("hashes__dub", [], {
-    domain: !!process.env.NEXT_PUBLIC_VERCEL_URL ? ".dub.co" : undefined,
+  const [hashes, setHashes] = useCookies<SimpleLinkProps[]>("hashes__pimms", [], {
+    domain: !!process.env.NEXT_PUBLIC_VERCEL_URL ? ".pimms.io" : undefined,
   });
 
   const { id: workspaceId, error } = useWorkspace();

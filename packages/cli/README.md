@@ -12,7 +12,7 @@ https://github.com/user-attachments/assets/2ce9fe51-68ab-4e6d-b08d-4da09c17f90e
 | `dub config`              | See your configured workspace credentials                                                                                                                                                                |
 | `dub domains`             | Configure your workspace domain                                                                                                                                                                          |
 | `dub shorten [url] [key]` | Create a short link. You can preemptively pass the URL and the generated short link key, or go through the CLI prompts.                                                                                  |
-| `dub links [options]`     | Search for links in your Dub workspace. Available options include: `-s, --search <search>` to search for a link by name, or `-l, --limit <limit>` to limit the number of links returned (default is 10). |
+| `dub links [options]`     | Search for links in your PiMMs workspace. Available options include: `-s, --search <search>` to search for a link by name, or `-l, --limit <limit>` to limit the number of links returned (default is 10). |
 | `dub help [command]`      | Display help for a specific command                                                                                                                                                                      |
 
 ## Running Locally for Development

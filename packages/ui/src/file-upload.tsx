@@ -56,7 +56,7 @@ const imageUploadVariants = cva(
   {
     variants: {
       variant: {
-        default: "rounded-md border border-neutral-300 shadow-sm",
+        default: "rounded-xl border-[2px] border-neutral-300 shadow-sm",
         plain: "",
       },
     },

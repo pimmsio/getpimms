@@ -61,12 +61,12 @@ export const PATCH = withWorkspace(
     const { name, slug, logo, conversionEnabled, allowedHostnames } =
       await updateWorkspaceSchema.parseAsync(await parseRequestBody(req));
 
-    if (["free", "pro"].includes(workspace.plan) && conversionEnabled) {
-      throw new DubApiError({
-        code: "forbidden",
-        message: "Conversion tracking is not available on free or pro plans.",
-      });
-    }
+    // if (["free"].includes(workspace.plan) && conversionEnabled) {
+    //   throw new DubApiError({
+    //     code: "forbidden",
+    //     message: "Conversion tracking is not available on free or pro plans.",
+    //   });
+    // }
 
     const validHostnames = allowedHostnames
       ? validateAllowedHostnames(allowedHostnames)

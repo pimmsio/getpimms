@@ -18,7 +18,7 @@ const cases = [
         error: {
           code: "forbidden",
           message: "Domain does not belong to workspace.",
-          doc_url: "https://dub.co/docs/api-reference/errors#forbidden",
+          // doc_url: "https://dub.co/docs/api-reference/errors#forbidden",
         },
       },
     },
@@ -35,8 +35,8 @@ const cases = [
         error: {
           code: "unprocessable_entity",
           message: "Invalid destination URL",
-          doc_url:
-            "https://dub.co/docs/api-reference/errors#unprocessable-entity",
+          // doc_url:
+          //   "https://dub.co/docs/api-reference/errors#unprocessable-entity",
         },
       },
     },
@@ -54,8 +54,8 @@ const cases = [
         error: {
           code: "unprocessable_entity",
           message: "Invalid tagIds detected: invalid",
-          doc_url:
-            "https://dub.co/docs/api-reference/errors#unprocessable-entity",
+          // doc_url:
+          //   "https://dub.co/docs/api-reference/errors#unprocessable-entity",
         },
       },
     },

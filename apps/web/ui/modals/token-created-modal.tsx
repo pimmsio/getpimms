@@ -25,7 +25,7 @@ function TokenCreatedModal({
       setShowModal={setShowTokenCreatedModal}
       className="max-w-md"
     >
-      <div className="space-y-2 border-b border-neutral-200 px-4 py-4 sm:px-6">
+      <div className="space-y-2 border-b-[6px] border-neutral-100 px-4 py-4 sm:px-6">
         <h3 className="text-lg font-medium">API Key Created</h3>
         <p className="text-sm text-neutral-500">
           For security reasons, we will only show you the key once. Please copy
@@ -36,7 +36,7 @@ function TokenCreatedModal({
       <div className="flex flex-col space-y-4 bg-neutral-50 px-4 py-8 sm:px-6">
         <div className="flex flex-col gap-1">
           <h2 className="text-sm font-medium text-neutral-800">API key</h2>
-          <div className="flex items-center justify-between rounded-md border border-neutral-200 bg-white p-2">
+          <div className="flex items-center justify-between rounded-xl border-[2px] border-neutral-100 bg-white p-2">
             <p className="font-mono text-sm text-neutral-500">{token}</p>
             <button
               onClick={(e) => {
@@ -46,7 +46,7 @@ function TokenCreatedModal({
                 });
               }}
               type="button"
-              className="text-neutral-90 flex h-7 items-center gap-2 rounded-md border border-neutral-200 bg-white px-2 py-1 text-xs font-medium hover:bg-neutral-50"
+              className="text-neutral-90 flex h-7 items-center gap-2 rounded-xl border-[2px] border-neutral-100 bg-white px-2 py-1 text-xs font-medium hover:bg-neutral-50"
             >
               {copied ? (
                 <Tick className="h-3.5 w-3.5" />

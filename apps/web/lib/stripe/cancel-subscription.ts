@@ -13,7 +13,7 @@ export async function cancelSubscription(customer?: string) {
     return await stripe.subscriptions.update(subscriptionId, {
       cancel_at_period_end: true,
       cancellation_details: {
-        comment: "Customer deleted their Dub workspace.",
+        comment: "Customer deleted their PIMMS workspace.",
       },
     });
   } catch (error) {

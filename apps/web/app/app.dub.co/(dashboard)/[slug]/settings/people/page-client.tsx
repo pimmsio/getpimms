@@ -50,7 +50,7 @@ export default function WorkspacePeopleClient() {
     <>
       <InviteTeammateModal />
       <InviteCodeModal />
-      <div className="rounded-lg border border-neutral-200 bg-white">
+      <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
         <div className="flex flex-col items-center justify-between space-y-3 p-5 sm:flex-row sm:space-y-0 sm:p-10">
           <div className="flex flex-col space-y-3">
             <h2 className="text-xl font-medium">People</h2>
@@ -58,7 +58,7 @@ export default function WorkspacePeopleClient() {
               Teammates that have access to this workspace.
             </p>
           </div>
-          <div className="flex space-x-2">
+          <div className="flex space-x-4">
             <Button
               text="Invite"
               onClick={() => setShowInviteTeammateModal(true)}
@@ -86,13 +86,13 @@ export default function WorkspacePeopleClient() {
             />
           </div>
         </div>
-        <div className="flex space-x-3 border-b border-neutral-200 px-3 sm:px-7">
+        <div className="flex space-x-3 border-b-[6px] border-neutral-100 px-3 sm:px-7">
           {tabs.map((tab) => (
             <div
               key={tab}
               className={`${
                 tab === currentTab ? "border-black" : "border-transparent"
-              } border-b py-1`}
+              } border-b-[2px] py-1`}
             >
               <button
                 onClick={() => setCurrentTab(tab)}
@@ -103,7 +103,7 @@ export default function WorkspacePeopleClient() {
             </div>
           ))}
         </div>
-        <div className="grid divide-y divide-neutral-200">
+        <div className="grid divide-y-[6px] divide-neutral-100">
           {users ? (
             users.length > 0 ? (
               users.map((user) => (
@@ -208,7 +208,7 @@ const UserCard = ({
               !isMachine && (
                 <select
                   className={cn(
-                    "rounded-md border border-neutral-200 text-xs text-neutral-500 focus:border-neutral-600 focus:ring-neutral-600",
+                    "rounded-xl border-[2px] border-neutral-100 text-xs text-neutral-500 focus:border-neutral-600 focus:ring-neutral-600",
                     {
                       "cursor-not-allowed bg-neutral-100": permissionsError,
                     },

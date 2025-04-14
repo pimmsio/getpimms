@@ -161,7 +161,7 @@ export function ContactForm({
               {uploads.map((upload) => (
                 <div
                   key={upload.attachmentId}
-                  className="flex w-full items-center justify-between rounded-md border border-neutral-200"
+                  className="flex w-full items-center justify-between rounded-xl border-[2px] border-neutral-100"
                 >
                   <div className="flex flex-1 items-center space-x-2 p-2">
                     {upload.uploading ? (

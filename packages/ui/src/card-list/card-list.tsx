@@ -8,7 +8,7 @@ const cardListVariants = cva(
     variants: {
       variant: {
         compact: "gap-0",
-        loose: "gap-4",
+        loose: "gap-0",
       },
       loading: {
         true: "opacity-50",

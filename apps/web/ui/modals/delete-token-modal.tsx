@@ -48,7 +48,7 @@ function DeleteTokenModal({
       setShowModal={setShowDeleteTokenModal}
       className="max-w-md"
     >
-      <div className="space-y-2 border-b border-neutral-200 px-4 py-4 sm:px-6">
+      <div className="space-y-2 border-b-[6px] border-neutral-100 px-4 py-4 sm:px-6">
         <h3 className="text-lg font-medium">Delete API Key</h3>
         <p className="text-sm text-neutral-500">
           This will permanently delete the API key for and revoke all access to
@@ -57,7 +57,7 @@ function DeleteTokenModal({
       </div>
 
       <div className="flex flex-col space-y-4 bg-neutral-50 px-4 py-4 sm:px-6">
-        <div className="relative flex items-center gap-2 space-x-3 rounded-md border border-neutral-300 bg-white px-4 py-2">
+        <div className="relative flex items-center gap-2 space-x-3 rounded-xl border-[2px] border-neutral-300 bg-white px-4 py-2">
           <Key className="size-5 text-neutral-500" />
 
           <div className="flex flex-1 flex-col gap-0.5">

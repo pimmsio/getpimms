@@ -28,7 +28,7 @@ import { Fragment, useMemo, useState } from "react";
 const LINE_COLORS = [
   "text-teal-500",
   "text-purple-500",
-  "text-blue-500",
+  "text-[#08272E]",
   "text-green-500",
   "text-orange-500",
   "text-yellow-500",
@@ -37,7 +37,7 @@ const LINE_COLORS = [
 const EVENT_TYPE_LINE_COLORS = {
   sale: "text-teal-500",
   lead: "text-purple-500",
-  click: "text-blue-500",
+  click: "text-[#08272E]",
 };
 
 const MAX_LINES = LINE_COLORS.length;
@@ -105,7 +105,7 @@ export function EarningsCompositeChart() {
   return (
     <div className="flex flex-col gap-6">
       <EarningsTableControls />
-      <div className="rounded-lg border border-neutral-200 p-6">
+      <div className="rounded-xl border-[6px] border-neutral-100 p-6">
         <div className="flex w-full items-center justify-between">
           <div className="flex flex-col gap-1">
             <span className="text-sm text-neutral-500">Total Earnings</span>
@@ -130,7 +130,7 @@ export function EarningsCompositeChart() {
           <ToggleGroup
             className="flex w-fit shrink-0 items-center gap-1 border-neutral-100 bg-neutral-100"
             optionClassName="h-8 px-2.5 flex items-center justify-center"
-            indicatorClassName="border border-neutral-200 bg-white"
+            indicatorClassName="border-[6px] border-neutral-100 bg-white"
             options={[
               {
                 label: (
@@ -169,7 +169,7 @@ export function EarningsCompositeChart() {
               tooltipContent={(d) => {
                 return (
                   <>
-                    <div className="flex justify-between border-b border-neutral-200 p-3 text-xs">
+                    <div className="flex justify-between border-b-[6px] border-neutral-100 p-3 text-xs">
                       <p className="font-medium leading-none text-neutral-900">
                         {formatDateTooltip(d.date, {
                           interval,

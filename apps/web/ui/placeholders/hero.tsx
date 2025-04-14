@@ -11,17 +11,6 @@ const HERO_GRADIENT = `radial-gradient(77% 116% at 37% 67%, #EEA5BA, rgba(238, 1
 export function Hero({ children }: PropsWithChildren) {
   return (
     <div className="relative mx-auto mt-4 w-full max-w-screen-lg overflow-hidden rounded-2xl bg-neutral-50 p-6 text-center sm:p-20 sm:px-0">
-      <Grid
-        cellSize={80}
-        patternOffset={[1, -58]}
-        className="inset-[unset] left-1/2 top-0 w-[1200px] -translate-x-1/2 text-neutral-300 [mask-image:linear-gradient(transparent,black_70%)]"
-      />
-      <div className="absolute -inset-x-10 bottom-0 h-[60%] opacity-40 blur-[100px] [transform:translate3d(0,0,0)]">
-        <div
-          className="size-full -scale-y-100 [mask-image:radial-gradient(closest-side,black_100%,transparent_100%)]"
-          style={{ backgroundImage: HERO_GRADIENT }}
-        />
-      </div>
       {children}
     </div>
   );

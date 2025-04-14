@@ -3,11 +3,11 @@ import { oauthClient } from "@/utils/oauth";
 import Configstore from "configstore";
 
 export async function getConfig(): Promise<DubConfig> {
-  const configStore = new Configstore("dub-cli");
+  const configStore = new Configstore("pimms-cli");
 
   if (!configStore.size) {
     throw new Error(
-      "Access token not found. Please run `dub login` to authenticate with Dub.",
+      "Access token not found. Please run `pimms login` to authenticate with PIMMS.",
     );
   }
 

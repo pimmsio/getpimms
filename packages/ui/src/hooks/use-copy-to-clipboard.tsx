@@ -30,9 +30,9 @@ export const useCopyToClipboard = (
       clearTimer();
       try {
         if (typeof value === "string") {
-          await navigator.clipboard.writeText(value);
+          await navigator.clipboard?.writeText(value);
         } else if (value instanceof ClipboardItem) {
-          await navigator.clipboard.write([value]);
+          await navigator.clipboard?.write([value]);
         }
         setCopied(true);
         onSuccess?.();

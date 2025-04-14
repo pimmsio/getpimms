@@ -37,7 +37,7 @@ export const generateClientSecret = authActionClient
       },
       data: {
         hashedClientSecret: await hashToken(clientSecret),
-        partialClientSecret: `dub_app_secret_****${clientSecret.slice(-8)}`,
+        partialClientSecret: `pimms_app_secret_****${clientSecret.slice(-8)}`,
       },
     });
 

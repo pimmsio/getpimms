@@ -105,7 +105,7 @@ export const POST = withWorkspace(
                 ? await hashToken(clientSecret)
                 : "",
               partialClientSecret: clientSecret
-                ? `dub_app_secret_****${clientSecret.slice(-8)}`
+                ? `pimms_app_secret_****${clientSecret.slice(-8)}`
                 : "",
               redirectUris,
               pkce,

@@ -14,14 +14,14 @@ import {
 
 const largeLinks = [
   {
-    title: "Dub API",
+    title: "PIMMS API",
     description: "Programmatic link creation at scale",
     icon: CubeSettingsFill,
     href: "/docs/api-reference/introduction",
   },
   {
-    title: "Dub Integrations",
-    description: "Connect Dub with your favorite tools",
+    title: "PIMMS Integrations",
+    description: "Connect PIMMS with your favorite tools",
     icon: ConnectedDotsFill,
     href: "/docs/integrations",
   },
@@ -29,20 +29,20 @@ const largeLinks = [
 
 export function ProductContent({ domain }: { domain: string }) {
   return (
-    <div className="grid w-[1020px] grid-cols-[minmax(0,1fr),0.4fr] divide-x divide-neutral-200 dark:divide-white/20">
+    <div className="grid w-[1020px] grid-cols-[minmax(0,1fr),0.4fr] divide-x divide-neutral-200">
       <div className="grid grid-cols-2 gap-4 p-4">
         <NavigationMenuLink asChild>
           <Link
             href={createHref(
-              "/home",
+              "/",
               domain,
-              getUtmParams({ domain, utm_content: "Dub Links" }),
+              getUtmParams({ domain, utm_content: "PIMMS Links" }),
             )}
             className="group relative flex flex-col overflow-hidden rounded-xl border border-neutral-100 bg-neutral-50 dark:border-white/20 dark:bg-white/10"
           >
             <div className="p-5 pb-0">
               <span className="text-sm font-medium text-neutral-900 dark:text-white">
-                Dub Links
+                PIMMS Links
               </span>
               <p className="mt-3 max-w-56 text-sm text-neutral-500 dark:text-white/60">
                 Short links with superpowers for the modern marketer
@@ -60,7 +60,7 @@ export function ProductContent({ domain }: { domain: string }) {
               href={createHref(
                 "/analytics",
                 domain,
-                getUtmParams({ domain, utm_content: "Dub Analytics" }),
+                getUtmParams({ domain, utm_content: "PIMMS Analytics" }),
               )}
               className="group relative flex flex-col overflow-hidden rounded-xl border border-neutral-100 bg-neutral-50 dark:border-white/20 dark:bg-white/10"
             >
@@ -68,7 +68,7 @@ export function ProductContent({ domain }: { domain: string }) {
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,#36D78F,transparent)] opacity-[0.07] transition-opacity duration-150 group-hover:opacity-[0.2]" />
               <div className="h-56 p-5">
                 <span className="text-sm font-medium text-neutral-900 dark:text-white">
-                  Dub Analytics
+                PIMMS Analytics
                 </span>
                 <p className="mt-3 max-w-48 text-sm text-neutral-500 dark:text-white/60">
                   Powerful real-time analytics with conversion tracking
@@ -107,7 +107,7 @@ export function ProductContent({ domain }: { domain: string }) {
                   getUtmParams({ domain, utm_content: title }),
                 )}
                 icon={
-                  <div className="shrink-0 rounded-[10px] border border-neutral-200 bg-white/50 p-2 dark:border-white/20 dark:bg-white/10">
+                  <div className="shrink-0 rounded-[10px] border-[6px] border-neutral-100 bg-white/50 p-2 dark:border-white/20 dark:bg-white/10">
                     <Icon
                       className={cn(
                         "h-4 w-4 shrink-0 text-neutral-600 transition-colors dark:text-white/60",
@@ -142,9 +142,9 @@ export function ProductContent({ domain }: { domain: string }) {
               href={createHref(
                 `/compare/${slug}`,
                 domain,
-                getUtmParams({ domain, utm_content: `Dub vs. ${name}` }),
+                getUtmParams({ domain, utm_content: `PIMMS vs. ${name}` }),
               )}
-              title={`Dub vs. ${name}`}
+              title={`PIMMS vs. ${name}`}
               showArrow
             />
           ))}

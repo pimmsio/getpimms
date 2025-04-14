@@ -102,8 +102,8 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
       limiter.schedule(() =>
         sendEmail({
           email: user.email as string,
-          replyTo: "steven.tey@dub.co",
-          subject: `Thank you for upgrading to Dub ${plan.name}!`,
+          replyTo: "alexandre@pimms.io",
+          subject: `Thank you for upgrading to PIMMS ${plan.name}!`,
           react: UpgradeEmail({
             name: user.name,
             email: user.email as string,
@@ -123,14 +123,14 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
       },
     }),
     // enable dub.link premium default domain for the workspace
-    prisma.defaultDomains.update({
-      where: {
-        projectId: workspaceId,
-      },
-      data: {
-        dublink: true,
-      },
-    }),
+    // prisma.defaultDomains.update({
+    //   where: {
+    //     projectId: workspaceId,
+    //   },
+    //   data: {
+    //     dublink: true,
+    //   },
+    // }),
   ]);
 }
 
@@ -181,27 +181,27 @@ async function completeOnboarding({
     })(),
 
     // Register saved domain
-    (async () => {
-      const data = await redis.get<{ domain: string; userId: string }>(
-        `onboarding-domain:${workspaceId}`,
-      );
-      if (!data || !data.domain || !data.userId) return;
-      const { domain, userId } = data;
+    // (async () => {
+    //   const data = await redis.get<{ domain: string; userId: string }>(
+    //     `onboarding-domain:${workspaceId}`,
+    //   );
+    //   if (!data || !data.domain || !data.userId) return;
+    //   const { domain, userId } = data;
 
-      try {
-        await claimDotLinkDomain({
-          domain,
-          userId,
-          workspace,
-        });
-        await redis.del(`onboarding-domain:${workspaceId}`);
-      } catch (e) {
-        console.error(
-          "Failed to register saved domain from onboarding",
-          { domain, userId, workspace },
-          e,
-        );
-      }
-    })(),
+    //   try {
+    //     await claimDotLinkDomain({
+    //       domain,
+    //       userId,
+    //       workspace,
+    //     });
+    //     await redis.del(`onboarding-domain:${workspaceId}`);
+    //   } catch (e) {
+    //     console.error(
+    //       "Failed to register saved domain from onboarding",
+    //       { domain, userId, workspace },
+    //       e,
+    //     );
+    //   }
+    // })(),
   ]);
 }

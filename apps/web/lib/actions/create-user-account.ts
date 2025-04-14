@@ -15,7 +15,7 @@ const schema = signUpSchema.extend({
   code: z.string().min(6, "OTP must be 6 characters long."),
 });
 
-// Sign up a new user using email and password
+// Register a new user using email and password
 export const createUserAccountAction = actionClient
   .schema(schema, {
     handleValidationErrorsShape: (ve) =>

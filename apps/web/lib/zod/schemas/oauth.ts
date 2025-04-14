@@ -71,6 +71,7 @@ export const authorizeRequestSchema = z.object({
       message: "code_challenge_method must be 'S256'",
     })
     .optional(),
+  code: z.string().max(190).optional(),
 });
 
 // Schema for OAuth2.0 code exchange request

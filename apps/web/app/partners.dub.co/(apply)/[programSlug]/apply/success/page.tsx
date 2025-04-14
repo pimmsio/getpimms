@@ -99,7 +99,7 @@ export default async function SuccessPage({
                 Your application to{" "}
                 <strong className="font-semibold">{program.name}</strong> has
                 been saved, but you still need to create your{" "}
-                <strong className="font-semibold">Dub Partners</strong> account
+                <strong className="font-semibold">PiMMs Partners</strong> account
                 to complete your application.
                 <br />
                 <br />
@@ -128,8 +128,8 @@ export default async function SuccessPage({
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
             <div className="absolute -inset-[50%] rounded-full bg-white blur-lg" />
 
-            {programSlug !== "dub" && (
-              <div className="relative flex items-center gap-2 rounded-full border border-neutral-100 bg-gradient-to-b from-white to-neutral-50 p-2 shadow-[0_8px_28px_0_#00000017]">
+            {programSlug !== "pimms" && (
+              <div className="relative flex items-center gap-2 rounded-full border-[2px] border-neutral-100 bg-gradient-to-b from-white to-neutral-50 p-2 shadow-[0_8px_28px_0_#00000017]">
                 <img
                   className="size-10 shrink-0 rounded-full"
                   src={program.logo || `${OG_AVATAR_URL}${program.name}`}

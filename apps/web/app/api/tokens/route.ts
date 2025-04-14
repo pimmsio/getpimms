@@ -110,7 +110,7 @@ export const POST = withWorkspace(
     }
 
     // Create token
-    const token = `dub_${nanoid(24)}`;
+    const token = `pimms_${nanoid(24)}`;
     const hashedKey = await hashToken(token);
     const partialKey = `${token.slice(0, 3)}...${token.slice(-4)}`;
 
@@ -130,7 +130,7 @@ export const POST = withWorkspace(
     waitUntil(
       sendEmail({
         email: session.user.email,
-        subject: `A new API key has been created for your workspace ${workspace.name} on Dub`,
+        subject: `A new API key has been created for your workspace ${workspace.name} on PIMMS`,
         react: APIKeyCreated({
           email: session.user.email,
           token: {

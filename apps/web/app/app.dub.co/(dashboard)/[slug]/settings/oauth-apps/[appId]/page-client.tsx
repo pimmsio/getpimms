@@ -73,7 +73,7 @@ export default function OAuthAppManagePageClient({ appId }: { appId: string }) {
         <div className="flex justify-between gap-2 sm:items-center">
           {isLoading ? (
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="w-fit flex-none rounded-md border border-neutral-200 bg-gradient-to-t from-neutral-100 p-2">
+              <div className="w-fit flex-none rounded-xl border-[2px] border-neutral-100 bg-gradient-to-t from-neutral-100 p-2">
                 <TokenAvatar id="placeholder-oauth-app" className="size-8" />
               </div>
               <div className="flex flex-col gap-2">
@@ -83,12 +83,12 @@ export default function OAuthAppManagePageClient({ appId }: { appId: string }) {
             </div>
           ) : (
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="w-fit flex-none rounded-md border border-neutral-200 bg-gradient-to-t from-neutral-100 p-2">
+              <div className="w-fit flex-none rounded-xl border-[2px] border-neutral-100 bg-gradient-to-t from-neutral-100 p-2">
                 {oAuthApp?.logo ? (
                   <BlurImage
                     src={oAuthApp.logo}
                     alt={`Logo for ${oAuthApp.name}`}
-                    className="size-8 rounded-full border border-neutral-200"
+                    className="size-8 rounded-full border-[6px] border-neutral-100"
                     width={20}
                     height={20}
                   />
@@ -153,7 +153,7 @@ export default function OAuthAppManagePageClient({ appId }: { appId: string }) {
           >
             <Button
               variant="outline"
-              className="flex w-8 rounded-md border border-neutral-200 px-2 transition-[border-color] duration-200"
+              className="flex w-8 rounded-xl border-[2px] border-neutral-100 px-2 transition-[border-color] duration-200"
               icon={<ThreeDots className="h-5 w-5 shrink-0 text-neutral-500" />}
               onClick={() => setOpenPopover(!openPopover)}
               {...(permissionsError && {

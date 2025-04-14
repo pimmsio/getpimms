@@ -36,7 +36,7 @@ export const FolderCard = ({ folder }: { folder: Folder }) => {
   return (
     <div
       className={cn(
-        "hover:drop-shadow-card-hover relative flex flex-col justify-between rounded-xl border border-neutral-200 bg-white px-5 py-4 transition-all duration-200 sm:h-36",
+        "hover:drop-shadow-card-hover relative flex flex-col justify-between rounded-xl border-[6px] border-neutral-100 bg-white px-5 py-4 transition-all duration-200 sm:h-36",
         folder.type === "mega" && "sm:h-32",
       )}
     >

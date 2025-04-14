@@ -7,7 +7,7 @@ import { ratelimit } from "../upstash";
 import { emailSchema } from "../zod/schemas/auth";
 import { authActionClient } from "./safe-action";
 
-// send invite referral email for Dub Referrals (soon to be deprecated?)
+// send invite referral email for PiMMs Referrals (soon to be deprecated?)
 export const sendInviteReferralEmail = authActionClient
   .schema(
     z.object({
@@ -38,7 +38,7 @@ export const sendInviteReferralEmail = authActionClient
         email,
         react: ReferralInvite({
           email,
-          url: `https://refer.dub.co/${workspace.slug}`,
+          url: `https://refer.pimms.io/${workspace.slug}`,
           workspaceUser: ctx.user.name || null,
           workspaceUserEmail: ctx.user.email || null,
         }),

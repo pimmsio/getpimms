@@ -191,7 +191,7 @@ export const domainKeySchema = z.object({
     .string()
     .min(1, "Domain is required.")
     .describe(
-      "The domain of the link to retrieve. E.g. for `d.to/github`, the domain is `d.to`.",
+      "The domain of the link to retrieve.",
     )
     .refine((v) => validDomainRegex.test(v), {
       message: "Invalid domain format",
@@ -200,7 +200,7 @@ export const domainKeySchema = z.object({
     .string()
     .min(1, "Key is required.")
     .describe(
-      "The key of the link to retrieve. E.g. for `d.to/github`, the key is `github`.",
+      "The key of the link to retrieve.",
     ),
 });
 
@@ -215,7 +215,7 @@ export const createLinkBodySchema = z.object({
     .max(190)
     .optional()
     .describe(
-      "The domain of the short link. If not provided, the primary domain for the workspace will be used (or `dub.sh` if the workspace has no domains).",
+      "The domain of the short link. If not provided, the primary domain for the workspace will be used (or `pim.ms` if the workspace has no domains).",
     ),
   key: z
     .string()
@@ -324,25 +324,25 @@ export const createLinkBodySchema = z.object({
     .string()
     .nullish()
     .describe(
-      "The custom link preview title (og:title). Will be used for Custom Social Media Cards if `proxy` is true. Learn more: https://d.to/og",
+      "The custom link preview title (og:title). Will be used for Custom Social Media Cards if `proxy` is true.",
     ),
   description: z
     .string()
     .nullish()
     .describe(
-      "The custom link preview description (og:description). Will be used for Custom Social Media Cards if `proxy` is true. Learn more: https://d.to/og",
+      "The custom link preview description (og:description). Will be used for Custom Social Media Cards if `proxy` is true.",
     ),
   image: z
     .string()
     .nullish()
     .describe(
-      "The custom link preview image (og:image). Will be used for Custom Social Media Cards if `proxy` is true. Learn more: https://d.to/og",
+      "The custom link preview image (og:image). Will be used for Custom Social Media Cards if `proxy` is true.",
     ),
   video: z
     .string()
     .nullish()
     .describe(
-      "The custom link preview video (og:video). Will be used for Custom Social Media Cards if `proxy` is true. Learn more: https://d.to/og",
+      "The custom link preview video (og:video). Will be used for Custom Social Media Cards if `proxy` is true.",
     ),
   rewrite: z
     .boolean()
@@ -371,7 +371,7 @@ export const createLinkBodySchema = z.object({
     .boolean()
     .optional()
     .describe(
-      "Allow search engines to index your short link. Defaults to `false` if not provided. Learn more: https://d.to/noindex",
+      "Allow search engines to index your short link. Defaults to `false` if not provided.",
     ),
   utm_source: z
     .string()
@@ -451,7 +451,7 @@ export const bulkUpdateLinksBodySchema = z.object({
     .default([]),
   data: createLinkBodySchema
     .omit({
-      id: true,
+      // id: true,
       domain: true,
       key: true,
       externalId: true,
@@ -475,7 +475,7 @@ export const LinkSchema = z
     domain: z
       .string()
       .describe(
-        "The domain of the short link. If not provided, the primary domain for the workspace will be used (or `dub.sh` if the workspace has no domains).",
+        "The domain of the short link. If not provided, the primary domain for the workspace will be used (or `pim.ms` if the workspace has no domains).",
       ),
     key: z
       .string()
@@ -538,25 +538,25 @@ export const LinkSchema = z
       .string()
       .nullable()
       .describe(
-        "The title of the short link generated via `api.dub.co/metatags`. Will be used for Custom Social Media Cards if `proxy` is true.",
+        "The title of the short link generated via `api.pimms.io/metatags`. Will be used for Custom Social Media Cards if `proxy` is true.",
       ),
     description: z
       .string()
       .nullable()
       .describe(
-        "The description of the short link generated via `api.dub.co/metatags`. Will be used for Custom Social Media Cards if `proxy` is true.",
+        "The description of the short link generated via `api.pimms.io/metatags`. Will be used for Custom Social Media Cards if `proxy` is true.",
       ),
     image: z
       .string()
       .nullable()
       .describe(
-        "The image of the short link generated via `api.dub.co/metatags`. Will be used for Custom Social Media Cards if `proxy` is true.",
+        "The image of the short link generated via `api.pimms.io/metatags`. Will be used for Custom Social Media Cards if `proxy` is true.",
       ),
     video: z
       .string()
       .nullable()
       .describe(
-        "The custom link preview video (og:video). Will be used for Custom Social Media Cards if `proxy` is true. Learn more: https://d.to/og",
+        "The custom link preview video (og:video). Will be used for Custom Social Media Cards if `proxy` is true.",
       ),
     rewrite: z
       .boolean()
@@ -582,7 +582,7 @@ export const LinkSchema = z
       .record(z.enum(COUNTRY_CODES), z.string().url())
       .nullable()
       .describe(
-        "Geo targeting information for the short link in JSON format `{[COUNTRY]: https://example.com }`. Learn more: https://d.to/geo",
+        "Geo targeting information for the short link in JSON format `{[COUNTRY]: https://example.com }`.",
       ),
     publicStats: z
       .boolean()
@@ -615,13 +615,13 @@ export const LinkSchema = z
       .string()
       .url()
       .describe(
-        "The full URL of the short link, including the https protocol (e.g. `https://dub.sh/try`).",
+        "The full URL of the short link, including the https protocol (e.g. `https://pim.ms/try`).",
       ),
     qrCode: z
       .string()
       .url()
       .describe(
-        "The full URL of the QR code for the short link (e.g. `https://api.dub.co/qr?url=https://dub.sh/try`).",
+        "The full URL of the QR code for the short link (e.g. `https://api.pimms.io/qr?url=https://pim.ms/try`).",
       ),
     utm_source: z
       .string()
@@ -715,7 +715,7 @@ export const getLinkInfoQuerySchema = domainKeySchema.partial().merge(
 );
 export const getLinksQuerySchemaExtended = getLinksQuerySchemaBase.merge(
   z.object({
-    // Only Dub UI uses the following query parameters
+    // Only PIMMS UI uses the following query parameters
     includeUser: booleanQuerySchema.default("false"),
     includeWebhooks: booleanQuerySchema.default("false"),
     includeDashboard: booleanQuerySchema.default("false"),

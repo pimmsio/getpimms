@@ -21,7 +21,7 @@ export const randomTagName = () => {
 };
 
 export const randomEmail = ({
-  domain = "dub-internal-test.com",
+  domain = "pimms-internal-test.com",
 }: {
   domain?: string;
 } = {}) => {

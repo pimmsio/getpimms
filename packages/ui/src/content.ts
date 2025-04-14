@@ -42,26 +42,26 @@ export type NavItemChildren = (
 
 export const FEATURES_LIST = [
   {
-    title: "Dub Links",
+    title: "PIMMS Links",
     description: "Short links with superpowers",
     icon: Hyperlink,
-    href: "/home",
+    href: "/",
   },
   {
-    title: "Dub Analytics",
+    title: "PIMMS Analytics",
     description: "Powerful real-time analytics",
     icon: LinesY,
     href: "/analytics",
   },
   {
-    title: "Dub API",
+    title: "PIMMS API",
     description: "Programmatic link creation at scale",
     icon: CubeSettingsFill,
     href: "/docs/api-reference/introduction",
   },
   {
-    title: "Dub Integrations",
-    description: "Connect Dub with your favorite tools",
+    title: "PIMMS Integrations",
+    description: "Connect PIMMS with your favorite tools",
     icon: ConnectedDotsFill,
     href: "/docs/integrations",
   },
@@ -185,7 +185,7 @@ export const RESOURCES = [
   },
   {
     icon: HexadecagonStar,
-    title: "Dub Brand",
+    title: "PIMMS Brand",
     description: "Logos, wordmark, etc.",
     href: "/brand",
   },

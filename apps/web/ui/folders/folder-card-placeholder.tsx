@@ -1,6 +1,6 @@
 export const FolderCardPlaceholder = () => {
   return (
-    <div className="relative h-36 rounded-xl border border-neutral-200 bg-white px-5 py-4">
+    <div className="relative h-36 rounded-xl border-[6px] border-neutral-100 bg-white px-5 py-4">
       <div className="flex">
         <div className="h-8 w-8 rounded-full bg-neutral-100" />
       </div>

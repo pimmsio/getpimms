@@ -32,7 +32,7 @@ export default async function AdminLayout({
   return (
     <>
       <div className="min-h-screen w-full bg-neutral-50">
-        <div className="sticky left-0 right-0 top-0 z-20 border-b border-neutral-200 bg-white">
+        <div className="sticky left-0 right-0 top-0 z-20 border-b-[6px] border-neutral-100 bg-white">
           <MaxWidthWrapper>
             <div className="flex h-16 items-center gap-12">
               <Link href="/">

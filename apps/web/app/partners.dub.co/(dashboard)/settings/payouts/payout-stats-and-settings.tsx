@@ -23,7 +23,7 @@ export function PayoutStatsAndSettings() {
   );
 
   return (
-    <div className="grid grid-cols-1 divide-neutral-200 rounded-lg border border-neutral-200 bg-neutral-50 max-sm:divide-y sm:grid-cols-2 sm:divide-x">
+    <div className="grid grid-cols-1 divide-neutral-200 rounded-xl border-[6px] border-neutral-100 bg-neutral-50 max-sm:divide-y sm:grid-cols-2 sm:divide-x">
       <div className="flex flex-col gap-1.5 p-4">
         <div className="flex justify-between gap-5">
           <div className="p-1">

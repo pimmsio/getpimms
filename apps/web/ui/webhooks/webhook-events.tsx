@@ -146,7 +146,7 @@ const WebhookEvent = ({ event }: { event: WebhookEventProps }) => {
             </ButtonTooltip>
           </div>
         </div>
-        <div className="grid gap-4 border-t border-neutral-200 bg-white p-6">
+        <div className="grid gap-4 border-t-[6px] border-neutral-100 bg-white p-6">
           <h4 className="font-semibold">Response</h4>
           <div className="flex items-center gap-8">
             <p className="text-sm text-neutral-500">HTTP status code</p>
@@ -157,7 +157,7 @@ const WebhookEvent = ({ event }: { event: WebhookEventProps }) => {
             dangerouslySetInnerHTML={{ __html: responseBody }}
           />
         </div>
-        <div className="grid gap-4 border-t border-neutral-200 bg-white p-6">
+        <div className="grid gap-4 border-t-[6px] border-neutral-100 bg-white p-6">
           <h4 className="font-semibold">Request</h4>
           <div
             className="shiki-wrapper overflow-y-scroll text-sm"
@@ -171,8 +171,8 @@ const WebhookEvent = ({ event }: { event: WebhookEventProps }) => {
 
 export const WebhookEventList = ({ events }: EventListProps) => {
   return (
-    <div className="overflow-hidden rounded-md border border-neutral-200">
-      <div className="flex flex-col divide-y divide-neutral-200">
+    <div className="overflow-hidden rounded-xl border-[2px] border-neutral-100">
+      <div className="flex flex-col divide-y-[6px] divide-neutral-100">
         {events.map((event, index) => (
           <WebhookEvent key={index} event={event} />
         ))}

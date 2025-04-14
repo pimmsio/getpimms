@@ -56,7 +56,7 @@ const publishWebhookEventToQStash = async ({
     url: webhook.url,
     body: finalPayload,
     headers: {
-      "Dub-Signature": signature,
+      "Pimms-Signature": signature,
       "Upstash-Hide-Headers": "true",
 
       // Integration specific headers

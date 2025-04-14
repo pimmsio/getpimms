@@ -22,7 +22,7 @@ export default function CreateWorkspaceButton() {
               href={
                 freeWorkspaces
                   ? `/${freeWorkspaces[0].slug}/upgrade`
-                  : "https://dub.co/pricing"
+                  : "https://pimms.io/pricing"
               }
             />
           ) : undefined

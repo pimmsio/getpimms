@@ -6,9 +6,9 @@ import { createNewCustomer } from "./utils";
 export async function customerUpdated(event: Stripe.Event) {
   const stripeCustomer = event.data.object as Stripe.Customer;
   const stripeAccountId = event.account as string;
-  const dubCustomerExternalId = stripeCustomer.metadata?.dubCustomerId;
+  const pimmsCustomerExternalId = stripeCustomer.metadata?.pimmsCustomerId;
 
-  if (!dubCustomerExternalId) {
+  if (!pimmsCustomerExternalId) {
     return "External ID not found in Stripe customer metadata, skipping...";
   }
 
@@ -17,7 +17,7 @@ export async function customerUpdated(event: Stripe.Event) {
       OR: [
         {
           projectConnectId: stripeAccountId,
-          externalId: dubCustomerExternalId,
+          externalId: pimmsCustomerExternalId,
         },
         {
           stripeCustomerId: stripeCustomer.id,
@@ -33,14 +33,14 @@ export async function customerUpdated(event: Stripe.Event) {
           id: customer.id,
         },
         data: {
-          externalId: dubCustomerExternalId,
+          externalId: pimmsCustomerExternalId,
           stripeCustomerId: stripeCustomer.id,
           name: stripeCustomer.name,
           email: stripeCustomer.email,
         },
       });
 
-      return `Dub customer with ID ${customer.id} updated.`;
+      return `PIMMS customer with ID ${customer.id} updated.`;
     } catch (error) {
       console.error(error);
       return `Error updating Dub customer with ID ${customer.id}: ${error}`;

@@ -61,7 +61,7 @@ export async function chargeSucceeded(event: Stripe.Event) {
             source_transaction: charge.id,
           }
         : {}),
-      description: `Dub Partners payout (${payout.program.name})`,
+      description: `PIMMS Partners payout (${payout.program.name})`,
     });
 
     console.log("Transfer created", transfer);
@@ -89,7 +89,7 @@ export async function chargeSucceeded(event: Stripe.Event) {
         sendEmail({
           subject: "You've been paid!",
           email: payout.partner.email,
-          from: "Dub Partners <system@dub.co>",
+          from: "PIMMS Partners <alexandre@pimms.io>",
           react: PartnerPayoutSent({
             email: payout.partner.email,
             program: payout.program,

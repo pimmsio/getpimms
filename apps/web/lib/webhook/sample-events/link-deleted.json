@@ -1,6 +1,6 @@
 {
   "id": "cm0b87844000dismqhkviju54",
-  "domain": "dub.sh",
+  "domain": "pim.ms",
   "key": "sOvvXDT",
   "url": "https://github.com/stack-auth/stack",
   "trackConversion": false,
@@ -28,8 +28,8 @@
   "tags": [],
   "webhookIds": [],
   "comments": null,
-  "shortLink": "https://dub.sh/sOvvXDT",
-  "qrCode": "https://api.dub.co/qr?url=https://dub.sh/sOvvXDT?qr=1",
+  "shortLink": "https://pim.ms/sOvvXDT",
+  "qrCode": "https://api.pimms.io/qr?url=https://pim.ms/sOvvXDT?qr=1",
   "utm_source": null,
   "utm_medium": null,
   "utm_campaign": null,

@@ -16,25 +16,25 @@ export default function CustomPartnerAuthLayout({
       </div>
       <div className="flex flex-col justify-end">
         <div className="relative flex w-full flex-col items-center justify-center gap-2 py-10 pb-6">
-          <a
+          {/* <a
             href="https://dub.partners"
             target="_blank"
             className="mt-4 flex items-center justify-center gap-1.5 text-neutral-500 transition-colors duration-75 hover:text-neutral-700"
           >
             <p className="text-xs font-medium">Powered by</p>
             <Wordmark className="h-3.5 text-neutral-900" />
-          </a>
+          </a> */}
 
           <div className="flex gap-3 text-center text-xs text-neutral-500 underline underline-offset-2">
             <a
-              href="https://dub.co/legal/privacy"
+              href="https://pimms.io/legal/privacy"
               target="_blank"
               className="hover:text-neutral-800"
             >
               Privacy Policy
             </a>
             <a
-              href="https://dub.co/legal/terms"
+              href="https://pimms.io/legal/terms"
               target="_blank"
               className="hover:text-neutral-800"
             >

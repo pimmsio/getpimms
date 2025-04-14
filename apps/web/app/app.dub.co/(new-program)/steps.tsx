@@ -117,10 +117,10 @@ export function ProgramOnboardingSteps() {
                         className={cn(
                           "flex h-5 w-5 items-center justify-center rounded-full text-xs",
                           completed && "bg-black text-white",
-                          current && "bg-blue-500 text-white",
+                          current && "bg-[#3971ff] text-white",
                           !current &&
                             !completed &&
-                            "border border-neutral-200 text-neutral-500",
+                            "border-[6px] border-neutral-100 text-neutral-500",
                         )}
                       >
                         {stepNumber === 5 ? (
@@ -134,7 +134,7 @@ export function ProgramOnboardingSteps() {
                       <span
                         className={cn(
                           "text-sm font-medium",
-                          current && "text-blue-500",
+                          current && "text-[#08272E]",
                           !current && !completed && "text-neutral-600",
                         )}
                       >

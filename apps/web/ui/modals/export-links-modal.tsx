@@ -110,7 +110,7 @@ function ExportLinksModal({
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `Dub Links Export - ${new Date().toISOString()}.csv`;
+      a.download = `PiMMs Links Export - ${new Date().toISOString()}.csv`;
       a.click();
 
       toast.success("Exported successfully");
@@ -128,7 +128,7 @@ function ExportLinksModal({
       showModal={showExportLinksModal}
       setShowModal={setShowExportLinksModal}
     >
-      <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-200 px-4 py-4 pt-8 sm:px-16">
+      <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-4 pt-8 sm:px-16">
         <Logo />
         <div className="flex flex-col space-y-1 text-center">
           <h3 className="text-lg font-medium">Export links</h3>
@@ -218,7 +218,7 @@ function ExportLinksModal({
           />
         </div>
 
-        <div className="border-t border-neutral-200" />
+        <div className="border-t-[6px] border-neutral-100" />
 
         <Controller
           name="useFilters"

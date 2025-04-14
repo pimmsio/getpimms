@@ -96,7 +96,7 @@ function ArchiveDomainModal({
       showModal={showArchiveDomainModal}
       setShowModal={setShowArchiveDomainModal}
     >
-      <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-200 px-4 py-4 pt-8 text-center sm:px-16">
+      <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-4 pt-8 text-center sm:px-16">
         <LinkLogo apexDomain={domain} />
         <h3 className="text-lg font-medium">
           {props.archived ? "Unarchive" : "Archive"} {domain}
@@ -105,13 +105,13 @@ function ArchiveDomainModal({
           {props.archived
             ? "By unarchiving this domain, it will show up in the link builder. "
             : "Archiving a domain will hide it from the link builder. "}
-          <a
+          {/* <a
             href="https://dub.co/help/article/archiving-domains"
             target="_blank"
             className="text-sm text-neutral-500 underline"
           >
             Learn more
-          </a>
+          </a> */}
         </p>
       </div>
 

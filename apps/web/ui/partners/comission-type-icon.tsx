@@ -4,7 +4,7 @@ import { cn } from "@dub/utils";
 import { z } from "zod";
 
 const iconsMap = {
-  click: { icon: CursorRays, className: "text-blue-500" },
+  click: { icon: CursorRays, className: "text-[#08272E]" },
   lead: { icon: UserCheck, className: "text-purple-500" },
   sale: { icon: InvoiceDollar, className: "text-teal-500" },
 };

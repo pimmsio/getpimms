@@ -68,12 +68,12 @@ export default async function ExpiredLinkPage({
               "animate-slide-up-fade motion-reduce:animate-fade-in [--offset:5px] [animation-delay:300ms] [animation-duration:1s] [animation-fill-mode:both]",
             )}
           >
-            <ButtonLink variant="primary" href="https://app.dub.co/register">
-              Try Dub today
+            <ButtonLink variant="primary" href="https://pimms.io/register">
+              Try PIMMS today
             </ButtonLink>
             <ButtonLink
               variant="secondary"
-              href={createHref("/home", params.domain, {
+              href={createHref("/", params.domain, {
                 ...UTM_PARAMS,
                 utm_campaign: params.domain,
                 utm_content: "Learn more",
@@ -86,9 +86,9 @@ export default async function ExpiredLinkPage({
         <div className="mt-20">
           <FeaturesSection domain={params.domain} utmParams={UTM_PARAMS} />
         </div>
-        <div className="mt-32">
+        {/* <div className="mt-32">
           <CTA domain={params.domain} utmParams={UTM_PARAMS} />
-        </div>
+        </div> */}
       </div>
       <Footer className="max-w-screen-lg border-0 bg-transparent lg:px-4 xl:px-0" />
     </main>

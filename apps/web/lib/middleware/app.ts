@@ -32,7 +32,8 @@ export default async function AppMiddleware(req: NextRequest) {
   ) {
     return NextResponse.redirect(
       new URL(
-        `/login${path === "/" ? "" : `?next=${encodeURIComponent(fullPath)}`}`,
+        // `/login${path === "/" ? "" : `?next=${encodeURIComponent(fullPath)}`}`,
+        `/login`,
         req.url,
       ),
     );

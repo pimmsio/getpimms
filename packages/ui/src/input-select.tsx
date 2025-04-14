@@ -197,7 +197,7 @@ export function InputSelect({
           <Drawer.Overlay className="fixed inset-0 z-40 bg-neutral-100 bg-opacity-10 backdrop-blur" />
           <Drawer.Portal>
             <Drawer.Content
-              className="fixed bottom-0 left-0 right-0 z-50 mt-24 rounded-t-lg border-t border-neutral-200 bg-white"
+              className="fixed bottom-0 left-0 right-0 z-50 mt-24 rounded-t-lg border-t-[6px] border-neutral-100 bg-white"
               onPointerDownOutside={(e) => {
                 // Prevent dismissal when clicking inside a toast
                 if (
@@ -259,7 +259,7 @@ export function InputSelect({
               ref={floatingRefs.setFloating}
               style={floatingStyles}
               {...getFloatingProps()}
-              className="z-20 flex w-full min-w-[160px] flex-col overflow-hidden rounded-md border border-neutral-200 bg-white shadow-md"
+              className="z-20 flex w-full min-w-[160px] flex-col overflow-hidden rounded-xl border-[2px] border-neutral-100 bg-white shadow-md"
             >
               <div
                 ref={scrollRef}
@@ -308,7 +308,7 @@ const InputGroup = forwardRef<HTMLLabelElement, InputGroupProps>(
       <label
         ref={ref}
         className={cn(
-          "group relative flex cursor-pointer gap-2 rounded-md border border-neutral-200 bg-white px-1 pl-3 transition-all focus-within:border-neutral-500 focus-within:ring-4 focus-within:ring-neutral-200",
+          "group relative flex cursor-pointer gap-2 rounded-xl border-[2px] border-neutral-100 bg-white px-1 pl-3 transition-all focus-within:border-neutral-500 focus-within:ring-4 focus-within:ring-neutral-200",
           className,
         )}
         {...rest}

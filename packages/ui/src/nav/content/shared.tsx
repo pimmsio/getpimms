@@ -70,7 +70,7 @@ export function ContentIcon({
   icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
 }) {
   return (
-    <div className="shrink-0 rounded-[10px] border border-neutral-200 bg-white/50 p-3 dark:border-white/20 dark:bg-white/10">
+    <div className="shrink-0 rounded-[10px] border-[6px] border-neutral-100 bg-white/50 p-3 dark:border-white/20 dark:bg-white/10">
       <Icon className="h-4 w-4 text-black transition-transform group-hover:scale-110 dark:text-white/80" />
     </div>
   );

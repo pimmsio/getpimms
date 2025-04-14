@@ -1,4 +1,4 @@
-import { DUB_WORDMARK, OG_AVATAR_URL } from "@dub/utils";
+import { DICEBEAR_AVATAR_URL, DUB_WORDMARK } from "@dub/utils";
 import {
   Body,
   Container,
@@ -15,7 +15,7 @@ import {
 import { Footer } from "../components/footer";
 
 export function PartnerApplicationReceived({
-  email = "panic@thedis.co",
+  email = "cheers@pimms.io",
   partner = {
     id: "pn_1JPBEGP7EXF76CXT1W99VERW5",
     name: "John Doe",
@@ -30,7 +30,7 @@ export function PartnerApplicationReceived({
   },
   program = {
     id: "prog_CYCu7IMAapjkRpTnr8F1azjN",
-    name: "Acme",
+    name: "PiMMs",
   },
   workspace = {
     slug: "acme",
@@ -54,7 +54,7 @@ export function PartnerApplicationReceived({
     slug: string;
   };
 }) {
-  const applicationUrl = `https://app.dub.co/${workspace.slug}/programs/${program.id}/partners?status=pending&partnerId=${partner.id}`;
+  const applicationUrl = `https://app.pimms.io/${workspace.slug}/programs/${program.id}/partners?partnerId=${partner.id}`;
 
   return (
     <Html>
@@ -65,7 +65,7 @@ export function PartnerApplicationReceived({
       </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[600px] rounded border border-solid border-neutral-200 px-10 py-5">
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
             <Section className="mb-8 mt-6">
               <Img src={DUB_WORDMARK} width="61" height="32" alt="dub" />
             </Section>
@@ -81,18 +81,21 @@ export function PartnerApplicationReceived({
                 href={applicationUrl}
                 className="text-neutral-600 underline underline-offset-4"
               >
-                review on Dub
+                review on PiMMs
               </Link>
               .
             </Text>
 
-            <Container className="mb-8 mt-10 rounded-lg border border-solid border-neutral-200">
+            <Container className="mb-8 mt-10 rounded-xl border-[6px] border-solid border-neutral-200">
               <Section className="p-2">
-                <Container className="mb-4 w-full rounded-lg border border-solid border-neutral-100 bg-neutral-50 p-6">
+                <Container className="mb-4 w-full rounded-xl border-[6px] border-solid border-neutral-100 bg-neutral-50 p-6">
                   <div>
                     <div className="relative w-fit">
                       <Img
-                        src={partner.image || `${OG_AVATAR_URL}${partner.name}`}
+                        src={
+                          partner.image ||
+                          `${DICEBEAR_AVATAR_URL}${partner.name}`
+                        }
                         width="48"
                         height="48"
                         alt={partner.name}
@@ -150,7 +153,7 @@ export function PartnerApplicationReceived({
                       href={applicationUrl}
                       className="box-border block w-full rounded-lg bg-black px-0 py-4 text-center text-sm font-semibold leading-none text-white no-underline"
                     >
-                      Review application on Dub
+                      Review application on PiMMs
                     </Link>
                   </Section>
                 </Section>
@@ -159,7 +162,7 @@ export function PartnerApplicationReceived({
 
             <Footer
               email={email}
-              notificationSettingsUrl={`https://app.dub.co/${workspace.slug}/settings/notifications`}
+              notificationSettingsUrl={`https://app.pimms.io/${workspace.slug}/settings/notifications`}
             />
           </Container>
         </Body>

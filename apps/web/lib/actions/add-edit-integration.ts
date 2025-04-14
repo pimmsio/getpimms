@@ -22,7 +22,7 @@ export const addEditIntegration = authActionClient
   .action(async ({ parsedInput, ctx }) => {
     const { id, workspaceId, ...integration } = parsedInput;
 
-    // this is only available for Dub workspace for now
+    // this is only available for PiMMs workspace for now
     // we might open this up to other workspaces in the future
     if (workspaceId !== DUB_WORKSPACE_ID) {
       throw new Error("Not authorized");

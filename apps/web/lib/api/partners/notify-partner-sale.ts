@@ -100,7 +100,7 @@ export async function notifyPartnerSale({
     ...(partner.email
       ? [
           sendEmail({
-            subject: "You just made a sale via Dub Partners!",
+            subject: "You just made a sale via PiMMs Partners!",
             email: partner.email!,
             react: NewSaleAlertPartner({
               email: partner.email!,

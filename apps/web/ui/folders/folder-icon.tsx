@@ -25,7 +25,7 @@ const folderIconsMap: Record<
   },
   write: {
     borderColor: "border-blue-200",
-    bgColor: "bg-blue-100",
+    bgColor: "bg-[#3971ff]",
     icon: Folder,
     defaultIconClassName: "text-blue-800",
   },

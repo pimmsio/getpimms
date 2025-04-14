@@ -11,7 +11,7 @@ export default function Feedback() {
   const [submitted, setSubmitted] = useState(false);
 
   return (
-    <div className="scrollbar-hide relative z-0 h-[400px] overflow-scroll border border-neutral-200 bg-white px-7 py-5 sm:rounded-lg sm:border-neutral-100 sm:shadow-lg">
+    <div className="scrollbar-hide relative z-0 h-[400px] overflow-scroll border-[6px] border-neutral-100 bg-white px-7 py-5 sm:rounded-lg sm:border-neutral-100 sm:shadow-lg">
       <div className="mb-5 flex">
         <h1 className="text-xl font-semibold">Feedback</h1>
       </div>
@@ -46,7 +46,7 @@ export default function Feedback() {
               <input
                 name="email"
                 type="email"
-                placeholder="panic@thedis.co"
+                placeholder="cheers@pimms.io"
                 autoComplete="email"
                 className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
               />

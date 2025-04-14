@@ -121,7 +121,7 @@ export function OnlinePresenceForm({
           <div
             className={cn(
               "flex w-full flex-col gap-4 text-left",
-              variant === "settings" && "gap-0 divide-y divide-neutral-200 p-5",
+              variant === "settings" && "gap-0 divide-y-[6px] divide-neutral-100 p-5",
             )}
           >
             <FormRow
@@ -364,7 +364,7 @@ export function OnlinePresenceForm({
               loading={isSubmitting || isSubmitSuccessful}
             />
           ) : (
-            <div className="flex justify-end rounded-b-lg border-t border-neutral-200 bg-neutral-100 px-5 py-3.5">
+            <div className="flex justify-end rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-100 px-5 py-3.5">
               <Button
                 type="submit"
                 text="Save changes"

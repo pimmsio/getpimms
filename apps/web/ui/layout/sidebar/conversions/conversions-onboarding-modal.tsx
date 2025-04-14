@@ -19,6 +19,7 @@ import {
   ReactNode,
   SetStateAction,
   useContext,
+  useEffect,
   useId,
   useState,
 } from "react";
@@ -30,77 +31,77 @@ import { Shopify } from "./icons/shopify";
 import { Stripe } from "./icons/stripe";
 import { Supabase } from "./icons/supabase";
 
-const PAYMENT_PROCESSORS = [
-  {
-    name: "Stripe",
-    icon: Stripe,
-    guide: "https://dub.co/docs/conversions/sales/stripe",
-    thumbnail: "https://assets.dub.co/help/conversions-guide-stripe.png",
-  },
-  {
-    name: "Shopify",
-    icon: Shopify,
-    guide: "https://dub.co/docs/conversions/sales/shopify",
-    thumbnail: "https://assets.dub.co/help/conversions-guide-shopify.png",
-  },
-  {
-    name: "Custom Payments",
-    shortName: "Custom",
-    icon: Custom,
-    guide: "https://dub.co/docs/conversions/sales/introduction",
-    thumbnail: "https://assets.dub.co/help/conversions-guide-sales.png",
-  },
-];
+// const PAYMENT_PROCESSORS = [
+//   {
+//     name: "Stripe",
+//     icon: Stripe,
+//     guide: "https://dub.co/docs/conversions/sales/stripe",
+//     thumbnail: "https://assets.dub.co/help/conversions-guide-stripe.png",
+//   },
+//   {
+//     name: "Shopify",
+//     icon: Shopify,
+//     guide: "https://dub.co/docs/conversions/sales/shopify",
+//     thumbnail: "https://assets.dub.co/help/conversions-guide-shopify.png",
+//   },
+//   {
+//     name: "Custom Payments",
+//     shortName: "Custom",
+//     icon: Custom,
+//     guide: "https://dub.co/docs/conversions/sales/introduction",
+//     thumbnail: "https://assets.dub.co/help/conversions-guide-sales.png",
+//   },
+// ];
 
 const AUTH_PROVIDERS = [
+  // {
+  //   name: "Auth.js",
+  //   icon: AuthJs,
+  //   guide: "https://dub.co/docs/conversions/leads/next-auth",
+  //   thumbnail: "https://assets.dub.co/help/conversions-guide-next-auth.png",
+  // },
+  // {
+  //   name: "Clerk",
+  //   icon: Clerk,
+  //   guide: "https://dub.co/docs/conversions/leads/clerk",
+  //   thumbnail: "https://assets.dub.co/help/conversions-guide-clerk.png",
+  // },
+  // {
+  //   name: "Supabase",
+  //   icon: Supabase,
+  //   guide: "https://dub.co/docs/conversions/leads/supabase-auth",
+  //   thumbnail: "https://assets.dub.co/help/conversions-guide-supabase.png",
+  // },
+  // {
+  //   name: "Auth0",
+  //   icon: Auth0,
+  //   guide: "https://dub.co/docs/conversions/leads/auth0",
+  //   thumbnail: "https://assets.dub.co/help/conversions-guide-auth0.png",
+  // },
   {
-    name: "Auth.js",
-    icon: AuthJs,
-    guide: "https://dub.co/docs/conversions/leads/next-auth",
-    thumbnail: "https://assets.dub.co/help/conversions-guide-next-auth.png",
-  },
-  {
-    name: "Clerk",
-    icon: Clerk,
-    guide: "https://dub.co/docs/conversions/leads/clerk",
-    thumbnail: "https://assets.dub.co/help/conversions-guide-clerk.png",
-  },
-  {
-    name: "Supabase",
-    icon: Supabase,
-    guide: "https://dub.co/docs/conversions/leads/supabase-auth",
-    thumbnail: "https://assets.dub.co/help/conversions-guide-supabase.png",
-  },
-  {
-    name: "Auth0",
-    icon: Auth0,
-    guide: "https://dub.co/docs/conversions/leads/auth0",
-    thumbnail: "https://assets.dub.co/help/conversions-guide-auth0.png",
-  },
-  {
-    name: "Custom Auth",
+    name: "Custom conversion events",
     shortName: "Custom",
     icon: Custom,
-    guide: "https://dub.co/docs/conversions/leads/introduction",
-    thumbnail: "https://assets.dub.co/help/conversions-guide-leads.png",
+    guide: "https://pimms.io/blog/introducing-conversion-tracking",
+    thumbnail: "https://assets.pimms.io/conversion-tracking-1.png",
   },
-  {
-    name: "Shopify",
-    icon: Shopify,
-    hidden: true,
-    guide: "https://dub.co/docs/conversions/sales/shopify",
-    thumbnail: "https://assets.dub.co/help/conversions-guide-shopify.png",
-  },
+  // {
+  //   name: "Shopify",
+  //   icon: Shopify,
+  //   hidden: true,
+  //   guide: "https://dub.co/docs/conversions/sales/shopify",
+  //   thumbnail: "https://assets.dub.co/help/conversions-guide-shopify.png",
+  // },
 ];
 
 const ConversionOnboardingModalContext = createContext<{
-  paymentProcessorIndex: number | null;
-  setPaymentProcessorIndex: Dispatch<SetStateAction<number | null>>;
+  // paymentProcessorIndex: number | null;
+  // setPaymentProcessorIndex: Dispatch<SetStateAction<number | null>>;
   authProviderIndex: number | null;
   setAuthProviderIndex: Dispatch<SetStateAction<number | null>>;
 }>({
-  paymentProcessorIndex: null,
-  setPaymentProcessorIndex: () => {},
+  // paymentProcessorIndex: null,
+  // setPaymentProcessorIndex: () => {},
   authProviderIndex: null,
   setAuthProviderIndex: () => {},
 });
@@ -130,9 +131,9 @@ function ConversionOnboardingModalInner({
 }: {
   setShowConversionOnboardingModal: Dispatch<SetStateAction<boolean>>;
 }) {
-  const [paymentProcessorIndex, setPaymentProcessorIndex] = useState<
-    number | null
-  >(null);
+  // const [paymentProcessorIndex, setPaymentProcessorIndex] = useState<
+  //   number | null
+  // >(null);
 
   const [authProviderIndex, setAuthProviderIndex] = useState<number | null>(
     null,
@@ -153,25 +154,27 @@ function ConversionOnboardingModalInner({
         </button>
         <ConversionOnboardingModalContext.Provider
           value={{
-            paymentProcessorIndex,
-            setPaymentProcessorIndex,
+            // paymentProcessorIndex,
+            // setPaymentProcessorIndex,
             authProviderIndex,
             setAuthProviderIndex,
           }}
         >
-          <ModalPage visible={paymentProcessorIndex === null}>
+          {/* <ModalPage visible={paymentProcessorIndex === null}>
             <PaymentProcessorSelection />
-          </ModalPage>
+          </ModalPage> */}
           <ModalPage
             visible={
-              paymentProcessorIndex !== null && authProviderIndex === null
+              // paymentProcessorIndex !== null && authProviderIndex === null
+              authProviderIndex === null
             }
           >
             <AuthProviderSelection />
           </ModalPage>
           <ModalPage
             visible={
-              paymentProcessorIndex !== null && authProviderIndex !== null
+              // paymentProcessorIndex !== null && authProviderIndex !== null
+              authProviderIndex !== null
             }
           >
             <Docs />
@@ -192,74 +195,83 @@ function ModalPage({
   return visible ? <div className="animate-fade-in">{children}</div> : null;
 }
 
-function PaymentProcessorSelection() {
-  const { setPaymentProcessorIndex, setAuthProviderIndex } = useContext(
-    ConversionOnboardingModalContext,
-  );
+// function PaymentProcessorSelection() {
+//   const { setPaymentProcessorIndex, setAuthProviderIndex } = useContext(
+//     ConversionOnboardingModalContext,
+//   );
 
-  return (
-    <div>
-      <div className="flex size-12 items-center justify-center rounded-full border border-neutral-200 text-neutral-900">
-        <CircleDollar className="size-8 [&_*]:stroke-1 [&_circle]:hidden" />
-      </div>
-      <h3 className="mt-6 text-lg font-semibold text-neutral-800">
-        Set up conversion tracking
-      </h3>
-      <p className="mt-2 text-base text-neutral-500">
-        Select your payment processor to view our setup guides.
-      </p>
-      <div
-        className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-[repeat(var(--cols),minmax(0,1fr))]"
-        style={
-          {
-            "--cols": PAYMENT_PROCESSORS.length,
-          } as CSSProperties
-        }
-      >
-        {PAYMENT_PROCESSORS.map(({ icon: Icon, name, shortName }, index) => (
-          <button
-            key={index}
-            type="button"
-            className="group flex flex-col items-center rounded-lg bg-neutral-200/40 p-8 pb-6 transition-colors duration-100 hover:bg-neutral-200/60"
-            onClick={() => {
-              setPaymentProcessorIndex(index);
-              if (name === "Shopify") {
-                setAuthProviderIndex(
-                  AUTH_PROVIDERS.findIndex(({ name }) => name === "Shopify"),
-                );
-              }
-            }}
-          >
-            <Icon className="h-11 transition-transform duration-100 group-hover:-translate-y-0.5" />
-            <span className="mt-3 text-center text-sm font-medium text-neutral-700 sm:mt-8">
-              {shortName || name}
-            </span>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
+//   const { setAuthProviderIndex } = useContext(
+//     ConversionOnboardingModalContext,
+//   );
+
+//   return (
+//     <div>
+//       <div className="flex size-12 items-center justify-center rounded-full border-[6px] border-neutral-100 text-neutral-900">
+//         <CircleDollar className="size-8 [&_*]:stroke-1 [&_circle]:hidden" />
+//       </div>
+//       <h3 className="mt-6 text-lg font-semibold text-neutral-800">
+//         Set up conversion tracking
+//       </h3>
+//       <p className="mt-2 text-base text-neutral-500">
+//         Select your payment processor to view our setup guides.
+//       </p>
+//       <div
+//         className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-[repeat(var(--cols),minmax(0,1fr))]"
+//         style={
+//           {
+//             "--cols": PAYMENT_PROCESSORS.length,
+//           } as CSSProperties
+//         }
+//       >
+//         {PAYMENT_PROCESSORS.map(({ icon: Icon, name, shortName }, index) => (
+//           <button
+//             key={index}
+//             type="button"
+//             className="group flex flex-col items-center rounded-lg bg-neutral-200/40 p-8 pb-6 transition-colors duration-100 hover:bg-neutral-200/60"
+//             onClick={() => {
+//               setPaymentProcessorIndex(index);
+//               if (name === "Shopify") {
+//                 setAuthProviderIndex(
+//                   AUTH_PROVIDERS.findIndex(({ name }) => name === "Shopify"),
+//                 );
+//               }
+//             }}
+//           >
+//             <Icon className="h-11 transition-transform duration-100 group-hover:-translate-y-0.5" />
+//             <span className="mt-3 text-center text-sm font-medium text-neutral-700 sm:mt-8">
+//               {shortName || name}
+//             </span>
+//           </button>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
 
 function AuthProviderSelection() {
-  const authProviders = AUTH_PROVIDERS.filter(({ hidden }) => !hidden);
+  // const authProviders = AUTH_PROVIDERS.filter(({ hidden }) => !hidden);
+  const authProviders = AUTH_PROVIDERS;
 
   const {
-    paymentProcessorIndex,
-    setPaymentProcessorIndex,
+    // paymentProcessorIndex,
+    // setPaymentProcessorIndex,
     setAuthProviderIndex,
   } = useContext(ConversionOnboardingModalContext);
 
-  const paymentProcessor = PAYMENT_PROCESSORS[paymentProcessorIndex ?? 0];
+  // const paymentProcessor = PAYMENT_PROCESSORS[paymentProcessorIndex ?? 0];
+
+  useEffect(() => {
+    setAuthProviderIndex(0);
+  }, []);
 
   return (
     <div>
-      <div className="flex size-12 items-center justify-center rounded-lg border border-neutral-200 text-neutral-900">
+      {/* <div className="flex size-12 items-center justify-center rounded-lg border-[6px] border-neutral-100 text-neutral-900">
         <paymentProcessor.icon className="size-8" />
       </div>
       <h3 className="mt-6 text-lg font-semibold text-neutral-800">
         {paymentProcessor.name}
-      </h3>
+      </h3> */}
 
       <p className="mt-5 text-sm leading-none text-neutral-500">
         Select your auth provider
@@ -286,7 +298,7 @@ function AuthProviderSelection() {
           </button>
         ))}
       </div>
-      <div className="mt-6 flex justify-center">
+      {/* <div className="mt-6 flex justify-center">
         <button
           type="button"
           className="text-sm leading-none text-neutral-500 underline transition-colors duration-75 hover:text-neutral-700"
@@ -294,7 +306,7 @@ function AuthProviderSelection() {
         >
           Back to payment processors
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }
@@ -303,67 +315,75 @@ function Docs() {
   const id = useId();
 
   const {
-    paymentProcessorIndex,
+    // paymentProcessorIndex,
     authProviderIndex,
-    setPaymentProcessorIndex,
+    // setPaymentProcessorIndex,
     setAuthProviderIndex,
   } = useContext(ConversionOnboardingModalContext);
 
-  const paymentProcessor = PAYMENT_PROCESSORS[paymentProcessorIndex ?? 0];
+  // const paymentProcessor = PAYMENT_PROCESSORS[paymentProcessorIndex ?? 0];
   const authProvider = AUTH_PROVIDERS[authProviderIndex ?? 0];
 
-  const isSameProvider = authProvider.name === paymentProcessor.name;
+  // const isSameProvider = authProvider.name === paymentProcessor.name;
 
   return (
     <div>
-      <div className="flex grid-cols-2 gap-12 sm:grid sm:gap-4">
-        <div>
-          <div className="flex size-12 items-center justify-center rounded-lg border border-neutral-200 text-neutral-900">
+      {/* <div className="flex grid-cols-2 gap-12 sm:grid sm:gap-4"> */}
+      <div className="flex flex-row items-center gap-4">
+      {/* <div>
+          <div className="flex size-12 items-center justify-center rounded-lg border-[6px] border-neutral-100 text-neutral-900">
             <paymentProcessor.icon className="size-8" />
           </div>
           <h3 className="mt-6 text-lg font-semibold text-neutral-800">
             {paymentProcessor.name}
           </h3>
-        </div>
-        {!isSameProvider && (
-          <div>
-            <div className="flex size-12 items-center justify-center rounded-lg border border-neutral-200 text-neutral-900">
+        </div> */}
+        {/* {!isSameProvider && ( */}
+          {/* <div> */}
+            {/* <div className="flex size-12 items-center justify-center rounded-lg border-[6px] border-neutral-100 text-neutral-900"> */}
               <authProvider.icon className="size-8" />
-            </div>
-            <h3 className="mt-6 text-lg font-semibold text-neutral-800">
+            {/* </div> */}
+            <h3 className="text-lg font-semibold text-neutral-800">
               {authProvider.name}
             </h3>
-          </div>
-        )}
+          {/* </div> */}
+        {/* )} */}
       </div>
       <div
         className={cn(
-          "mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2",
-          isSameProvider && "mx-auto max-w-xs sm:grid-cols-1",
+          "mt-4"
+          // "mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2",
+          // isSameProvider && "mx-auto max-w-xs sm:grid-cols-1",
         )}
       >
         {[
-          {
-            label: `Read ${paymentProcessor.name} guide`,
-            url: paymentProcessor.guide,
-            thumbnail: paymentProcessor.thumbnail,
-            icon: BookOpen,
-          },
+          // {
+          //   label: `Read ${paymentProcessor.name} guide`,
+          //   url: paymentProcessor.guide,
+          //   thumbnail: paymentProcessor.thumbnail,
+          //   icon: BookOpen,
+          // },
           // If it's the same provider don't show the auth provider guide
-          ...(!isSameProvider
-            ? [
-                {
-                  label: `Read ${authProvider.name} guide`,
-                  url: authProvider.guide,
-                  thumbnail: authProvider.thumbnail,
-                  icon: BookOpen,
-                },
-              ]
-            : []),
+          // ...(!isSameProvider
+          //   ? [
+          //       {
+          //         label: `Read ${authProvider.name} guide`,
+          //         url: authProvider.guide,
+          //         thumbnail: authProvider.thumbnail,
+          //         icon: BookOpen,
+          //       },
+          //     ]
+          //   : []),
+          {
+            label: `Read ${authProvider.name} guide`,
+            url: authProvider.guide,
+            thumbnail: authProvider.thumbnail,
+            icon: BookOpen,
+          }
         ].map(({ icon: Icon, label, url, thumbnail }) => (
           <Link
             key={label}
-            href={url || "https://dub.co/docs/conversions/quickstart"}
+            href={url || "https://pimms.io/blog/introducing-conversion-tracking"}
             target="_blank"
             className="group flex flex-col items-center rounded-lg bg-neutral-200/40 pb-4 pt-6 transition-colors duration-100 hover:bg-neutral-200/60"
           >
@@ -387,8 +407,8 @@ function Docs() {
           </Link>
         ))}
       </div>
-      <div className="mt-4 flex items-start gap-3 rounded-lg border border-neutral-300 p-4">
-        <div className="hidden rounded-md border border-neutral-300 p-1.5 sm:block">
+      <div className="mt-4 flex items-center gap-3 rounded-xl border-[6px] border-neutral-200 p-4">
+        <div className="hidden rounded-xl border-[2px] border-neutral-300 p-1.5 sm:block">
           <SquareChart className="size-5" />
         </div>
         <div>
@@ -398,14 +418,14 @@ function Docs() {
           >
             Enable conversion tracking for future links
           </label>
-          <p className="mt-1 text-xs text-neutral-500">
+          {/* <p className="mt-1 text-xs text-neutral-500">
             This only affects links made with the link builder. You can update
             this behavior later in your workspace settings.
-          </p>
+          </p> */}
         </div>
         <ConversionTrackingToggleSwitch id={`${id}-switch`} />
       </div>
-      <div className="mt-6 flex justify-center">
+      {/* <div className="mt-6 flex justify-center">
         <button
           type="button"
           className="text-sm leading-none text-neutral-500 underline transition-colors duration-75 hover:text-neutral-700"
@@ -420,7 +440,7 @@ function Docs() {
             ? "payment processors"
             : "auth providers"}
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }

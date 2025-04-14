@@ -8,7 +8,7 @@ export default function OnboardingVerification() {
         Payout information
       </h1>
       <div className="animate-slide-up-fade relative mt-8 w-full [--offset:10px] [animation-delay:500ms] [animation-duration:1s] [animation-fill-mode:both]">
-        <div className="divide-y divide-neutral-200 overflow-hidden rounded-lg border border-neutral-200">
+        <div className="divide-y-[6px] divide-neutral-100 overflow-hidden rounded-xl border-[6px] border-neutral-100">
           <div className="flex items-center justify-center bg-neutral-50 p-4">
             <img
               src="https://assets.dub.co/misc/stripe-wordmark.svg"

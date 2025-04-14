@@ -61,7 +61,7 @@ export function Tooltip({
         <TooltipPrimitive.Content
           sideOffset={8}
           side={side}
-          className="animate-slide-up-fade pointer-events-auto z-[99] items-center overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm"
+          className="animate-slide-up-fade pointer-events-auto z-[99] items-center overflow-hidden rounded-xl border-[6px] border-neutral-100 bg-white shadow-sm"
           collisionPadding={0}
           {...rest}
         >
@@ -108,7 +108,7 @@ export function TooltipContent({
             {...(target ? { target } : {})}
             className={cn(
               buttonVariants({ variant: "primary" }),
-              "flex h-9 w-full items-center justify-center whitespace-nowrap rounded-lg border px-4 text-sm",
+              "flex h-9 w-full items-center justify-center whitespace-nowrap rounded-xl border-[6px] px-4 text-sm",
             )}
           >
             {cta}

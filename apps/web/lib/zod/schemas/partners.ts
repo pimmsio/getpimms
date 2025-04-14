@@ -175,7 +175,7 @@ export const EnrolledPartnerSchema = PartnerSchema.pick({
     applicationId: z.string().nullish(),
   });
 
-// Used internally in the Dub dashboard for partners table
+// Used internally in the PiMMs dashboard for partners table
 export const EnrolledPartnerSchemaWithExpandedFields =
   EnrolledPartnerSchema.merge(PartnerOnlinePresenceSchema).extend({
     commissions: z.number().default(0),
@@ -236,7 +236,7 @@ export const createPartnerSchema = z.object({
     .max(190)
     .email()
     .describe(
-      "Email for the partner in your system. Partners will be able to claim their profile by signing up to Dub Partners with this email.",
+      "Email for the partner in your system. Partners will be able to claim their profile by signing up to PiMMs Partners with this email.",
     ),
   username: z
     .string()
@@ -272,7 +272,7 @@ export const createPartnerSchema = z.object({
       publicStats: true,
       tagId: true,
       geo: true,
-      projectId: true,
+      // projectId: true,
       programId: true,
       partnerId: true,
       webhookIds: true,

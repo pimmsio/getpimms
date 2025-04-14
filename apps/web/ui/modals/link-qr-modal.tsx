@@ -153,7 +153,7 @@ function LinkQRModalInner({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h3 className="text-lg font-medium">QR Code</h3>
-          <ProBadgeTooltip
+          {/* <ProBadgeTooltip
             content={
               <SimpleTooltipContent
                 title="Set a custom QR code design to improve click-through rates."
@@ -161,7 +161,7 @@ function LinkQRModalInner({
                 href="https://dub.co/help/article/custom-qr-codes"
               />
             }
-          />
+          /> */}
         </div>
         <div className="max-md:hidden">
           <Tooltip
@@ -174,7 +174,7 @@ function LinkQRModalInner({
             }
             side="right"
           >
-            <kbd className="flex size-6 cursor-default items-center justify-center rounded-md border border-neutral-200 font-sans text-xs text-neutral-950">
+            <kbd className="flex size-6 cursor-default items-center justify-center rounded-xl border-[2px] border-neutral-100 font-sans text-xs text-neutral-950">
               Q
             </kbd>
           </Tooltip>
@@ -187,7 +187,7 @@ function LinkQRModalInner({
             <span className="text-sm font-medium text-neutral-700">
               QR Code Preview
             </span>
-            <InfoTooltip
+            {/* <InfoTooltip
               content={
                 <SimpleTooltipContent
                   title="Customize your QR code to fit your brand."
@@ -195,7 +195,7 @@ function LinkQRModalInner({
                   href="https://dub.co/help/article/custom-qr-codes"
                 />
               }
-            />
+            /> */}
           </div>
           {url && qrData && (
             <div className="flex items-center gap-2">
@@ -224,7 +224,7 @@ function LinkQRModalInner({
             </div>
           )}
         </div>
-        <div className="relative mt-2 flex h-44 items-center justify-center overflow-hidden rounded-md border border-neutral-300">
+        <div className="relative mt-2 flex h-44 items-center justify-center overflow-hidden rounded-xl border-[2px] border-neutral-300">
           {!isMobile && (
             <ShimmerDots className="opacity-30 [mask-image:radial-gradient(40%_80%,transparent_50%,black)]" />
           )}
@@ -252,7 +252,7 @@ function LinkQRModalInner({
       </div>
 
       {/* Logo toggle */}
-      <div className="flex items-center justify-between">
+      {/* <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <label
             className="text-sm font-medium text-neutral-700"
@@ -281,7 +281,11 @@ function LinkQRModalInner({
               <TooltipContent
                 title="You need to be on the Pro plan and above to customize your QR Code logo."
                 cta="Upgrade to Pro"
-                href={slug ? `/${slug}/upgrade` : "https://dub.co/pricing"}
+                href={
+                  slug
+                    ? `/${slug}/upgrade?exit=close`
+                    : "https://pimms.io/pricing"
+                }
                 target="_blank"
               />
             ) : undefined
@@ -292,7 +296,7 @@ function LinkQRModalInner({
             ) : undefined
           }
         />
-      </div>
+      </div> */}
 
       {/* Color selector */}
       <div>

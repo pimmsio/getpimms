@@ -19,7 +19,7 @@ export function DomainCardTitleColumn({
 }) {
   return (
     <div className="flex min-w-0 items-center gap-4">
-      <div className="hidden rounded-full border border-neutral-200 sm:block">
+      <div className="hidden rounded-full border-[6px] border-neutral-100 sm:block">
         <div
           className={cn(
             "rounded-full",
@@ -50,11 +50,6 @@ export function DomainCardTitleColumn({
             <span className="xs:px-3 xs:py-1 flex items-center gap-1 rounded-full bg-sky-400/[.15] px-1.5 py-0.5 text-xs font-medium text-sky-600">
               <Flag2 className="hidden h-3 w-3 sm:block" />
               Primary
-            </span>
-          ) : defaultDomain && domain === "dub.link" ? (
-            <span className="xs:px-3 xs:py-1 flex items-center gap-1 rounded-full bg-yellow-400/[.25] px-1.5 py-0.5 text-xs font-medium text-yellow-600">
-              <Star className="h-3 w-3" fill="currentColor" />
-              Premium
             </span>
           ) : null}
         </div>

@@ -33,7 +33,7 @@ function RemoveSCIMModal({
       showModal={showRemoveSCIMModal}
       setShowModal={setShowRemoveSCIMModal}
     >
-      <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-200 px-4 py-4 pt-8 sm:px-16">
+      <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-4 pt-8 sm:px-16">
         {logo ? (
           <BlurImage
             src={logo}
@@ -53,7 +53,7 @@ function RemoveSCIMModal({
       </div>
 
       <div className="flex flex-col space-y-4 bg-neutral-50 px-4 py-8 text-left sm:px-16">
-        <div className="flex items-center space-x-3 rounded-md border border-neutral-300 bg-white p-3">
+        <div className="flex items-center space-x-3 rounded-xl border-[2px] border-neutral-300 bg-white p-3">
           <img
             src={currentProvider.logo}
             alt={currentProvider.name + " logo"}

@@ -148,7 +148,7 @@ export function RegisterDomainForm({
               Search domains
             </p>
 
-            {workspace.plan === "free" && variant === "modal" && (
+            {/* {workspace.plan === "free" && variant === "modal" && (
               <ProBadgeTooltip
                 content={
                   <SimpleTooltipContent
@@ -158,7 +158,7 @@ export function RegisterDomainForm({
                   />
                 }
               />
-            )}
+            )} */}
           </div>
 
           <div className="mt-2">
@@ -172,7 +172,7 @@ export function RegisterDomainForm({
                   : "bg-neutral-100",
               )}
             >
-              <div className="flex rounded-md border border-neutral-300 bg-white">
+              <div className="flex rounded-xl border-[2px] border-neutral-300 bg-white">
                 <input
                   name="domain"
                   id="domain"
@@ -261,8 +261,8 @@ export function RegisterDomainForm({
               <h2 className="text-sm font-medium text-neutral-800">
                 Available alternatives
               </h2>
-              <div className="mt-2 overflow-hidden rounded-lg border border-neutral-200">
-                <div className="flex flex-col divide-y divide-neutral-200">
+              <div className="mt-2 overflow-hidden rounded-xl border-[6px] border-neutral-100">
+                <div className="flex flex-col divide-y-[6px] divide-neutral-100">
                   {availableDomains.map((alternative) => (
                     <div
                       key={alternative.domain}
@@ -295,7 +295,7 @@ export function RegisterDomainForm({
             </div>
           )}
 
-        {searchedDomain && (
+        {/* {searchedDomain && (
           <p className="-my-2 text-pretty text-left text-sm text-neutral-400">
             By claiming your .link domain, you agree to our{" "}
             <a
@@ -307,13 +307,13 @@ export function RegisterDomainForm({
             </a>
             .
           </p>
-        )}
+        )} */}
       </div>
       <div
         className={cn(
           "mt-8 flex justify-end gap-2",
           variant === "modal" &&
-            "border-t border-neutral-200 px-4 py-4 sm:px-6",
+            "border-t-[6px] border-neutral-100 px-4 py-4 sm:px-6",
         )}
       >
         {onCancel && variant === "modal" && (
@@ -378,13 +378,13 @@ function DomainSavedToast() {
       <CheckCircleFill className="size-5 shrink-0 text-black" />
       <p className="text-[13px] font-medium text-neutral-900">
         Domain saved. You'll need a pro plan to complete the registration.{" "}
-        <a
+        {/* <a
           href="https://dub.co/help/article/free-dot-link-domain"
           target="_blank"
           className="text-neutral-500 underline transition-colors hover:text-neutral-800"
         >
           Learn more
-        </a>
+        </a> */}
       </p>
     </div>
   );

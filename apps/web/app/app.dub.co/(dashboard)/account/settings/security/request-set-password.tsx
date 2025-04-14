@@ -36,8 +36,8 @@ export const RequestSetPassword = () => {
   };
 
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white">
-      <div className="flex flex-col gap-3 border-b border-neutral-200 p-5 sm:p-10">
+    <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
+      <div className="flex flex-col gap-3 border-b-[6px] border-neutral-100 p-5 sm:p-10">
         <h2 className="text-xl font-medium">Password</h2>
         <p className="pb-2 text-sm text-neutral-500">
           {user?.provider && (
@@ -46,7 +46,7 @@ export const RequestSetPassword = () => {
               <span className="uppercase">{user?.provider}</span>.{" "}
             </>
           )}
-          You can set a password to use with your Dub account.
+          You can set a password to use with your PIMMS account.
         </p>
       </div>
       <div className="p-5 sm:p-10">

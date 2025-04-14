@@ -12,23 +12,19 @@ export function Footer({
   if (marketing) {
     return (
       <Tailwind>
-        <Hr className="mx-0 my-6 w-full border border-neutral-200" />
+        <Hr className="mx-0 my-6 w-full border-[6px] border-neutral-100" />
         <Text className="text-[12px] leading-6 text-neutral-500">
           We send out product update emails once a month – no spam, no nonsense.
           Don't want to get these emails?{" "}
           <Link
             className="text-neutral-700 underline"
-            href="https://app.dub.co/account/settings"
+            href="https://app.pimms.io/account/settings"
           >
             Unsubscribe here.
           </Link>
         </Text>
         <Text className="text-[12px] text-neutral-500">
-          Dub Technologies, Inc.
-          <br />
-          2261 Market Street STE 5906
-          <br />
-          San Francisco, CA 941114
+          PIMMS. Chemin de Louis-Hubert 2. Petit-Lancy, 1213
         </Text>
       </Tailwind>
     );
@@ -36,7 +32,7 @@ export function Footer({
 
   return (
     <Tailwind>
-      <Hr className="mx-0 my-6 w-full border border-neutral-200" />
+      <Hr className="mx-0 my-6 w-full border-[6px] border-neutral-100" />
       <Text className="text-[12px] leading-6 text-neutral-500">
         This email was intended for <span className="text-black">{email}</span>.
         If you were not expecting this email, you can ignore this email. If you
@@ -56,11 +52,7 @@ export function Footer({
         </Text>
       )}
       <Text className="text-[12px] text-neutral-500">
-        Dub Technologies, Inc.
-        <br />
-        2261 Market Street STE 5906
-        <br />
-        San Francisco, CA 941114
+        PIMMS. Chemin de Louis-Hubert 2. Petit-Lancy, 1213
       </Text>
     </Tailwind>
   );

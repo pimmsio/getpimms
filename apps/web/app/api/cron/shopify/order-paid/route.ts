@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       await redis.expire(`shopify:checkout:${checkoutToken}`, 60 * 60 * 24);
 
       return new Response(
-        `[Shopify] Order is not from a Dub link. Skipping...`,
+        `[Shopify] Order is not from a PIMMS link. Skipping...`,
       );
     }
 

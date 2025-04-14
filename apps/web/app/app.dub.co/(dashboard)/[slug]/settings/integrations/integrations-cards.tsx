@@ -2,11 +2,10 @@
 
 import IntegrationCard from "@/ui/integrations/integration-card";
 import { AnimatedEmptyState } from "@/ui/shared/animated-empty-state";
-import { buttonVariants, Plus } from "@dub/ui";
-import { cn } from "@dub/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { IntegrationsWithInstallations } from "./integrations-list";
+import { Plus } from "lucide-react";
 
 const CATEGORY_ORDER = [
   "Payments",
@@ -14,10 +13,12 @@ const CATEGORY_ORDER = [
   "Analytics",
   "Productivity",
   "Social Scheduling",
+  "Appointment Scheduling",
+  "Calendar",
   "CMS",
   "Forms",
   "Authentication",
-  "Dub",
+  "PIMMS",
   "Miscellaneous",
 ] as const;
 
@@ -106,17 +107,17 @@ export function IntegrationsCards({
                   </div>
                 </div>
               )}
-              addButton={
-                <a
-                  href="mailto:support@dub.co?subject=Integration%20Request"
-                  className={cn(
-                    buttonVariants({ variant: "primary" }),
-                    "flex h-8 items-center rounded-md border px-2.5 text-sm",
-                  )}
-                >
-                  Request integration
-                </a>
-              }
+              // addButton={
+              //   <a
+              //     href="mailto:support@dub.co?subject=Integration%20Request"
+              //     className={cn(
+              //       buttonVariants({ variant: "primary" }),
+              //       "flex h-8 items-center rounded-md border px-2.5 text-sm",
+              //     )}
+              //   >
+              //     Request integration
+              //   </a>
+              // }
             />
           </motion.div>
         )}

@@ -35,9 +35,9 @@ export function StepPage({
       <h1 className="mt-4 text-center text-2xl font-medium leading-tight">
         {title}
       </h1>
-      <div className="mt-1.5 text-center text-base leading-tight text-neutral-500">
+      {/* <div className="mt-1.5 text-center text-base leading-tight text-neutral-500">
         {description}
-      </div>
+      </div> */}
       <div className="mt-8 w-full">{children}</div>
     </div>
   );
@@ -45,7 +45,7 @@ export function StepPage({
 
 function StepIcon({ icon: Icon }: { icon: Icon }) {
   return (
-    <div className="rounded-full border border-neutral-200 bg-white p-2.5">
+    <div className="rounded-full border-[6px] border-neutral-100 bg-white p-2.5">
       <Icon className="size-[18px]" />
     </div>
   );

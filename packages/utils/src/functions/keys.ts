@@ -1,7 +1,5 @@
-// allow letters, numbers, '-', '_', '/', '.', and emojis
-export const validKeyRegex = new RegExp(
-  /^[0-9A-Za-z_\u0080-\uFFFF\/\-\p{Emoji}.]+$/u,
-);
+// allow letters, numbers, '-', '_', '/', '.'
+export const validKeyRegex = /^[0-9A-Za-z_\u0080-\uFFFF\/\-.]+$/;
 
 export const isUnsupportedKey = (key: string) => {
   // special case for root domain links

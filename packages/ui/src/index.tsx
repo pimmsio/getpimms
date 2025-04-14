@@ -7,6 +7,7 @@ export * from "./alert";
 export * from "./avatar";
 export * from "./badge";
 export * from "./button";
+export * from "./floating-button";
 export * from "./card-list";
 export * from "./carousel";
 export * from "./checkbox";

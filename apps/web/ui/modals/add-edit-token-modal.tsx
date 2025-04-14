@@ -15,7 +15,6 @@ import {
   Modal,
   RadioGroup,
   RadioGroupItem,
-  SimpleTooltipContent,
   ToggleGroup,
 } from "@dub/ui";
 import { cn } from "@dub/utils";
@@ -154,7 +153,7 @@ function AddEditTokenModal({
         className="max-w-lg"
         onClose={() => setSelectedToken(null)}
       >
-        <h3 className="border-b border-neutral-200 px-4 py-4 text-lg font-medium sm:px-6">
+        <h3 className="border-b-[6px] border-neutral-100 px-4 py-4 text-lg font-medium sm:px-6">
           {token ? "Edit" : "Create New"} API Key
         </h3>
 
@@ -191,27 +190,19 @@ function AddEditTokenModal({
                   setData({ ...data, isMachine: value === "machine" })
                 }
               >
-                <div className="flex w-1/2 items-center space-x-2 rounded-md border border-neutral-300 bg-white transition-all hover:bg-neutral-50 active:bg-neutral-100">
+                <div className="flex w-1/2 items-center space-x-2 rounded-xl border-[2px] border-neutral-300 bg-white transition-all hover:bg-neutral-50 active:bg-neutral-100">
                   <RadioGroupItem value="user" id="user" className="ml-3" />
                   <Label
                     htmlFor="user"
                     className="flex flex-1 cursor-pointer items-center justify-between space-x-1 p-3 pl-0"
                   >
                     <p className="text-neutral-600">You</p>
-                    <InfoTooltip
-                      content={
-                        <SimpleTooltipContent
-                          title="This API key will be tied to your user account – if you are removed from the workspace, it will be deleted."
-                          cta="Learn more"
-                          href="https://dub.co/docs/api-reference/tokens"
-                        />
-                      }
-                    />
+                    <InfoTooltip content="This API key will be tied to your user account – if you are removed from the workspace, it will be deleted." />
                   </Label>
                 </div>
                 <div
                   className={cn(
-                    "flex w-1/2 items-center space-x-2 rounded-md border border-neutral-300 bg-white transition-all hover:bg-neutral-50 active:bg-neutral-100",
+                    "flex w-1/2 items-center space-x-2 rounded-xl border-[2px] border-neutral-300 bg-white transition-all hover:bg-neutral-50 active:bg-neutral-100",
                     {
                       "cursor-not-allowed opacity-75": !isOwner,
                     },
@@ -235,15 +226,9 @@ function AddEditTokenModal({
                     <p className="text-neutral-600">Machine</p>
                     <InfoTooltip
                       content={
-                        <SimpleTooltipContent
-                          title={
-                            isOwner
-                              ? "A new bot member will be added to your workspace, and the key will be associated with it. Since the key is not tied to your account, it will not be deleted even if you leave the workspace."
-                              : "Only the workspace owner can create machine users."
-                          }
-                          cta="Learn more"
-                          href="https://dub.co/docs/api-reference/tokens#machine-users"
-                        />
+                        isOwner
+                          ? "A new bot member will be added to your workspace, and the key will be associated with it. Since the key is not tied to your account, it will not be deleted even if you leave the workspace."
+                          : "Only the workspace owner can create machine users."
                       }
                     />
                   </Label>
@@ -271,7 +256,7 @@ function AddEditTokenModal({
                   setData({ ...data, scopes: {} });
                 }
               }}
-              className="grid grid-cols-3 rounded-md border border-neutral-300 bg-neutral-100"
+              className="grid grid-cols-3 rounded-xl border-[2px] border-neutral-300 bg-neutral-100"
               optionClassName="w-full h-8 flex items-center justify-center text-sm text-neutral-800"
               indicatorClassName="rounded-md bg-white border border-neutral-300 shadow-sm"
             />

@@ -59,7 +59,7 @@ export const RequestFolderEditAccessButton = ({
       variant={variant}
       className={cn(
         variant === "outline" &&
-          "h-8 w-fit rounded-md border border-neutral-200 text-neutral-900",
+          "h-8 w-fit rounded-xl border-[2px] border-neutral-100 text-neutral-900",
       )}
       disabled={isRequested || requestSent}
       loading={isPending}

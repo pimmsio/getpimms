@@ -17,10 +17,10 @@ import { Footer } from "../components/footer";
 export function PartnerBanned({
   partner = {
     name: "John",
-    email: "panic@thedis.co",
+    email: "cheers@pimms.io",
   },
   program = {
-    name: "Acme",
+    name: "PiMMs",
     supportEmail: "support@acme.com",
   },
   bannedReason = "violating our terms of service",
@@ -44,7 +44,7 @@ export function PartnerBanned({
       </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[600px] rounded border border-solid border-neutral-200 px-10 py-5">
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
             <Section className="mb-8 mt-6">
               <Img src={DUB_WORDMARK} width="61" height="32" alt="dub" />
             </Section>

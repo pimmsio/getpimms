@@ -1,6 +1,6 @@
 import { AnalyticsResponseOptions } from "@/lib/analytics/types";
 import { editQueryString } from "@/lib/analytics/utils";
-import { MiniAreaChart, useMediaQuery, useRouterStuff } from "@dub/ui";
+import { useMediaQuery, useRouterStuff } from "@dub/ui";
 import { capitalize, cn, fetcher } from "@dub/utils";
 import NumberFlow from "@number-flow/react";
 import { useCallback, useContext, useEffect } from "react";
@@ -76,15 +76,20 @@ export default function EventsTabs() {
   }, [tab, searchParams.get("sort")]);
 
   return (
-    <div className="grid w-full grid-cols-3 gap-2 overflow-x-auto sm:gap-4">
-      {["clicks", "leads", "sales"].map((event) => (
+    // <div className="grid w-full grid-cols-3 gap-2 overflow-x-auto sm:gap-4">
+    <div className="grid w-full grid-cols-2 gap-2 overflow-x-auto sm:gap-4">
+      {[
+        // "clicks",
+        "leads",
+        "sales"
+      ].map((event) => (
         <button
           key={event}
           className={cn(
-            "flex justify-between gap-4 rounded-xl border bg-white px-5 py-4 text-left transition-[box-shadow] focus:outline-none",
+            "flex justify-between gap-4 rounded-xl border-[6px] border-neutral-100 bg-white px-5 py-4 text-left transition-[box-shadow] focus:outline-none",
             tab === event
-              ? "border-black shadow-[0_0_0_1px_black_inset]"
-              : "border-neutral-200 focus-visible:border-black",
+              ? "md:border-[#3970ff]"
+              : "border-neutral-200 focus-visible:md:border-[#3970ff]",
           )}
           onClick={() => onEventTabClick(event)}
         >
@@ -123,7 +128,7 @@ export default function EventsTabs() {
               )}
             </div>
           </div>
-          {timeseriesData && !isMobile && (
+          {/* {timeseriesData && !isMobile && (
             <div
               className={cn(
                 "relative h-full max-w-[140px] grow transition-opacity",
@@ -142,7 +147,7 @@ export default function EventsTabs() {
                 }
               />
             </div>
-          )}
+          )} */}
         </button>
       ))}
     </div>

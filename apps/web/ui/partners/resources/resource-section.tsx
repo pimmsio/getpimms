@@ -21,7 +21,7 @@ export function ResourceSection({
   onAdd?: () => void;
 }>) {
   return (
-    <div className="border-border-subtle grid grid-cols-1 gap-4 rounded-lg border p-4 sm:grid-cols-2 sm:p-6">
+    <div className="border-border-subtle grid grid-cols-1 gap-4 rounded-xl border-[6px] p-4 sm:grid-cols-2 sm:p-6">
       <div>
         <h2 className="text-content-emphasis text-lg font-semibold">{title}</h2>
         {description && (

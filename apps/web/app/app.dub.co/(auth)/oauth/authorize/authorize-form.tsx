@@ -24,6 +24,7 @@ export const AuthorizeForm = ({
   scope,
   code_challenge,
   code_challenge_method,
+  code
 }: AuthorizeFormProps) => {
   const { data: session } = useSession();
   const { workspaces } = useWorkspaces();
@@ -118,7 +119,11 @@ export const AuthorizeForm = ({
       return;
     }
 
-    window.location.href = data.callbackUrl;
+    const url = new URL(data.callbackUrl);
+    // add workspace slug to the callback url
+    url.searchParams.set("slug", selectedWorkspace.id);
+
+    window.location.href = url.toString();
   };
 
   return (
@@ -140,6 +145,7 @@ export const AuthorizeForm = ({
             value={code_challenge_method}
           />
         )}
+        {code && <input type="hidden" name="code" value={code} />}
         <p className="text-sm text-neutral-500">
           Select a workspace to grant API access to
         </p>

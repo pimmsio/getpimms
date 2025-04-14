@@ -118,7 +118,7 @@ export async function GET(req: NextRequest) {
           </div>
           <div tw="mt-10 flex">
             {program.rewardAmount && program.rewardType && (
-              <div tw="w-full flex items-center rounded-md bg-neutral-100 border border-neutral-200 p-8 text-2xl">
+              <div tw="w-full flex items-center rounded-md bg-neutral-100 border-[6px] border-neutral-100 p-8 text-2xl">
                 {/* @ts-ignore */}
                 <InvoiceDollar tw="w-8 h-8 mr-4" />
                 <strong

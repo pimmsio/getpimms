@@ -43,12 +43,8 @@ export default async function LinkMiddleware(
     return NextResponse.next();
   }
 
-  if (domain === "dev.buff.ly") {
-    domain = "buff.ly";
-  }
-
   // encode the key to ascii
-  // links on Dub are case insensitive by default
+  // links on PiMMs are case insensitive by default
   let key = punyEncode(originalKey);
 
   if (!isCaseSensitiveDomain(domain)) {
@@ -67,9 +63,9 @@ export default async function LinkMiddleware(
   }
 
   // we don't support .php links (too much bot traffic)
-  // hence we redirect to the root domain and add `dub-no-track` header to avoid tracking bot traffic
+  // hence we redirect to the root domain and add `pimms-no-track` header to avoid tracking bot traffic
   if (isUnsupportedKey(key)) {
-    return NextResponse.redirect(new URL("/?dub-no-track=1", req.url), {
+    return NextResponse.redirect(new URL("/?pimms-no-track=1", req.url), {
       headers: {
         ...DUB_HEADERS,
         "X-Robots-Tag": "googlebot: noindex",
@@ -87,13 +83,6 @@ export default async function LinkMiddleware(
     });
 
     if (!linkData) {
-      // TODO: remove this once everything is migrated over
-      if (domain === "buff.ly") {
-        return NextResponse.rewrite(
-          new URL(`/api/links/crawl/bitly/${domain}/${key}`, req.url),
-        );
-      }
-
       // check if domain has notFoundUrl configured
       const domainData = await getDomainViaEdge(domain);
       if (domainData?.notFoundUrl) {
@@ -165,7 +154,7 @@ export default async function LinkMiddleware(
   if (password) {
     const pw =
       req.nextUrl.searchParams.get("pw") ||
-      req.cookies.get(`dub_password_${linkId}`)?.value;
+      req.cookies.get(`pimms_password_${linkId}`)?.value;
 
     // rewrite to auth page (/password/[domain]/[key]) if:
     // - no `pw` param is provided
