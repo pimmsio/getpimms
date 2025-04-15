@@ -74,20 +74,20 @@ export type ErrorCodes = z.infer<typeof ErrorCode>;
 
 export class DubApiError extends Error {
   public readonly code: z.infer<typeof ErrorCode>;
-  public readonly docUrl?: string;
+  // public readonly docUrl?: string;
 
   constructor({
     code,
     message,
-    docUrl,
+    // docUrl,
   }: {
     code: z.infer<typeof ErrorCode>;
     message: string;
-    docUrl?: string;
+    // docUrl?: string;
   }) {
     super(message);
     this.code = code;
-    this.docUrl = docUrl ?? `${docErrorUrl}#${code.replace("_", "-")}`;
+    // this.docUrl = docUrl ?? `${docErrorUrl}#${code.replace("_", "-")}`;
   }
 }
 
