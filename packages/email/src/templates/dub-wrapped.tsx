@@ -117,7 +117,7 @@ export function DubWrapped({
       title: "New link builder + dashboard",
       description:
         "We launched a new link builder, rebuilt from the ground up, to help you manage your links better. We also gave our dashboard a makeover as well.",
-      image: "https://assets.pimms.io/dashboard.jpg?v=2",
+      image: "https://assets.pimms.io/dashboard.jpg?v=3",
       cta: {
         text: "Read the announcement",
         href: "https://ship.pimms.io/builder",
