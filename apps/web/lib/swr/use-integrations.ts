@@ -8,7 +8,7 @@ export default function useIntegrations() {
 
   const { data: integrations, error } = useSWR<
     Pick<InstalledIntegrationProps, "id" | "name" | "slug">[]
-  >(`/api/integrations?workspaceId=${id}`, fetcher, {
+  >(id ? `/api/integrations?workspaceId=${id}` : null, fetcher, {
     dedupingInterval: 20000,
     revalidateOnFocus: false,
     keepPreviousData: true,

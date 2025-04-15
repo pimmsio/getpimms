@@ -23,10 +23,9 @@ export const POST = withAxiom(async (req: Request) => {
   const { livemode } = JSON.parse(buf);
 
   const sig = req.headers.get("Stripe-Signature");
-  // const webhookSecret = !livemode
-  //   ? process.env.STRIPE_APP_WEBHOOK_SECRET_TEST
-  //   : process.env.STRIPE_APP_WEBHOOK_SECRET;
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  const webhookSecret = !livemode
+    ? process.env.STRIPE_APP_WEBHOOK_SECRET_TEST
+    : process.env.STRIPE_APP_WEBHOOK_SECRET;
 
   if (!sig || !webhookSecret) {
     return new Response("Invalid request", {

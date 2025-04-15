@@ -1,6 +1,7 @@
 "use server";
 
 import { getSlackInstallationUrl } from "../integrations/slack/install";
+import { getStripeInstallationUrl } from "../integrations/stripe/install";
 import z from "../zod";
 import { authActionClient } from "./safe-action";
 
@@ -20,6 +21,8 @@ export const getIntegrationInstallUrl = authActionClient
 
     if (integrationSlug === "slack") {
       url = await getSlackInstallationUrl(workspace.id);
+    } else if (integrationSlug === "stripe") {
+      url = await getStripeInstallationUrl(workspace.id);
     } else {
       throw new Error("Invalid integration slug");
     }

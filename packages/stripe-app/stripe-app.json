@@ -1,6 +1,6 @@
 {
   "id": "pimms.io",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "name": "PIMMS",
   "icon": "./stripe-icon.png",
   "permissions": [

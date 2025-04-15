@@ -39,6 +39,7 @@ export const GET = async (req: NextRequest) => {
   const workspaceId = await redis.get<string>(`stripe:install:state:${state}`);
 
   if (!workspaceId) {
+    console.error("[Stripe OAuth callback] No workspace found for state", state);
     redirect(APP_DOMAIN);
   }
 

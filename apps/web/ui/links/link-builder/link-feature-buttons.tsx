@@ -21,13 +21,19 @@ export function LinkFeatureButtons({
   const { PasswordModal, PasswordButton } = usePasswordModal();
   const { ABTestingModal, ABTestingButton } = useABTestingModal();
 
+  // ab testing only if search params include ab_testing=true
+  const searchParams = new URLSearchParams(window.location.search);
+  const abTesting = searchParams.get("ab_testing");
+
   return (
     <>
       <PasswordModal />
       <UTMModal />
       <TargetingModal />
       <ExpirationModal />
-      {flags?.abTesting && <ABTestingModal />}
+
+      {abTesting && flags?.abTesting && <ABTestingModal />}
+      {abTesting && flags?.abTesting && <ABTestingButton />}
 
       {/* <div className={cn("flex min-w-0 items-center gap-2", className)}>
         <UTMButton />

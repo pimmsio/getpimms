@@ -320,13 +320,7 @@ function ABTestingEdit({
               Testing URLs
             </label>
             <InfoTooltip
-              content={
-                <SimpleTooltipContent
-                  title="Add up to 3 additional destination URLs to test for this short link."
-                  cta="Learn more"
-                  href="https://dub.co/help/article/ab-testing" // TODO: Add article
-                />
-              }
+              content="Add up to 3 additional destination URLs to test for this short link."
             />
           </div>
           <div className="mt-2">
@@ -347,7 +341,7 @@ function ABTestingEdit({
                         placeholder={
                           domains?.find(({ slug }) => slug === domain)
                             ?.placeholder ||
-                          "https://dub.co/help/article/what-is-dub"
+                          "https://youtu.be/BY_XwvKogC8"
                         }
                         className="block h-9 grow border-none px-2 text-neutral-900 placeholder-neutral-400 focus:ring-0 sm:text-sm"
                         {...register(`testVariants.${index}.url`, {
