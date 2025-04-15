@@ -60,7 +60,7 @@ export default function Main() {
 
   const tab = tabs.find(({ id }) => id === selectedTab) ?? tabs[0];
 
-  const showPaywall = (tab.conversions || view === "funnel") && plan === "free";
+  const showPaywall = (tab.id === "sales" || view === "funnel") && plan === "free";
 
   return (
     <div className="w-full overflow-hidden bg-white">
@@ -236,7 +236,7 @@ function ConversionTrackingPaywall() {
         </h2>
         <p className="mt-4 max-w-sm text-center text-sm text-neutral-500">
           Want to see how your clicks are converting to revenue? Upgrade to our
-          Pro Plan and start tracking conversion with PiMMs.
+          Pro Plan and start tracking sales with PiMMs.
         </p>
         <Link
           href={`/${slug}/upgrade`}

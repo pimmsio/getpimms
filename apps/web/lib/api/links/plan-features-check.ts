@@ -49,11 +49,11 @@ export const proFeaturesCheck = (payload: NewLinkProps) => {
 export const businessFeaturesCheck = (payload: NewLinkProps) => {
   const { testVariants, trackConversion } = payload;
 
-  if (testVariants || trackConversion) {
+  if (testVariants) {
     const businessFeaturesString = combineWords(
       [
         testVariants && "A/B testing",
-        trackConversion && "conversion tracking",
+        // trackConversion && "conversion tracking",
       ].filter(Boolean) as string[],
     );
 
