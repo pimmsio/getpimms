@@ -22,28 +22,24 @@ import {
   CarouselNavBar,
   CarouselThumbnail,
   CarouselThumbnails,
-  Logo,
   MaxWidthWrapper,
   Popover,
   Tooltip,
-  TooltipContent,
   useMediaQuery,
 } from "@dub/ui";
 import {
   CircleWarning,
   ConnectedDots,
   DubCraftedShield,
-  Globe,
-  OfficeBuilding,
   Trash,
 } from "@dub/ui/icons";
 import {
   cn,
   DUB_WORKSPACE_ID,
   formatDate,
-  getDomainWithoutWWW,
   SEGMENT_INTEGRATION_ID,
   SLACK_INTEGRATION_ID,
+  STRIPE_INTEGRATION_ID,
   ZAPIER_INTEGRATION_ID,
 } from "@dub/utils";
 import { useAction } from "next-safe-action/hooks";
@@ -265,6 +261,22 @@ export default function IntegrationPageClient({
                 loading={isPending}
                 text="Enable"
                 variant="primary"
+                icon={<ConnectedDots className="size-4" />}
+              />
+            )}
+          {!integration.installed &&
+            integration.id === STRIPE_INTEGRATION_ID && (
+              <Button
+                onClick={() => {
+                  execute({
+                    workspaceId: workspaceId!,
+                    integrationSlug: integration.slug,
+                    test: true,
+                  });
+                }}
+                loading={isPending}
+                text="Enable (Test)"
+                variant="secondary"
                 icon={<ConnectedDots className="size-4" />}
               />
             )}
