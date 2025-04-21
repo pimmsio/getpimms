@@ -4,7 +4,6 @@ import { useABTestingModal } from "@/ui/modals/link-builder/ab-testing-modal";
 import { useExpirationModal } from "@/ui/modals/link-builder/expiration-modal";
 import { usePasswordModal } from "@/ui/modals/link-builder/password-modal";
 import { useTargetingModal } from "@/ui/modals/link-builder/targeting-modal";
-import { useUTMModal } from "@/ui/modals/link-builder/utm-modal";
 import { cn } from "@dub/utils";
 
 export function LinkFeatureButtons({
@@ -15,7 +14,6 @@ export function LinkFeatureButtons({
   className?: string;
 }) {
   const { flags } = useWorkspace();
-  const { UTMModal, UTMButton } = useUTMModal();
   const { ExpirationModal, ExpirationButton } = useExpirationModal();
   const { TargetingModal, TargetingButton } = useTargetingModal();
   const { PasswordModal, PasswordButton } = usePasswordModal();
@@ -28,8 +26,8 @@ export function LinkFeatureButtons({
   return (
     <>
       <PasswordModal />
-      <UTMModal />
-      <TargetingModal />
+      {/* <UTMModal />
+      <TargetingModal /> */}
       <ExpirationModal />
 
       {abTesting && flags?.abTesting && <ABTestingModal />}

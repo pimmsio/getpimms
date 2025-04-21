@@ -1,11 +1,13 @@
+import useWorkspace from "@/lib/swr/use-workspace";
+import { UtmTemplateProps } from "@/lib/types";
 import { LinkFormData } from "@/ui/links/link-builder/link-builder-provider";
 import { useLinkBuilderKeyboardShortcut } from "@/ui/links/link-builder/use-link-builder-keyboard-shortcut";
+import { UTMTemplateList } from "@/ui/links/link-builder/utm-templates-button";
 import {
   Button,
   DiamondTurnRight,
-  InfoTooltip,
+  LoadingSpinner,
   Modal,
-  SimpleTooltipContent,
   Tooltip,
   UTM_PARAMETERS,
   UTMBuilder,
@@ -13,8 +15,9 @@ import {
 import {
   cn,
   constructURLFromUTMParams,
+  fetcher,
   getParamsFromURL,
-  isValidUrl,
+  getUrlFromStringIfValid,
 } from "@dub/utils";
 import {
   Dispatch,
@@ -23,12 +26,13 @@ import {
   useMemo,
   useState,
 } from "react";
-import { FormProvider, useForm, useFormContext } from "react-hook-form";
-import { UTMTemplatesCombo } from "./utm-templates-combo";
+import { useForm, useFormContext } from "react-hook-form";
+import useSWR from "swr";
 
 type UTMModalProps = {
   showUTMModal: boolean;
   setShowUTMModal: Dispatch<SetStateAction<boolean>>;
+  onLoad: (params: Record<string, string>) => void;
 };
 
 function UTMModal(props: UTMModalProps) {
@@ -43,7 +47,7 @@ function UTMModal(props: UTMModalProps) {
   );
 }
 
-function UTMModalInner({ setShowUTMModal }: UTMModalProps) {
+function UTMModalInner({ setShowUTMModal, onLoad }: UTMModalProps) {
   const { getValues: getValuesParent, setValue: setValueParent } =
     useFormContext<LinkFormData>();
 
@@ -77,6 +81,7 @@ function UTMModalInner({ setShowUTMModal }: UTMModalProps) {
   } = form;
 
   const url = watch("url");
+  const isUrlValid = useMemo(() => !!getUrlFromStringIfValid(url), [url]);
   const enabledParams = useMemo(() => getParamsFromURL(url), [url]);
 
   // Update targeting URL params if they previously matched the same params of the destination URL
@@ -149,6 +154,16 @@ function UTMModalInner({ setShowUTMModal }: UTMModalProps) {
     [],
   );
 
+  const { id: workspaceId } = useWorkspace();
+
+  const { data: utmData, isLoading: isUtmLoading } = useSWR<UtmTemplateProps[]>(
+    workspaceId && `/api/utm?workspaceId=${workspaceId}`,
+    fetcher,
+    {
+      dedupingInterval: 60000,
+    },
+  );
+
   return (
     <form
       onSubmit={(e) => {
@@ -168,16 +183,14 @@ function UTMModalInner({ setShowUTMModal }: UTMModalProps) {
       }}
     >
       <div className="flex items-center justify-between">
-        {/* {utmData ? (
+        {utmData ? (
           <div className="text-sm">
             <div className="max-w-64">
               <UTMTemplateList
-                enabledParams={enabledParams}
                 data={utmData}
                 onLoad={(params) => {
                   onLoad(params);
                 }}
-                disabled={!isUrlValid}
               />
             </div>
           </div>
@@ -189,7 +202,7 @@ function UTMModalInner({ setShowUTMModal }: UTMModalProps) {
           <div className="flex w-full items-center justify-center p-2 text-center text-xs text-neutral-500 md:w-32">
             Failed to load templates
           </div>
-        )} */}
+        )}
         <div className="flex items-center gap-2">
           {/* <h3 className="text-lg font-medium">UTM Builder</h3> */}
           {/* <InfoTooltip
@@ -236,7 +249,7 @@ function UTMModalInner({ setShowUTMModal }: UTMModalProps) {
             );
           }}
           disabledTooltip={
-            isValidUrl(url)
+            isUrlValid
               ? undefined
               : "Enter a destination URL to add UTM parameters"
           }
@@ -244,7 +257,7 @@ function UTMModalInner({ setShowUTMModal }: UTMModalProps) {
         />
       </div>
 
-      {isValidUrl(url) && (
+      {isUrlValid && (
         <div className="mt-4 grid gap-y-1">
           <span className="block text-sm font-medium text-neutral-700">
             URL Preview
@@ -265,7 +278,7 @@ function UTMModalInner({ setShowUTMModal }: UTMModalProps) {
                 });
               }}
               disabledTooltip={
-                isValidUrl(url)
+                isUrlValid
                   ? undefined
                   : "Enter a destination URL to use UTM templates"
               }
@@ -288,7 +301,7 @@ function UTMModalInner({ setShowUTMModal }: UTMModalProps) {
             variant="secondary"
             text="Close"
             className="h-9 w-fit"
-            disabled={!isDirty}
+            // disabled={!isDirty}
           />
         </div>
       </div>
@@ -328,12 +341,20 @@ function UTMButton({
   );
 }
 
-export function useUTMModal() {
+export function useUTMModal({
+  onLoad,
+}: {
+  onLoad: (params: Record<string, string>) => void;
+}) {
   const [showUTMModal, setShowUTMModal] = useState(false);
 
   const UTMModalCallback = useCallback(() => {
     return (
-      <UTMModal showUTMModal={showUTMModal} setShowUTMModal={setShowUTMModal} />
+      <UTMModal
+        showUTMModal={showUTMModal}
+        setShowUTMModal={setShowUTMModal}
+        onLoad={onLoad}
+      />
     );
   }, [showUTMModal, setShowUTMModal]);
 

@@ -1,6 +1,6 @@
 import { LinkFormData } from "@/ui/links/link-builder/link-builder-provider";
-import { UTMTemplatesButton } from "@/ui/links/link-builder/utm-templates-button";
-import { constructURLFromUTMParams, isValidUrl } from "@dub/utils";
+import { useTargetingModal } from "@/ui/modals/link-builder/targeting-modal";
+import { useUTMModal } from "@/ui/modals/link-builder/utm-modal";
 import { forwardRef, memo } from "react";
 import {
   Controller,
@@ -10,6 +10,7 @@ import {
 } from "react-hook-form";
 import { DestinationUrlInput } from "../../destination-url-input";
 import { useAvailableDomains } from "../../use-available-domains";
+import { constructURLFromUTMParams } from "@dub/utils";
 
 /**
  * Wraps the DestinationUrlInput component with link-builder-specific context & logic
@@ -30,39 +31,45 @@ export const LinkBuilderDestinationUrlInput = memo(
       currentDomain: domain,
     });
 
+    const { UTMModal, UTMButton } = useUTMModal({
+      onLoad: (params) => {
+        setValue("url", constructURLFromUTMParams(url, params), {
+          shouldDirty: true,
+        });
+      },
+    });
+    const { TargetingButton, TargetingModal } = useTargetingModal();
+
     return (
-      <Controller
-        name="url"
-        control={control}
-        render={({ field }) => (
-          <DestinationUrlInput
-            ref={ref}
-            domain={domain}
-            _key={key}
-            value={field.value}
-            domains={domains}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              clearErrors("url");
-              field.onChange(e.target.value);
-            }}
-            required={key !== "_root"}
-            error={errors.url?.message || undefined}
-            right={
-              <div className="-mb-1 h-6">
-                {isValidUrl(url) && (
-                  <UTMTemplatesButton
-                    onLoad={(params) => {
-                      setValue("url", constructURLFromUTMParams(url, params), {
-                        shouldDirty: true,
-                      });
-                    }}
-                  />
-                )}
-              </div>
-            }
-          />
-        )}
-      />
+      <>
+        <UTMModal />
+        <TargetingModal />
+        <Controller
+          name="url"
+          control={control}
+          render={({ field }) => (
+            <DestinationUrlInput
+              ref={ref}
+              domain={domain}
+              _key={key}
+              value={field.value}
+              domains={domains}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                clearErrors("url");
+                field.onChange(e.target.value);
+              }}
+              required={key !== "_root"}
+              error={errors.url?.message || undefined}
+              right={
+                <div className="mb-1.5 flex h-6 items-center gap-2">
+                  <UTMButton />
+                  <TargetingButton />
+                </div>
+              }
+            />
+          )}
+        />
+      </>
     );
   }),
 );

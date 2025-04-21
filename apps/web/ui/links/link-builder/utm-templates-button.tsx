@@ -83,7 +83,7 @@ export function UTMTemplatesButton({
   ) : null;
 }
 
-function UTMTemplateList({
+export function UTMTemplateList({
   data,
   onLoad,
 }: {
