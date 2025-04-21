@@ -34,9 +34,9 @@ export const PLANS = [
     name: "Pro",
     // link: "https://dub.co/help/article/pro-plan",
     price: {
-      monthly: 15,
-      yearly: 90,
+      lifetime: 45,
       ids: [
+        "price_1R2yHmBN5sOoOmBU1CeLs81z", // lifetime (prod)
         "price_1R9AM5BL7DFxjjSQ9e32QsT1", // new monthly (test)
         "price_1RBgCrBN5sOoOmBURR514Ec7", // new monthly (prod)
         "price_1QxoOyBN5sOoOmBUKEy5qXku", // new yearly (test)
@@ -46,7 +46,7 @@ export const PLANS = [
     limits: {
       links: 1_000,
       clicks: 50_000,
-      sales: 1_000_00,
+      sales: 5_000_00,
       domains: 10,
       tags: 25,
       folders: 3,
@@ -66,7 +66,7 @@ export const PLANS = [
       },
       {
         id: "sales",
-        text: "1k€ tracked sales/mo",
+        text: "5000€ tracked sales/mo",
       },
       { id: "domains", text: "10 domains" },
       { id: "users", text: "5 users" },
@@ -120,7 +120,7 @@ export const PLANS = [
     limits: {
       links: 10_000,
       clicks: 250_000,
-      sales: 25_000_00,
+      sales: 60_000_00,
       domains: 100,
       tags: INFINITY_NUMBER,
       folders: 20,

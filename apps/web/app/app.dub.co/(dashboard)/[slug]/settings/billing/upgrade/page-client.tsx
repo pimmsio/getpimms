@@ -33,7 +33,7 @@ const COMPARE_FEATURE_ICONS: Record<
   API: Plug2,
 };
 
-const plans = ["Pro", "Business", /*"Advanced", "Enterprise"*/].map(
+const plans = ["Pro", "Business" /*"Advanced", "Enterprise"*/].map(
   (p) => PLANS.find(({ name }) => name === p)!,
 );
 
@@ -77,7 +77,7 @@ export function WorkspaceBillingUpgradePageClient() {
           <div className="overflow-x-hidden rounded-b-[12px] from-neutral-200 [container-type:inline-size] lg:bg-gradient-to-t lg:p-px">
             <div
               className={cn(
-                "grid grid-cols-4 lg:grid-cols-2 gap-px overflow-hidden rounded-b-[11px] text-sm text-neutral-800 [&_strong]:font-medium",
+                "grid grid-cols-4 gap-px overflow-hidden rounded-b-[11px] text-sm text-neutral-800 lg:grid-cols-2 [&_strong]:font-medium",
 
                 // Mobile
                 "max-lg:w-[calc(400cqw+3*32px)] max-lg:translate-x-[calc(-1*var(--index)*(100cqw+32px))] max-lg:gap-x-8 max-lg:transition-transform",
@@ -123,7 +123,11 @@ export function WorkspaceBillingUpgradePageClient() {
                           ) : (
                             <>
                               <NumberFlow
-                                value={plan.price[period]!}
+                                value={
+                                  plan.name === "Pro"
+                                    ? plan.price["lifetime"]!
+                                    : plan.price[period]!
+                                }
                                 className="text-sm font-medium tabular-nums text-neutral-700"
                                 format={{
                                   style: "currency",
@@ -132,11 +136,17 @@ export function WorkspaceBillingUpgradePageClient() {
                                 }}
                                 continuous
                               />
-                              <span className="text-sm font-medium text-neutral-400">
-                                {period === "yearly"
-                                  ? "billed yearly"
-                                  : "per month"}
-                              </span>
+                              {plan.name === "Pro" ? (
+                                <span className="text-sm font-medium text-neutral-400">
+                                  One-time payment
+                                </span>
+                              ) : (
+                                <span className="text-sm font-medium text-neutral-400">
+                                  {period === "yearly"
+                                    ? "billed yearly"
+                                    : "per month"}
+                                </span>
+                              )}
                             </>
                           )}
                         </div>
@@ -218,7 +228,7 @@ export function WorkspaceBillingUpgradePageClient() {
                 </a>
                 <table
                   className={cn(
-                    "grid grid-cols-4 lg:grid-cols-2 overflow-hidden text-sm text-neutral-800 [&_strong]:font-medium",
+                    "grid grid-cols-4 overflow-hidden text-sm text-neutral-800 lg:grid-cols-2 [&_strong]:font-medium",
 
                     // Mobile
                     "max-lg:w-[calc(400cqw+3*32px)] max-lg:translate-x-[calc(-1*var(--index)*(100cqw+32px))] max-lg:gap-x-8 max-lg:transition-transform",

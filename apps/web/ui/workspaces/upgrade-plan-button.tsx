@@ -49,6 +49,11 @@ export function UpgradePlanButton({
       loading={clicked}
       disabled={!workspaceSlug || isCurrentPlan}
       onClick={() => {
+        if (selectedPlan.name === "Pro") {
+          router.push("https://buy.stripe.com/00g15T7LY4ma2iceUX");
+          return;
+        }
+
         setClicked(true);
         fetch(`/api/workspaces/${workspaceSlug}/billing/upgrade`, {
           method: "POST",

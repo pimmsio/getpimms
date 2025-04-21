@@ -13,7 +13,7 @@ const plans = [PRO_PLAN, BUSINESS_PLAN/*, ADVANCED_PLAN*/];
 export function PlanSelector() {
   const [period, setPeriod] = useState<"monthly" | "yearly">("yearly");
   const [mobilePlanIndex, setMobilePlanIndex] = useState(0);
-
+  
   return (
     <div>
       <div className="flex justify-center">
@@ -62,7 +62,7 @@ export function PlanSelector() {
               </div>
               <div className="mt-1 text-base font-medium text-neutral-400">
                 <NumberFlow
-                  value={plan.price[period]!}
+                  value={plan.name === "Pro" ? plan.price["lifetime"]! : plan.price[period]!}
                   className="tabular-nums text-neutral-700"
                   format={{
                     style: "currency",
@@ -71,9 +71,15 @@ export function PlanSelector() {
                   }}
                   continuous
                 />
-                <span className="ml-1 font-medium">
-                  {period === "monthly" ? "per month" : "billed yearly"}
-                </span>
+                {plan.name === "Pro" ? (
+                  <span className="ml-1 font-medium">
+                    One-time payment
+                  </span>
+                ) : (
+                  <span className="ml-1 font-medium">
+                    {period === "monthly" ? "per month" : "billed yearly"}
+                  </span>
+                )}
               </div>
               <div className="my-6 flex gap-2">
                 <button
