@@ -59,6 +59,7 @@ export const GET = async (req: NextRequest) => {
       `${APP_DOMAIN}/${workspace.slug}/settings/integrations/stripe?stripeConnectError=${error_description}`,
     );
   } else if (stripeAccountId) {
+    console.log("stripeAccountId found", stripeAccountId, workspaceId);
     // Update the workspace with the Stripe Connect ID
     const workspace = await prisma.project.update({
       where: {
@@ -68,6 +69,8 @@ export const GET = async (req: NextRequest) => {
         stripeConnectId: stripeAccountId,
       },
     });
+
+    console.log("workspace updated", workspace);
 
     await installIntegration({
       integrationId: STRIPE_INTEGRATION_ID,

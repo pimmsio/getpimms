@@ -25,6 +25,7 @@ import {
   MaxWidthWrapper,
   Popover,
   Tooltip,
+  TooltipContent,
   useMediaQuery,
 } from "@dub/ui";
 import {
@@ -131,16 +132,16 @@ export default function IntegrationPageClient({
                   onClick={() => {
                     setShowUninstallIntegrationModal(true);
                   }}
-                  // {...(integration.slug === "stripe" && {
-                  //   disabledTooltip: (
-                  //     <TooltipContent
-                  //       title="You cannot uninstall the Stripe integration from here. Please visit the Stripe dashboard to uninstall the app."
-                  //       cta="Go to Stripe"
-                  //       href="https://dashboard.stripe.com/settings/apps/pimms.io"
-                  //       target="_blank"
-                  //     />
-                  //   ),
-                  // })}
+                  {...(integration.slug === "stripe" && {
+                    disabledTooltip: (
+                      <TooltipContent
+                        title="You cannot uninstall the Stripe integration from here. Please visit the Stripe dashboard to uninstall the app."
+                        cta="Go to Stripe"
+                        href="https://dashboard.stripe.com/settings/apps/pimms.io"
+                        target="_blank"
+                      />
+                    ),
+                  })}
                 />
               </div>
             }
