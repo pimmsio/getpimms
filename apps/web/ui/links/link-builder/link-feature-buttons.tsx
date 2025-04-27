@@ -21,7 +21,6 @@ export function LinkFeatureButtons({
 
   // ab testing only if search params include ab_testing=true
   const searchParams = new URLSearchParams(window.location.search);
-  const abTesting = searchParams.get("ab_testing");
 
   return (
     <>
@@ -30,8 +29,8 @@ export function LinkFeatureButtons({
       <TargetingModal /> */}
       <ExpirationModal />
 
-      {abTesting && flags?.abTesting && <ABTestingModal />}
-      {abTesting && flags?.abTesting && <ABTestingButton />}
+      {/* {flags?.abTesting && <ABTestingModal />}
+      {flags?.abTesting && <ABTestingButton />} */}
 
       {/* <div className={cn("flex min-w-0 items-center gap-2", className)}>
         <UTMButton />

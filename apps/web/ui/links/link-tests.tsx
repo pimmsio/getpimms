@@ -1,6 +1,6 @@
 import useWorkspace from "@/lib/swr/use-workspace";
 import { ABTestVariantsSchema } from "@/lib/zod/schemas/links";
-import { fetcher } from "@dub/utils";
+import { fetcher, getPrettyUrl } from "@dub/utils";
 import { motion } from "framer-motion";
 import { memo, useMemo } from "react";
 import useSWR from "swr";
@@ -62,30 +62,16 @@ export const LinkTests = memo(({ link }: { link: ResponseLink }) => {
       transition={{ duration: 0.2 }}
       className="overflow-hidden"
     >
-      <ul className="flex flex-col gap-2.5 border-t border-neutral-200 bg-neutral-100 p-3">
+      <ul className="flex w-full flex-col gap-2.5 border-t border-neutral-200 bg-neutral-100 p-3 lg:flex-row">
         {testVariants.map((test, idx) => {
           const analytics = data?.find(({ url }) => url === test.url);
 
           return (
             <li
               key={idx}
-              className="flex items-center justify-between rounded-xl border-[6px] border-neutral-200 bg-white p-2.5"
+              className="flex w-full items-center justify-between rounded-xl bg-white p-2.5"
             >
               <div className="flex min-w-0 items-center gap-4">
-                {/* Test number */}
-                <div className="size-7 shrink-0 select-none rounded-full border border-neutral-200/50 p-px">
-                  <div className="flex size-full items-center justify-center rounded-full bg-gradient-to-t from-neutral-950/5 text-sm font-medium text-neutral-800">
-                    {idx + 1}
-                  </div>
-                </div>
-
-                {/* Test name */}
-                <span className="truncate text-sm font-medium text-neutral-800">
-                  {test.url}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-5">
                 {/* Test percentage */}
                 <div className="h-7 shrink-0 select-none rounded-[6px] border border-neutral-200/50 p-px">
                   <div className="flex size-full items-center justify-center rounded-[5px] bg-gradient-to-t from-neutral-950/5 px-1.5 text-xs font-semibold tabular-nums text-neutral-800">
@@ -93,8 +79,15 @@ export const LinkTests = memo(({ link }: { link: ResponseLink }) => {
                   </div>
                 </div>
 
+                {/* Test name */}
+                <span className="truncate text-sm font-medium text-neutral-800">
+                  {getPrettyUrl(test.url)}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-5">
                 {/* Analytics badge */}
-                <div className="flex justify-end sm:min-w-48">
+                <div className="flex justify-end">
                   {isLoading ? (
                     <div className="h-7 w-32 animate-pulse rounded-md bg-neutral-100" />
                   ) : error ? null : (

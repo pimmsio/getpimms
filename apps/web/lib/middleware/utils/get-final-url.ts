@@ -35,6 +35,8 @@ export const getFinalUrl = (
       // if it's a calendly link, then set the pimms_id into the utm_term
       if (urlObj.hostname.includes("calendly")) {
         urlObj.searchParams.set("utm_term", `pimms_id_${clickId}`);
+      } else if (urlObj.hostname.includes("iclosed")) {
+        urlObj.searchParams.set("utm_term", clickId);
       } else {
         urlObj.searchParams.set("pimms_id", clickId);
       }

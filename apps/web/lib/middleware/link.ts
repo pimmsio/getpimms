@@ -3,6 +3,7 @@ import {
   detectBot,
   getFinalUrl,
   isExceptionToDirectRedirect,
+  isExceptionToNativeBrowser,
   isNativeBrowser,
   isSupportedDeeplinkProtocol,
   isSupportedDirectAppLink,
@@ -506,8 +507,8 @@ export default async function LinkMiddleware(
   } else if (
     (ua?.device?.type != "mobile" && ua?.device?.type != "tablet") ||
     shallShowDirectPreview(req) ||
-    isNativeBrowser(req) ||
-    isExceptionToDirectRedirect(req)
+    isExceptionToDirectRedirect(req) ||
+    (isNativeBrowser(req) && !isExceptionToNativeBrowser(req))
   ) {
     ev.waitUntil(
       recordClick({

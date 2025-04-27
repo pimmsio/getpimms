@@ -37,6 +37,7 @@ export const proFeaturesCheck = (payload: NewLinkProps) => {
         android && "Android targeting",
         geo && "geo targeting",
         doIndex && "search engine indexing",
+        testVariants && "A/B testing",
       ].filter(Boolean) as string[],
     );
 
@@ -49,16 +50,16 @@ export const proFeaturesCheck = (payload: NewLinkProps) => {
 export const businessFeaturesCheck = (payload: NewLinkProps) => {
   const { testVariants, trackConversion } = payload;
 
-  if (testVariants) {
-    const businessFeaturesString = combineWords(
-      [
-        testVariants && "A/B testing",
-        // trackConversion && "conversion tracking",
-      ].filter(Boolean) as string[],
-    );
+  // if (testVariants) {
+  //   const businessFeaturesString = combineWords(
+  //     [
+  //       testVariants && "A/B testing",
+  //       trackConversion && "conversion tracking",
+  //     ].filter(Boolean) as string[],
+  //   );
 
-    throw new Error(
-      `You can only use ${businessFeaturesString} on a Business plan and above. Upgrade to Business to use these features.`,
-    );
-  }
+  //   throw new Error(
+  //     `You can only use ${businessFeaturesString} on a Business plan and above. Upgrade to Business to use these features.`,
+  //   );
+  // }
 };

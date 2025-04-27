@@ -5,29 +5,15 @@ import { QRLinkProps } from "@/lib/types";
 import { QRCode } from "@/ui/shared/qr-code";
 import {
   Button,
-  ButtonTooltip,
   IconMenu,
-  InfoTooltip,
   Modal,
   Popover,
-  ShimmerDots,
-  SimpleTooltipContent,
-  Switch,
   Tooltip,
-  TooltipContent,
   useCopyToClipboard,
   useLocalStorage,
   useMediaQuery,
 } from "@dub/ui";
-import {
-  Check,
-  Check2,
-  Copy,
-  CrownSmall,
-  Download,
-  Hyperlink,
-  Photo,
-} from "@dub/ui/icons";
+import { Check, Check2, Download, Hyperlink, Photo } from "@dub/ui/icons";
 import { API_DOMAIN, cn, DUB_QR_LOGO, linkConstructor } from "@dub/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -43,7 +29,6 @@ import {
 import { HexColorInput, HexColorPicker } from "react-colorful";
 import { toast } from "sonner";
 import { useDebouncedCallback } from "use-debounce";
-import { ProBadgeTooltip } from "../shared/pro-badge-tooltip";
 
 const DEFAULT_COLORS = [
   "#000000",
@@ -53,7 +38,7 @@ const DEFAULT_COLORS = [
   "#F6CF54",
   "#49A065",
   "#2146B7",
-  "#AE49BF",
+  // "#AE49BF",
 ];
 
 export type QRCodeDesign = {
@@ -116,9 +101,8 @@ function LinkQRModalInner({
 
   const [data, setData] = useState(dataPersisted);
 
-  const hideLogo = data.hideLogo && plan !== "free";
-  const logo =
-    plan === "free" ? DUB_QR_LOGO : domainLogo || workspaceLogo || DUB_QR_LOGO;
+  const hideLogo = !domainLogo && !workspaceLogo;
+  const logo = domainLogo || workspaceLogo || DUB_QR_LOGO;
 
   const qrData = useMemo(
     () =>
@@ -200,17 +184,12 @@ function LinkQRModalInner({
           {url && qrData && (
             <div className="flex items-center gap-2">
               <DownloadPopover qrData={qrData} props={props}>
-                <div>
-                  <ButtonTooltip
-                    tooltipProps={{
-                      content: "Download QR code",
-                    }}
-                  >
-                    <Download className="h-4 w-4 text-neutral-500" />
-                  </ButtonTooltip>
+                <div className="flex cursor-pointer items-center gap-1 text-sm">
+                  <Download className="h-4 w-4 text-neutral-500" />
+                  Download
                 </div>
               </DownloadPopover>
-              <CopyPopover qrData={qrData} props={props}>
+              {/* <CopyPopover qrData={qrData} props={props}>
                 <div>
                   <ButtonTooltip
                     tooltipProps={{
@@ -220,7 +199,7 @@ function LinkQRModalInner({
                     <Copy className="h-4 w-4 text-neutral-500" />
                   </ButtonTooltip>
                 </div>
-              </CopyPopover>
+              </CopyPopover> */}
             </div>
           )}
         </div>
@@ -389,8 +368,9 @@ function DownloadPopover({
 }>) {
   const anchorRef = useRef<HTMLAnchorElement>(null);
 
-  function download(url: string, extension: string) {
+  function download(blob: Blob, extension: string) {
     if (!anchorRef.current) return;
+    const url = window.URL.createObjectURL(blob);
     anchorRef.current.href = url;
     anchorRef.current.download = `${props.key}-qrcode.${extension}`;
     anchorRef.current.click();
@@ -398,6 +378,41 @@ function DownloadPopover({
   }
 
   const [openPopover, setOpenPopover] = useState(false);
+
+  const handleDownload = async (extension: string) => {
+    const generateOptions = {
+      colors: [qrData.fgColor],
+      corner: "corner1",
+      level: "H",
+      patterns: [
+        {
+          name: "pattern10",
+          scale: 1,
+        },
+      ],
+      logo: qrData.hideLogo ? undefined : qrData.imageSettings?.src,
+    };
+    
+    const res = await fetch(`/api/qr/static`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        customization: { ...generateOptions },
+        value: qrData.value,
+        image_type: extension,
+      }),
+    });
+
+    if (!res.ok || !anchorRef.current) {
+      return;
+    }
+
+    const blob = await res.blob();
+
+    download(blob, extension);
+  };
 
   return (
     <div>
@@ -407,7 +422,7 @@ function DownloadPopover({
             <button
               type="button"
               onClick={async () => {
-                download(await getQRAsSVGDataUri(qrData), "svg");
+                await handleDownload("svg");
               }}
               className="rounded-md p-2 text-left text-sm font-medium text-neutral-500 transition-all duration-75 hover:bg-neutral-100"
             >
@@ -419,10 +434,7 @@ function DownloadPopover({
             <button
               type="button"
               onClick={async () => {
-                download(
-                  (await getQRAsCanvas(qrData, "image/png")) as string,
-                  "png",
-                );
+                await handleDownload("png");
               }}
               className="rounded-md p-2 text-left text-sm font-medium text-neutral-500 transition-all duration-75 hover:bg-neutral-100"
             >
@@ -434,10 +446,7 @@ function DownloadPopover({
             <button
               type="button"
               onClick={async () => {
-                download(
-                  (await getQRAsCanvas(qrData, "image/jpeg")) as string,
-                  "jpg",
-                );
+                await handleDownload("jpg");
               }}
               className="rounded-md p-2 text-left text-sm font-medium text-neutral-500 transition-all duration-75 hover:bg-neutral-100"
             >

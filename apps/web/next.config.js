@@ -19,11 +19,12 @@ module.exports = withAxiom({
     "@dub/email",
     "@boxyhq/saml-jackson",
   ],
-  ...(process.env.NODE_ENV === "production" && {
-    experimental: {
+  experimental: {
+    ...(process.env.NODE_ENV === "production" && {
       esmExternals: "loose",
-    },
-  }),
+    }),
+    serverComponentsExternalPackages: ["@napi-rs/image"],
+  },
   webpack: (config, { webpack, isServer }) => {
     if (isServer) {
       config.plugins.push(
@@ -51,6 +52,9 @@ module.exports = withAxiom({
       },
       {
         hostname: "assets.pimms.io", // for PIMMS's static assets
+      },
+      {
+        hostname: "assets-code.pimms.io", // for PIMMS's static assets for QR codes
       },
       {
         hostname: "www.google.com",

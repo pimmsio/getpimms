@@ -1,6 +1,9 @@
+import useWorkspace from "@/lib/swr/use-workspace";
 import { LinkFormData } from "@/ui/links/link-builder/link-builder-provider";
+import { useABTestingModal } from "@/ui/modals/link-builder/ab-testing-modal";
 import { useTargetingModal } from "@/ui/modals/link-builder/targeting-modal";
 import { useUTMModal } from "@/ui/modals/link-builder/utm-modal";
+import { constructURLFromUTMParams } from "@dub/utils";
 import { forwardRef, memo } from "react";
 import {
   Controller,
@@ -10,7 +13,6 @@ import {
 } from "react-hook-form";
 import { DestinationUrlInput } from "../../destination-url-input";
 import { useAvailableDomains } from "../../use-available-domains";
-import { constructURLFromUTMParams } from "@dub/utils";
 
 /**
  * Wraps the DestinationUrlInput component with link-builder-specific context & logic
@@ -39,36 +41,42 @@ export const LinkBuilderDestinationUrlInput = memo(
       },
     });
     const { TargetingButton, TargetingModal } = useTargetingModal();
+    const { ABTestingModal, ABTestingButton } = useABTestingModal();
+
+    const { flags } = useWorkspace();
 
     return (
       <>
         <UTMModal />
         <TargetingModal />
-        <Controller
-          name="url"
-          control={control}
-          render={({ field }) => (
-            <DestinationUrlInput
-              ref={ref}
-              domain={domain}
-              _key={key}
-              value={field.value}
-              domains={domains}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                clearErrors("url");
-                field.onChange(e.target.value);
-              }}
-              required={key !== "_root"}
-              error={errors.url?.message || undefined}
-              right={
-                <div className="mb-1.5 flex h-6 items-center gap-2">
-                  <UTMButton />
-                  <TargetingButton />
-                </div>
-              }
-            />
-          )}
-        />
+        {flags?.abTesting && <ABTestingModal />}
+
+        <div className="flex w-full flex-col gap-2">
+          <Controller
+            name="url"
+            control={control}
+            render={({ field }) => (
+              <DestinationUrlInput
+                ref={ref}
+                domain={domain}
+                _key={key}
+                value={field.value}
+                domains={domains}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  clearErrors("url");
+                  field.onChange(e.target.value);
+                }}
+                required={key !== "_root"}
+                error={errors.url?.message || undefined}
+              />
+            )}
+          />
+          <div className="flex w-fit flex-row gap-2 mt-1">
+            <UTMButton />
+            <TargetingButton />
+            {flags?.abTesting && <ABTestingButton />}
+          </div>
+        </div>
       </>
     );
   }),

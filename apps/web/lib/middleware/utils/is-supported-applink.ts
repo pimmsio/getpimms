@@ -469,6 +469,11 @@ export const isNativeBrowser = (req: NextRequest): boolean => {
   );
 };
 
+export const isExceptionToNativeBrowser = (req: NextRequest): boolean => {
+  const referer = req.headers.get("referer") || "";
+  return referer.includes("t.co");
+};
+
 export const isExceptionToDirectRedirect = (req: NextRequest): boolean => {
   const userAgent = req.headers.get("user-agent") || "";
 
@@ -515,7 +520,11 @@ export const getDirectLink = (
   }
 };
 
-const getIntentUrl = (packageName: string, value: string, fallbackUrl?: string) => {
+const getIntentUrl = (
+  packageName: string,
+  value: string,
+  fallbackUrl?: string,
+) => {
   return `intent://${value}#Intent;scheme=https;package=${packageName}${fallbackUrl ? `;S.browser_fallback_url=${encodeURIComponent(fallbackUrl)}` : ""};end`;
 };
 

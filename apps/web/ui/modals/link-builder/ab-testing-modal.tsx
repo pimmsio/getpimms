@@ -23,7 +23,8 @@ import {
   cn,
   formatDateTime,
   getDateTimeLocal,
-  isValidUrl,
+  getUrlFromString,
+  getUrlFromStringIfValid,
   parseDateTime,
 } from "@dub/utils";
 import { differenceInDays } from "date-fns";
@@ -203,8 +204,13 @@ function ABTestingModal({
           e.stopPropagation();
           handleSubmit((data) => {
             const currentTests = data.testVariants;
+            const parsedTests = currentTests.map((test) => {
+              const parsed = getUrlFromString(test.url);
+              if (!parsed) return null;
+              return { ...test, url: parsed };
+            }).filter((test) => test !== null);
 
-            if (!currentTests || currentTests.length <= 1) {
+            if (!parsedTests || parsedTests.length <= 1) {
               setValueParent("testVariants", null, { shouldDirty: true });
               setValueParent("testCompletedAt", null, {
                 shouldDirty: true,
@@ -214,7 +220,7 @@ function ABTestingModal({
             }
 
             // Validate total percentage equals 100
-            const totalPercentage = currentTests.reduce(
+            const totalPercentage = parsedTests.reduce(
               (sum, test) => sum + test.percentage,
               0,
             );
@@ -225,14 +231,17 @@ function ABTestingModal({
             }
 
             // Validate all URLs are filled
-            if (currentTests.some((test) => !test.url)) {
+            if (parsedTests.some((test) => !test.url)) {
               toast.error("All test URLs must be filled");
               return;
             }
 
-            setValueParent("url", currentTests[0].url, { shouldDirty: true });
+            // Parse URLs
+
+
+            setValueParent("url", parsedTests[0].url, { shouldDirty: true });
             setValueParent("trackConversion", true);
-            setValueParent("testVariants", currentTests, { shouldDirty: true });
+            setValueParent("testVariants", parsedTests, { shouldDirty: true });
             setValueParent("testCompletedAt", data.testCompletedAt, {
               shouldDirty: true,
             });
@@ -281,7 +290,7 @@ function ABTestingModal({
               content="Add up to 3 additional destination URLs to test for this short link."
             />
           </div>
-          <div className="mt-2">
+          <div className="flex flex-col gap-2 mt-2">
             <AnimatedSizeContainer
               height
               transition={{ ease: "easeInOut", duration: 0.2 }}
@@ -290,12 +299,12 @@ function ABTestingModal({
               <div className="flex flex-col gap-2 p-1">
                 {testVariants.map((_, index) => (
                   <div key={index} className="flex items-center gap-2">
-                    <label className="relative flex grow items-center overflow-hidden rounded-xl border-[6px] border-neutral-200 focus-within:border-neutral-500 focus-within:ring-1 focus-within:ring-neutral-500">
+                    <label className="relative flex grow items-center overflow-hidden rounded-xl border-[2px] border-neutral-200 focus-within:border-neutral-500 focus-within:ring-1 focus-within:ring-neutral-500">
                       <span className="flex h-9 w-8 items-center justify-center border-r border-neutral-300 text-center text-sm font-medium text-neutral-800">
                         {index + 1}
                       </span>
                       <input
-                        type="url"
+                        // type="url"
                         placeholder={
                           domains?.find(({ slug }) => slug === domain)
                             ?.placeholder ||
@@ -306,7 +315,7 @@ function ABTestingModal({
                           validate: (value, { testVariants }) => {
                             if (!value) return "URL is required";
 
-                            if (!isValidUrl(value)) return "Invalid URL";
+                            if (!getUrlFromStringIfValid(value)) return "Invalid URL";
 
                             return (
                               testVariants.length > 1 &&
@@ -350,7 +359,7 @@ function ABTestingModal({
         </div>
 
         {/* Traffic split */}
-        <div className="mt-6">
+        <div className="mt-6 hidden">
           <div className="flex items-center gap-2">
             <label className="block text-sm font-medium text-neutral-700">
               Traffic Split
@@ -392,7 +401,7 @@ function ABTestingModal({
               }
             /> */}
           </div>
-          <div className="mt-2 flex w-full items-center justify-between rounded-xl border-[6px] border-neutral-200 bg-white shadow-sm transition-all focus-within:border-neutral-800 focus-within:outline-none focus-within:ring-1 focus-within:ring-neutral-500">
+          <div className="hidden mt-2 flex w-full items-center justify-between rounded-xl border-[2px] border-neutral-200 bg-white shadow-sm transition-all focus-within:border-neutral-800 focus-within:outline-none focus-within:ring-1 focus-within:ring-neutral-500">
             <input
               id={`${id}-testCompletedAt`}
               type="text"
@@ -543,7 +552,7 @@ function ABTestingButton({
       variant="secondary"
       text={label}
       icon={<Flask className={cn("size-4", enabled && "text-blue-500")} />}
-      className="h-8 w-fit gap-1.5 px-2.5 text-xs font-medium text-neutral-700"
+      className="flex h-auto w-full items-center gap-2 rounded-md border-0 px-1 py-1 text-neutral-700 outline-none hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-neutral-500 active:bg-neutral-200 group-hover:bg-neutral-100"
       onClick={() => setShowABTestingModal(true)}
     />
   );
@@ -653,7 +662,7 @@ function TrafficSplitSlider({
             style={{ width: `${test.percentage}%` }}
           >
             {i > 0 && <div className="w-1.5" />}
-            <div className="flex h-full grow items-center justify-center gap-2 rounded-xl border-[6px] border-neutral-200 text-xs">
+            <div className="flex h-full grow items-center justify-center gap-2 rounded-xl border-[2px] border-neutral-200 text-xs">
               <span className="text-xs font-semibold text-neutral-900">
                 {i + 1}
               </span>
