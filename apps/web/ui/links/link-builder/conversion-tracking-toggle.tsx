@@ -42,9 +42,14 @@ export const ConversionTrackingToggle = memo(() => {
           </div>
         )}
         <span className="flex select-none items-center gap-1 text-sm font-medium text-neutral-700">
-          Conversion Tracking
+          Conversion tracking is{" "}
+          {!trackConversion ? (
+            <span className="text-red-500">disabled</span>
+          ) : (
+            <span className="text-green-500">enabled</span>
+          )}
           <InfoTooltip
-            content="View analytics on conversions from your short links."
+            content="Track conversions and sales for this link."
           />
         </span>
       </div>

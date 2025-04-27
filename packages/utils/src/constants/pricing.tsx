@@ -46,7 +46,7 @@ export const PLANS = [
     limits: {
       links: 1_000,
       clicks: 50_000,
-      sales: 5_000_00,
+      sales: 20_000_00,
       domains: 10,
       tags: 25,
       folders: 3,
@@ -66,7 +66,7 @@ export const PLANS = [
       },
       {
         id: "sales",
-        text: "5000€ tracked sales/mo",
+        text: "20000€ tracked sales/mo",
       },
       { id: "domains", text: "10 domains" },
       { id: "users", text: "5 users" },

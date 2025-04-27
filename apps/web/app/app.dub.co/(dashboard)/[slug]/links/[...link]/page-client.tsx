@@ -202,7 +202,7 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
       </div>
       <form
         className={cn(
-          "grid grow grid-cols-1 transition-opacity lg:grid-cols-[minmax(0,1fr)_300px]",
+          "grid grow grid-cols-1 transition-opacity lg:grid-cols-[3fr_2fr]",
           "divide-neutral-200 border-t border-neutral-200 lg:divide-x lg:divide-y-0",
           isChangingLink && "opacity-50",
         )}
@@ -240,10 +240,10 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
               <LinkBuilderFolderSelector />
             </div> */}
             <div className="py-4 lg:px-4 lg:py-6">
-              <QRCodePreview />
+              <LinkPreview />
             </div>
             <div className="py-4 lg:px-4 lg:py-6">
-              <LinkPreview />
+              <QRCodePreview />
             </div>
           </div>
         </div>
@@ -293,7 +293,7 @@ function LoadingSkeleton() {
       </div>
       <div
         className={cn(
-          "grid grow grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px]",
+          "grid grow grid-cols-1 transition-opacity lg:grid-cols-[3fr_2fr]",
           "divide-neutral-200 border-t border-neutral-200 lg:divide-x lg:divide-y-0",
         )}
       >

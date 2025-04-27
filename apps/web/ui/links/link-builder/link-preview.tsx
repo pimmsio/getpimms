@@ -4,19 +4,8 @@ import {
   useLinkBuilderContext,
 } from "@/ui/links/link-builder/link-builder-provider";
 import { useOGModal } from "@/ui/modals/link-builder/og-modal";
+import { Button, FileUpload, Icon, Switch, useMediaQuery } from "@dub/ui";
 import {
-  Button,
-  FileUpload,
-  Icon,
-  InfoTooltip,
-  ShimmerDots,
-  SimpleTooltipContent,
-  Switch,
-  TooltipContent,
-  useMediaQuery,
-} from "@dub/ui";
-import {
-  CrownSmall,
   Facebook,
   GlobePointer,
   LinkedIn,
@@ -25,7 +14,7 @@ import {
   Pen2,
   Twitter,
 } from "@dub/ui/icons";
-import { cn, getDomainWithoutWWW, resizeImage } from "@dub/utils";
+import { getDomainWithoutWWW, resizeImage, SHORT_DOMAIN } from "@dub/utils";
 import {
   ChangeEvent,
   ComponentType,
@@ -83,7 +72,7 @@ export const LinkPreview = memo(() => {
 
   const [debouncedUrl] = useDebounce(url, 500);
   const hostname = useMemo(() => {
-    if (password) return "dub.co";
+    if (password) return "pim.ms";
     return getDomainWithoutWWW(debouncedUrl) ?? null;
   }, [password, debouncedUrl]);
 
@@ -106,7 +95,7 @@ export const LinkPreview = memo(() => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-medium text-neutral-700">
-            Custom Link Preview
+            Custom preview
           </h2>
           {/* <InfoTooltip
             content={
@@ -118,7 +107,6 @@ export const LinkPreview = memo(() => {
             }
           /> */}
         </div>
-
         <Switch
           checked={proxy}
           fn={(checked) => setValue("proxy", checked, { shouldDirty: true })}
@@ -141,6 +129,9 @@ export const LinkPreview = memo(() => {
           // }
         />
       </div>
+      <p className="text-xs text-neutral-700">
+        Enabling custom preview also enforces deep linking.
+      </p>
       {/* <div className="mt-2.5 grid grid-cols-4 gap-2">
         {tabs.map((tab) => {
           const Icon = tabIcons[tab];
@@ -301,9 +292,15 @@ const ImagePreview = ({
   );
 };
 
-function DefaultOGPreview({ title, description, children }: OGPreviewProps) {
+function DefaultOGPreview({
+  title,
+  description,
+  hostname,
+  children,
+}: OGPreviewProps) {
   const { plan } = useWorkspace();
-  const { setValue } = useFormContext<LinkFormData>();
+  const { watch, setValue } = useFormContext<LinkFormData>();
+  const { proxy } = watch();
 
   return (
     <div>
@@ -311,29 +308,34 @@ function DefaultOGPreview({ title, description, children }: OGPreviewProps) {
         {children}
       </div>
       <ReactTextareaAutosize
-        className="mt-4 line-clamp-2 w-full resize-none border-none bg-transparent p-0 text-xs font-medium text-neutral-700 outline-none focus:ring-0"
+        className="text-md mt-4 line-clamp-2 w-full resize-none border-none bg-transparent p-0 font-medium text-neutral-700 outline-none focus:ring-0"
         value={title || "Add a title..."}
         maxRows={2}
         onChange={(e) => {
           setValue("title", e.currentTarget.value, { shouldDirty: true });
-          if (plan && plan !== "free") {
-            setValue("proxy", true, { shouldDirty: true });
-          }
+          // if (plan && plan !== "free") {
+          setValue("proxy", true, { shouldDirty: true });
+          // }
         }}
       />
       <ReactTextareaAutosize
-        className="mt-1.5 line-clamp-2 w-full resize-none border-none bg-transparent p-0 text-xs text-neutral-700/80 outline-none focus:ring-0"
+        className="mt-1.5 line-clamp-2 w-full resize-none border-none bg-transparent p-0 text-sm text-neutral-700/80 outline-none focus:ring-0"
         value={description || "Add a description..."}
         maxRows={2}
         onChange={(e) => {
           setValue("description", e.currentTarget.value, {
             shouldDirty: true,
           });
-          if (plan && plan !== "free") {
-            setValue("proxy", true, { shouldDirty: true });
-          }
+          // if (plan && plan !== "free") {
+          setValue("proxy", true, { shouldDirty: true });
+          // }
         }}
       />
+      {hostname && (
+        <p className="mt-2 text-xs text-[#606770]">
+          {proxy ? SHORT_DOMAIN : hostname || "domain.com"}
+        </p>
+      )}
     </div>
   );
 }
@@ -345,7 +347,8 @@ function FacebookOGPreview({
   children,
 }: OGPreviewProps) {
   const { plan } = useWorkspace();
-  const { setValue } = useFormContext<LinkFormData>();
+  const { watch, setValue } = useFormContext<LinkFormData>();
+  const { proxy } = watch();
 
   return (
     <div>
@@ -353,9 +356,6 @@ function FacebookOGPreview({
         {children}
         {(hostname || title || description) && (
           <div className="grid gap-1 border-t border-neutral-300 bg-[#f2f3f5] p-2">
-            {hostname && (
-              <p className="text-xs uppercase text-[#606770]">{hostname}</p>
-            )}
             <input
               className="truncate border-none bg-transparent p-0 text-xs font-semibold text-[#1d2129] outline-none focus:ring-0"
               value={title || "Add a title..."}
@@ -363,9 +363,9 @@ function FacebookOGPreview({
                 setValue("title", e.currentTarget.value, {
                   shouldDirty: true,
                 });
-                if (plan && plan !== "free") {
-                  setValue("proxy", true, { shouldDirty: true });
-                }
+                // if (plan && plan !== "free") {
+                setValue("proxy", true, { shouldDirty: true });
+                // }
               }}
             />
             <ReactTextareaAutosize
@@ -376,11 +376,16 @@ function FacebookOGPreview({
                 setValue("description", e.currentTarget.value, {
                   shouldDirty: true,
                 });
-                if (plan && plan !== "free") {
-                  setValue("proxy", true, { shouldDirty: true });
-                }
+                // if (plan && plan !== "free") {
+                setValue("proxy", true, { shouldDirty: true });
+                // }
               }}
             />
+            {hostname && (
+              <p className="text-xs uppercase text-[#606770]">
+                {proxy ? SHORT_DOMAIN : hostname || "domain.com"}
+              </p>
+            )}
           </div>
         )}
       </div>
@@ -390,7 +395,8 @@ function FacebookOGPreview({
 
 function LinkedInOGPreview({ title, hostname, children }: OGPreviewProps) {
   const { plan } = useWorkspace();
-  const { setValue } = useFormContext<LinkFormData>();
+  const { watch, setValue } = useFormContext<LinkFormData>();
+  const { proxy } = watch();
 
   return (
     <div className="flex items-center gap-3 rounded-lg border border-[#8c8c8c33] px-4 py-3">
@@ -409,18 +415,23 @@ function LinkedInOGPreview({ title, hostname, children }: OGPreviewProps) {
             setValue("title", e.currentTarget.value, {
               shouldDirty: true,
             });
-            if (plan && plan !== "free") {
-              setValue("proxy", true, { shouldDirty: true });
-            }
+            // if (plan && plan !== "free") {
+            setValue("proxy", true, { shouldDirty: true });
+            // }
           }}
         />
-        <p className="text-xs text-[#00000099]">{hostname || "domain.com"}</p>
+        <p className="text-xs text-[#00000099]">
+          {proxy ? SHORT_DOMAIN : hostname || "domain.com"}
+        </p>
       </div>
     </div>
   );
 }
 
 function XOGPreview({ title, hostname, children }: OGPreviewProps) {
+  const { watch } = useFormContext<LinkFormData>();
+  const { proxy } = watch();
+
   return (
     <div>
       <div className="group relative overflow-hidden rounded-2xl border border-neutral-300">
@@ -434,7 +445,9 @@ function XOGPreview({ title, hostname, children }: OGPreviewProps) {
         </div>
       </div>
       {hostname && (
-        <p className="mt-1 text-xs text-[#606770]">From {hostname}</p>
+        <p className="mt-1 text-xs text-[#606770]">
+          From {proxy ? SHORT_DOMAIN : hostname || "domain.com"}
+        </p>
       )}
     </div>
   );

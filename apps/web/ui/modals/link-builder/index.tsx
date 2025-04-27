@@ -193,7 +193,7 @@ function LinkBuilderInner({
 
           <div
             className={cn(
-              "grid w-full sm:gap-y-6 max-md:overflow-auto md:grid-cols-[2fr_1fr]",
+              "grid w-full sm:gap-y-6 max-md:overflow-auto md:grid-cols-[3fr_2fr]",
               "max-md:max-h-[calc(100dvh-200px)] max-md:min-h-[min(566px,_calc(100dvh-200px))]",
               "md:[&>div]:max-h-[calc(100dvh-200px)] md:[&>div]:min-h-[min(566px,_calc(100dvh-200px))]",
             )}
