@@ -1,6 +1,6 @@
 import useWorkspace from "@/lib/swr/use-workspace";
 import { ABTestVariantsSchema } from "@/lib/zod/schemas/links";
-import { fetcher, getPrettyUrl } from "@dub/utils";
+import { fetcher, getPrettyUrl, isValidUrl } from "@dub/utils";
 import { motion } from "framer-motion";
 import { memo, useMemo } from "react";
 import useSWR from "swr";
@@ -62,9 +62,10 @@ export const LinkTests = memo(({ link }: { link: ResponseLink }) => {
       transition={{ duration: 0.2 }}
       className="overflow-hidden"
     >
-      <ul className="flex w-full flex-col gap-2.5 border-t border-neutral-200 bg-neutral-100 p-3 lg:flex-row">
+      <ul className="grid grid-cols-1 gap-2.5 border-t border-neutral-200 bg-neutral-100 p-3 lg:grid-cols-2">
         {testVariants.map((test, idx) => {
-          const analytics = data?.find(({ url }) => url === test.url);
+          const parsedUrl = test.url && isValidUrl(test.url) ? new URL(test.url).toString() : undefined;
+          const analytics = data?.find(({ url }) => url === parsedUrl);
 
           return (
             <li
@@ -99,7 +100,7 @@ export const LinkTests = memo(({ link }: { link: ResponseLink }) => {
                         sales: analytics?.sales ?? 0,
                         saleAmount: analytics?.saleAmount ?? 0,
                       }}
-                      url={test.url}
+                      url={parsedUrl}
                       sharingEnabled={false}
                     />
                   )}

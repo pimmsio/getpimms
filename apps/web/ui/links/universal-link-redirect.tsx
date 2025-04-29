@@ -1,8 +1,7 @@
 "use client";
-
 import { useEffect } from "react";
 
-export default function DirectLinkRedirect({
+export default function UniversalLinkRedirect({
   directLink,
   url,
 }: {
@@ -14,7 +13,7 @@ export default function DirectLinkRedirect({
       return;
     }
 
-    // After a short delay, force navigation to the YouTube web URL.
+    // After a short delay, force navigation to the web URL.
     const timer = setTimeout(() => {
       window.location.href = url;
     }, 500);

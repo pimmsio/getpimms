@@ -7,7 +7,7 @@ import {
   useMediaQuery,
   UserCheck,
 } from "@dub/ui";
-import { cn, currencyFormatter, nFormatter } from "@dub/utils";
+import { cn, currencyFormatter, getUrlFromString, isValidUrl, nFormatter } from "@dub/utils";
 import Link from "next/link";
 import { useContext, useMemo, useState } from "react";
 import { useShareDashboardModal } from "../modals/share-dashboard-modal";
@@ -134,6 +134,7 @@ export function LinkAnalyticsBadge({
         }
       > */
   }
+
   return (
     <Link
       href={`/${slug}/analytics?domain=${domain}&key=${key}${url ? `&url=${url}` : ""}&interval=${plan === "free" ? "30d" : plan === "pro" ? "1y" : "all"}`}

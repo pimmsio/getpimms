@@ -26,7 +26,7 @@ function BackgroundGradient({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "absolute left-0 top-0 aspect-square w-full overflow-hidden sm:aspect-[2/1] bg-[#FFEAF1]",
+        "absolute left-0 top-0 aspect-square w-full overflow-hidden sm:aspect-[2/1] bg-neutral-50",
         // "[mask-image:radial-gradient(70%_100%_at_50%_30%,_black_70%,_#0009)]",
         className,
       )}

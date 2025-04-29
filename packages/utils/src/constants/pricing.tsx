@@ -141,7 +141,7 @@ export const PLANS = [
       },
       {
         id: "sales",
-        text: "25k€ tracked sales/mo",
+        text: "60k€ tracked sales/mo",
       },
       { id: "domains", text: "100 domains" },
       { id: "users", text: "10 users" },
