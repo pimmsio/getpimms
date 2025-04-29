@@ -66,6 +66,13 @@ export const exact = (domain: string): RegExp =>
     "i",
   );
 
+const universalLinks = [
+  {
+    appName: "vinted",
+    domains: [flex("vinted")],
+  },
+];
+
 /* ========================
    AppLinks Array
 ======================== */
@@ -244,12 +251,6 @@ const appLinks: AppLink[] = [
   //   protocol: "googleapps",
   // },
   {
-    appName: "vinted",
-    domains: [flex("vinted")],
-    protocol: "vinted",
-    android: "fr.vinted",
-  },
-  {
     appName: "skool",
     domains: [flex("skool")],
     protocol: "skool",
@@ -289,9 +290,8 @@ const appLinkParsers: AppLinkParser[] = appLinks.map((app) => {
     case "x":
     // fail
     case "linkedin":
-    case "vinted":
-    case "kick":
-    case "facebook":
+      // case "kick":
+      // case "facebook":
       // to test
       // case "eventbrite":
       return {
@@ -490,6 +490,9 @@ export const isLinkedinBot = (req: NextRequest): boolean => {
 
 export const isSupportedDirectAppLink = (url: string): boolean =>
   appLinks.some((app) => app.domains.some((pattern) => pattern.test(url)));
+
+export const isSupportedUniversalLinks = (url: string): boolean =>
+  universalLinks.some((app) => app.domains.some((pattern) => pattern.test(url)));
 
 export const getDirectAppLink = (
   url: string,

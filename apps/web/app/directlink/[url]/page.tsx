@@ -14,7 +14,6 @@ export default function DirectlinkPage({
   const url = decodeURIComponent(params.url);
 
   const os = searchParams.os as "ios" | "android" | undefined;
-  const browser = searchParams.browser as string | undefined;
 
   // get direct link uri scheme
   const directLink = getDirectLink(url, os);
@@ -23,8 +22,7 @@ export default function DirectlinkPage({
     directLink,
     url,
     os,
-    browser,
   });
-  
-  return <DirectLinkRedirect directLink={directLink} url={url} os={os} browser={browser} />;
+
+  return <DirectLinkRedirect directLink={directLink} url={url} />;
 }

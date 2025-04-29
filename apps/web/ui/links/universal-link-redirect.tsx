@@ -1,8 +1,7 @@
 "use client";
-
 import { useEffect } from "react";
 
-export default function DirectLinkRedirect({
+export default function UniversalLinkRedirect({
   directLink,
   url,
 }: {

@@ -7,6 +7,7 @@ import {
   isNativeBrowser,
   isSupportedDeeplinkProtocol,
   isSupportedDirectAppLink,
+  isSupportedUniversalLinks,
   parse,
   shallShowDirectPreview,
 } from "@/lib/middleware/utils";
@@ -42,7 +43,7 @@ export default async function LinkMiddleware(
   req: NextRequest,
   ev: NextFetchEvent,
 ) {
-  let { domain, fullKey: originalKey } = parse(req);
+  let { domain, fullKey: originalKey, searchParamsObj } = parse(req);
 
   if (!domain) {
     return NextResponse.next();
@@ -319,6 +320,58 @@ export default async function LinkMiddleware(
       rewriteUrl.searchParams.set("browser", ua?.browser?.name?.toLowerCase());
     }
 
+    return createResponseWithCookies(
+      NextResponse.rewrite(rewriteUrl, {
+        headers: {
+          ...DUB_HEADERS,
+          ...(!shouldIndex && { "X-Robots-Tag": "googlebot: noindex" }),
+        },
+      }),
+      cookieData,
+    );
+    // rewrite to universal link page
+  } else if (isSupportedUniversalLinks(url) && !shallShowDirectPreview(req)) {
+    ev.waitUntil(
+      recordClick({
+        req,
+        clickId,
+        linkId,
+        domain,
+        key,
+        url,
+        webhookIds,
+        workspaceId,
+        trackConversion,
+      }),
+    );
+
+    console.log("ua.os.name", ua?.os?.name);
+    console.log("ua.browser.name", ua?.browser?.name);
+    console.log("searchParamsObj", searchParamsObj);
+
+    const rewriteUrl = new URL(
+      `/universallink/${encodeURIComponent(
+        getFinalUrl(url, {
+          req,
+          clickId: trackConversion ? clickId : undefined,
+        }),
+      )}`,
+      req.url,
+    );
+
+    if (ua?.os?.name) {
+      rewriteUrl.searchParams.set("os", ua?.os?.name?.toLowerCase());
+    }
+    if (ua?.browser?.name) {
+      rewriteUrl.searchParams.set("browser", ua?.browser?.name?.toLowerCase());
+    }
+    if (searchParamsObj) {
+      Object.entries(searchParamsObj).forEach(([key, value]) =>
+        rewriteUrl.searchParams.set(key, value),
+      );
+    }
+    rewriteUrl.searchParams.set("key", key);
+    rewriteUrl.searchParams.set("domain", domain);
     return createResponseWithCookies(
       NextResponse.rewrite(rewriteUrl, {
         headers: {
