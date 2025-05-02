@@ -2,8 +2,10 @@ import {
   createResponseWithCookies,
   detectBot,
   getFinalUrl,
+  getMatchedApp,
   isExceptionToDirectRedirect,
   isExceptionToNativeBrowser,
+  isFromSameApp,
   isNativeBrowser,
   isSupportedDeeplinkProtocol,
   isSupportedDirectAppLink,
@@ -285,7 +287,11 @@ export default async function LinkMiddleware(
       cookieData,
     );
     // rewrite to applink page if url matches a direct links
-  } else if (isSupportedDirectAppLink(url) && !shallShowDirectPreview(req)) {
+  } else if (
+    isSupportedDirectAppLink(url) &&
+    !shallShowDirectPreview(req) &&
+    !isFromSameApp(ua.browser?.name, getMatchedApp(url)?.appName)
+  ) {
     ev.waitUntil(
       recordClick({
         req,

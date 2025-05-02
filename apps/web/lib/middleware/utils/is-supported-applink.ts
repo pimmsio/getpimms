@@ -11,6 +11,7 @@ interface AppLink {
   domains: RegExp[];
   protocol: string;
   android?: string;
+  disableIfUserAgentContains?: string[];
 }
 
 interface AppLinkParser extends AppLink {
@@ -129,6 +130,7 @@ const appLinks: AppLink[] = [
     domains: [flex("linkedin"), exact("lnkd.in")],
     protocol: "linkedin",
     android: "com.linkedin.android",
+    disableIfUserAgentContains: ["linkedinapp"],
   },
   {
     appName: "spotify",
@@ -466,6 +468,25 @@ export const isNativeBrowser = (req: NextRequest): boolean => {
   ];
   return listOfNativeBrowsers.some((browser) =>
     userAgent.toLowerCase().includes(browser),
+  );
+};
+
+export const isFromSameApp = (
+  browser: string | undefined,
+  appName: string | undefined,
+): boolean => {
+  if (!browser || !appName) return false;
+
+  const normalized = browser.toLowerCase();
+  const target = appName.toLowerCase();
+
+  // Covers "LinkedIn", "LinkedInApp", etc.
+  return normalized.includes(target);
+};
+
+export const getMatchedApp = (url: string): AppLink | undefined => {
+  return appLinks.find((app) =>
+    app.domains.some((pattern) => pattern.test(url))
   );
 };
 
