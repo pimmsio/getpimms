@@ -515,7 +515,8 @@ export default async function LinkMiddleware(
     (ua?.device?.type != "mobile" && ua?.device?.type != "tablet") ||
     shallShowDirectPreview(req) ||
     isExceptionToDirectRedirect(req) ||
-    (isNativeBrowser(req) && !isExceptionToNativeBrowser(req))
+    (isNativeBrowser(req) && !isExceptionToNativeBrowser(req)) ||
+    isFromSameApp(ua.browser?.name, getMatchedApp(url)?.appName)
   ) {
     ev.waitUntil(
       recordClick({

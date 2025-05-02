@@ -50,7 +50,7 @@ export function UpgradePlanButton({
       disabled={!workspaceSlug || isCurrentPlan}
       onClick={() => {
         if (selectedPlan.name === "Pro") {
-          router.push("https://buy.stripe.com/00g15T7LY4ma2iceUX");
+          window.location.href = `/api/pay`;
           return;
         }
 

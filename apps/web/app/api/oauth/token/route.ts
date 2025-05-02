@@ -19,11 +19,13 @@ export async function POST(req: NextRequest) {
     const validatedData = tokenGrantSchema.parse(formData);
 
     if (validatedData.grant_type === "authorization_code") {
+      console.log("authorization_code");
       const data = await exchangeAuthCodeForToken(req, validatedData);
       return NextResponse.json(data, {
         headers: CORS_HEADERS,
       });
     } else if (validatedData.grant_type === "refresh_token") {
+      console.log("refresh_token");
       const data = await refreshAccessToken(req, validatedData);
       return NextResponse.json(data, {
         headers: CORS_HEADERS,
