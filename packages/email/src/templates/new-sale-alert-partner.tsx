@@ -51,11 +51,13 @@ export function NewSaleAlertPartner({
   const earningsInDollars = currencyFormatter(sale.earnings / 100, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
+    currency: "EUR",
   });
 
   const saleAmountInDollars = currencyFormatter(sale.amount / 100, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
+    currency: "EUR",
   });
 
   return (
@@ -99,15 +101,6 @@ export function NewSaleAlertPartner({
               commission for this sale and it will be included in your next
               payout.
             </Text>
-
-            <Section className="mb-12 mt-8">
-              <Link
-                className="px-5 py-3 bg-[#dc2e65] text-white font-semibold outline outline-[6px] transition outline-[#ffeaf1] cursor-pointer no-underline rounded-xl"
-                href={linkToSale}
-              >
-                View sale
-              </Link>
-            </Section>
             <Footer email={email} />
           </Container>
         </Body>

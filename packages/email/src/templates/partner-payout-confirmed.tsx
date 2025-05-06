@@ -90,15 +90,6 @@ export function PartnerPayoutConfirmed({
               The payout is currently being processed and is expected to be
               credited to your account within 5 business days.
             </Text>
-
-            <Section className="mb-12 mt-8">
-              <Link
-                className="px-5 py-3 bg-[#dc2e65] text-white font-semibold outline outline-[6px] transition outline-[#ffeaf1] cursor-pointer no-underline rounded-xl"
-                href={`https://partners.pimms.io/settings/payouts?payoutId=${payout.id}`}
-              >
-                View payout
-              </Link>
-            </Section>
             <Footer email={email} />
           </Container>
         </Body>

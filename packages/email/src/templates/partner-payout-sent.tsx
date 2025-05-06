@@ -98,15 +98,6 @@ export function PartnerPayoutSent({
             <Text className="text-sm leading-6 text-neutral-600">
               The funds are on their way to your account.
             </Text>
-
-            <Section className="mb-12 mt-8">
-              <Link
-                className="px-5 py-3 bg-[#dc2e65] text-white font-semibold outline outline-[6px] transition outline-[#ffeaf1] cursor-pointer no-underline rounded-xl"
-                href={`https://partners.pimms.io/settings/payouts?payoutId=${payout.id}`}
-              >
-                View payout
-              </Link>
-            </Section>
             <Footer email={email} />
           </Container>
         </Body>
