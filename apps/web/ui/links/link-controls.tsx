@@ -255,7 +255,7 @@ export function LinkControls({
                   className="h-9 px-2 font-medium"
                 />
               )}
-              {/* {options.includes("duplicate") && (
+              {options.includes("duplicate") && (
                 <Button
                   text="Duplicate"
                   variant="outline"
@@ -272,7 +272,7 @@ export function LinkControls({
                       : undefined
                   }
                 />
-              )} */}
+              )}
             </div>
             <div className="border-t border-neutral-200" />
             <div className="grid gap-px p-2">
