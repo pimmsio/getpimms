@@ -4,12 +4,14 @@ import {
   extractDomainWwwAndPath,
   extractPathname,
 } from "./applink/extract-generic";
-import { buildInstagramAppLink } from "./applink/extract-instagram";
-
+import {
+  buildInstagramAppLink,
+} from "./applink/extract-instagram";
+import { getSubstackAndroidPath } from "./applink/extract-substack";
 interface AppLink {
   appName: string;
   domains: RegExp[];
-  protocol: string;
+  protocol?: string;
   android?: string;
   disableIfUserAgentContains?: string[];
 }
@@ -72,6 +74,10 @@ const universalLinks = [
     appName: "vinted",
     domains: [flex("vinted")],
   },
+  {
+    appName: "substack",
+    domains: [flex("substack")],
+  },
 ];
 
 /* ========================
@@ -79,6 +85,11 @@ const universalLinks = [
 ======================== */
 
 const appLinks: AppLink[] = [
+  {
+    appName: "substack",
+    domains: [flex("substack")],
+    android: "com.substack.app",
+  },
   {
     appName: "youtubemusic",
     domains: [exact("music.youtube.com")],
@@ -406,6 +417,22 @@ const appLinkParsers: AppLinkParser[] = appLinks.map((app) => {
           return parsePath(app, buildInstagramAppLink(url, os), os);
         },
       };
+    case "substack":
+      return {
+        ...app,
+        parse: (url: string, os?: "ios" | "android" | undefined) => {
+          if (!os || !app.android) {
+            return url;
+          }
+
+          const path = getSubstackAndroidPath(url);
+          if (!path) {
+            return url;
+          }
+
+          return getIntentUrl(app.android, path, url);
+        },
+      };
     default:
       return { ...app, parse: (url: string) => url };
   }
@@ -486,7 +513,7 @@ export const isFromSameApp = (
 
 export const getMatchedApp = (url: string): AppLink | undefined => {
   return appLinks.find((app) =>
-    app.domains.some((pattern) => pattern.test(url))
+    app.domains.some((pattern) => pattern.test(url)),
   );
 };
 
@@ -509,11 +536,19 @@ export const isLinkedinBot = (req: NextRequest): boolean => {
   return userAgent.toLowerCase().includes("linkedinbot") || false;
 };
 
-export const isSupportedDirectAppLink = (url: string): boolean =>
-  appLinks.some((app) => app.domains.some((pattern) => pattern.test(url)));
+export const isSupportedDirectAppLink = (url: string, os?: string): boolean => {
+  return appLinks.some(
+    (app) =>
+      app.domains.some((pattern) => pattern.test(url)) &&
+      ((os === "android" && (!!app.android || !!app.protocol)) ||
+        (os === "ios" && !!app.protocol)),
+  );
+};
 
 export const isSupportedUniversalLinks = (url: string): boolean =>
-  universalLinks.some((app) => app.domains.some((pattern) => pattern.test(url)));
+  universalLinks.some((app) =>
+    app.domains.some((pattern) => pattern.test(url)),
+  );
 
 export const getDirectAppLink = (
   url: string,

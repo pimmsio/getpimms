@@ -28,6 +28,8 @@ export const sendWebhooks = async ({
 
   const payload = prepareWebhookPayload(trigger, data);
 
+  console.log("Sending webhooks", payload);
+
   return await Promise.all(
     webhooks.map((webhook) =>
       publishWebhookEventToQStash({ webhook, payload }),

@@ -288,7 +288,7 @@ export default async function LinkMiddleware(
     );
     // rewrite to applink page if url matches a direct links
   } else if (
-    isSupportedDirectAppLink(url) &&
+    isSupportedDirectAppLink(url, ua.os?.name?.toLowerCase()) &&
     !shallShowDirectPreview(req) &&
     !isFromSameApp(ua.browser?.name, getMatchedApp(url)?.appName)
   ) {

@@ -12,10 +12,10 @@ type User = {
 export function getUserAvatarUrl(user?: User | null) {
   if (user?.image) return user.image;
 
-  if (!user?.id) return "https://api.dub.co/og/avatar";
+  if (!user?.id) return "https://app.pimms.io/api/og/avatar";
 
-  const ogAvatar = `https://api.dub.co/og/avatar?seed=${encodeURIComponent(user.id)}`;
-  const encodedOGAvatar = `https://api.dub.co/og/avatar${encodeURIComponent(`?seed=${encodeURIComponent(user.id)}`)}`;
+  const ogAvatar = `https://app.pimms.io/api/og/avatar?seed=${encodeURIComponent(user.id)}`;
+  const encodedOGAvatar = `https://app.pimms.io/api/og/avatar${encodeURIComponent(`?seed=${encodeURIComponent(user.id)}`)}`;
 
   return user.email
     ? `https://www.gravatar.com/avatar/${sha256(user.email)}?d=${encodeURIComponent(encodedOGAvatar)}`
@@ -53,7 +53,7 @@ export function Avatar({
       )}
       draggable={false}
       onError={() => {
-        setUrl(`https://api.dub.co/og/avatar?seed=${user.id}`);
+        setUrl(`https://app.pimms.io/api/og/avatar?seed=${user.id}`);
       }}
     />
   );
