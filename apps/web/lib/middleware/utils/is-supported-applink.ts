@@ -4,9 +4,7 @@ import {
   extractDomainWwwAndPath,
   extractPathname,
 } from "./applink/extract-generic";
-import {
-  buildInstagramAppLink,
-} from "./applink/extract-instagram";
+import { buildInstagramAppLink } from "./applink/extract-instagram";
 import { getSubstackAndroidPath } from "./applink/extract-substack";
 interface AppLink {
   appName: string;
@@ -78,6 +76,10 @@ const universalLinks = [
     appName: "substack",
     domains: [flex("substack")],
   },
+  {
+    appName: "twitter",
+    domains: [exact("x.com"), flex("twitter")],
+  },
 ];
 
 /* ========================
@@ -89,6 +91,11 @@ const appLinks: AppLink[] = [
     appName: "substack",
     domains: [flex("substack")],
     android: "com.substack.app",
+  },
+  {
+    appName: "twitter",
+    domains: [exact("x.com"), flex("twitter")],
+    android: "com.twitter.android",
   },
   {
     appName: "youtubemusic",
@@ -129,12 +136,6 @@ const appLinks: AppLink[] = [
     // for android, tiktok://www.tiktok.com/@_bryan_johnson_
     // and intent://www.tiktok.com/@_bryan_johnson_#Intent;scheme=https;package=com.zhiliaoapp.musically;action=android.intent.action.VIEW;S.browser_fallback_url=https%3A%2F%2Fwww.tiktok.com%2F@_bryan_johnson_;end
     android: "com.zhiliaoapp.musically",
-  },
-  {
-    appName: "x",
-    domains: [flex("x.com"), flex("twitter")],
-    protocol: "twitter",
-    android: "com.twitter.android",
   },
   {
     appName: "linkedin",
@@ -300,7 +301,6 @@ const appLinkParsers: AppLinkParser[] = appLinks.map((app) => {
     // work
     case "youtube":
     case "tiktok":
-    case "x":
     // fail
     case "linkedin":
       // case "kick":
@@ -415,6 +415,17 @@ const appLinkParsers: AppLinkParser[] = appLinks.map((app) => {
           }
 
           return parsePath(app, buildInstagramAppLink(url, os), os);
+        },
+      };
+    case "twitter":
+      return {
+        ...app,
+        parse: (url: string, os?: "ios" | "android" | undefined) => {
+          if (!os || !app.android) {
+            return url;
+          }
+
+          return parsePath(app, extractDomainAndPath(url), os);
         },
       };
     case "substack":

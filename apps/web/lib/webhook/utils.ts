@@ -27,3 +27,8 @@ export const identifyWebhookReceiver = (url: string): WebhookReceiver => {
 
   return webhookReceivers[hostname] || "user";
 };
+
+export function parseWorkspaceId(input: string | null): string | null {
+  if (!input) return null;
+  return input.startsWith("ws_") ? input.slice(3) : input;
+}

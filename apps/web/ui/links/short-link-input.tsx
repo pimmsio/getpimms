@@ -5,12 +5,10 @@ import { LinkProps } from "@/lib/types";
 import { DOMAINS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/domains";
 import { Lock, Random } from "@/ui/shared/icons";
 import {
-  AnimatedSizeContainer,
   ButtonTooltip,
   Combobox,
   LinkedIn,
   LoadingCircle,
-  Magic,
   Tooltip,
   Twitter,
   useKeyboardShortcut,
@@ -41,7 +39,6 @@ import {
 } from "react";
 import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
-import { FreeDotLinkBanner } from "../domains/free-dot-link-banner";
 import { AlertCircleFill } from "../shared/icons";
 import { UpgradeRequiredToast } from "../shared/upgrade-required-toast";
 import { useAvailableDomains } from "./use-available-domains";
@@ -200,6 +197,10 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
       });
     }, [key, domain]);
 
+    const isLongLink = useMemo(() => {
+      return shortLink.length + 8 > 27;
+    }, [shortLink]);
+
     return (
       <div>
         <div className="flex items-center justify-between">
@@ -298,7 +299,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
                 "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500":
                   error,
                 "border-amber-300 pr-10 text-amber-900 placeholder-amber-300 focus:border-amber-500 focus:ring-amber-500":
-                  shortLink.length > 25,
+                  isLongLink,
                 "cursor-not-allowed border border-neutral-300 bg-neutral-100 text-neutral-500":
                   lockKey,
               },
@@ -314,7 +315,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
             }}
             {...inputProps}
           />
-          {(error || shortLink.length > 25) && (
+          {(error || isLongLink) && (
             <Tooltip
               content={
                 error || (
@@ -322,8 +323,8 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
                     <TriangleAlert className="mt-0.5 h-4 w-4 flex-none text-amber-500" />
                     <div>
                       <p className="text-sm text-neutral-700">
-                        Short links longer than 25 characters will show up
-                        differently on some platforms.
+                        Short links longer than 19 characters (including the
+                        domain) will show up differently on some platforms.
                       </p>
                       <div className="mt-2 flex items-center space-x-2">
                         <LinkedIn className="h-4 w-4" />
@@ -335,11 +336,11 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
                           })}
                         </p>
                       </div>
-                      {shortLink.length > 25 && (
+                      {isLongLink && (
                         <div className="mt-1 flex items-center space-x-2">
                           <Twitter className="h-4 w-4" />
                           <p className="cursor-pointer text-sm text-[#34a2f1] hover:underline">
-                            {truncate(shortLink, 25)}
+                            {truncate(shortLink, 19)}
                           </p>
                         </div>
                       )}
@@ -348,13 +349,13 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
                 )
               }
             >
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 z-50">
                 {error ? (
                   <AlertCircleFill
                     className="h-5 w-5 text-red-500"
                     aria-hidden="true"
                   />
-                ) : shortLink.length > 25 ? (
+                ) : isLongLink ? (
                   <AlertCircleFill className="h-5 w-5 text-amber-500" />
                 ) : null}
               </div>

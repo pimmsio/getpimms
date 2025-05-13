@@ -19,6 +19,7 @@ const CATEGORY_ORDER = [
   "Forms",
   "Authentication",
   "PIMMS",
+  "Website Builders",
   "Miscellaneous",
 ] as const;
 

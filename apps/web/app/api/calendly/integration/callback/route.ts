@@ -65,8 +65,6 @@ export const GET = async (req: Request) => {
       throw new Error("Invalid or expired authorization code");
     }
 
-    console.log("app", app);
-
     if (accessCode.expiresAt < new Date()) {
       await prisma.oAuthCode.delete({ where: { code } });
       throw new Error("Authorization code has expired");
@@ -101,6 +99,8 @@ export const GET = async (req: Request) => {
     });
 
     const tokenData = await tokenResponse.json();
+    console.log("tokenData", tokenData);
+    
     if (!tokenResponse.ok || !tokenData.access_token) {
       throw new Error(
         tokenData.error_description || "Calendly token exchange failed",
@@ -108,6 +108,7 @@ export const GET = async (req: Request) => {
     }
 
     const calendlyAccessToken = tokenData.access_token;
+    const calendlyRefreshToken = tokenData.refresh_token;
 
     const userRes = await fetch("https://api.calendly.com/users/me", {
       headers: { Authorization: `Bearer ${calendlyAccessToken}` },
@@ -147,6 +148,7 @@ export const GET = async (req: Request) => {
     
     if (!webhookRes.ok || !webhookData.resource) {
       console.error("Webhook creation error", webhookData);
+
       throw new Error("Failed to create Calendly webhook");
     }
 
@@ -155,7 +157,7 @@ export const GET = async (req: Request) => {
       workspaceId: accessCode.projectId,
       integrationId: app.integrationId,
       credentials: {
-        accessToken: calendlyAccessToken,
+        refreshToken: calendlyRefreshToken,
         userUri,
         organizationUri,
         webhookUri: webhookData.resource.uri,
