@@ -1,6 +1,6 @@
 import { withAxiom } from "next-axiom";
 import { customerCreated } from "./customer-created";
-import { getClickData, getFirstAvailableField, getLink, isValidPimmsId } from "./utils";
+import { getClickData, getFirstAvailableField, getLink, isValidPimmsId } from "@/lib/webhook/custom";
 import { parseWorkspaceId } from "@/lib/webhook/utils";
 
 const relevantEvents = new Set(["form_submission"]);
