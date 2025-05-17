@@ -6,7 +6,7 @@ export const metaTagsSchema = z.object({
     .nullable()
     .describe("The meta title tag for the URL.")
     .openapi({
-      example: "PIMMS | Deep links that boost your conversions on social media",
+      example: "PIMMS | Link sharing tool that boosts and measures your conversions",
     }),
   description: z
     .string()

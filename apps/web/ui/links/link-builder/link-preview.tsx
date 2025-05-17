@@ -14,7 +14,7 @@ import {
   Pen2,
   Twitter,
 } from "@dub/ui/icons";
-import { getDomainWithoutWWW, resizeImage, SHORT_DOMAIN } from "@dub/utils";
+import { cn, getDomainWithoutWWW, resizeImage, SHORT_DOMAIN } from "@dub/utils";
 import {
   ChangeEvent,
   ComponentType,
@@ -65,9 +65,9 @@ const tabComponents: Record<Tab, ComponentType<OGPreviewProps>> = {
 export const LinkPreview = memo(() => {
   const { slug, plan } = useWorkspace();
   const { control, setValue } = useFormContext<LinkFormData>();
-  const [proxy, title, description, image, url, password] = useWatch({
+  const [proxy, doIndex, title, description, image, url, password] = useWatch({
     control,
-    name: ["proxy", "title", "description", "image", "url", "password"],
+    name: ["proxy", "doIndex", "title", "description", "image", "url", "password"],
   });
 
   const [debouncedUrl] = useDebounce(url, 500);
@@ -83,6 +83,10 @@ export const LinkPreview = memo(() => {
   const [selectedTab, setSelectedTab] = useState<Tab>("default");
 
   const onImageChange = (image: string) => {
+    if (doIndex) {
+      return;
+    }
+
     setValue("image", image, { shouldDirty: true });
     setValue("proxy", true);
   };
@@ -95,7 +99,7 @@ export const LinkPreview = memo(() => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-medium text-neutral-700">
-            Custom preview
+            Custom preview is {proxy ? "enabled" : "disabled"}
           </h2>
           {/* <InfoTooltip
             content={
@@ -107,7 +111,7 @@ export const LinkPreview = memo(() => {
             }
           /> */}
         </div>
-        <Switch
+        {/* <Switch
           checked={proxy}
           fn={(checked) => setValue("proxy", checked, { shouldDirty: true })}
           // disabledTooltip={
@@ -127,11 +131,8 @@ export const LinkPreview = memo(() => {
           //     <CrownSmall className="size-full text-neutral-500" />
           //   ) : undefined
           // }
-        />
+        /> */}
       </div>
-      <p className="text-xs text-neutral-700">
-        Enabling custom preview also enforces deep linking.
-      </p>
       {/* <div className="mt-2.5 grid grid-cols-4 gap-2">
         {tabs.map((tab) => {
           const Icon = tabIcons[tab];
@@ -159,7 +160,7 @@ export const LinkPreview = memo(() => {
           type="button"
           variant="secondary"
           icon={<Pen2 className="mx-px size-4" />}
-          className="absolute right-2 top-2 z-10 h-8 w-fit px-1.5"
+          className={cn("absolute right-2 top-2 z-10 h-8 w-fit px-1.5", doIndex && "hidden")}
           onClick={() => setShowOGModal(true)}
         />
         <OGPreview
@@ -300,7 +301,7 @@ function DefaultOGPreview({
 }: OGPreviewProps) {
   const { plan } = useWorkspace();
   const { watch, setValue } = useFormContext<LinkFormData>();
-  const { proxy } = watch();
+  const { proxy, doIndex } = watch();
 
   return (
     <div>
@@ -311,6 +312,7 @@ function DefaultOGPreview({
         className="text-md mt-4 line-clamp-2 w-full resize-none border-none bg-transparent p-0 font-medium text-neutral-700 outline-none focus:ring-0"
         value={title || "Add a title..."}
         maxRows={2}
+        disabled={!!doIndex}
         onChange={(e) => {
           setValue("title", e.currentTarget.value, { shouldDirty: true });
           // if (plan && plan !== "free") {
@@ -322,6 +324,7 @@ function DefaultOGPreview({
         className="mt-1.5 line-clamp-2 w-full resize-none border-none bg-transparent p-0 text-sm text-neutral-700/80 outline-none focus:ring-0"
         value={description || "Add a description..."}
         maxRows={2}
+        disabled={!!doIndex}
         onChange={(e) => {
           setValue("description", e.currentTarget.value, {
             shouldDirty: true,
@@ -348,7 +351,7 @@ function FacebookOGPreview({
 }: OGPreviewProps) {
   const { plan } = useWorkspace();
   const { watch, setValue } = useFormContext<LinkFormData>();
-  const { proxy } = watch();
+  const { proxy, doIndex } = watch();
 
   return (
     <div>
@@ -359,6 +362,7 @@ function FacebookOGPreview({
             <input
               className="truncate border-none bg-transparent p-0 text-xs font-semibold text-[#1d2129] outline-none focus:ring-0"
               value={title || "Add a title..."}
+              disabled={!!doIndex}
               onChange={(e) => {
                 setValue("title", e.currentTarget.value, {
                   shouldDirty: true,
@@ -372,6 +376,7 @@ function FacebookOGPreview({
               className="mb-1 line-clamp-2 w-full resize-none rounded-md border-none bg-neutral-200 bg-transparent p-0 text-xs text-[#606770] outline-none focus:ring-0"
               value={description || "Add a description..."}
               maxRows={2}
+              disabled={!!doIndex}
               onChange={(e) => {
                 setValue("description", e.currentTarget.value, {
                   shouldDirty: true,
@@ -396,7 +401,7 @@ function FacebookOGPreview({
 function LinkedInOGPreview({ title, hostname, children }: OGPreviewProps) {
   const { plan } = useWorkspace();
   const { watch, setValue } = useFormContext<LinkFormData>();
-  const { proxy } = watch();
+  const { proxy, doIndex } = watch();
 
   return (
     <div className="flex items-center gap-3 rounded-lg border border-[#8c8c8c33] px-4 py-3">
@@ -411,6 +416,7 @@ function LinkedInOGPreview({ title, hostname, children }: OGPreviewProps) {
           className="line-clamp-2 w-full resize-none border-none p-0 text-sm font-semibold text-[#000000E6] outline-none focus:ring-0"
           value={title || "Add a title..."}
           maxRows={2}
+          disabled={!!doIndex}
           onChange={(e) => {
             setValue("title", e.currentTarget.value, {
               shouldDirty: true,

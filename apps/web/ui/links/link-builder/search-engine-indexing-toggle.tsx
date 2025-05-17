@@ -28,7 +28,10 @@ export const SearchEngineIndexingToggle = memo(() => {
 
   useLinkBuilderKeyboardShortcut(
     "s",
-    () => setValue("doIndex", !doIndex, { shouldDirty: true }),
+    () => {
+      setValue("doIndex", !doIndex, { shouldDirty: true });
+      setValue("proxy", doIndex, { shouldDirty: true });
+    },
     { enabled: true },
   );
 
@@ -47,16 +50,17 @@ export const SearchEngineIndexingToggle = memo(() => {
           ) : (
             <span className="text-green-500">enabled</span>
           )}
-          <InfoTooltip content="Transfers 100% of the link equity (or PageRank) to the destination URL. Use this feature only for special scenarios." />
+          <InfoTooltip content="Transfers PageRank to the destination URL. Only use this feature on your website or blog links to boost your SEO. When active, custom preview and deep linking are disabled." />
         </span>
       </div>
       <Switch
         checked={doIndex}
-        fn={(checked) =>
+        fn={(checked) => {
           setValue("doIndex", checked, {
             shouldDirty: true,
-          })
-        }
+          });
+          setValue("proxy", !checked, { shouldDirty: true });
+        }}
         disabledTooltip={requiresUpgrade ? <TooltipContent
           title="Search engine indexing is only available on Pro plans and above."
           cta="Upgrade to Pro"
