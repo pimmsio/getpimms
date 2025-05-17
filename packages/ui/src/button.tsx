@@ -8,7 +8,7 @@ export const buttonVariants = cva("transition-all", {
   variants: {
     variant: {
       primary:
-        "bg-[#3971ff] border-none text-white font-semibold ring-[6px] ring-[#E7EEFF] text-lg transition duration-500",
+        "bg-[#3971ff] border-none text-white font-semibold text-md transition duration-500",
       secondary: cn(
         "border-neutral-200 bg-white text-neutral-900 hover:bg-neutral-50 focus-visible:border-neutral-500 outline-none",
         "data-[state=open]:border-neutral-500 data-[state=open]:ring-4 data-[state=open]:ring-neutral-200",

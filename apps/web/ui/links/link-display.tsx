@@ -50,7 +50,7 @@ export default function LinkDisplay() {
     <Popover
       content={
         <div className="w-full divide-y-[6px] divide-neutral-100 text-sm md:w-80">
-          <div className="grid grid-cols-2 gap-2 p-3">
+          {/* <div className="grid grid-cols-2 gap-2 p-3">
             {[
               { id: "cards", label: "Cards", icon: GridLayoutRows },
               { id: "rows", label: "Rows", icon: TableRows2 },
@@ -78,7 +78,7 @@ export default function LinkDisplay() {
                 </button>
               );
             })}
-          </div>
+          </div> */}
           {!isMegaFolder && (
             <div className="flex h-16 items-center justify-between gap-2 px-4">
               <span className="flex items-center gap-2">
@@ -192,7 +192,7 @@ export default function LinkDisplay() {
     >
       <Button
         variant="secondary"
-        className="hover:bg-white [&>div]:w-full"
+        className="hover:bg-white [&>div]:w-full border-neutral-100"
         textWrapperClassName="!overflow-visible"
         text={
           <div className="flex w-full items-center gap-2">

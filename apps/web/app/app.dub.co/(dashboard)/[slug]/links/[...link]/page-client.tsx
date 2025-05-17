@@ -23,6 +23,7 @@ import { LinkFeatureButtons } from "@/ui/links/link-builder/link-feature-buttons
 import { LinkPreview } from "@/ui/links/link-builder/link-preview";
 import { OptionsList } from "@/ui/links/link-builder/options-list";
 import { QRCodePreview } from "@/ui/links/link-builder/qr-code-preview";
+import { SearchEngineIndexingToggle } from "@/ui/links/link-builder/search-engine-indexing-toggle";
 import { TagSelect } from "@/ui/links/link-builder/tag-select";
 import { useLinkBuilderSubmit } from "@/ui/links/link-builder/use-link-builder-submit";
 import { useMetatags } from "@/ui/links/link-builder/use-metatags";
@@ -220,11 +221,13 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
 
             <ConversionTrackingToggle />
 
+            <SearchEngineIndexingToggle />
+
             {isDesktop && (
               <LinkFeatureButtons className="mt-1 flex-wrap" variant="page" />
             )}
 
-            <OptionsList />
+            {/* <OptionsList /> */}
           </div>
 
           {isDesktop && (

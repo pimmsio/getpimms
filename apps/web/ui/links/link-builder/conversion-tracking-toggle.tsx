@@ -44,7 +44,7 @@ export const ConversionTrackingToggle = memo(() => {
         <span className="flex select-none items-center gap-1 text-sm font-medium text-neutral-700">
           Conversion tracking is{" "}
           {!trackConversion ? (
-            <span className="text-red-500">disabled</span>
+            <span>disabled</span>
           ) : (
             <span className="text-green-500">enabled</span>
           )}
