@@ -9,9 +9,9 @@ import { useDebounce } from "use-debounce";
 
 export function useMetatags({ enabled = true }: { enabled?: boolean } = {}) {
   const { control, setValue } = useFormContext<LinkFormData>();
-  const [url, password, proxy, title, description, image] = useWatch({
+  const [url, password, proxy, doIndex, title, description, image] = useWatch({
     control,
-    name: ["url", "password", "proxy", "title", "description", "image"],
+    name: ["url", "password", "proxy", "doIndex", "title", "description", "image"],
   });
   const [debouncedUrl] = useDebounce(getUrlWithoutUTMParams(url), 500);
 
@@ -58,14 +58,16 @@ export function useMetatags({ enabled = true }: { enabled?: boolean } = {}) {
           // set timeout to prevent flickering
           setTimeout(() => {
             setGeneratingMetatags(false);
-            setValue("proxy", true, { shouldDirty: true });
+            if (!doIndex) {
+              setValue("proxy", true, { shouldDirty: true });
+            }
           }, 200);
         });
       } catch (_) {}
     } else {
       setGeneratingMetatags(false);
     }
-  }, [debouncedUrl, password, enabled]);
+  }, [debouncedUrl, password, enabled, doIndex]);
 
   return { generatingMetatags };
 }

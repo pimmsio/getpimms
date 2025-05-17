@@ -142,9 +142,11 @@ export default async function LinkMiddleware(
   const url = testUrl || cachedLink.url;
   const ua = userAgent(req);
 
-  // by default, we only index default dub domain links (e.g. dub.sh)
+  // by default, we only index default pimms domain links (e.g. pim.ms)
   // everything else is not indexed by default, unless the user has explicitly set it to be indexed
-  const shouldIndex = isDubDomain(domain) || doIndex === true;
+  const shouldIndex = doIndex === true;
+
+  console.log("shouldIndex", shouldIndex, isDubDomain(domain));
 
   // only show inspect modal if the link is not password protected
   if (inspectMode && !password) {
@@ -280,7 +282,7 @@ export default async function LinkMiddleware(
         {
           headers: {
             ...DUB_HEADERS,
-            ...(!shouldIndex && { "X-Robots-Tag": "googlebot: noindex" }),
+            "X-Robots-Tag": "googlebot: noindex",
           },
         },
       ),
@@ -290,7 +292,8 @@ export default async function LinkMiddleware(
   } else if (
     isSupportedDirectAppLink(url, ua.os?.name?.toLowerCase()) &&
     !shallShowDirectPreview(req) &&
-    !isFromSameApp(ua.browser?.name, getMatchedApp(url)?.appName)
+    !isFromSameApp(ua.browser?.name, getMatchedApp(url)?.appName) &&
+    !shouldIndex // we don't deeplink indexed links
   ) {
     ev.waitUntil(
       recordClick({
@@ -330,13 +333,13 @@ export default async function LinkMiddleware(
       NextResponse.rewrite(rewriteUrl, {
         headers: {
           ...DUB_HEADERS,
-          ...(!shouldIndex && { "X-Robots-Tag": "googlebot: noindex" }),
+          "X-Robots-Tag": "googlebot: noindex",
         },
       }),
       cookieData,
     );
     // rewrite to deeplink page if the link is a mailto: or tel:
-  } else if (isSupportedDeeplinkProtocol(url)) {
+  } else if (isSupportedDeeplinkProtocol(url) && !shouldIndex) {
     ev.waitUntil(
       recordClick({
         req,
@@ -365,7 +368,7 @@ export default async function LinkMiddleware(
         {
           headers: {
             ...DUB_HEADERS,
-            ...(!shouldIndex && { "X-Robots-Tag": "googlebot: noindex" }),
+            "X-Robots-Tag": "googlebot: noindex",
           },
         },
       ),
@@ -516,7 +519,8 @@ export default async function LinkMiddleware(
     shallShowDirectPreview(req) ||
     isExceptionToDirectRedirect(req) ||
     (isNativeBrowser(req) && !isExceptionToNativeBrowser(req)) ||
-    isFromSameApp(ua.browser?.name, getMatchedApp(url)?.appName)
+    isFromSameApp(ua.browser?.name, getMatchedApp(url)?.appName) ||
+    shouldIndex
   ) {
     ev.waitUntil(
       recordClick({
@@ -565,7 +569,11 @@ export default async function LinkMiddleware(
       cookieData,
     );
     // rewrite to universal link page
-  } else if (isSupportedUniversalLinks(url) && !shallShowDirectPreview(req)) {
+  } else if (
+    isSupportedUniversalLinks(url) &&
+    !shallShowDirectPreview(req) &&
+    !shouldIndex
+  ) {
     ev.waitUntil(
       recordClick({
         req,
@@ -611,7 +619,7 @@ export default async function LinkMiddleware(
       NextResponse.rewrite(rewriteUrl, {
         headers: {
           ...DUB_HEADERS,
-          ...(!shouldIndex && { "X-Robots-Tag": "googlebot: noindex" }),
+          "X-Robots-Tag": "googlebot: noindex",
         },
       }),
       cookieData,
@@ -655,7 +663,7 @@ export default async function LinkMiddleware(
       NextResponse.rewrite(rewriteUrl, {
         headers: {
           ...DUB_HEADERS,
-          ...(!shouldIndex && { "X-Robots-Tag": "googlebot: noindex" }),
+          "X-Robots-Tag": "googlebot: noindex",
         },
       }),
       cookieData,

@@ -70,7 +70,7 @@ export function constructMetadata({
       fullTitle ||
       (title
         ? `${title} | PIMMS`
-        : "PIMMS | Deep links that boost your conversions on social media"),
+        : "PIMMS | Link sharing tool that boosts and measures your conversions"),
     description,
     openGraph: {
       title,
