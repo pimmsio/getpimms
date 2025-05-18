@@ -6,6 +6,7 @@ import posthog from "posthog-js";
 import { useState } from "react";
 import { HelpArticle } from "../help";
 import { HelpSection } from "../help/help-section";
+import { useParams } from "next/navigation";
 
 export function HelpButton(
   {
@@ -16,9 +17,10 @@ export function HelpButton(
     allHelpArticles?: HelpArticle[];
   },
 ) {
+  const { slug } = useParams() as { slug?: string };
   const [isOpen, setIsOpen] = useState(false);
 
-  return (
+  return slug ? (
     // <HelpContext.Provider value={{ popularHelpArticles, allHelpArticles }}>
     <Popover
       content={<HelpSection />}
@@ -35,7 +37,7 @@ export function HelpButton(
             }
             setIsOpen((o) => !o);
           }}
-          className="group flex items-center gap-1 text-sm font-semibold text-[#08272E] transition-colors hover:text-neutral-900"
+          className="group flex items-center gap-1 text-xs font-medium text-[#08272E] transition-colors hover:text-neutral-900"
         >
           <MessageSquareText className="size-4" />
           Contact Us
@@ -43,5 +45,5 @@ export function HelpButton(
       </div>
     </Popover>
     // </HelpContext.Provider>
-  );
+  ): null;
 }

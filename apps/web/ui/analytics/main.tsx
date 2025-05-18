@@ -1,9 +1,9 @@
 import { EventType } from "@/lib/analytics/types";
 import useWorkspace from "@/lib/swr/use-workspace";
-import { BlurImage, buttonVariants, useRouterStuff } from "@dub/ui";
+import { buttonVariants, useRouterStuff } from "@dub/ui";
 import { cn } from "@dub/utils";
 import NumberFlow, { NumberFlowGroup } from "@number-flow/react";
-import { Lock } from "lucide-react";
+import { Coins, Lock } from "lucide-react";
 import Link from "next/link";
 import { useContext, useMemo } from "react";
 import AnalyticsAreaChart from "./analytics-area-chart";
@@ -60,11 +60,12 @@ export default function Main() {
 
   const tab = tabs.find(({ id }) => id === selectedTab) ?? tabs[0];
 
-  const showPaywall = (tab.id === "sales" || view === "funnel") && plan === "free";
+  const showPaywall =
+    (tab.id === "sales" || view === "funnel") && plan === "free";
 
   return (
     <div className="w-full overflow-hidden bg-white">
-      <div className="scrollbar-hide grid w-full grid-cols-3 divide-x overflow-y-hidden border-[6px] border-b-2 border-neutral-100 rounded-t-xl">
+      <div className="scrollbar-hide grid w-full grid-cols-3 divide-x overflow-y-hidden rounded-t-xl border-[6px] border-b-2 border-neutral-100">
         <NumberFlowGroup>
           {tabs.map(({ id, label, colorClassName, conversions }, idx) => {
             return (
@@ -178,7 +179,7 @@ export default function Main() {
       <div className="relative">
         <div
           className={cn(
-            "relative overflow-hidden border-x-[6px] border-b-[6px] border-neutral-100 rounded-b-xl",
+            "relative overflow-hidden rounded-b-xl border-x-[6px] border-b-[6px] border-neutral-100",
             showPaywall &&
               "pointer-events-none [mask-image:linear-gradient(#0006,#0006_25%,transparent_40%)]",
           )}
@@ -223,26 +224,27 @@ function ConversionTrackingPaywall() {
   return (
     <div className="animate-slide-up-fade pointer-events-none absolute inset-0 flex items-center justify-center pt-24">
       <div className="pointer-events-auto flex flex-col items-center">
-        <div className="group relative flex aspect-video w-full max-w-80 items-center justify-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100">
-          <BlurImage
-            src="https://assets.pimms.io/conversion-tracking-1.png"
-            alt="thumbnail"
-            fill
-            className="object-cover"
-          />
+        <div className="flex size-16 items-center justify-center rounded-full border-[6px] border-neutral-100 bg-neutral-50">
+          <Coins className="size-6 text-neutral-800" />
         </div>
         <h2 className="mt-7 text-base font-semibold text-neutral-700">
-          🎉 New conversion analytics
+          Real-time Sales tracking
         </h2>
         <p className="mt-4 max-w-sm text-center text-sm text-neutral-500">
-          Want to see how your clicks are converting to revenue? Upgrade to our
-          Pro Plan and start tracking sales with PiMMs.
+          Want to see your sales in realtime ?{" "}
+          <a
+            href="https://pimms.io/guides/how-to-track-conversions-on-vibe-coding-ai-no-code-sites"
+            target="_blank"
+            className="font-medium underline underline-offset-4 hover:text-black"
+          >
+            Learn more
+          </a>
         </p>
         <Link
           href={`/${slug}/upgrade`}
           className={cn(
             buttonVariants({ variant: "primary" }),
-            "mt-4 flex h-8 items-center justify-center whitespace-nowrap rounded-lg border px-3 text-sm",
+            "mt-4 flex h-9 items-center justify-center rounded-md border px-4 text-sm",
           )}
         >
           Upgrade to Pro

@@ -1,6 +1,8 @@
 "use client";
 
 import { editQueryString } from "@/lib/analytics/utils";
+import useCustomersCount from "@/lib/swr/use-customers-count";
+import useListIntegrations from "@/lib/swr/use-list-integrations";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { ClickEvent, LeadEvent, SaleEvent } from "@/lib/types";
 import EmptyState from "@/ui/shared/empty-state";
@@ -13,9 +15,8 @@ import {
   useRouterStuff,
   useTable,
 } from "@dub/ui";
-import { CursorRays, Globe, Magnifier, QRCode } from "@dub/ui/icons";
+import { CursorRays, Globe, QRCode } from "@dub/ui/icons";
 import {
-  CONTINENTS,
   COUNTRIES,
   REGIONS,
   capitalize,
@@ -25,18 +26,16 @@ import {
   nFormatter,
 } from "@dub/utils";
 import { Cell, ColumnDef } from "@tanstack/react-table";
-import { DollarSign, Link2, Target } from "lucide-react";
+import { IntegrationsCardsLight } from "app/app.dub.co/(dashboard)/[slug]/settings/integrations/integrations-cards-light";
+import { Coins, Link2, Target } from "lucide-react";
 import { ReactNode, useContext, useEffect, useMemo } from "react";
 import useSWR from "swr";
 import { AnalyticsContext } from "../analytics-provider";
-import ContinentIcon from "../continent-icon";
 import DeviceIcon from "../device-icon";
 import { CustomerRowItem } from "./customer-row-item";
-import EditColumnsButton from "./edit-columns-button";
 import { EventsContext } from "./events-provider";
 import { EXAMPLE_EVENTS_DATA } from "./example-data";
 import FilterButton from "./filter-button";
-import { RowMenuButton } from "./row-menu-button";
 import { eventColumns, useColumnVisibility } from "./use-column-visibility";
 
 export type EventDatum = ClickEvent | LeadEvent | SaleEvent;
@@ -54,7 +53,7 @@ export default function EventsTable({
   requiresUpgrade?: boolean;
   upgradeOverlay?: ReactNode;
 }) {
-  const { slug } = useWorkspace();
+  const { slug, salesUsage } = useWorkspace();
   const { searchParams, queryParams } = useRouterStuff();
   const { setExportQueryString } = useContext(EventsContext);
   const {
@@ -480,9 +479,27 @@ export default function EventsTable({
     },
   );
 
+  const { integrations, loading: integrationsLoading } = useListIntegrations();
+
+  const { data: customersCount } = useCustomersCount();
+  const hasNoCustomer = !customersCount || customersCount === 0;
+  const hasNoSales = !salesUsage || salesUsage === 0;
+
+  const isEmptyData = !data || data.length === 0;
+
+  const demo =
+    isEmptyData &&
+    ((tab === "leads" && hasNoCustomer) || (tab === "sales" && hasNoSales));
+
+  const showEmptyState = isEmptyData && !isLoading && !integrationsLoading;
+  const showDemo = demo && !isLoading && !integrationsLoading;
+
   const { table, ...tableProps } = useTable({
-    data: (data ??
-      (requiresUpgrade ? EXAMPLE_EVENTS_DATA[tab] : [])) as EventDatum[],
+    data: (showDemo
+      ? EXAMPLE_EVENTS_DATA[tab]
+      : showEmptyState || !data
+        ? []
+        : data) as EventDatum[],
     loading: isLoading,
     error: error && !requiresUpgrade ? "Failed to fetch events." : undefined,
     columns,
@@ -512,7 +529,7 @@ export default function EventsTable({
     tdClassName: (columnId) => (columnId === "customer" ? "p-0" : ""),
     emptyState: (
       <EmptyState
-        icon={tab === "sales" ? DollarSign : Target}
+        icon={tab === "sales" ? Coins : Target}
         title={`No ${tab === "sales" ? "sales" : "conversions"} recorded`}
         description={`${tab === "sales" ? "Sales" : "Conversions"} will appear here when your links ${tab === "clicks" ? "are clicked on" : `convert to ${tab}`}`}
       />
@@ -526,9 +543,20 @@ export default function EventsTable({
         {...tableProps}
         table={table}
         scrollWrapperClassName={
-          requiresUpgrade ? "overflow-x-hidden" : undefined
+          requiresUpgrade || showDemo ? "overflow-x-hidden" : undefined
         }
       >
+        {showDemo && !isLoading && !integrationsLoading && !requiresUpgrade && (
+          <>
+            <div className="absolute inset-0 flex touch-pan-y flex-col items-center justify-center gap-6 bg-gradient-to-t from-[#fff_70%] to-[#fff6]">
+              <EmptyState
+                icon={tab === "sales" ? Coins : Target}
+                title={`No ${tab === "sales" ? "sales" : "conversions"} recorded`}
+                description={`${tab === "sales" ? "Sales" : "Conversions"} will appear here when your links convert to ${tab}. To get started, install an integration below or follow a guide.`}
+              />
+            </div>
+          </>
+        )}
         {requiresUpgrade && (
           <>
             <div className="absolute inset-0 flex touch-pan-y items-center justify-center bg-gradient-to-t from-[#fff_70%] to-[#fff6]">
@@ -538,6 +566,22 @@ export default function EventsTable({
           </>
         )}
       </Table>
+      {showDemo &&
+        !isLoading &&
+        !integrationsLoading &&
+        !requiresUpgrade &&
+        integrations && (
+          <div className="mt-4 rounded-xl border-[6px] border-neutral-100 py-4">
+            <IntegrationsCardsLight
+              integrations={integrations}
+              integrationsToShow={
+                tab === "leads"
+                  ? undefined
+                  : ["stripe", "zapier", "systeme-io", "webflow", "framer"]
+              }
+            />
+          </div>
+        )}
     </>
   );
 }

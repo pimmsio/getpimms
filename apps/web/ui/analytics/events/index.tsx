@@ -45,9 +45,9 @@ function EventsTableContainer() {
       upgradeOverlay={
         <EmptyState
           icon={selectedTab === "sales" ? CoinsIcon : TargetIcon}
-          title={selectedTab === "sales" ? "Real-time Sales" : "Real-time Conversions"}
+          title={selectedTab === "sales" ? "Real-time Sales tracking" : "Real-time Conversions tracking"}
           description={`Want to see your ${selectedTab === "sales" ? "sales" : "conversions"} in realtime ?`}
-          // learnMore="https://d.to/events"
+          learnMore="https://pimms.io/guides/how-to-track-conversions-on-vibe-coding-ai-no-code-sites"
           buttonText="Upgrade to Pro"
           buttonLink={`/${slug}/upgrade`}
         />

@@ -37,6 +37,12 @@ declare global {
   var apiController: IConnectionAPIController | undefined;
   var oauthController: IOAuthController | undefined;
   var directorySyncController: IDirectorySyncController | undefined;
+  interface Window {
+    satismeter?: {
+      (...args: any[]): void;
+      q?: any[];
+    };
+  }
 }
 
 export async function jackson() {

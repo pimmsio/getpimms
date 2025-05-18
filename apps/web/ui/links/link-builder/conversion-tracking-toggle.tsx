@@ -1,10 +1,10 @@
+import useCustomersCount from "@/lib/swr/use-customers-count";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { LinkFormData } from "@/ui/links/link-builder/link-builder-provider";
 import {
   CrownSmall,
   FlaskSmall,
   InfoTooltip,
-  SimpleTooltipContent,
   Switch,
   TooltipContent,
 } from "@dub/ui";
@@ -48,9 +48,7 @@ export const ConversionTrackingToggle = memo(() => {
           ) : (
             <span className="text-green-500">enabled</span>
           )}
-          <InfoTooltip
-            content="Track conversions and sales for this link."
-          />
+          <InfoTooltip content="Track conversions and sales for this link." />
         </span>
       </div>
       <Switch

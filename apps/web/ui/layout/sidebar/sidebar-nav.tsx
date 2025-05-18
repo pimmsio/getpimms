@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PropsWithChildren, ReactNode, useMemo, useState } from "react";
 import { CreateProgramCard } from "./create-program-card";
+import SatisMeter from "./satismeter";
 
 export type NavItemCommon = {
   name: string;
@@ -54,8 +55,8 @@ export function SidebarNav<T extends Record<any, any>>({
 }) {
   return (
     <ClientOnly className="scrollbar-hide relative flex h-full w-full flex-col overflow-y-auto overflow-x-hidden">
-      <nav className="relative flex grow flex-col px-3 sm:py-3 text-neutral-500">
-        <div className="relative flex items-center justify-between gap-1 mt-2">
+      <nav className="relative flex grow flex-col px-3 text-neutral-500 sm:py-3">
+        <div className="relative mt-2 flex items-center justify-between gap-1">
           {Object.entries(areas).map(([area, areaConfig]) => {
             const { title, backHref } = areaConfig(data);
 
@@ -96,7 +97,7 @@ export function SidebarNav<T extends Record<any, any>>({
                   <div className="pt-2">{switcher}</div>
                 )}
 
-                <div className="flex flex-col gap-1 sm:gap-2 pt-4">
+                <div className="flex flex-col gap-1 pt-4 sm:gap-2">
                   {content.map(({ name, items }, idx) => (
                     <div key={idx} className="flex flex-col gap-1 sm:gap-2">
                       {name && (
@@ -134,12 +135,19 @@ export function SidebarNav<T extends Record<any, any>>({
           })}
         </div>
       </nav>
-      {bottom && (
-        <div className="relative flex flex-col gap-2 justify-end">{bottom}</div>
+      {bottom && currentArea === "default" && (
+        <div className="relative flex flex-col justify-end gap-2">{bottom}</div>
       )}
       <div className="relative mx-auto flex items-center justify-between gap-1 pb-2 pt-1">
         <NavWordmark className="h-2.5" isInApp />
       </div>
+      {data.session?.user?.id && (
+        <SatisMeter
+          userId={data.session?.user?.id}
+          email={data.session?.user?.email}
+          name={data.session?.user?.name}
+        />
+      )}
     </ClientOnly>
   );
 }
@@ -169,7 +177,7 @@ function NavItem({ item }: { item: NavItemType | NavSubItemType }) {
         onPointerEnter={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}
         className={cn(
-          "group flex items-center gap-2.5 rounded-full p-0.5 sm:p-2 text-sm leading-none text-neutral-600 transition-[background-color,color,font-weight] duration-75 hover:bg-neutral-200/50 active:bg-neutral-200/80",
+          "group flex items-center gap-2.5 rounded-full p-0.5 text-sm leading-none text-neutral-600 transition-[background-color,color,font-weight] duration-75 hover:bg-neutral-200/50 active:bg-neutral-200/80 sm:p-2",
           "outline-none focus-visible:ring-2 focus-visible:ring-black/50",
           isActive &&
             !items &&
@@ -207,7 +215,7 @@ function NavItem({ item }: { item: NavItemType | NavSubItemType }) {
           >
             <div className="pl-px pt-1">
               <div className="pl-3.5">
-                <div className="flex flex-col gap-1 sm:gap-2 border-l border-neutral-200 pl-2">
+                <div className="flex flex-col gap-1 border-l border-neutral-200 pl-2 sm:gap-2">
                   {items.map((item) => (
                     <NavItem key={item.name} item={item} />
                   ))}

@@ -57,7 +57,7 @@ export function ConversionOnboardingPopup({
         style={floatingStyles}
         className="drop-shadow-sm"
       >
-        <div className="animate-slide-up-fade relative flex w-[240px] flex-col rounded-xl border-[6px] border-neutral-100 bg-white p-3 text-left">
+        <div className="animate-slide-up-fade relative flex w-[240px] flex-col rounded-xl border-[6px] border-neutral-100 bg-white p-3 text-center">
           {/* <div className="relative">
             <Link
               href="https://d.to/conversions"
@@ -83,10 +83,10 @@ export function ConversionOnboardingPopup({
             </button>
           </div> */}
           <h2 className="mt-4 text-sm font-semibold text-neutral-700">
-            🎉 New conversion analytics
+            Get started with sales tracking and analytics
           </h2>
           <p className="mt-1.5 text-xs text-neutral-500">
-            Follow our guide to get set up and track your deep link conversions
+            Follow our guide to get set up and track your sales
           </p>
           <div className="grid-row-2 mt-4 grid w-full gap-2">
             <Button

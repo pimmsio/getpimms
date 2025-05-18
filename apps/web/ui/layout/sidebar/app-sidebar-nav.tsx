@@ -70,7 +70,7 @@ const NAV_AREAS: SidebarNavAreas<{
             href: `/${slug}/leads?event=leads`,
           },
           {
-            name: "Sales",
+            name: "Sales tracking",
             icon: CoinsIcon,
             // href: `/${slug}/events${pathname === `/${slug}/events` ? "" : queryString}`,
             href: `/${slug}/sales?event=sales`,

@@ -41,19 +41,6 @@ export const PLAN_COMPARE_FEATURES: {
           </>
         ),
       },
-      {
-        text: ({ plan }) => (
-          <>
-            <strong>
-              {plan.limits.tags === INFINITY_NUMBER
-                ? "Unlimited"
-                : nFormatter(plan.limits.tags)}
-            </strong>{" "}
-            tags
-          </>
-        ),
-        // href: "https://dub.co/help/article/how-to-use-tags",
-      },
       // {
       //   check: {
       //     free: false,
@@ -70,22 +57,18 @@ export const PLAN_COMPARE_FEATURES: {
       //     </>
       //   ),
       // },
-      {
-        text: "Custom QR codes",
-        // href: "https://dub.co/help/article/custom-qr-codes",
-      },
-      {
-        text: "UTM builder + templates",
-        // href: "https://dub.co/help/article/how-to-create-utm-templates",
-      },
-      {
-        check: {
-          free: false,
-          default: true,
-        },
-        text: "Custom link previews",
-        // href: "https://dub.co/help/article/custom-link-previews",
-      },
+      // {
+      //   text: "Custom QR codes",
+      //   // href: "https://dub.co/help/article/custom-qr-codes",
+      // },
+      // {
+      //   check: {
+      //     free: false,
+      //     default: true,
+      //   },
+      //   text: "Custom link previews",
+      //   // href: "https://dub.co/help/article/custom-link-previews",
+      // },
       {
         check: {
           free: false,
@@ -148,10 +131,10 @@ export const PLAN_COMPARE_FEATURES: {
     category: "Analytics",
     href: "https://pimms.io",
     features: [
-      {
-        text: "Advanced analytics",
-        // href: "https://dub.co/help/article/dub-analytics",
-      },
+      // {
+      //   text: "Advanced analytics",
+      //   // href: "https://dub.co/help/article/dub-analytics",
+      // },
       {
         text: ({ plan }) => (
           <>
@@ -173,17 +156,17 @@ export const PLAN_COMPARE_FEATURES: {
           </>
         ),
       },
-      {
-        check: {
-          default: false,
-          pro: true,
-          business: true,
-          advanced: true,
-          enterprise: true,
-        },
-        text: "Real-time events stream",
-        // href: "https://dub.co/help/article/real-time-events-stream",
-      },
+      // {
+      //   check: {
+      //     default: false,
+      //     pro: true,
+      //     business: true,
+      //     advanced: true,
+      //     enterprise: true,
+      //   },
+      //   text: "Real-time events stream",
+      //   // href: "https://dub.co/help/article/real-time-events-stream",
+      // },
       {
         check: {
           default: false,
@@ -201,17 +184,17 @@ export const PLAN_COMPARE_FEATURES: {
     category: "Sales tracking",
     href: "https://pimms.io",
     features: [
-      {
-        check: {
-          default: false,
-          pro: false,
-          business: true,
-          advanced: true,
-          enterprise: true,
-        },
-        text: "Create your own affiliate program",
-        // href: "https://dub.co/help/article/dub-partners",
-      },
+      // {
+      //   check: {
+      //     default: false,
+      //     pro: false,
+      //     business: true,
+      //     advanced: true,
+      //     enterprise: true,
+      //   },
+      //   text: "Create your own affiliate program",
+      //   // href: "https://dub.co/help/article/dub-partners",
+      // },
       {
         check: {
           default: false,
@@ -355,10 +338,10 @@ export const PLAN_COMPARE_FEATURES: {
         text: "API Access",
         // href: "https://dub.co/docs/api-reference/introduction",
       },
-      {
-        text: "Native SDKs",
-        // href: "https://dub.co/docs/sdks/overview",
-      },
+      // {
+      //   text: "Native SDKs",
+      //   // href: "https://dub.co/docs/sdks/overview",
+      // },
       {
         text: ({ id, plan }) => (
           <>
@@ -399,6 +382,23 @@ export const PLAN_COMPARE_FEATURES: {
             {plan.limits.users === 1 ? "" : "s"}
           </>
         ),
+      },
+      {
+        text: ({ plan }) => (
+          <>
+            <strong>
+              {plan.limits.tags === INFINITY_NUMBER
+                ? "Unlimited"
+                : nFormatter(plan.limits.tags)}
+            </strong>{" "}
+            tags
+          </>
+        ),
+        // href: "https://dub.co/help/article/how-to-use-tags",
+      },
+      {
+        text: "UTM builder + templates",
+        // href: "https://dub.co/help/article/how-to-create-utm-templates",
       },
       // {
       //   check: {

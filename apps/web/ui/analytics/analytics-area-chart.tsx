@@ -1,10 +1,15 @@
 import { formatDateTooltip } from "@/lib/analytics/format-date-tooltip";
 import { EventType } from "@/lib/analytics/types";
 import { editQueryString } from "@/lib/analytics/utils";
+import useCustomersCount from "@/lib/swr/use-customers-count";
+import useListIntegrations from "@/lib/swr/use-list-integrations";
 import useWorkspace from "@/lib/swr/use-workspace";
+import { EmptyState } from "@dub/ui";
 import { Areas, TimeSeriesChart, XAxis, YAxis } from "@dub/ui/charts";
 import { cn, currencyFormatter, fetcher, nFormatter } from "@dub/utils";
+import { IntegrationsCardsLight } from "app/app.dub.co/(dashboard)/[slug]/settings/integrations/integrations-cards-light";
 import { subDays } from "date-fns";
+import { Coins, Target } from "lucide-react";
 import { Fragment, useContext, useMemo } from "react";
 import useSWR from "swr";
 import { AnalyticsLoadingSpinner } from "./analytics-loading-spinner";
@@ -35,12 +40,12 @@ const RESOURCE_LABELS = {
 
 export default function AnalyticsAreaChart({
   resource,
-  demo,
+  demo: demoFromProps,
 }: {
   resource: EventType;
   demo?: boolean;
 }) {
-  const { createdAt } = useWorkspace();
+  const { createdAt, salesUsage } = useWorkspace();
 
   const {
     baseApiPath,
@@ -52,7 +57,7 @@ export default function AnalyticsAreaChart({
     requiresUpgrade,
   } = useContext(AnalyticsContext);
 
-  const { data } = useSWR<
+  const { data, isLoading } = useSWR<
     {
       start: Date;
       clicks: number;
@@ -61,7 +66,7 @@ export default function AnalyticsAreaChart({
       saleAmount: number;
     }[]
   >(
-    !demo &&
+    !demoFromProps &&
       `${baseApiPath}?${editQueryString(queryString, {
         groupBy: "timeseries",
       })}`,
@@ -70,6 +75,23 @@ export default function AnalyticsAreaChart({
       shouldRetryOnError: !requiresUpgrade,
     },
   );
+
+  const { data: customersCount } = useCustomersCount();
+  const dataSales = data?.reduce((acc, curr) => acc + curr.sales, 0);
+  const countNoSales = !dataSales || dataSales === 0;
+  const dataLeads = data?.reduce((acc, curr) => acc + curr.leads, 0);
+  const countNoLeads = !dataLeads || dataLeads === 0;
+
+  const hasNoCustomer = !customersCount || customersCount === 0;
+  const hasNoSales = !salesUsage || salesUsage === 0;
+
+  const isDataEmpty =
+    !!data &&
+    !isLoading &&
+    ((resource === "leads" && hasNoCustomer && countNoLeads) ||
+      (resource === "sales" && hasNoSales && countNoSales));
+
+  const demo = !!data && !isLoading && (demoFromProps || isDataEmpty);
 
   const chartData = useMemo(
     () =>
@@ -109,31 +131,38 @@ export default function AnalyticsAreaChart({
   ];
 
   const activeSeries = series.find(({ id }) => id === resource);
+  const { integrations, loading: integrationsLoading } = useListIntegrations();
 
   return (
-    <div className="flex h-96 w-full items-center justify-center">
-      {chartData ? (
-        <TimeSeriesChart
-          key={queryString}
-          data={chartData}
-          series={series}
-          defaultTooltipIndex={demo ? DEMO_DATA.length - 2 : undefined}
-          tooltipClassName="p-0"
-          tooltipContent={(d) => {
-            return (
-              <>
-                <p className="border-b-[6px] border-neutral-100 px-4 py-3 text-sm text-neutral-900">
-                  {formatDateTooltip(d.date, {
-                    interval: demo ? "day" : interval,
-                    start,
-                    end,
-                    dataAvailableFrom: createdAt,
-                  })}
-                </p>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-2 px-4 py-3 text-sm">
-                  <Fragment key={resource}>
-                    <div className="flex items-center gap-2">
-                      {/* {activeSeries && (
+    <>
+      <div
+        className={cn(
+          "relative flex h-96 w-full items-center justify-center",
+          isDataEmpty && !integrationsLoading && !!integrations && "h-[300px]",
+        )}
+      >
+        {chartData ? (
+          <TimeSeriesChart
+            key={queryString}
+            data={chartData}
+            series={series}
+            defaultTooltipIndex={demo ? DEMO_DATA.length - 2 : undefined}
+            tooltipClassName="p-0"
+            tooltipContent={(d) => {
+              return (
+                <>
+                  <p className="border-b-[6px] border-neutral-100 px-4 py-3 text-sm text-neutral-900">
+                    {formatDateTooltip(d.date, {
+                      interval: demo ? "day" : interval,
+                      start,
+                      end,
+                      dataAvailableFrom: createdAt,
+                    })}
+                  </p>
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-2 px-4 py-3 text-sm">
+                    <Fragment key={resource}>
+                      <div className="flex items-center gap-2">
+                        {/* {activeSeries && (
                         <div
                           className={cn(
                             activeSeries.colorClassName,
@@ -141,44 +170,65 @@ export default function AnalyticsAreaChart({
                           )}
                         />
                       )} */}
-                      <p className="capitalize text-neutral-600">
-                        {RESOURCE_LABELS[resource]}
+                        <p className="capitalize text-neutral-600">
+                          {RESOURCE_LABELS[resource]}
+                        </p>
+                      </div>
+                      <p className="text-right font-medium text-neutral-900">
+                        {resource === "sales" && saleUnit === "saleAmount"
+                          ? currencyFormatter(d.values.saleAmount)
+                          : nFormatter(d.values[resource], { full: true })}
                       </p>
-                    </div>
-                    <p className="text-right font-medium text-neutral-900">
-                      {resource === "sales" && saleUnit === "saleAmount"
-                        ? currencyFormatter(d.values.saleAmount)
-                        : nFormatter(d.values[resource], { full: true })}
-                    </p>
-                  </Fragment>
-                </div>
-              </>
-            );
-          }}
-        >
-          <Areas />
-          <XAxis
-            tickFormat={(d) =>
-              formatDateTooltip(d, {
-                interval,
-                start,
-                end,
-                dataAvailableFrom: createdAt,
-              })
-            }
-          />
-          <YAxis
-            showGridLines
-            tickFormat={
-              resource === "sales" && saleUnit === "saleAmount"
-                ? (v) => `$${nFormatter(v)}`
-                : nFormatter
-            }
-          />
-        </TimeSeriesChart>
-      ) : (
-        <AnalyticsLoadingSpinner />
+                    </Fragment>
+                  </div>
+                </>
+              );
+            }}
+          >
+            <Areas />
+            <XAxis
+              tickFormat={(d) =>
+                formatDateTooltip(d, {
+                  interval,
+                  start,
+                  end,
+                  dataAvailableFrom: createdAt,
+                })
+              }
+            />
+            <YAxis
+              showGridLines
+              tickFormat={
+                resource === "sales" && saleUnit === "saleAmount"
+                  ? (v) => `$${nFormatter(v)}`
+                  : nFormatter
+              }
+            />
+          </TimeSeriesChart>
+        ) : (
+          <AnalyticsLoadingSpinner />
+        )}
+
+        {isDataEmpty && !integrationsLoading && !!integrations && (
+          <div className="absolute inset-0 flex touch-pan-y flex-col items-center justify-center gap-4 bg-gradient-to-t from-[#fff_30%] to-[#fff6] pt-12">
+            <EmptyState
+              icon={resource === "sales" ? Coins : Target}
+              title={`No ${resource === "sales" ? "sales" : "conversions"} recorded`}
+              description={`${resource === "sales" ? "Sales" : "Conversions"} will appear here when your links convert to ${resource}. To get started, install an integration below or follow a guide.`}
+            />
+          </div>
+        )}
+      </div>
+      {isDataEmpty && !integrationsLoading && !!integrations && (
+        <IntegrationsCardsLight
+          integrations={integrations}
+          integrationsToShow={
+            resource === "leads"
+              ? undefined
+              : ["stripe", "zapier", "systeme-io", "webflow", "framer"]
+          }
+        />
       )}
-    </div>
+    </>
   );
 }

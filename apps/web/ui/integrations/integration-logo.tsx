@@ -22,7 +22,7 @@ export const IntegrationLogo = memo(
             width={32}
             height={32}
           />
-          <div className="pointer-events-none absolute inset-0 size-full rounded-[inherit] border border-black/[0.075]" />
+          <div className="pointer-events-none absolute inset-0 size-full rounded-[inherit]" />
         </>
       ) : (
         <div className="relative size-full rounded-[inherit]" />
