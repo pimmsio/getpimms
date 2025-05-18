@@ -40,7 +40,7 @@ export function FilterList({
           className,
         )}
       >
-        <div className="flex grow flex-wrap gap-x-4 gap-y-2">
+        <div className="flex flex-wrap gap-x-4 gap-y-2">
           <AnimatePresence>
             {activeFilters?.map(({ key, value: filterValue }) => {
               if (key === "loader") {
@@ -96,10 +96,10 @@ export function FilterList({
                     key={`${key}-${value}`}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center divide-x rounded-xl border-[6px] border-neutral-100 bg-white text-sm text-black"
+                    className="flex items-center rounded-xl border-[6px] border-neutral-100 bg-white text-sm text-black"
                   >
                     {/* Filter */}
-                    <div className="flex items-center gap-2.5 px-3 py-2">
+                    <div className="flex items-center gap-2.5 px-2 py-2">
                       {/* <span className="shrink-0 text-neutral-600">
                         {isReactNode(filter.icon) ? (
                           filter.icon
@@ -111,10 +111,10 @@ export function FilterList({
                     </div>
 
                     {/* is */}
-                    <div className="px-3 py-2 text-neutral-500">is</div>
+                    <div className="px-0.5 py-2 text-neutral-500">=</div>
 
                     {/* Option */}
-                    <div className="flex items-center gap-2.5 px-3 py-2">
+                    <div className="flex items-center gap-2.5 px-1 py-2">
                       {filter.options ? (
                         <>
                           <span className="shrink-0 text-neutral-600">
@@ -128,7 +128,7 @@ export function FilterList({
                             <Link
                               href={linkPageHref}
                               target="_blank"
-                              className="cursor-alias decoration-dotted underline-offset-2 hover:underline"
+                              className="cursor-alias decoration-dotted underline-offset-2 hover:underline max-w-[120px] truncate text-ellipsis"
                             >
                               {truncate(optionLabel, 30)}
                             </Link>
@@ -158,7 +158,7 @@ export function FilterList({
         {activeFilters?.length !== 0 && (
           <button
             type="button"
-            className="group mt-px flex items-center gap-2 whitespace-nowrap rounded-xl border-[6px] border-transparent px-3 py-2 text-sm text-neutral-500 ring-inset ring-neutral-500 transition-colors hover:border-neutral-200 hover:bg-white hover:text-black focus:outline-none"
+            className="group mt-px flex items-center gap-2 whitespace-nowrap rounded-xl border-[6px] border-transparent px-1 py-2 text-sm ring-inset transition-colors hover:text-black focus:outline-none"
             onClick={onRemoveAll}
           >
             Clear

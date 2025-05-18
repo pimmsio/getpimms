@@ -87,16 +87,16 @@ export function ContactForm({
 
   return (
     <div className="relative w-full px-3 pb-16 pt-5 sm:px-6">
-      <button
+      {/* <button
         type="button"
         className="-ml-2 flex items-center space-x-1 px-2 py-1"
         onClick={() => setScreen("main")}
-      >
-        <ChevronLeft className="h-5 w-5" />
+      > */}
+        {/* <ChevronLeft className="h-5 w-5" /> */}
         <h3 className="text-lg font-semibold text-neutral-700">
           Contact support
         </h3>
-      </button>
+      {/* </button> */}
 
       <AnimatePresence>
         {formStatus === "success" ? (
@@ -114,7 +114,7 @@ export function ContactForm({
         ) : (
           <motion.form
             ref={formRef}
-            className="mt-5 grid gap-2"
+            className="my-5 grid gap-2"
             onSubmit={async (e) => {
               e.preventDefault();
               setFormStatus("loading");
@@ -140,7 +140,7 @@ export function ContactForm({
               <TextareaAutosize
                 name="message"
                 required
-                placeholder="E.g. My custom domain is not working."
+                placeholder="E.g. I need help to setup Stripe..."
                 minRows={8}
                 autoFocus={!isMobile}
                 autoComplete="off"
@@ -157,7 +157,7 @@ export function ContactForm({
               />
             </label>
 
-            <div className="grid w-full gap-2">
+            {/* <div className="grid w-full gap-2">
               {uploads.map((upload) => (
                 <div
                   key={upload.attachmentId}
@@ -199,7 +199,7 @@ export function ContactForm({
               variant="plain"
               onChange={async ({ file }) => await handleUpload(file)}
               content="Drag and drop or click to upload."
-            />
+            /> */}
 
             <div className="fixed bottom-0 left-0 z-10 flex h-16 w-full items-center justify-center rounded-b-lg bg-white px-3 sm:px-6">
               <Button

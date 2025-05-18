@@ -1,5 +1,6 @@
 "use client";
 
+import useCustomersCount from "@/lib/swr/use-customers-count";
 import useDomainsCount from "@/lib/swr/use-domains-count";
 import useIntegrations from "@/lib/swr/use-integrations";
 import useUsers from "@/lib/swr/use-users";
@@ -34,13 +35,16 @@ function OnboardingButtonInner({
     return null;
   }
 
-  const { totalLinks, conversionEnabled } = useWorkspace();
+  const { totalLinks, conversionEnabled, linksUsage, salesUsage } = useWorkspace();
 
   const { integrations: activeIntegrations } = useIntegrations();
 
   const { data: domainsCount, loading: domainsLoading } = useDomainsCount({
     ignoreParams: true,
   });
+
+  const { data: customersCount } = useCustomersCount();
+
   const { users, loading: usersLoading } = useUsers();
   const { users: invites, loading: invitesLoading } = useUsers({
     invites: true,
@@ -56,14 +60,19 @@ function OnboardingButtonInner({
         checked: totalLinks === 0 ? false : true,
       },
       {
-        display: "Enable conversion tracking",
-        cta: `/${slug}/settings/analytics`,
-        checked: !!conversionEnabled,
+        display: "Track your first click",
+        cta: `/${slug}/analytics`,
+        checked: linksUsage && linksUsage > 0,
       },
       {
-        display: "Setup an integration in 1-step",
-        cta: `/${slug}/settings/integrations`,
-        checked: !!activeIntegrations && activeIntegrations.length > 0,
+        display: "Track a lead / conversion",
+        cta: `/${slug}/leads?event=leads`,
+        checked: customersCount && customersCount > 0,
+      },
+      {
+        display: "Track your first sale $",
+        cta: `/${slug}/sales?event=sales`,
+        checked: salesUsage && salesUsage > 0,
       },
       {
         display: "Set up your custom domain",

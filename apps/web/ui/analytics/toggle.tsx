@@ -966,12 +966,12 @@ export default function Toggle({
                 })}
               >
                 {isMobile ? filterSelect : dateRangePicker}
-                {/* {!dashboardProps && (
+                {!dashboardProps && (
                   <div className="flex grow justify-end gap-2">
                     {page === "analytics" && !partnerPage && (
                       <>
                         {domain && key && <ShareButton />}
-                        <Button
+                        {/* <Button
                           variant="secondary"
                           className="w-fit"
                           icon={
@@ -987,8 +987,8 @@ export default function Toggle({
                               );
                             }
                           }}
-                        />
-                        <AnalyticsOptions />
+                        /> */}
+                        {/* <AnalyticsOptions /> */}
                       </>
                     )}
                     {page === "events" && !partnerPage && (
@@ -1004,11 +1004,11 @@ export default function Toggle({
                             router.push(`/${slug}/analytics${getQueryString()}`)
                           }
                         />
-                        <EventsOptions />
+                        {/* <EventsOptions /> */}
                       </>
                     )}
                   </div>
-                )} */}
+                )}
               </div>
             </div>
           </div>

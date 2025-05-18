@@ -8,7 +8,7 @@ export async function submitFeedback(data: FormData) {
   const feedback = data.get("feedback") as string;
 
   return await resend?.emails.send({
-    from: "feedback@pimms.io",
+    from: "alexandre+feedback@pimms.io",
     to: "alexandre@pimms.io",
     ...(email && { replyTo: email }),
     subject: "🎉 New Feedback Received!",

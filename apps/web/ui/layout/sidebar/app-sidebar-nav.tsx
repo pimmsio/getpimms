@@ -13,15 +13,27 @@ import {
   Users6,
   Webhook,
 } from "@dub/ui/icons";
+import {
+  BarChart2,
+  CoinsIcon,
+  Link,
+  Settings,
+  Settings2,
+  Split,
+  Target,
+  TargetIcon,
+  WalletCards,
+} from "lucide-react";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useParams, usePathname } from "next/navigation";
 import { ReactNode, useMemo } from "react";
+import UserSurveyButton from "../user-survey";
+import { ReferralButton } from "./referral-button";
 import { SidebarNav, SidebarNavAreas } from "./sidebar-nav";
 import { Usage } from "./usage";
 import { WorkspaceDropdown } from "./workspace-dropdown";
-import { BarChart2, CoinsIcon, Link, Settings, Settings2, Split, Target, TargetIcon, WalletCards } from "lucide-react";
-import { ReferralButton } from "./referral-button";
+import { HelpButton } from "./help-button";
 // import { ReferralButton } from "./referral-button";
 
 const NAV_AREAS: SidebarNavAreas<{
@@ -272,8 +284,9 @@ export function AppSidebarNav({
       switcher={<WorkspaceDropdown />}
       bottom={
         <>
+          <UserSurveyButton />
+          <HelpButton />
           <ReferralButton />
-          {/* <UserSurveyButton /> */}
           <Usage />
         </>
       }

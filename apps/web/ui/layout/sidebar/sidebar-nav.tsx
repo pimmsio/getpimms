@@ -135,7 +135,7 @@ export function SidebarNav<T extends Record<any, any>>({
         </div>
       </nav>
       {bottom && (
-        <div className="relative flex flex-col justify-end">{bottom}</div>
+        <div className="relative flex flex-col gap-2 justify-end">{bottom}</div>
       )}
       <div className="relative mx-auto flex items-center justify-between gap-1 pb-2 pt-1">
         <NavWordmark className="h-2.5" isInApp />

@@ -7,7 +7,7 @@ import { ContactForm } from "./contact-form";
 import { HelpArticles } from "./help-articles";
 
 export function HelpSection() {
-  const [screen, setScreen] = useState<"main" | "contact">("main");
+  const [screen, setScreen] = useState<"main" | "contact">("contact");
 
   const containerRef = useRef<HTMLDivElement>(null);
   const resizeObserverEntry = useResizeObserver(containerRef);

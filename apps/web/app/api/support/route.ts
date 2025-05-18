@@ -1,6 +1,7 @@
 import { withSession } from "@/lib/auth";
-import { plain, upsertPlainCustomer } from "@/lib/plain";
 import z from "@/lib/zod";
+import { resend } from "@dub/email/resend";
+import { SupportRequestEmail } from "@dub/email/templates/support-email";
 import { NextResponse } from "next/server";
 
 const supportRequestQuerySchema = z.object({
@@ -20,46 +21,58 @@ export const POST = withSession(async ({ req, session }) => {
     });
   }
 
-  let plainCustomerId: string | null = null;
+  // let plainCustomerId: string | null = null;
 
-  const plainCustomer = await plain.getCustomerByEmail({
-    email: session.user.email,
+  // const plainCustomer = await plain.getCustomerByEmail({
+  //   email: session.user.email,
+  // });
+
+  // if (plainCustomer.data) {
+  //   plainCustomerId = plainCustomer.data.id;
+  // } else {
+  //   const { data, error } = await upsertPlainCustomer(session.user);
+  //   if (error) {
+  //     return NextResponse.json({
+  //       error: error.message,
+  //     });
+  //   }
+
+  //   if (data) {
+  //     plainCustomerId = data.customer.id;
+  //   }
+  // }
+
+  // if (!plainCustomerId) {
+  //   return NextResponse.json({
+  //     error: "Plain customer not found",
+  //   });
+  // }
+
+  // const res = await plain.createThread({
+  //   customerIdentifier: {
+  //     customerId: plainCustomerId,
+  //   },
+  //   components: [
+  //     {
+  //       componentText: {
+  //         text: message,
+  //       },
+  //     },
+  //   ],
+  //   attachmentIds,
+  // });
+
+  // send email to support@pimms.io
+
+  await resend?.emails.send({
+    from: "alexandre+support@pimms.io",
+    to: "alexandre@pimms.io",
+    ...(session.user.email && { replyTo: session.user.email }),
+    subject: "🎉 New Support Request Received!",
+    react: SupportRequestEmail({ email: session.user.email, message }),
   });
 
-  if (plainCustomer.data) {
-    plainCustomerId = plainCustomer.data.id;
-  } else {
-    const { data, error } = await upsertPlainCustomer(session.user);
-    if (error) {
-      return NextResponse.json({
-        error: error.message,
-      });
-    }
-
-    if (data) {
-      plainCustomerId = data.customer.id;
-    }
-  }
-
-  if (!plainCustomerId) {
-    return NextResponse.json({
-      error: "Plain customer not found",
-    });
-  }
-
-  const res = await plain.createThread({
-    customerIdentifier: {
-      customerId: plainCustomerId,
-    },
-    components: [
-      {
-        componentText: {
-          text: message,
-        },
-      },
-    ],
-    attachmentIds,
+  return NextResponse.json({
+    success: true,
   });
-
-  return NextResponse.json(res);
 });

@@ -25,8 +25,7 @@ import {
   nFormatter,
 } from "@dub/utils";
 import { Cell, ColumnDef } from "@tanstack/react-table";
-import { Link2 } from "lucide-react";
-import Link from "next/link";
+import { DollarSign, Link2, Target } from "lucide-react";
 import { ReactNode, useContext, useEffect, useMemo } from "react";
 import useSWR from "swr";
 import { AnalyticsContext } from "../analytics-provider";
@@ -513,9 +512,9 @@ export default function EventsTable({
     tdClassName: (columnId) => (columnId === "customer" ? "p-0" : ""),
     emptyState: (
       <EmptyState
-        icon={Magnifier}
-        title="No events recorded"
-        description={`Events will appear here when your links ${tab === "clicks" ? "are clicked on" : `convert to ${tab}`}`}
+        icon={tab === "sales" ? DollarSign : Target}
+        title={`No ${tab === "sales" ? "sales" : "conversions"} recorded`}
+        description={`${tab === "sales" ? "Sales" : "Conversions"} will appear here when your links ${tab === "clicks" ? "are clicked on" : `convert to ${tab}`}`}
       />
     ),
     resourceName: (plural) => `event${plural ? "s" : ""}`,

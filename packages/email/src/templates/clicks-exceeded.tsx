@@ -21,7 +21,7 @@ export function ClicksExceeded({
     id: "ckqf1q3xw0000gk5u2q1q2q1q",
     name: "PIMMS",
     slug: "pimms",    usage: 2410,
-    usageLimit: 1000,
+    usageLimit: 600,
     plan: "business",
   },
   type = "firstUsageLimitEmail",

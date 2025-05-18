@@ -11,7 +11,7 @@ export function ReferralButton() {
     <div className="px-3 py-1">
       <div className="flex items-center justify-between gap-3">
         <Link
-          className="group flex items-center gap-0.5 text-sm font-semibold text-[#08272E] transition-colors hover:text-neutral-900"
+          className="group flex items-center gap-1 text-sm font-semibold text-[#08272E] transition-colors hover:text-neutral-900"
           href="/account/settings/referrals"
         >
           <Gift className="size-4" />

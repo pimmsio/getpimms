@@ -28,21 +28,21 @@ const options = [
     label: "LinkedIn",
     icon: LinkedIn,
   },
-  {
-    value: "product-hunt",
-    label: "Product Hunt",
-    icon: ProductHunt,
-  },
+  // {
+  //   value: "product-hunt",
+  //   label: "Product Hunt",
+  //   icon: ProductHunt,
+  // },
   {
     value: "google",
     label: "Google",
     icon: Google,
   },
-  {
-    value: "github",
-    label: "GitHub",
-    icon: Github,
-  },
+  // {
+  //   value: "github",
+  //   label: "GitHub",
+  //   icon: Github,
+  // },
   {
     value: "other",
     label: "Other",
@@ -64,9 +64,9 @@ export default function SurveyForm({
 
   return (
     <div className="grid gap-4">
-      <Wordmark className="h-8" />
+      <Wordmark className="h-4" />
       <p className="text-sm font-medium text-neutral-800">
-        Where did you hear about PiMMs?
+        Where did you hear about us?
       </p>
       <form
         onSubmit={(e) => {

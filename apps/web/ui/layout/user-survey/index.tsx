@@ -45,6 +45,7 @@ export default function UserSurveyButton() {
                 popoverContentClassName="mx-2"
                 openPopover={!hidden && openPopover}
                 setOpenPopover={setOpenPopover}
+                side="top"
               >
                 <button
                   className={cn(

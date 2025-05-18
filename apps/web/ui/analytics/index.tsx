@@ -19,6 +19,7 @@ import Main from "./main";
 import Referer from "./referer";
 import Toggle from "./toggle";
 import TopLinks from "./top-links";
+import Feedback from "./feedback";
 
 export default function Analytics({
   adminPage,
@@ -63,7 +64,7 @@ function StatsGrid() {
       <Locations />
       <Devices />
       <Referer />
-      {/* <Feedback /> */}
+      <Feedback />
     </div>
   );
 }

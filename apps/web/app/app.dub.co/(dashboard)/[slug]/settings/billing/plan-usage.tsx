@@ -126,11 +126,11 @@ export default function PlanUsage() {
       </div>
       <div className="grid grid-cols-[minmax(0,1fr)] divide-y-[6px] divide-neutral-100 border-t-[6px] border-neutral-100">
         <div>
-          <div className="grid gap-4 p-6 md:p-8 lg:gap-6 grid-cols-1 md:grid-cols-2">
+          <div className="grid gap-4 p-6 md:p-8 lg:gap-6 grid-cols-1 md:grid-cols-3">
             <UsageTabCard
               id="events"
               icon={CursorRays}
-              title="Events tracked"
+              title="Events tracked (clicks + conversions)"
               usage={usage}
               limit={usageLimit}
             />
@@ -141,7 +141,7 @@ export default function PlanUsage() {
               usage={linksUsage}
               limit={linksLimit}
             />
-            {/* <UsageTabCard
+            <UsageTabCard
               id="revenue"
               icon={CircleDollar}
               title="Revenue tracked"
@@ -149,11 +149,11 @@ export default function PlanUsage() {
               limit={salesLimit}
               unit="$"
               requiresUpgrade={plan === "free" || plan === "pro"}
-            /> */}
+            />
           </div>
-          {/* <div className="w-full px-2 pb-8 md:px-8">
+          <div className="w-full px-2 pb-8 md:px-8">
             <UsageChart />
-          </div> */}
+          </div>
         </div>
         {/* <div
           className={cn(
@@ -276,14 +276,14 @@ function UsageTabCard({
       onClick={() => !requiresUpgrade && queryParams({ set: { tab: id } })}
       disabled={requiresUpgrade}
     >
-      <Icon className="size-4 text-neutral-600" />
+      {/* <Icon className="size-4 text-neutral-600" /> */}
       <div className="mt-1.5 flex items-center gap-2 text-sm text-neutral-600">
         {title}
         {requiresUpgrade && (
           <Tooltip
             content={
               <div className="max-w-xs px-4 py-2 text-center text-sm text-neutral-600">
-                Upgrade to Business to unlock conversion tracking.{" "}
+                Upgrade to Pro to unlock sales tracking.{" "}
                 <Link
                   href={`/${slug}/upgrade`}
                   className="underline underline-offset-2 hover:text-neutral-800"
@@ -295,7 +295,7 @@ function UsageTabCard({
           >
             <span className="flex items-center gap-1 rounded-full border-[2px] border-neutral-300 px-2 py-0.5 text-xs text-neutral-500">
               <CrownSmall className="size-" />
-              Business
+              Pro
             </span>
           </Tooltip>
         )}

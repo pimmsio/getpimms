@@ -18,12 +18,12 @@ model Project {
   totalClicks Int @default(0) // Total number of clicks in the workspace
 
   usage        Int @default(0)
-  usageLimit   Int @default(1000)
+  usageLimit   Int @default(600)
   linksUsage   Int @default(0)
   linksLimit   Int @default(10)
   salesUsage   Int @default(0)
   salesLimit   Int @default(0)
-  domainsLimit Int @default(3)
+  domainsLimit Int @default(1)
   tagsLimit    Int @default(5)
   foldersUsage Int @default(0)
   foldersLimit Int @default(0)

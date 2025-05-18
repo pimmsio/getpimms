@@ -97,15 +97,15 @@ function UsageInner() {
           </div>
 
           <div className="mt-4 flex flex-col gap-4">
-            {/* <UsageRow
+            <UsageRow
               icon={CursorRays}
-              label="Events"
+              label="Clicks + leads"
               usage={usage}
               limit={usageLimit}
               showNextPlan={hovered}
               nextPlanLimit={nextPlan?.limits.clicks}
               warning={warnings[0]}
-            /> */}
+            />
             <UsageRow
               icon={Hyperlink}
               label="Deep links"
