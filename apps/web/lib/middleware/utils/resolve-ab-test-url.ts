@@ -21,6 +21,8 @@ export const resolveABTestURL = ({
       return null;
     }
 
+    console.log("has test variants", testVariants.length);
+
     if (testVariants.length < 2 || testVariants.length > MAX_TEST_COUNT) {
       console.error(`Invalid test count: ${testVariants.length} for link.`);
       return null;
@@ -28,6 +30,9 @@ export const resolveABTestURL = ({
 
     const cookieStore = cookies();
     const urlFromCookie = cookieStore.get("pimms_test_url")?.value;
+
+    console.log("urlFromCookie", urlFromCookie);
+    
     if (
       urlFromCookie &&
       testVariants.map((t) => t.url).includes(urlFromCookie)

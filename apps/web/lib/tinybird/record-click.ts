@@ -103,6 +103,8 @@ export async function recordClick({
 
   const finalUrl = url ? getFinalUrlForRecordClick({ req, url }) : "";
 
+  console.log("record click final Url", finalUrl, url, clickId, linkId);
+
   const clickData = {
     timestamp: timestamp || new Date(Date.now()).toISOString(),
     identity_hash,

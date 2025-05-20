@@ -47,6 +47,8 @@ export default async function LinkMiddleware(
 ) {
   let { domain, fullKey: originalKey, searchParamsObj } = parse(req);
 
+  console.log("originalKey", originalKey);
+
   if (!domain) {
     return NextResponse.next();
   }
@@ -83,6 +85,8 @@ export default async function LinkMiddleware(
   }
 
   let cachedLink = await linkCache.get({ domain, key });
+
+  console.log("has cached link", !!cachedLink);
 
   if (!cachedLink) {
     let linkData = await getLinkViaEdge({
@@ -138,6 +142,8 @@ export default async function LinkMiddleware(
     testVariants,
     testCompletedAt,
   });
+
+  console.log("testUrl", !!testUrl, testUrl, testCompletedAt);
 
   const url = testUrl || cachedLink.url;
   const ua = userAgent(req);
@@ -218,14 +224,24 @@ export default async function LinkMiddleware(
 
   const pimmsIdCookieName = `pimms_id_${domain}_${key}`;
 
+  console.log("pimmsIdCookieName", pimmsIdCookieName);
+
   const cookieStore = cookies();
+
+  console.log("cookieStore", cookieStore);
+
   let clickId = cookieStore.get(pimmsIdCookieName)?.value;
+
+  console.log(`clickId ${clickId ? "found" : "not found"} in cookieStore ${pimmsIdCookieName}`, clickId);
+
   if (!clickId) {
     // if trackConversion is enabled, check if clickId is cached in Redis
     if (trackConversion) {
       const ip = process.env.VERCEL === "1" ? ipAddress(req) : LOCALHOST_IP;
 
       clickId = (await clickCache.get({ domain, key, ip })) || undefined;
+
+      console.log(`clickId ${clickId ? "found" : "not found"} in cache`, clickId, ip);
     }
 
     // if there's still no clickId, generate a new one
@@ -240,6 +256,8 @@ export default async function LinkMiddleware(
     pimmsIdCookieValue: clickId,
     pimmsTestUrlValue: testUrl,
   };
+
+  console.log("cookieData", cookieData);
 
   // for root domain links, if there's no destination URL, rewrite to placeholder page
   if (!url) {
