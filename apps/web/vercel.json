@@ -35,10 +35,6 @@
     {
       "path": "/api/cron/aggregate-clicks",
       "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/cron/trigger-withdrawal",
-      "schedule": "0 0,12 * * *"
     }
   ],
   "functions": {
