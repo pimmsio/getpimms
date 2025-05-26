@@ -42,7 +42,13 @@ export const POST = withAxiom(async (req: Request) => {
         }
 
         const clickData = await getClickData(pimmsId);
+
+        console.log("clickData", clickData.click_id);
+
         const link = await getLink(clickData);
+
+        console.log("link found", link.id, link.projectId);
+
         const isValid = await isValidPimmsId(link, workspaceId);
 
         if (!isValid) {

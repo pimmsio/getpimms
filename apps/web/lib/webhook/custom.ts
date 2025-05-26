@@ -1,6 +1,7 @@
 import { getClickEvent } from "@/lib/tinybird";
 import { prisma } from "@dub/prisma";
 import { Link } from "@prisma/client";
+import { parseWorkspaceId } from "./utils";
 
 export function getFirstAvailableField(
   data: Record<string, any>,
@@ -58,9 +59,12 @@ export const getLink = async (clickData: any) => {
 };
 
 export const isValidPimmsId = async (link: Link, workspaceId: string) => {
-  if (!link) {
+  if (!link || !link.projectId || !workspaceId) {
     throw new Error("Missing link, skipping...");
   }
 
-  return link.projectId === workspaceId;
+  const parsedWorkspaceId = parseWorkspaceId(workspaceId);
+  const parsedProjectId = parseWorkspaceId(link.projectId);
+
+  return parsedWorkspaceId === parsedProjectId;
 };
