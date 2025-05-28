@@ -27,6 +27,10 @@ type ClickData = z.infer<typeof clickEventSchemaTB>;
 // POST /api/track/lead – Track a lead conversion event
 export const POST = withWorkspace(
   async ({ req, workspace }) => {
+    const userAgent = req.headers.get("user-agent")?.toLowerCase() || "";
+
+    console.log("userAgent", userAgent);
+
     const body = await parseRequestBody(req);
 
     const {
@@ -98,6 +102,16 @@ export const POST = withWorkspace(
       }
 
       if (!clickData) {
+        if (userAgent.includes("zapier")) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: `Click event not found for clickId: ${clickId}`,
+            },
+            { status: 200 },
+          );
+        }
+
         throw new DubApiError({
           code: "not_found",
           message: `Click event not found for clickId: ${clickId}`,

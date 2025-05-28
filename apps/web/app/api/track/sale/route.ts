@@ -27,6 +27,10 @@ type LeadEvent = z.infer<typeof leadEventSchemaTB>;
 // POST /api/track/sale – Track a sale conversion event
 export const POST = withWorkspace(
   async ({ req, workspace }) => {
+    const userAgent = req.headers.get("user-agent")?.toLowerCase() || "";
+
+    console.log("userAgent", userAgent);
+
     const body = await parseRequestBody(req);
 
     let {
@@ -111,6 +115,16 @@ export const POST = withWorkspace(
       );
 
       if (!cachedLeadEvent) {
+        if (userAgent.includes("zapier")) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: `Lead event not found for externalId: ${customerExternalId} and eventName: ${leadEventName}`,
+            },
+            { status: 200 },
+          );
+        }
+
         throw new DubApiError({
           code: "not_found",
           message: `Lead event not found for externalId: ${customerExternalId} and eventName: ${leadEventName}`,
