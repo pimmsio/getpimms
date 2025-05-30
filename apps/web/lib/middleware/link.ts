@@ -40,14 +40,13 @@ import { getLinkViaEdge } from "../planetscale";
 import { getDomainViaEdge } from "../planetscale/get-domain-via-edge";
 import { hasEmptySearchParams } from "./utils/has-empty-search-params";
 import { resolveABTestURL } from "./utils/resolve-ab-test-url";
+import { normalizeSubstack } from "./utils/applink/extract-substack";
 
 export default async function LinkMiddleware(
   req: NextRequest,
   ev: NextFetchEvent,
 ) {
   let { domain, fullKey: originalKey, searchParamsObj } = parse(req);
-
-  console.log("originalKey", originalKey);
 
   if (!domain) {
     return NextResponse.next();
@@ -85,8 +84,6 @@ export default async function LinkMiddleware(
   }
 
   let cachedLink = await linkCache.get({ domain, key });
-
-  console.log("has cached link", !!cachedLink);
 
   if (!cachedLink) {
     let linkData = await getLinkViaEdge({
@@ -143,16 +140,13 @@ export default async function LinkMiddleware(
     testCompletedAt,
   });
 
-  console.log("testUrl", !!testUrl, testUrl, testCompletedAt);
+  let url = testUrl || cachedLink.url;
 
-  const url = testUrl || cachedLink.url;
   const ua = userAgent(req);
 
   // by default, we only index default pimms domain links (e.g. pim.ms)
   // everything else is not indexed by default, unless the user has explicitly set it to be indexed
   const shouldIndex = doIndex === true;
-
-  console.log("shouldIndex", shouldIndex, isDubDomain(domain));
 
   // only show inspect modal if the link is not password protected
   if (inspectMode && !password) {
@@ -224,15 +218,9 @@ export default async function LinkMiddleware(
 
   const pimmsIdCookieName = `pimms_id_${domain}_${key}`;
 
-  console.log("pimmsIdCookieName", pimmsIdCookieName);
-
   const cookieStore = cookies();
 
-  console.log("cookieStore", cookieStore);
-
   let clickId = cookieStore.get(pimmsIdCookieName)?.value;
-
-  console.log(`clickId ${clickId ? "found" : "not found"} in cookieStore ${pimmsIdCookieName}`, clickId);
 
   if (!clickId) {
     // if trackConversion is enabled, check if clickId is cached in Redis
@@ -240,8 +228,6 @@ export default async function LinkMiddleware(
       const ip = process.env.VERCEL === "1" ? ipAddress(req) : LOCALHOST_IP;
 
       clickId = (await clickCache.get({ domain, key, ip })) || undefined;
-
-      console.log(`clickId ${clickId ? "found" : "not found"} in cache`, clickId, ip);
     }
 
     // if there's still no clickId, generate a new one
@@ -256,8 +242,6 @@ export default async function LinkMiddleware(
     pimmsIdCookieValue: clickId,
     pimmsTestUrlValue: testUrl,
   };
-
-  console.log("cookieData", cookieData);
 
   // for root domain links, if there's no destination URL, rewrite to placeholder page
   if (!url) {
@@ -286,6 +270,8 @@ export default async function LinkMiddleware(
       cookieData,
     );
   }
+
+  url = normalizeSubstack(url);
 
   const isBot = detectBot(req);
 
@@ -541,6 +527,10 @@ export default async function LinkMiddleware(
     shouldIndex
   ) {
     console.log("referrer", req.headers.get("referer"));
+    console.log("ua.os.name", ua?.os?.name);
+    console.log("ua.browser.name", ua?.browser?.name);
+    console.log("ua.device.type", ua?.device?.type);
+    console.log("shouldIndex", shouldIndex);
 
     ev.waitUntil(
       recordClick({

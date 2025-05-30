@@ -2,7 +2,6 @@ import { generateFilters } from "@/lib/ai/generate-filters";
 import {
   DUB_LINKS_ANALYTICS_INTERVAL,
   INTERVAL_DISPLAYS,
-  TRIGGER_DISPLAY,
   VALID_ANALYTICS_FILTERS,
 } from "@/lib/analytics/constants";
 import { validDateRangeForPlan } from "@/lib/analytics/utils";
@@ -31,8 +30,6 @@ import {
   ExpandingArrow,
   Filter,
   LinkLogo,
-  Sliders,
-  SquareLayoutGrid6,
   TooltipContent,
   useMediaQuery,
   useRouterStuff,
@@ -41,19 +38,13 @@ import {
 } from "@dub/ui";
 import {
   Cube,
-  CursorRays,
   FlagWavy,
-  Folder,
   Globe2,
   Hyperlink,
   LinkBroken,
-  LocationPin,
-  Magic,
-  MapPosition,
   MobilePhone,
   OfficeBuilding,
   QRCode,
-  ReferredVia,
   Tag,
   User,
   Window,
@@ -62,18 +53,15 @@ import {
   APP_DOMAIN,
   capitalize,
   cn,
-  CONTINENTS,
   COUNTRIES,
   DUB_DEMO_LINKS,
   DUB_LOGO,
   getApexDomain,
   getGoogleFavicon,
   getNextPlan,
-  GOOGLE_FAVICON_URL,
   linkConstructor,
   nFormatter,
   OG_AVATAR_URL,
-  REGIONS,
 } from "@dub/utils";
 import { readStreamableValue } from "ai/rsc";
 import posthog from "posthog-js";
@@ -85,15 +73,10 @@ import {
   useState,
 } from "react";
 import { useDebounce } from "use-debounce";
-import { FolderIcon } from "../folders/folder-icon";
 import { LinkIcon } from "../links/link-icon";
 import TagBadge from "../links/tag-badge";
-import AnalyticsOptions from "./analytics-options";
 import { AnalyticsContext } from "./analytics-provider";
-import ContinentIcon from "./continent-icon";
 import DeviceIcon from "./device-icon";
-import EventsOptions from "./events/events-options";
-import RefererIcon from "./referer-icon";
 import { ShareButton } from "./share-button";
 import { useAnalyticsFilterOption } from "./utils";
 
@@ -866,7 +849,8 @@ export default function Toggle({
       }}
       presets={INTERVAL_DISPLAYS.map(({ display, value, shortcut }) => {
         const requiresUpgrade =
-          partnerPage ||
+          !adminPage &&
+          (partnerPage ||
           DUB_DEMO_LINKS.find((l) => l.domain === domain && l.key === key)
             ? false
             : !validDateRangeForPlan({
@@ -875,7 +859,7 @@ export default function Toggle({
                 interval: value,
                 start,
                 end,
-              });
+              }));
 
         const { startDate, endDate } = getStartEndDates({
           interval: value,
@@ -934,11 +918,7 @@ export default function Toggle({
               >
                 <BlurImage
                   alt={url || "PIMMS"}
-                  src={
-                    url
-                      ? getGoogleFavicon(url)
-                      : DUB_LOGO
-                  }
+                  src={url ? getGoogleFavicon(url) : DUB_LOGO}
                   className="mr-2 h-6 w-6 flex-shrink-0 overflow-hidden rounded-full"
                   width={48}
                   height={48}

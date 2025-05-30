@@ -48,7 +48,8 @@ const constructSpotifyDeepLink = (originalUrl: string): string | null => {
 
 // Matches URLs with any subdomains, the given keyword, and any TLD (requires a path after the domain).
 export const flex = (keyword: string): RegExp =>
-  new RegExp(`^https?:\\/\\/(?:[a-z0-9-]+\\.)*${keyword}\\.[a-z]+\\/.*`, "i");
+  new RegExp(`^https?:\\/\\/(?:[a-z0-9-]+\\.)*${keyword}\\.[a-z]+(?:\\/.*)?$`, "i");
+
 // Matches URLs with either www. or no subdomain, the given keyword, and any TLD (requires a path).
 export const wwwOnly = (keyword: string): RegExp =>
   new RegExp(`^https?:\\/\\/(?:www\\.)?${keyword}\\.[a-z]+\\/.*`, "i");
