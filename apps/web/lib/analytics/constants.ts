@@ -5,6 +5,7 @@ export const intervals = [
   "7d",
   "30d",
   "90d",
+  "6m",
   "1y",
   "mtd",
   "qtd",
@@ -17,6 +18,7 @@ export const eventIntervals = [
   "7d",
   "30d",
   "90d",
+  "6m",
   "1y",
   "mtd",
   "qtd",
@@ -47,6 +49,11 @@ export const INTERVAL_DISPLAYS = [
     display: "Last 3 months",
     value: "90d",
     shortcut: "3",
+  },
+  {
+    display: "Last 6 months",
+    value: "6m",
+    shortcut: "6",
   },
   {
     display: "Last 12 months",
@@ -96,6 +103,10 @@ export const INTERVAL_DATA: Record<
   },
   "90d": {
     startDate: new Date(Date.now() - 7776000000),
+    granularity: "day",
+  },
+  "6m": {
+    startDate: new Date(Date.now() - 15552000000),
     granularity: "day",
   },
   "1y": {

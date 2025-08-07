@@ -34,12 +34,16 @@ export default function Analytics({
         {({ dashboardProps }) => {
           return (
             <div
-              className={cn("pb-10", dashboardProps && "bg-neutral-50 pt-10")}
+              className={cn("min-h-screen bg-gradient-to-br from-gray-50 to-gray-100/50 pb-16", dashboardProps && "bg-gradient-to-br from-neutral-50 to-neutral-100/50 pt-10")}
             >
-              <Toggle />
-              <div className="mx-auto grid max-w-screen-xl gap-5 px-3 lg:px-10">
-                <Main />
-                <StatsGrid />
+              <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-lg border-b border-gray-200/50 shadow-sm">
+                <Toggle />
+              </div>
+              <div className="mx-auto max-w-screen-xl px-2 sm:px-4 lg:px-8 pt-4 sm:pt-6">
+                <div className="space-y-4 sm:space-y-6">
+                  <Main />
+                  <StatsGrid />
+                </div>
               </div>
             </div>
           );
@@ -50,7 +54,7 @@ export default function Analytics({
 }
 
 function StatsGrid() {
-  const { dashboardProps, partnerPage, selectedTab, view } =
+  const { dashboardProps, selectedTab, view } =
     useContext(AnalyticsContext);
   const { plan } = useWorkspace();
 
@@ -59,7 +63,7 @@ function StatsGrid() {
     plan === "free";
 
   return hide ? null : (
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {!dashboardProps && <TopLinks />}
       <Locations />
       <Devices />

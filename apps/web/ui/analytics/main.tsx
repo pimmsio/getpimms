@@ -1,14 +1,16 @@
 import { EventType } from "@/lib/analytics/types";
+import { editQueryString } from "@/lib/analytics/utils";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { buttonVariants, useRouterStuff } from "@dub/ui";
-import { cn } from "@dub/utils";
-import NumberFlow, { NumberFlowGroup } from "@number-flow/react";
-import { Coins, Lock } from "lucide-react";
+import { cn, fetcher } from "@dub/utils";
+import { Coins } from "lucide-react";
 import Link from "next/link";
 import { useContext, useMemo } from "react";
-import AnalyticsAreaChart from "./analytics-area-chart";
+import useSWR from "swr";
 import { AnalyticsFunnelChart } from "./analytics-funnel-chart";
 import { AnalyticsContext } from "./analytics-provider";
+
+import MixedAnalyticsChart from "./mixed-analytics-chart";
 
 type Tab = {
   id: EventType;
@@ -20,14 +22,36 @@ type Tab = {
 export default function Main() {
   const {
     totalEvents,
+    totalEventsLoading,
     requiresUpgrade,
     showConversions,
     selectedTab,
-    saleUnit,
     view,
+    baseApiPath,
+    queryString,
   } = useContext(AnalyticsContext);
   const { plan } = useWorkspace();
   const { queryParams } = useRouterStuff();
+
+  // Fetch timeseries data to calculate recent visitors
+  const { data: timeseriesData } = useSWR<
+    {
+      start: Date;
+      clicks: number;
+      leads: number;
+      sales: number;
+      saleAmount: number;
+    }[]
+  >(
+    totalEvents &&
+      `${baseApiPath}?${editQueryString(queryString, {
+        groupBy: "timeseries",
+      })}`,
+    fetcher,
+    {
+      shouldRetryOnError: !requiresUpgrade,
+    },
+  );
 
   const tabs = useMemo(
     () =>
@@ -63,155 +87,267 @@ export default function Main() {
   const showPaywall =
     (tab.id === "sales" || view === "funnel") && plan === "free";
 
-  return (
-    <div className="w-full overflow-hidden bg-white">
-      <div className="scrollbar-hide grid w-full grid-cols-3 divide-x overflow-y-hidden rounded-t-xl border-[6px] border-b-2 border-neutral-100">
-        <NumberFlowGroup>
-          {tabs.map(({ id, label, colorClassName, conversions }, idx) => {
-            return (
-              <div key={id} className="relative z-0">
-                {/* {idx > 0 && (
-                  <div className="absolute left-0 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-200 bg-white p-1.5">
-                    <ChevronRight
-                      className="h-3 w-3 text-neutral-400"
-                      strokeWidth={2.5}
-                    />
-                  </div>
-                )} */}
-                <Link
-                  className={cn(
-                    "border-box relative block h-full flex-none px-4 py-3 sm:px-8 sm:py-6",
-                    "transition-colors hover:bg-neutral-50 focus:outline-none active:bg-neutral-100",
-                    "ring-inset ring-neutral-500 focus-visible:ring-1",
-                  )}
-                  href={
-                    queryParams({
-                      set: {
-                        event: id,
-                      },
-                      getNewPath: true,
-                    }) as string
-                  }
-                  aria-current
-                >
-                  {/* Active tab indicator */}
-                  <div
-                    className={cn(
-                      "absolute bottom-0 left-0 h-0.5 w-full bg-[#08272E] transition-transform duration-100",
-                      tab.id !== id && "translate-y-[3px]", // Translate an extra pixel to avoid sub-pixel issues
-                    )}
-                  />
+  const additionalMetrics = useMemo(() => {
+    if (!totalEvents) return {};
 
-                  <div className="flex items-center gap-2.5 text-sm text-neutral-600">
-                    {/* <div
-                      className={cn(
-                        "h-2 w-2 rounded-sm bg-current shadow-[inset_0_0_0_1px_#00000019]",
-                        colorClassName,
-                      )}
-                    /> */}
-                    <span>{label}</span>
-                  </div>
-                  <div className="mt-1 flex h-12 items-center">
-                    {totalEvents?.[id] || totalEvents?.[id] === 0 ? (
-                      <NumberFlow
-                        value={
-                          id === "sales" && saleUnit === "saleAmount"
-                            ? totalEvents.saleAmount / 100
-                            : totalEvents[id]
-                        }
-                        className={cn(
-                          "text-xl font-medium sm:text-3xl",
-                          showPaywall && "opacity-30",
-                        )}
-                        format={
-                          id === "sales" && saleUnit === "saleAmount"
-                            ? {
-                                style: "currency",
-                                currency: "USD",
-                                // @ts-ignore – trailingZeroDisplay is a valid option but TS is outdated
-                                trailingZeroDisplay: "stripIfInteger",
-                              }
-                            : {
-                                notation:
-                                  totalEvents[id] > 999999
-                                    ? "compact"
-                                    : "standard",
-                              }
-                        }
-                      />
-                    ) : requiresUpgrade ? (
-                      <div className="block rounded-full bg-neutral-100 p-2.5">
-                        <Lock className="h-4 w-4 text-neutral-500" />
-                      </div>
-                    ) : (
-                      <div className="h-9 w-16 animate-pulse rounded-md bg-neutral-200" />
-                    )}
-                  </div>
-                </Link>
-                {/* {id === "sales" && (
-                  <ToggleGroup
-                    className="absolute right-3 top-3 hidden w-fit shrink-0 items-center gap-1 border-neutral-100 bg-neutral-100 sm:flex"
-                    optionClassName="size-8 p-0 flex items-center justify-center"
-                    indicatorClassName="border-[6px] border-neutral-100 bg-white"
-                    options={[
-                      {
-                        label: <div className="text-base">$</div>,
-                        value: "saleAmount",
-                      },
-                      {
-                        label: <div className="text-[11px]">123</div>,
-                        value: "sales",
-                      },
-                    ]}
-                    selected={saleUnit}
-                    selectAction={(option: AnalyticsSaleUnit) => {
-                      queryParams({
-                        set: { saleUnit: option },
-                      });
-                    }}
-                  />
-                )} */}
-              </div>
-            );
-          })}
-        </NumberFlowGroup>
-      </div>
+    const clicks = totalEvents.clicks;
+    const leads = totalEvents.leads;
+    const sales = totalEvents.sales;
+    const revenue = totalEvents.saleAmount / 100;
+    const revenuePerClick = clicks > 0 ? revenue / clicks : 0;
+    const clickToLeadRate = clicks > 0 ? (leads / clicks) * 100 : 0;
+    const leadToSaleRate = leads > 0 ? (sales / leads) * 100 : 0;
+    const avgOrderValue = sales > 0 ? revenue / sales : 0;
+
+    // Calculate recent visitors from actual timeseries data (last 30 minutes)
+    let recentVisitors = 0;
+    if (timeseriesData && timeseriesData.length > 0) {
+      const now = new Date();
+      const thirtyMinutesAgo = new Date(now.getTime() - 30 * 60 * 1000);
+
+      // Sum clicks from data points within the last 30 minutes
+      recentVisitors = timeseriesData
+        .filter((dataPoint) => {
+          const pointDate = new Date(dataPoint.start);
+          return pointDate >= thirtyMinutesAgo;
+        })
+        .reduce((total, dataPoint) => total + dataPoint.clicks, 0);
+    }
+
+    return {
+      clicks,
+      leads,
+      sales,
+      revenue,
+      revenuePerClick,
+      clickToLeadRate,
+      leadToSaleRate,
+      avgOrderValue,
+      recentVisitors,
+    };
+  }, [totalEvents, timeseriesData]);
+
+  return (
+    <div className="w-full overflow-hidden">
+      {/* Enhanced metrics section */}
       <div className="relative">
         <div
           className={cn(
-            "relative overflow-hidden rounded-b-xl border-x-[6px] border-b-[6px] border-neutral-100",
+            "relative overflow-hidden rounded-lg border border-gray-200/50 bg-white",
             showPaywall &&
               "pointer-events-none [mask-image:linear-gradient(#0006,#0006_25%,transparent_40%)]",
           )}
         >
+          {totalEvents && !totalEventsLoading ? (
+            <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto m-2">
+              <div
+                className="group rounded-md bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-[#EBF1FF] to-[#EFF1FF] border border-[#C2D4FF] hover:border-[#C2D4FF] transition-all duration-200"
+              >
+                <div
+                  className="flex items-center gap-1 text-xs text-[#00237A]"
+                >
+                  <div
+                    className="h-1.5 w-1.5 rounded-full bg-[#3870FF]"
+                  ></div>
+                  <span>Clicks</span>
+                </div>
+                <div
+                  className="mt-1 text-sm font-semibold text-[#00237A] sm:text-base lg:text-lg"
+                >
+                  {totalEvents.clicks > 999
+                    ? (totalEvents.clicks / 1000).toFixed(1) + "k"
+                    : totalEvents.clicks.toString()}
+                </div>
+              </div>
+
+              <div
+                className="group rounded-md bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-[#FFF6EB] to-[#FFF3EB] border border-[#FFB85C] hover:border-[#FFB85C] transition-all duration-200"
+              >
+                <div
+                  className="flex items-center gap-1 text-xs text-[#522E00]"
+                >
+                  <div
+                    className="h-1.5 w-1.5 rounded-full bg-[#FFD399]"
+                  ></div>
+                  <span>Leads</span>
+                </div>
+                <div
+                  className="mt-1 text-sm font-semibold text-[#522E00] sm:text-base lg:text-lg"
+                >
+                  {totalEvents.leads || "0"}
+                </div>
+              </div>
+
+              <div
+                className="group rounded-md bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-[#EBFFFA] to-[#EBFFFA] border border-[#47FFD1] hover:border-[#47FFD1] transition-all duration-200"
+              >
+                <div
+                  className="flex items-center gap-1 text-xs text-[#002e25]"
+                >
+                  <div
+                    className="h-1.5 w-1.5 rounded-full bg-[#00F5B8]"
+                  ></div>
+                  <span>Sales</span>
+                </div>
+                <div
+                  className="mt-1 text-sm font-semibold text-[#002e25] sm:text-base lg:text-lg"
+                >
+                  $
+                  {totalEvents.saleAmount
+                    ? totalEvents.saleAmount > 99999
+                      ? (totalEvents.saleAmount / 100 / 1000).toFixed(1) + "k"
+                      : (totalEvents.saleAmount / 100).toFixed(0)
+                    : "0"}
+                </div>
+              </div>
+
+              <div
+                className="group rounded-md bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-slate-50/70 to-gray-100/40 border border-gray-200/50 hover:border-gray-300/60 transition-all duration-200"
+              >
+                <div
+                  className="flex items-center gap-1 text-xs text-gray-600"
+                >
+                  <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-gray-400"></div>
+                  <span>Recent</span>
+                </div>
+                <div
+                  className="mt-1 text-sm font-semibold text-gray-900 sm:text-base lg:text-lg"
+                >
+                  {additionalMetrics.recentVisitors}
+                </div>
+              </div>
+
+              <div
+                className="group rounded-md bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-slate-50/70 to-gray-100/40 border border-gray-200/50 hover:border-gray-300/60 transition-all duration-200"
+              >
+                <div className="text-xs text-gray-600">
+                  Sale/click
+                </div>
+                <div
+                  className="mt-1 text-sm font-semibold text-gray-900 sm:text-base lg:text-lg"
+                >
+                  ${(additionalMetrics.revenuePerClick || 0).toFixed(1)}
+                </div>
+              </div>
+
+              <div
+                className="group rounded-md bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-slate-50/70 to-gray-100/40 border border-gray-200/50 hover:border-gray-300/60 transition-all duration-200"
+              >
+                <div className="text-xs text-gray-600">
+                  Click → Lead
+                </div>
+                <div
+                  className="mt-1 text-sm font-semibold text-gray-900 sm:text-base lg:text-lg"
+                >
+                  {Math.round(additionalMetrics.clickToLeadRate || 0)}%
+                </div>
+              </div>
+
+              <div
+                className="group rounded-md bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-slate-50/70 to-gray-100/40 border border-gray-200/50 hover:border-gray-300/60 transition-all duration-200"
+              >
+                <div className="text-xs text-gray-600">
+                  Lead → Sale
+                </div>
+                <div
+                  className="mt-1 text-sm font-semibold text-gray-900 sm:text-base lg:text-lg"
+                >
+                  {Math.round(additionalMetrics.leadToSaleRate || 0)}%
+                </div>
+              </div>
+
+              <div
+                className="group rounded-md bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-slate-50/70 to-gray-100/40 border border-gray-200/50 hover:border-gray-300/60 transition-all duration-200"
+              >
+                <div className="text-xs text-gray-600">
+                  Avg order
+                </div>
+                <div
+                  className="mt-1 text-sm font-semibold text-gray-900 sm:text-base lg:text-lg"
+                >
+                  ${Math.round(additionalMetrics.avgOrderValue || 0)}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto m-2">
+              {/* Clicks skeleton */}
+              <div className="group rounded-md border border-[#C2D4FF]/30 bg-gradient-to-br from-[#EBF1FF] to-[#EFF1FF] p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+                <div className="flex items-center gap-1 text-xs text-[#00237A]">
+                  <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#3870FF]/50"></div>
+                  <div className="h-3 w-8 animate-pulse rounded-md bg-[#3870FF]/50"></div>
+                </div>
+                <div className="mt-1 h-4 w-6 animate-pulse rounded-md bg-[#3870FF]/50 sm:h-5 lg:h-6"></div>
+              </div>
+
+              {/* Conversions skeleton */}
+              <div className="group rounded-md border border-[#FFB85C]/30 bg-gradient-to-br from-[#FFF6EB] to-[#FFF3EB] p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+                <div className="flex items-center gap-1 text-xs text-[#522E00]">
+                  <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#FFD399]/70"></div>
+                  <div className="h-3 w-6 animate-pulse rounded-md bg-[#FFD399]/70"></div>
+                </div>
+                <div className="mt-1 h-4 w-4 animate-pulse rounded-md bg-[#FFD399]/70 sm:h-5 lg:h-6"></div>
+              </div>
+
+              {/* Revenue skeleton */}
+              <div className="group rounded-md border border-[#47FFD1]/30 bg-gradient-to-br from-[#EBFFFA] to-[#EBFFFA] p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+                <div className="flex items-center gap-1 text-xs text-[#002e25]">
+                  <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#00F5B8]/70"></div>
+                  <div className="h-3 w-6 animate-pulse rounded-md bg-[#00F5B8]/70"></div>
+                </div>
+                <div className="mt-1 h-4 w-6 animate-pulse rounded-md bg-[#00F5B8]/70 sm:h-5 lg:h-6"></div>
+              </div>
+
+              {/* Recent visitors skeleton */}
+              <div className="group rounded-md border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+                <div className="flex items-center gap-1 text-xs text-gray-600">
+                  <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-gray-300"></div>
+                  <div className="h-3 w-8 animate-pulse rounded-md bg-gray-300"></div>
+                </div>
+                <div className="mt-1 h-4 w-3 animate-pulse rounded-md bg-gray-400 sm:h-5 lg:h-6"></div>
+              </div>
+
+              {/* Revenue/click skeleton */}
+              <div className="group rounded-md border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+                <div className="text-xs text-gray-600">
+                  <div className="h-3 w-10 animate-pulse rounded-md bg-gray-300"></div>
+                </div>
+                <div className="mt-1 h-4 w-8 animate-pulse rounded-md bg-gray-400 sm:h-5 lg:h-6"></div>
+              </div>
+
+              {/* Click → Lead rate skeleton */}
+              <div className="group rounded-md border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+                <div className="text-xs text-gray-600">
+                  <div className="h-3 w-8 animate-pulse rounded-md bg-gray-300"></div>
+                </div>
+                <div className="mt-1 h-4 w-6 animate-pulse rounded-md bg-gray-400 sm:h-5 lg:h-6"></div>
+              </div>
+
+              {/* Lead → Sale rate skeleton */}
+              <div className="group rounded-md border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+                <div className="text-xs text-gray-600">
+                  <div className="h-3 w-8 animate-pulse rounded-md bg-gray-300"></div>
+                </div>
+                <div className="mt-1 h-4 w-6 animate-pulse rounded-md bg-gray-400 sm:h-5 lg:h-6"></div>
+              </div>
+
+              {/* Avg order value skeleton */}
+              <div className="group rounded-md border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+                <div className="text-xs text-gray-600">
+                  <div className="h-3 w-10 animate-pulse rounded-md bg-gray-300"></div>
+                </div>
+                <div className="mt-1 h-4 w-8 animate-pulse rounded-md bg-gray-400 sm:h-5 lg:h-6"></div>
+              </div>
+            </div>
+          )}
+
           {view === "timeseries" && (
-            <div className="p-5 pt-10 sm:p-10">
-              <AnalyticsAreaChart resource={tab.id} demo={showPaywall} />
+            <div className="p-2 sm:p-4 lg:p-6">
+              <MixedAnalyticsChart demo={showPaywall} />
             </div>
           )}
           {view === "funnel" && <AnalyticsFunnelChart demo={showPaywall} />}
         </div>
-        {/* <ToggleGroup
-          className="absolute right-3 top-3 flex w-fit shrink-0 items-center gap-1 border-neutral-100 bg-neutral-100"
-          optionClassName="size-8 p-0 flex items-center justify-center"
-          indicatorClassName="border border-neutral-200 bg-white"
-          options={[
-            {
-              label: <ChartLine className="size-4 text-neutral-600" />,
-              value: "timeseries",
-            },
-            {
-              label: <Filter2 className="size-4 -rotate-90 text-neutral-600" />,
-              value: "funnel",
-            },
-          ]}
-          selected={view}
-          selectAction={(option) => {
-            queryParams({
-              set: { view: option },
-            });
-          }}
-        /> */}
         {showPaywall && <ConversionTrackingPaywall />}
       </div>
     </div>

@@ -61,6 +61,7 @@ export const AnalyticsContext = createContext<{
   totalEvents?: {
     [key in AnalyticsResponseOptions]: number;
   };
+  totalEventsLoading?: boolean;
   adminPage?: boolean;
   partnerPage?: boolean;
   showConversions?: boolean;
@@ -293,7 +294,7 @@ export default function AnalyticsProvider({
   // Reset requiresUpgrade when query changes
   useEffect(() => setRequiresUpgrade(false), [queryString]);
 
-  const { data: totalEvents } = useSWR<{
+  const { data: totalEvents, isLoading: totalEventsLoading } = useSWR<{
     [key in AnalyticsResponseOptions]: number;
   }>(
     `${baseApiPath}?${editQueryString(queryString, {
@@ -301,7 +302,6 @@ export default function AnalyticsProvider({
     })}`,
     fetcher,
     {
-      keepPreviousData: true,
       onSuccess: () => setRequiresUpgrade(false),
       onError: (error) => {
         try {
@@ -349,6 +349,7 @@ export default function AnalyticsProvider({
         interval, /// time period interval
         tagIds, // ids of the tags to filter by
         totalEvents, // totalEvents (clicks, leads, sales)
+        totalEventsLoading, // loading state for totalEvents
         adminPage, // whether the user is an admin
         partnerPage, // whether the user is viewing partner analytics
         dashboardProps,

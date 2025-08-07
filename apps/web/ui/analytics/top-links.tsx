@@ -6,7 +6,7 @@ import { useCallback, useContext, useState } from "react";
 import { AnalyticsCard } from "./analytics-card";
 import { AnalyticsLoadingSpinner } from "./analytics-loading-spinner";
 import { AnalyticsContext } from "./analytics-provider";
-import BarList from "./bar-list";
+import MixedBarList from "./mixed-bar-list";
 import { useAnalyticsFilterOption } from "./utils";
 
 export default function TopLinks() {
@@ -53,7 +53,7 @@ export default function TopLinks() {
       {({ limit, setShowModal }) =>
         data ? (
           data.length > 0 ? (
-            <BarList
+            <MixedBarList
               tab={tab}
               data={
                 data
@@ -83,15 +83,14 @@ export default function TopLinks() {
                           }),
                       getNewPath: true,
                     }) as string,
-                    value: d[dataKey] || 0,
+                    clicks: d.clicks || 0,
+                    leads: d.leads || 0,
+                    sales: d.sales || 0,
+                    saleAmount: d.saleAmount || 0,
                     ...(tab === "links" && { linkData: d }),
                   }))
-                  ?.sort((a, b) => b.value - a.value) || []
+                  ?.sort((a, b) => b.clicks - a.clicks) || []
               }
-              unit={selectedTab}
-              maxValue={Math.max(...data?.map((d) => d[dataKey] ?? 0)) ?? 0}
-              barBackground="bg-[#E7EEFF]"
-              hoverBackground="hover:bg-neutral-100"
               setShowModal={setShowModal}
               {...(limit && { limit })}
             />
