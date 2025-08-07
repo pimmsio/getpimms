@@ -19,7 +19,7 @@ export const throwIfClicksUsageExceeded = (workspace: WorkspaceWithUsers) => {
 export const throwIfLinksUsageExceeded = (workspace: WorkspaceWithUsers) => {
   if (
     workspace.linksUsage >= workspace.linksLimit &&
-    (workspace.plan === "free" || workspace.plan === "pro")
+    (workspace.plan === "free" || workspace.plan === "starter" || workspace.plan === "pro")
   ) {
     throw new DubApiError({
       code: "forbidden",

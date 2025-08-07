@@ -84,7 +84,7 @@ export function ConfigureWebhook({
   const { linkIds = [], triggers = [] } = data;
 
   const canManageWebhook =
-    !permissionsError || plan === "free" || plan === "pro";
+    !permissionsError || plan === "free" || plan === "starter" || plan === "pro";
 
   const enableLinkSelection = LINK_LEVEL_WEBHOOK_TRIGGERS.some((trigger) =>
     triggers.includes(trigger),

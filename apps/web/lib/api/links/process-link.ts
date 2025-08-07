@@ -20,7 +20,7 @@ import {
   pluralize,
 } from "@dub/utils";
 import { combineTagIds } from "../tags/combine-tag-ids";
-import { businessFeaturesCheck, proFeaturesCheck } from "./plan-features-check";
+import { businessFeaturesCheck, proFeaturesCheck, starterFeaturesCheck } from "./plan-features-check";
 import { keyChecks, processKey } from "./utils";
 
 export async function processLink<T extends Record<string, any>>({
@@ -114,10 +114,22 @@ export async function processLink<T extends Record<string, any>>({
       return {
         link: payload,
         error:
-          "You can only set a redirect for a root domain link on a Pro plan and above. Upgrade to Pro to use this feature.",
+          "You can only set a redirect for a root domain link on a Starter plan and above. Upgrade to Starter to use this feature.",
         code: "forbidden",
       };
     }
+    try {
+      businessFeaturesCheck(payload);
+      proFeaturesCheck(payload);
+      starterFeaturesCheck(payload);
+    } catch (error) {
+      return {
+        link: payload,
+        error: error.message,
+        code: "forbidden",
+      };
+    }
+  } else if (workspace.plan === "starter") {
     try {
       businessFeaturesCheck(payload);
       proFeaturesCheck(payload);
@@ -451,11 +463,11 @@ export async function processLink<T extends Record<string, any>>({
 
     // Webhook validity checks
     if (webhookIds && webhookIds.length > 0) {
-      if (!workspace || workspace.plan === "free" || workspace.plan === "pro") {
+      if (!workspace || workspace.plan === "free" || workspace.plan === "starter") {
         return {
           link: payload,
           error:
-            "You can only use webhooks on a Business plan and above. Upgrade to Business to use this feature.",
+            "You can only use webhooks on a Pro plan and above. Upgrade to Pro to use this feature.",
           code: "forbidden",
         };
       }

@@ -21,7 +21,7 @@ export default function WebhooksPageClient() {
     role: role,
   });
 
-  const needsHigherPlan = plan === "free" || plan === "pro";
+  const needsHigherPlan = plan === "free" || plan === "starter";
 
   if (needsHigherPlan) {
     return (
@@ -31,7 +31,7 @@ export default function WebhooksPageClient() {
           title="Webhooks"
           description="Webhooks allow you to receive HTTP requests whenever a specific event (eg: someone clicked your link) occurs in PIMMS."
           // learnMore="https://d.to/webhooks"
-          buttonText="Upgrade to Business"
+          buttonText="Upgrade to Pro"
           buttonLink={`/${slug}/upgrade`}
         />
       </div>

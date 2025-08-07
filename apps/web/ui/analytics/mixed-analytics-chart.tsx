@@ -1,21 +1,16 @@
 import { formatDateTooltip } from "@/lib/analytics/format-date-tooltip";
 import { editQueryString } from "@/lib/analytics/utils";
-import useCustomersCount from "@/lib/swr/use-customers-count";
 import useListIntegrations from "@/lib/swr/use-list-integrations";
 
-import { EmptyState } from "@dub/ui";
 import { TimeSeriesChart, XAxis, YAxis } from "@dub/ui/charts";
-import { cn, fetcher, nFormatter } from "@dub/utils";
-import { IntegrationsCardsLight } from "app/app.dub.co/(dashboard)/[slug]/settings/integrations/integrations-cards-light";
+import { fetcher, nFormatter } from "@dub/utils";
 import { subDays } from "date-fns";
-import { Target } from "lucide-react";
 import { useContext, useMemo } from "react";
 import useSWR from "swr";
 import { AnalyticsLoadingSpinner } from "./analytics-loading-spinner";
 import { AnalyticsContext } from "./analytics-provider";
 import { MixedAreasAndBars } from "./mixed-areas-bars";
 import { groupTimeseriesData } from "@/lib/analytics/utils/group-timeseries-data";
-import { $ } from "@upstash/redis/zmscore-b6b93f14";
 
 
 const DEMO_DATA = [

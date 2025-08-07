@@ -18,7 +18,7 @@ export default function AnalyticsClient({
     return <LayoutLoader />;
   }
 
-  if (exceededClicks && !(plan === "pro" && eventsPage)) {
+  if (exceededClicks && !((plan === "starter" || plan === "pro") && eventsPage)) {
     return <WorkspaceExceededClicks />;
   }
 

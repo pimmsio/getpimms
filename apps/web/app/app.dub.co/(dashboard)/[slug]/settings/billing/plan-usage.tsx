@@ -148,7 +148,7 @@ export default function PlanUsage() {
               usage={salesUsage}
               limit={salesLimit}
               unit="$"
-              requiresUpgrade={plan === "free" || plan === "pro"}
+              requiresUpgrade={plan === "free" || plan === "starter"}
             />
           </div>
           <div className="w-full px-2 pb-8 md:px-8">

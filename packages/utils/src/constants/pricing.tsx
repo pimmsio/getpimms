@@ -31,10 +31,9 @@ export const PLANS = [
     },
   },
   {
-    name: "Pro",
-    // link: "https://dub.co/help/article/pro-plan",
+    name: "Starter",
     price: {
-      lifetime: 45,
+      lifetime: 59,
       ids: [
         "price_1R2yHmBN5sOoOmBU1CeLs81z", // lifetime (prod)
         "price_1R9AM5BL7DFxjjSQ9e32QsT1", // new monthly (test)
@@ -44,72 +43,33 @@ export const PLANS = [
       ],
     },
     limits: {
-      links: 1_000,
+      links: 200,
       clicks: 50_000,
-      sales: 20_000_00,
-      domains: 10,
+      sales: 0,
+      domains: 3,
       tags: 25,
       folders: 3,
-      users: 5,
+      users: 3,
       ai: 1000,
       api: 600,
-      retention: "1-year",
+      retention: "6-month",
     },
     featureTitle: "Everything in Free, plus:",
     features: [
-      { id: "clicks", text: "Unlimited clicks" },
-      { id: "links", text: "Unlimited new links" },
-      { id: "retention", text: "1-year analytics retention" },
-      {
-        id: "events",
-        text: "Real-time events stream",
-      },
-      {
-        id: "sales",
-        text: "20000€ tracked sales/mo",
-      },
-      { id: "domains", text: "10 domains" },
-      { id: "users", text: "5 users" },
-      // {
-      //   id: "advanced",
-      //   text: "Advanced link features",
-      //   tooltip: "ADVANCED_LINK_FEATURES",
-      // },
-      // {
-      //   id: "ai",
-      //   text: "Unlimited AI credits",
-      //   tooltip: {
-      //     title:
-      //       "Subject to fair use policy – you will be notified if you exceed the limit, which are high enough for frequent usage.",
-      //     cta: "Learn more.",
-      //     href: "https://dub.co/blog/introducing-dub-ai",
-      //   },
-      // },
-      // {
-      //   id: "dotlink",
-      //   text: "Free .link domain",
-      //   tooltip: {
-      //     title:
-      //       "All our paid plans come with a free .link custom domain, which helps improve click-through rates.",
-      //     cta: "Learn more.",
-      //     href: "https://dub.co/help/article/free-dot-link-domain",
-      //   },
-      // },
-      // {
-      //   id: "folders",
-      //   text: "Link folders",
-      // },
-      {
-        id: "deeplinks",
-        text: "Deep links",
-      },
+      { id: "links", text: "200 links /month" },
+      { id: "tracking", text: "Unlimited tracking" },
+      { id: "events", text: "Event tracking (subscription, meetings etc.)" },
+      { id: "integrations", text: "100+ integrations incl. Zapier" },
+      { id: "domains", text: "3 custom domains" },
+      { id: "users", text: "3 team members" },
+      { id: "retention", text: "6 months of data" },
+      { id: "support", text: "1 month priority support included" },
     ] as PlanFeature[],
   },
   {
-    name: "Business",
+    name: "Pro",
     price: {
-      monthly: 50,
-      yearly: 350,
+      lifetime: 99,
       ids: [
         "price_1R9AM5BL7DFxjjSQ9e32QsT1", // new monthly (test)
         "price_1R9AM5BL7DFxjjSQcvE5Yu0T", // new yearly (test)
@@ -118,59 +78,57 @@ export const PLANS = [
       ],
     },
     limits: {
-      links: 10_000,
-      clicks: 250_000,
-      sales: 60_000_00,
-      domains: 100,
-      tags: INFINITY_NUMBER,
+      links: 600,
+      clicks: 50_000,
+      sales: 30_000_00,
+      domains: 5,
+      tags: 100,
       folders: 20,
-      users: 10,
+      users: 5,
       ai: 1000,
       api: 3000,
-      retention: "3-year",
+      retention: "1-year",
     },
-    featureTitle: "Everything in Pro, plus:",
+    featureTitle: "Everything in Starter, plus:",
     features: [
-      {
-        id: "clicks",
-        text: "Unlimited tracked clicks",
-      },
-      {
-        id: "retention",
-        text: "3-year analytics retention",
-      },
-      {
-        id: "sales",
-        text: "60k€ tracked sales/mo",
-      },
-      { id: "domains", text: "100 domains" },
-      { id: "users", text: "10 users" },
-      // {
-      //   id: "partners",
-      //   text: "Partner management",
-      //   tooltip: {
-      //     title: "Use PiMMs Partners to manage and pay out your affiliates.",
-      //     cta: "Learn more.",
-      //     href: "https://dub.co/partners",
-      //   },
-      // },
-      // {
-      //   id: "payouts",
-      //   text: "1-click global payouts",
-      //   tooltip: {
-      //     title: "Send payouts to 180+ countries in 1-click.",
-      //     cta: "Learn more.",
-      //     href: "https://dub.co/help/article/partner-payouts",
-      //   },
-      // },
-      {
-        id: "webhooks",
-        text: "Event webhooks",
-      },
-      // {
-      //   id: "tests",
-      //   text: "A/B testing",
-      // },
+      { id: "links", text: "600 links /month" },
+      { id: "sales", text: "Sales tracking up to 30k€ /month" },
+      { id: "stripe", text: "Stripe payments integration" },
+      { id: "testing", text: "A/B testing" },
+      { id: "webhooks", text: "Webhooks" },
+      { id: "users", text: "5 team members" },
+      { id: "retention", text: "12 months of data" },
+      { id: "support", text: "3 months priority support included" },
+    ] as PlanFeature[],
+  },
+  {
+    name: "Business",
+    price: {
+      monthly: null,
+      yearly: null,
+    },
+    limits: {
+      links: INFINITY_NUMBER,
+      clicks: 50_000,
+      sales: 30_000_00,
+      domains: 100,
+      tags: 100,
+      folders: 20,
+      users: 10,
+      ai: 10000,
+      api: 10000,
+      retention: "2-year",
+    },
+    featureTitle: "Everything in Pro and more:",
+    features: [
+      { id: "links", text: "Unlimited short links" },
+      { id: "tracking", text: "Unlimited tracking" },
+      { id: "sales", text: "Sales tracking" },
+      { id: "users", text: "Unlimited team members" },
+      { id: "domains", text: "Unlimited custom domains" },
+      { id: "bulk", text: "Bulk link operations" },
+      { id: "retention", text: "More than a year of data" },
+      { id: "support", text: "Priority support" },
     ] as PlanFeature[],
   },
   // {
@@ -275,12 +233,12 @@ export const PLANS = [
 ];
 
 export const FREE_PLAN = PLANS.find((plan) => plan.name === "Free")!;
+export const STARTER_PLAN = PLANS.find((plan) => plan.name === "Starter")!;
 export const PRO_PLAN = PLANS.find((plan) => plan.name === "Pro")!;
 export const BUSINESS_PLAN = PLANS.find((plan) => plan.name === "Business")!;
-export const ADVANCED_PLAN = PLANS.find((plan) => plan.name === "Advanced")!;
 
 export const SELF_SERVE_PAID_PLANS = PLANS.filter((p) =>
-  ["Pro", "Business"/*, "Advanced"*/].includes(p.name),
+  ["Starter", "Pro"/*, "Business"*/].includes(p.name),
 );
 
 export const FREE_WORKSPACES_LIMIT = 2;
@@ -302,7 +260,7 @@ export const getCurrentPlan = (plan: string) => {
 };
 
 export const getNextPlan = (plan?: string | null) => {
-  if (!plan) return PRO_PLAN;
+  if (!plan) return STARTER_PLAN;
   return PLANS[
     PLANS.findIndex((p) => p.name.toLowerCase() === plan.toLowerCase()) + 1
   ];

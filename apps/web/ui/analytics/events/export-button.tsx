@@ -8,7 +8,7 @@ export default function ExportButton({ onClick }: { onClick?: () => void }) {
   const { exportQueryString } = useContext(EventsContext);
   const { slug, plan } = useWorkspace();
 
-  const needsHigherPlan = plan === "free" || plan === "pro";
+  const needsHigherPlan = plan === "free" || plan === "starter" || plan === "pro";
 
   async function exportData() {
     const response = await fetch(`/api/events/export?${exportQueryString}`, {

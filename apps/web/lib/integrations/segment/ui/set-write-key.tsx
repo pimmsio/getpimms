@@ -77,7 +77,7 @@ export function SetWriteKey({
             how to locate your write key.
           </p>
 
-          {plan === "free" || plan === "pro" ? (
+          {plan === "free" || plan === "starter" || plan === "pro" ? (
             <Tooltip content={planDisabledTooltip}>
               <div className="mt-4 cursor-not-allowed rounded border border-neutral-300 bg-neutral-50 px-3 py-2 text-sm text-neutral-400">
                 Enter your write key
@@ -110,7 +110,7 @@ export function SetWriteKey({
               loading={isPending}
               disabled={installed || !writeKey}
               disabledTooltip={
-                plan === "free" || plan === "pro"
+                plan === "free" || plan === "starter" || plan === "pro"
                   ? planDisabledTooltip
                   : undefined
               }

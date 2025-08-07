@@ -69,6 +69,7 @@ export const GET = withWorkspace(
   {
     requiredPlan: [
       "free",
+      "starter",
       "pro",
       "business",
       "business plus",
@@ -166,6 +167,7 @@ export const PATCH = withWorkspace(
   {
     requiredPlan: [
       "free",
+      "starter",
       "pro",
       "business",
       "business plus",
@@ -200,6 +202,7 @@ export const DELETE = withWorkspace(
   {
     requiredPlan: [
       "free",
+      "starter",
       "pro",
       "business",
       "business plus",

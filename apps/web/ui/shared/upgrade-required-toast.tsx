@@ -30,7 +30,7 @@ export const UpgradeRequiredToast = ({
       <Link
         href={slug ? `/${slug}/upgrade` : "https://pimms.io/pricing"}
         target="_blank"
-        className="w-full rounded border border-black bg-black px-3 py-1.5 text-center text-sm text-white transition-all hover:bg-neutral-800 hover:ring-0 hover:ring-transparent"
+        className="w-full rounded border border-blue-500 bg-[#3971ff] px-3 py-1.5 text-center text-sm text-white transition-all hover:ring-0 hover:ring-transparent"
       >
         {planToUpgradeTo ? `Upgrade to ${planToUpgradeTo}` : "Contact support"}
       </Link>
