@@ -58,7 +58,7 @@ function SCIMModal({
             <Logo />
           </div>
         ) : (
-          <div className="rounded-full border-[6px] border-neutral-100 p-3">
+          <div className="rounded-full border border-neutral-100 p-3">
             <FolderSync className="h-5 w-5 text-neutral-600" />
           </div>
         )}
@@ -131,7 +131,7 @@ function SCIMModal({
               onChange={(e) =>
                 setSelectedProvider(e.target.value as SAMLProviderProps["scim"])
               }
-              className="mt-1 block w-full appearance-none rounded-xl border-[2px] border-neutral-300 px-3 py-2 placeholder-neutral-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
+              className="mt-1 block w-full appearance-none rounded border border-neutral-300 px-3 py-2 placeholder-neutral-400 shadow-sm focus:border-black focus:outline-none focus:ring-0 sm:text-sm"
             >
               <option disabled selected>
                 Select a provider
@@ -175,7 +175,7 @@ function SCIMModal({
                     }
                   />
                 </div>
-                <div className="mt-1 flex w-full items-center justify-between rounded-xl border-[2px] border-neutral-300 bg-white px-3 py-2 shadow-sm">
+                <div className="mt-1 flex w-full items-center justify-between rounded border border-neutral-300 bg-white px-3 py-2 shadow-sm">
                   <div className="scrollbar-hide overflow-auto">
                     <p className="whitespace-nowrap text-neutral-600 sm:text-sm">
                       {scim.directories[0].scim.endpoint}
@@ -215,7 +215,7 @@ function SCIMModal({
                     }
                   />
                 </div>
-                <div className="mt-1 flex w-full items-center justify-between rounded-xl border-[2px] border-neutral-300 bg-white px-3 py-2 shadow-sm">
+                <div className="mt-1 flex w-full items-center justify-between rounded border border-neutral-300 bg-white px-3 py-2 shadow-sm">
                   <input
                     type={showBearerToken ? "text" : "password"}
                     contentEditable={false}

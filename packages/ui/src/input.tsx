@@ -23,9 +23,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             type={isPasswordVisible ? "text" : type}
             className={cn(
-              "w-full max-w-md rounded-xl border-2 border-neutral-200 text-black placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
+              "w-full max-w-md rounded border border-neutral-200 text-black placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
               props.error &&
-                "border-red-500 focus:border-red-500 focus:ring-red-500",
+                "border-red-500 focus:border-red-500 focus:ring-0",
               className,
             )}
             ref={ref}

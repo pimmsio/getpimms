@@ -11,7 +11,7 @@ export function ConversionTrackingToggle() {
   const id = useId();
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-xl border-[6px] border-neutral-100 bg-white p-5">
+    <div className="flex items-center justify-between gap-4 rounded border border-neutral-200 bg-white p-5">
       <div className="flex min-w-0 items-center gap-4">
         <div className="overflow-hidden">
           <label

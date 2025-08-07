@@ -62,7 +62,7 @@ function BrandingSettingsForm({ program }: { program: ProgramProps }) {
 
   return (
     <form
-      className="rounded-xl border-[6px] border-neutral-100 bg-white"
+      className="rounded border border-neutral-100 bg-white"
       onSubmit={handleSubmit(async (data) => {
         await executeAsync({
           workspaceId: workspaceId || "",
@@ -101,7 +101,7 @@ function BrandingSettingsForm({ program }: { program: ProgramProps }) {
                   <FileUpload
                     id={id}
                     accept="images"
-                    className="size-14 rounded-xl border-[6px] border-neutral-200 p-1"
+                    className="size-14 rounded border border-neutral-200 p-1"
                     iconClassName="size-4 text-neutral-800"
                     icon={Plus}
                     variant="plain"
@@ -131,7 +131,7 @@ function BrandingSettingsForm({ program }: { program: ProgramProps }) {
                   <FileUpload
                     id={id}
                     accept="images"
-                    className="h-14 rounded-xl border-[6px] border-neutral-200 p-1"
+                    className="h-14 rounded border border-neutral-200 p-1"
                     iconClassName="size-4 text-neutral-800"
                     icon={Plus}
                     variant="plain"
@@ -173,7 +173,7 @@ function BrandingSettingsForm({ program }: { program: ProgramProps }) {
         <BrandingPreview />
       </div>
 
-      <div className="flex items-center justify-end rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-50 px-6 py-5">
+      <div className="flex items-center justify-end rounded-b border-t-[6px] border-neutral-100 bg-neutral-50 px-6 py-5">
         <div>
           <Button
             text="Save changes"

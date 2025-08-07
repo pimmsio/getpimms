@@ -183,7 +183,7 @@ function FunnelChartInner({
         >
           <div
             className={cn(
-              "rounded-xl border-[6px] border-neutral-100 bg-white text-base shadow-sm",
+              "rounded border border-neutral-200 bg-white text-base shadow-sm",
             )}
           >
             <p className="border-b-[6px] border-neutral-100 px-3 py-2 text-sm text-neutral-900 sm:px-4 sm:py-3">
@@ -194,7 +194,7 @@ function FunnelChartInner({
                 <div
                   className={cn(
                     tooltipStep.colorClassName,
-                    "h-2 w-2 shrink-0 rounded-sm bg-current opacity-50 shadow-[inset_0_0_0_1px_#0003]",
+                    "h-2 w-2 shrink-0 rounded bg-current opacity-50 shadow-[inset_0_0_0_1px_#0003]",
                   )}
                 />
                 <p className="whitespace-nowrap capitalize text-neutral-600">

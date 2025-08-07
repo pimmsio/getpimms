@@ -103,7 +103,7 @@ export function IntegrationsCards({
               description="Let us know if you'd like to see it in the future."
               cardContent={() => (
                 <div className="flex h-24 w-full items-center justify-center sm:h-32">
-                  <div className="rounded-xl bg-neutral-100/50 p-4">
+                  <div className="rounded bg-neutral-100/50 p-4">
                     <Plus className="size-4 text-neutral-700" />
                   </div>
                 </div>
@@ -113,7 +113,7 @@ export function IntegrationsCards({
               //     href="mailto:support@dub.co?subject=Integration%20Request"
               //     className={cn(
               //       buttonVariants({ variant: "primary" }),
-              //       "flex h-8 items-center rounded-md border px-2.5 text-sm",
+              //       "flex h-8 items-center rounded border px-2.5 text-sm",
               //     )}
               //   >
               //     Request integration
@@ -130,12 +130,12 @@ export function IntegrationsCards({
 export function IntegrationsCardsLoader() {
   return [...Array(3)].map((_, idx) => (
     <div key={idx}>
-      <div className="h-4 w-24 animate-pulse rounded-md bg-neutral-200" />
+      <div className="h-4 w-24 animate-pulse rounded bg-neutral-200" />
       <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {[...Array(3)].map((_, idx) => (
           <div
             key={idx}
-            className="h-[170px] animate-pulse rounded-lg bg-neutral-200"
+            className="h-[170px] animate-pulse rounded bg-neutral-200"
           />
         ))}
       </div>

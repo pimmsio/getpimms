@@ -114,7 +114,7 @@ function PasswordModalInner({
             }
             side="right"
           >
-            <kbd className="flex size-6 cursor-default items-center justify-center rounded-xl border-[2px] border-neutral-100 font-sans text-xs text-neutral-950">
+            <kbd className="flex size-6 cursor-default items-center justify-center rounded border border-neutral-100 font-sans text-xs text-neutral-950">
               P
             </kbd>
           </Tooltip>
@@ -152,16 +152,16 @@ function PasswordModalInner({
             </ButtonTooltip>
           </div>
         </div>
-        <div className="mt-2 rounded-md shadow-sm">
+        <div className="mt-2 rounded shadow-sm">
           <input
             type={showPassword ? "text" : "password"}
             placeholder="Create password"
             data-1p-ignore
             className={`${
               errors.password
-                ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
-                : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-500"
-            } block w-full rounded-md focus:outline-none sm:text-sm`}
+                ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
+                : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0"
+            } block w-full rounded focus:outline-none sm:text-sm`}
             {...rest}
             ref={(e) => {
               ref(e);

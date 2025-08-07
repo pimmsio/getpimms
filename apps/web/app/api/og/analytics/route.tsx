@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
             </svg>
           </div>
 
-          <div tw="flex items-center rounded-xl border-[2px] border-neutral-100 bg-white shadow-sm h-12 px-6">
+          <div tw="flex items-center rounded border border-neutral-100 bg-white shadow-sm h-12 px-6">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -84,7 +84,7 @@ export async function GET(req: NextRequest) {
             <p tw="text-neutral-700 ml-2 mt-4">Last 24 hours</p>
           </div>
         </div>
-        <div tw="flex flex-col h-full w-full rounded-xl border-[6px] border-neutral-100 bg-white shadow-lg overflow-hidden">
+        <div tw="flex flex-col h-full w-full rounded border border-neutral-100 bg-white shadow-lg overflow-hidden">
           <div tw="flex flex-col px-12 py-4">
             <div tw="flex items-center">
               <h1 tw="font-bold text-5xl leading-none">{nFormatter(clicks)}</h1>

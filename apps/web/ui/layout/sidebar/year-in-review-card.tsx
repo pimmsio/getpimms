@@ -17,7 +17,7 @@ export function YearInReviewCard() {
     <Link
       href={`/${slug}/wrapped/2024`}
       className={cn(
-        "group m-3 mt-8 h-44 select-none gap-2 overflow-hidden rounded-lg border border-neutral-200 bg-white p-3 text-[0.8125rem] transition-[height] duration-200 hover:h-52",
+        "group m-3 mt-8 h-44 select-none gap-2 overflow-hidden rounded border border-neutral-200 bg-white p-3 text-[0.8125rem] transition-[height] duration-200 hover:h-52",
         pathname.endsWith("/wrapped/2024") && "h-52",
       )}
     >

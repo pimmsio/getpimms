@@ -141,7 +141,7 @@ function AddEditTagModal({
               Tag Name
             </p>
           </label>
-          <div className="mt-2 flex rounded-md shadow-sm">
+          <div className="mt-2 flex rounded shadow-sm">
             <input
               name="name"
               id="name"
@@ -149,7 +149,7 @@ function AddEditTagModal({
               required
               autoFocus={!isMobile}
               autoComplete="off"
-              className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+              className="block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
               placeholder="New Tag"
               value={name}
               onChange={(e) => {
@@ -183,7 +183,7 @@ function AddEditTagModal({
                 <Label
                   htmlFor={colorOption}
                   className={cn(
-                    "cursor-pointer whitespace-nowrap rounded-md px-2 py-0.5 text-sm capitalize ring-current peer-focus-visible:ring-offset-2",
+                    "cursor-pointer whitespace-nowrap rounded px-2 py-0.5 text-sm capitalize ring-current peer-focus-visible:ring-offset-2",
                     css,
                     color === colorOption && "ring-2",
                   )}
@@ -224,7 +224,7 @@ function AddTagButton({
         variant="primary"
         text="Create tag"
         shortcut="C"
-        className="h-9 rounded-lg"
+        className="h-9 rounded"
         disabledTooltip={
           exceededTags ? (
             <TooltipContent

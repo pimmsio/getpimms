@@ -56,7 +56,7 @@ const imageUploadVariants = cva(
   {
     variants: {
       variant: {
-        default: "rounded-xl border-[2px] border-neutral-300 shadow-sm",
+        default: "rounded border border-neutral-300 shadow-sm",
         plain: "",
       },
     },
@@ -254,7 +254,7 @@ export function FileUpload({
       />
       <div
         className={cn(
-          "absolute inset-0 z-[3] flex flex-col items-center justify-center rounded-[inherit] border-2 border-transparent bg-white transition-all",
+          "absolute inset-0 z-[3] flex flex-col items-center justify-center rounded-[inherit] border border-transparent bg-white transition-all",
           disabled && "bg-neutral-50",
           dragActive &&
             !disabled &&

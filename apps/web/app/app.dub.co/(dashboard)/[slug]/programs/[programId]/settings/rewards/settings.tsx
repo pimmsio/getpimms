@@ -59,7 +59,7 @@ export function RewardSettings() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
+      <div className="rounded border border-neutral-100 bg-white">
         <div className="p-6">
           <h2 className="inline-flex items-center gap-2 text-lg font-semibold text-neutral-900">
             Reward settings
@@ -68,7 +68,7 @@ export function RewardSettings() {
             These are applied to all reward types
           </p>
         </div>
-        <div className="divide-y-[6px] divide-neutral-100 border-t-[6px] border-neutral-100 px-6">
+        <div className="divide-y divide-neutral-100 border-t-[6px] border-neutral-100 px-6">
           <SettingsRow
             heading="Holding period"
             description="Set the holding period before payouts are released"
@@ -76,7 +76,7 @@ export function RewardSettings() {
             <div className="flex items-center justify-end">
               <div className="w-full max-w-md">
                 <select
-                  className="block w-full rounded-xl border-[2px] border-neutral-300 bg-white py-2 pl-3 pr-10 text-sm text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500"
+                  className="block w-full rounded border border-neutral-300 bg-white py-2 pl-3 pr-10 text-sm text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-0"
                   {...register("holdingPeriodDays", { required: true })}
                 >
                   {HOLDING_PERIOD_DAYS.map((v) => (
@@ -95,14 +95,14 @@ export function RewardSettings() {
           >
             <div className="flex items-center justify-end">
               <div className="w-full max-w-md">
-                <div className="relative mt-2 rounded-md shadow-sm">
+                <div className="relative mt-2 rounded shadow-sm">
                   <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-sm text-neutral-400">
                     $
                   </span>
 
                   <input
                     className={cn(
-                      "block w-full rounded-md border-neutral-300 pl-6 pr-12 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                      "block w-full rounded border-neutral-300 pl-6 pr-12 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                       errors.minPayoutAmount &&
                         "border-red-600 pr-7 focus:border-red-500 focus:ring-red-600",
                     )}

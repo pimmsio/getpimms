@@ -95,7 +95,7 @@ export function AnalyticsCard<T extends string>({
       </Modal>
       <div
         className={cn(
-          "group relative z-0 h-[400px] overflow-hidden rounded-lg border border-gray-200/50 bg-white transition-all duration-200 hover:border-gray-300/50",
+          "group relative z-0 h-[400px] overflow-hidden rounded border border-gray-200/50 bg-white transition-all duration-200 hover:border-gray-300/50",
           className,
         )}
       >
@@ -178,7 +178,7 @@ export function AnalyticsCard<T extends string>({
               onClick={() => setShowModal(true)}
               className="group relative flex w-full items-center justify-center py-4"
             >
-              <div className="rounded-xl border-[2px] border-[#08272E] bg-white px-2.5 py-1 text-sm text-neutral-950 group-hover:bg-neutral-100 group-active:border-neutral-300">
+              <div className="rounded border border-[#08272E] bg-white px-2.5 py-1 text-sm text-neutral-950 group-hover:bg-neutral-100 group-active:border-neutral-300">
                 View All
               </div>
             </button>
@@ -209,7 +209,7 @@ function SubTabs({
       selectAction={(period) => onSelectTab(period)}
       className="flex w-full flex-wrap rounded-none border-x-0 border-t-0 border-neutral-100 bg-neutral-50 px-6 py-2.5 sm:flex-nowrap"
       optionClassName="text-xs px-2 font-normal hover:text-neutral-700"
-      indicatorClassName="border-0 bg-neutral-200 rounded-md"
+      indicatorClassName="border-0 bg-neutral-200 rounded"
     />
   );
 }

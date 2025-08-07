@@ -60,13 +60,13 @@ export function FeaturedIntegrations({
                       className="group relative block"
                     >
                       {/* Image */}
-                      <div className="overflow-hidden rounded-xl border-[6px] border-neutral-100 bg-white">
+                      <div className="overflow-hidden rounded border border-neutral-100 bg-white">
                         <BlurImage
                           src={integration.screenshots![0]}
                           alt={`Screenshot of ${integration.name}`}
                           width={900}
                           height={580}
-                          className="aspect-[900/580] w-full overflow-hidden rounded-xl object-cover object-top [mask-image:linear-gradient(black_90%,transparent)]"
+                          className="aspect-[900/580] w-full overflow-hidden rounded object-cover object-top [mask-image:linear-gradient(black_90%,transparent)]"
                         />
                       </div>
 
@@ -76,7 +76,7 @@ export function FeaturedIntegrations({
                       </div>
 
                       {/* Bottom card */}
-                      <div className="absolute inset-x-4 bottom-4 hidden items-center gap-3 rounded-lg bg-white p-3 transition-all duration-100 group-hover:drop-shadow-sm sm:flex">
+                      <div className="absolute inset-x-4 bottom-4 hidden items-center gap-3 rounded bg-white p-3 transition-all duration-100 group-hover:drop-shadow-sm sm:flex">
                         <div className="shrink-0">
                           <IntegrationLogo
                             src={integration.logo}
@@ -149,7 +149,7 @@ function CarouselNavBar({
                 key={idx}
                 onClick={stopAutoplayAnd(() => api.scrollTo(idx))}
                 className={cn(
-                  "rounded-md ring-black/10 transition-all duration-100 hover:scale-105 active:scale-100",
+                  "rounded ring-black/10 transition-all duration-100 hover:scale-105 active:scale-100",
                   idx === selectedIndex && "ring-[3px]",
                 )}
               >
@@ -175,7 +175,7 @@ export function FeaturedIntegrationsLoader() {
           {[...Array(3)].map((_, idx) => (
             <div key={idx} className="min-w-0 shrink-0 grow-0 basis-2/3 pl-4">
               <div className="border border-transparent">
-                <div className="aspect-[900/580] animate-pulse rounded-lg bg-neutral-200" />
+                <div className="aspect-[900/580] animate-pulse rounded bg-neutral-200" />
               </div>
             </div>
           ))}
@@ -185,7 +185,7 @@ export function FeaturedIntegrationsLoader() {
         {[...Array(4)].map((_, idx) => (
           <div
             key={idx}
-            className="size-8 animate-pulse rounded-lg bg-neutral-200"
+            className="size-8 animate-pulse rounded bg-neutral-200"
           />
         ))}
       </div>

@@ -86,7 +86,7 @@ export default function EventsTabs() {
         <button
           key={event}
           className={cn(
-            "flex justify-between gap-4 rounded-xl border-[6px] border-neutral-100 bg-white px-5 py-4 text-left transition-[box-shadow] focus:outline-none",
+            "flex justify-between gap-4 rounded border border-neutral-100 bg-white px-5 py-4 text-left transition-[box-shadow] focus:outline-none",
             tab === event
               ? "md:border-[#3970ff]"
               : "border-neutral-200 focus-visible:md:border-[#3970ff]",
@@ -124,7 +124,7 @@ export default function EventsTabs() {
                   }
                 />
               ) : (
-                <div className="h-8 w-12 animate-pulse rounded-md bg-neutral-200" />
+                <div className="h-8 w-12 animate-pulse rounded bg-neutral-200" />
               )}
             </div>
           </div>

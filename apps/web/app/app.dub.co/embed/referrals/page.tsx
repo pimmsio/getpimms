@@ -46,13 +46,13 @@ function EmbedInlineLoading({ themeOptions }: { themeOptions: ThemeOptions }) {
       className="bg-bg-default flex min-h-screen flex-col"
     >
       <div className="p-5">
-        <div className="border-border-default relative flex flex-col overflow-hidden rounded-xl border-[6px] p-4 md:p-6">
+        <div className="border-border-default relative flex flex-col overflow-hidden rounded border p-4 md:p-6">
           {/* <HeroBackground color="#737373" /> */}
           <span className="text-base font-semibold text-neutral-800">
             Referral link
           </span>
           <div className="xs:flex-row relative mt-3 flex flex-col items-center gap-2">
-            <div className="xs:w-full border-border-default bg-bg-muted h-10 w-full rounded-md border" />
+            <div className="xs:w-full border-border-default bg-bg-muted h-10 w-full rounded border" />
             <Button
               icon={<Copy className="size-4" />}
               text="Copy link"
@@ -64,8 +64,8 @@ function EmbedInlineLoading({ themeOptions }: { themeOptions: ThemeOptions }) {
             Rewards
           </span>
           <div className="relative mt-2 flex flex-col gap-2">
-            <div className="bg-bg-muted h-6 w-full rounded-md" />
-            <div className="bg-bg-muted h-6 w-80 rounded-md" />
+            <div className="bg-bg-muted h-6 w-full rounded" />
+            <div className="bg-bg-muted h-6 w-80 rounded" />
           </div>
           {/* <a
             href="https://dub.partners"
@@ -77,12 +77,12 @@ function EmbedInlineLoading({ themeOptions }: { themeOptions: ThemeOptions }) {
           </a> */}
         </div>
         <div className="mt-4 grid gap-2 sm:h-32 sm:grid-cols-3">
-          <div className="border-border-subtle bg-bg-muted h-full w-full rounded-xl border-[6px] sm:col-span-2" />
-          <div className="border-border-subtle bg-bg-muted h-full w-full rounded-lg border-[6px]" />
+          <div className="border-border-subtle bg-bg-muted h-full w-full rounded border sm:col-span-2" />
+          <div className="border-border-subtle bg-bg-muted h-full w-full rounded border" />
         </div>
         {/* <div className="mt-4">
-          <div className="border-border-subtle bg-bg-muted h-10 w-full rounded-lg border" />
-          <div className="border-border-muted my-4 h-80 w-full rounded-xl border-[6px] p-2" />
+          <div className="border-border-subtle bg-bg-muted h-10 w-full rounded border" />
+          <div className="border-border-muted my-4 h-80 w-full rounded border p-2" />
         </div> */}
       </div>
     </div>

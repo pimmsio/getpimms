@@ -172,14 +172,14 @@ export function RegisterDomainForm({
                   : "bg-neutral-100",
               )}
             >
-              <div className="flex rounded-xl border-[2px] border-neutral-300 bg-white">
+              <div className="flex rounded border border-neutral-300 bg-white">
                 <input
                   name="domain"
                   id="domain"
                   type="text"
                   required
                   autoComplete="off"
-                  className="block w-full rounded-md rounded-r-none border-0 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-0 sm:text-sm"
+                  className="block w-full rounded rounded-r-none border-0 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-0 sm:text-sm"
                   aria-invalid="true"
                   autoFocus={!isMobile}
                   placeholder={workspace.slug}
@@ -193,7 +193,7 @@ export function RegisterDomainForm({
                     }
                   }}
                 />
-                <span className="inline-flex items-center rounded-md rounded-l-none bg-white pr-3 font-medium text-neutral-500 sm:text-sm">
+                <span className="inline-flex items-center rounded rounded-l-none bg-white pr-3 font-medium text-neutral-500 sm:text-sm">
                   .link
                 </span>
               </div>
@@ -261,8 +261,8 @@ export function RegisterDomainForm({
               <h2 className="text-sm font-medium text-neutral-800">
                 Available alternatives
               </h2>
-              <div className="mt-2 overflow-hidden rounded-xl border-[6px] border-neutral-100">
-                <div className="flex flex-col divide-y-[6px] divide-neutral-100">
+              <div className="mt-2 overflow-hidden rounded border border-neutral-100">
+                <div className="flex flex-col divide-y divide-neutral-100">
                   {availableDomains.map((alternative) => (
                     <div
                       key={alternative.domain}
@@ -331,7 +331,7 @@ export function RegisterDomainForm({
             target="_blank"
             className={cn(
               buttonVariants(),
-              "flex h-9 w-full items-center justify-center rounded-md border px-4 text-sm",
+              "flex h-9 w-full items-center justify-center rounded border px-4 text-sm",
               variant === "modal" && "w-fit",
             )}
           >
@@ -374,7 +374,7 @@ function UpgradeTooltipContent() {
 
 function DomainSavedToast() {
   return (
-    <div className="flex items-center gap-1.5 rounded-lg bg-white p-4 text-sm shadow-[0_4px_12px_#0000001a]">
+    <div className="flex items-center gap-1.5 rounded bg-white p-4 text-sm shadow-[0_4px_12px_#0000001a]">
       <CheckCircleFill className="size-5 shrink-0 text-black" />
       <p className="text-[13px] font-medium text-neutral-900">
         Domain saved. You'll need a pro plan to complete the registration.{" "}

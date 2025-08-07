@@ -99,7 +99,7 @@ export function TagCard({
           {linksCount !== undefined && (
             <Link
               href={`/${slug}/links?tagIds=${tag.id}`}
-              className="whitespace-nowrap rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-sm text-neutral-800 transition-colors hover:bg-neutral-100"
+              className="whitespace-nowrap rounded border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-sm text-neutral-800 transition-colors hover:bg-neutral-100"
             >
               {nFormatter(linksCount || 0)} {pluralize("link", linksCount || 0)}
             </Link>

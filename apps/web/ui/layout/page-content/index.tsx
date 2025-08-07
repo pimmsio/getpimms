@@ -48,7 +48,7 @@ export function PageContent({
                     {titleBackButtonLink && (
                       <Link
                         href={titleBackButtonLink}
-                        className="rounded-lg p-1.5 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
+                        className="rounded p-1.5 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
                       >
                         <ChevronLeft className="size-5" />
                       </Link>

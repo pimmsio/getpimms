@@ -128,7 +128,7 @@ export default function AddEditIntegrationForm({
         <div>
           <FileUpload
             accept="images"
-            className="h-24 w-24 rounded-full border-[2px] border-neutral-300"
+            className="h-24 w-24 rounded-full border border-neutral-300"
             iconClassName="w-5 h-5"
             variant="plain"
             readFile
@@ -150,10 +150,10 @@ export default function AddEditIntegrationForm({
             </h2>
             <InfoTooltip content="Application name will be displayed in the OAuth consent screen" />
           </label>
-          <div className="relative mt-2 rounded-md shadow-sm">
+          <div className="relative mt-2 rounded shadow-sm">
             <input
               className={cn(
-                "block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                 {
                   "cursor-not-allowed bg-neutral-50": !canManageApp,
                 },
@@ -176,10 +176,10 @@ export default function AddEditIntegrationForm({
             </h2>
             <InfoTooltip content="Unique slug for this application on PiMMs" />
           </label>
-          <div className="relative mt-2 rounded-md shadow-sm">
+          <div className="relative mt-2 rounded shadow-sm">
             <input
               className={cn(
-                "block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                 {
                   "cursor-not-allowed bg-neutral-50": !canManageApp,
                 },
@@ -201,12 +201,12 @@ export default function AddEditIntegrationForm({
             </h2>
             <InfoTooltip content="Description of your application" />
           </label>
-          <div className="relative mt-2 rounded-md shadow-sm">
+          <div className="relative mt-2 rounded shadow-sm">
             <TextareaAutosize
               name="description"
               minRows={2}
               className={cn(
-                "block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                 {
                   "cursor-not-allowed bg-neutral-50": !canManageApp,
                 },
@@ -227,12 +227,12 @@ export default function AddEditIntegrationForm({
             <h2 className="text-sm font-medium text-neutral-900">Overview</h2>
             <InfoTooltip content="Provide some details about your integration. This will be displayed on the integration page. Markdown is supported." />
           </label>
-          <div className="relative mt-2 rounded-md shadow-sm">
+          <div className="relative mt-2 rounded shadow-sm">
             <TextareaAutosize
               name="readme"
               minRows={10}
               className={cn(
-                "block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                 {
                   "cursor-not-allowed bg-neutral-50": !canManageApp,
                 },
@@ -265,7 +265,7 @@ export default function AddEditIntegrationForm({
               <Reorder.Item
                 key={screenshot.key}
                 value={screenshot}
-                className="group flex w-full items-center justify-between rounded-xl border-[2px] border-neutral-100 bg-white transition-shadow hover:cursor-grab active:cursor-grabbing active:shadow-lg"
+                className="group flex w-full items-center justify-between rounded border border-neutral-100 bg-white transition-shadow hover:cursor-grab active:cursor-grabbing active:shadow-lg"
               >
                 <div className="flex flex-1 items-center space-x-2 p-2">
                   {screenshot.uploading ? (
@@ -294,7 +294,7 @@ export default function AddEditIntegrationForm({
 
           <FileUpload
             accept="images"
-            className="mt-2 aspect-[5/1] w-full rounded-md border border-dashed border-neutral-300"
+            className="mt-2 aspect-[5/1] w-full rounded border border-dashed border-neutral-300"
             iconClassName="w-5 h-5"
             variant="plain"
             onChange={async ({ file }) => await handleUpload(file)}
@@ -310,10 +310,10 @@ export default function AddEditIntegrationForm({
             </h2>
             <InfoTooltip content="The person or company developing this application" />
           </label>
-          <div className="relative mt-2 rounded-md shadow-sm">
+          <div className="relative mt-2 rounded shadow-sm">
             <input
               className={cn(
-                "block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                 {
                   "cursor-not-allowed bg-neutral-50": !canManageApp,
                 },
@@ -334,10 +334,10 @@ export default function AddEditIntegrationForm({
             </h2>
             <InfoTooltip content="URL to the developer's website or documentation" />
           </label>
-          <div className="relative mt-2 rounded-md shadow-sm">
+          <div className="relative mt-2 rounded shadow-sm">
             <input
               className={cn(
-                "block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                 {
                   "cursor-not-allowed bg-neutral-50": !canManageApp,
                 },

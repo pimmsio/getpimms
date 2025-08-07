@@ -34,7 +34,7 @@ export function ToggleGroup({
       <motion.div
         layout
         className={cn(
-          "border-border-subtle bg-bg-default relative z-0 inline-flex items-center gap-1 rounded-xl border p-1",
+          "border-border-subtle bg-bg-default relative z-0 inline-flex items-center gap-1 rounded border p-1",
           className,
         )}
         style={style}
@@ -64,7 +64,7 @@ export function ToggleGroup({
               <motion.div
                 layoutId={layoutGroupId}
                 className={cn(
-                  "border-border-subtle bg-bg-muted absolute left-0 top-0 -z-[1] h-full w-full rounded-lg border",
+                  "border-border-subtle bg-bg-muted absolute left-0 top-0 -z-[1] h-full w-full rounded border",
                   indicatorClassName,
                 )}
                 transition={{ duration: 0.25 }}

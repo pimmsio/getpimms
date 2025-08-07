@@ -111,13 +111,13 @@ export function InviteTeammatesForm({
                   {pluralize("Email", fields.length)}
                 </span>
               )}
-              <div className="relative flex rounded-md shadow-sm">
+              <div className="relative flex rounded shadow-sm">
                 <input
                   type="email"
                   placeholder="cheers@pimms.io"
                   autoFocus={index === 0 && !isMobile}
                   autoComplete="off"
-                  className="z-10 block w-full rounded-l-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                  className="z-10 block w-full rounded-l-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
                   {...register(`teammates.${index}.email`, {
                     required: index === 0,
                   })}
@@ -170,7 +170,7 @@ export function InviteTeammatesForm({
 
 function InviteSavedToast({ teammates }: { teammates: number }) {
   return (
-    <div className="flex items-center gap-1.5 rounded-lg bg-white p-4 text-sm shadow-[0_4px_12px_#0000001a]">
+    <div className="flex items-center gap-1.5 rounded bg-white p-4 text-sm shadow-[0_4px_12px_#0000001a]">
       <CheckCircleFill className="size-5 shrink-0 text-black" />
       <p className="text-[13px] font-medium text-neutral-900">
         {pluralize("Invitation", teammates)} saved. You'll need a pro plan to

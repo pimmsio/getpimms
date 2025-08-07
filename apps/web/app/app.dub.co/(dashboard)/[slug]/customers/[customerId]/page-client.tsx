@@ -61,7 +61,7 @@ export function CustomerPageClient() {
               {customer.name}
             </h1>
           ) : (
-            <div className="h-5 w-32 animate-pulse rounded-md bg-neutral-200" />
+            <div className="h-5 w-32 animate-pulse rounded bg-neutral-200" />
           )}
 
           {customer ? (
@@ -79,7 +79,7 @@ export function CustomerPageClient() {
               </div>
             )
           ) : (
-            <div className="h-5 w-24 animate-pulse rounded-md bg-neutral-200" />
+            <div className="h-5 w-24 animate-pulse rounded bg-neutral-200" />
           )}
         </div>
       </div>
@@ -102,7 +102,7 @@ export function CustomerPageClient() {
                 <Link
                   href={`/${slug}/programs/${customer.programId}/partners?partnerId=${customer.partner.id}`}
                   target="_blank"
-                  className="border-border-subtle group flex items-center justify-between overflow-hidden rounded-lg border bg-neutral-100 px-4 py-3"
+                  className="border-border-subtle group flex items-center justify-between overflow-hidden rounded border bg-neutral-100 px-4 py-3"
                 >
                   <div className="flex min-w-0 items-center gap-3">
                     {

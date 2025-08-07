@@ -63,7 +63,7 @@ export default function MixedBarList({
               <input
                 type="text"
                 placeholder={`Search ${tab}...`}
-                className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full rounded border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-0 focus:ring-0"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -179,7 +179,7 @@ export function MixedLineItem({
 
   const tooltipContent = (
     <div 
-      className="w-64 p-3 bg-white rounded-lg shadow-xl border-0"
+      className="w-64 p-3 bg-white rounded shadow-xl border-0"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="mb-2 font-semibold text-gray-900 text-sm">
@@ -286,7 +286,7 @@ export function MixedLineItem({
           <div className="pt-3 border-t border-gray-100/80">
             <a
               href={href}
-              className="flex items-center justify-center gap-2 w-full py-2 px-3 bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium text-sm rounded-lg transition-colors"
+              className="flex items-center justify-center gap-2 w-full py-2 px-3 bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium text-sm rounded transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 setShowModal(false);
@@ -315,7 +315,7 @@ export function MixedLineItem({
           initial={{ width: 0 }}
           animate={{ width: `${clicksWidth}%` }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className={`h-3/4 ${leads === 0 && saleAmount === 0 ? 'rounded-md' : 'rounded-l-md'} bg-[#D6E2FF] relative overflow-hidden`}
+          className={`h-3/4 ${leads === 0 && saleAmount === 0 ? 'rounded' : 'rounded-l-md'} bg-[#D6E2FF] relative overflow-hidden`}
           style={{
             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
           }}

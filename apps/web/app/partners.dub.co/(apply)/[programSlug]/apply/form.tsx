@@ -100,9 +100,9 @@ export function ProgramApplicationForm({
         <input
           type="text"
           className={cn(
-            "mt-2 block w-full rounded-md focus:outline-none sm:text-sm",
+            "mt-2 block w-full rounded focus:outline-none sm:text-sm",
             errors.name
-              ? "border-red-400 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
+              ? "border-red-400 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
               : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-[var(--brand)] focus:ring-[var(--brand)]",
           )}
           placeholder="Acme, Inc."
@@ -118,9 +118,9 @@ export function ProgramApplicationForm({
         <input
           type="email"
           className={cn(
-            "mt-2 block w-full rounded-md focus:outline-none sm:text-sm",
+            "mt-2 block w-full rounded focus:outline-none sm:text-sm",
             errors.email
-              ? "border-red-400 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
+              ? "border-red-400 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
               : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-[var(--brand)] focus:ring-[var(--brand)]",
           )}
           placeholder="cheers@pimms.io"
@@ -138,9 +138,9 @@ export function ProgramApplicationForm({
         <input
           type="text"
           className={cn(
-            "mt-2 block w-full rounded-md focus:outline-none sm:text-sm",
+            "mt-2 block w-full rounded focus:outline-none sm:text-sm",
             errors.website
-              ? "border-red-400 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
+              ? "border-red-400 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
               : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-[var(--brand)] focus:ring-[var(--brand)]",
           )}
           placeholder="https://example.com"
@@ -154,9 +154,9 @@ export function ProgramApplicationForm({
         </span>
         <ReactTextareaAutosize
           className={cn(
-            "mt-2 block max-h-48 min-h-12 w-full rounded-md focus:outline-none sm:text-sm",
+            "mt-2 block max-h-48 min-h-12 w-full rounded focus:outline-none sm:text-sm",
             errors.proposal
-              ? "border-red-400 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
+              ? "border-red-400 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
               : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-[var(--brand)] focus:ring-[var(--brand)]",
           )}
           placeholder=""
@@ -172,9 +172,9 @@ export function ProgramApplicationForm({
         </span>
         <ReactTextareaAutosize
           className={cn(
-            "mt-2 block max-h-48 min-h-12 w-full rounded-md focus:outline-none sm:text-sm",
+            "mt-2 block max-h-48 min-h-12 w-full rounded focus:outline-none sm:text-sm",
             errors.comments
-              ? "border-red-400 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
+              ? "border-red-400 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
               : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-[var(--brand)] focus:ring-[var(--brand)]",
           )}
           placeholder=""
@@ -190,7 +190,7 @@ export function ProgramApplicationForm({
             id="ageVerification"
             className={cn(
               "h-4 w-4 rounded border-neutral-300 text-[var(--brand)] focus:ring-[var(--brand)]",
-              errors.ageVerification && "border-red-400 focus:ring-red-500",
+              errors.ageVerification && "border-red-400 focus:ring-0",
             )}
             {...register("ageVerification", {
               required: true,
@@ -209,7 +209,7 @@ export function ProgramApplicationForm({
             id="termsAgreement"
             className={cn(
               "h-4 w-4 rounded border-neutral-300 text-[var(--brand)] focus:ring-[var(--brand)]",
-              errors.termsAgreement && "border-red-400 focus:ring-red-500",
+              errors.termsAgreement && "border-red-400 focus:ring-0",
             )}
             {...register("termsAgreement", { required: true })}
           />

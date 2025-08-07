@@ -36,7 +36,7 @@ export function FailedPayment({
       <Preview>{title}</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border border-solid border-neutral-100 px-10 py-5">
             <Section className="my-8">
               <Img src={DUB_WORDMARK} height="14" alt="PIMMS" className="my-0" />
             </Section>
@@ -56,7 +56,7 @@ export function FailedPayment({
             </Text>
             <Section className="my-8 text-center">
               <Link
-                className="px-5 py-3 bg-[#dc2e65] text-white font-semibold outline outline-[6px] transition outline-[#ffeaf1] cursor-pointer no-underline rounded-xl"
+                className="px-5 py-3 bg-[#3971ff] text-white font-semibold text-md cursor-pointer no-underline rounded border-none transition duration-500 hover:opacity-90"
                 href={`https://app.pimms.io/${workspace.slug}/settings/billing`}
               >
                 Update payment information

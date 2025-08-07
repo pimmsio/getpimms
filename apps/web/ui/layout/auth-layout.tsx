@@ -61,13 +61,13 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
       </div>
 
       <div className="hidden h-full flex-col justify-center space-y-12 md:col-span-2 md:flex bg-white shadow-[inset_0_0_10px_0_rgba(0,0,0,0.1)] overflow-hidden">
-        <div className="ml-12 h-1/2 w-[140%] rounded-xl shadow-md">
+        <div className="ml-12 h-1/2 w-[140%] rounded shadow-md">
           <BlurImage
             alt="PIMMS Analytics"
             src="https://assets.pimms.io/dashboard.jpg?v=3"
             width={2400}
             height={1260}
-            className="aspect-[2400/1260] h-full rounded-lg object-cover object-left-top"
+            className="aspect-[2400/1260] h-full rounded object-cover object-left-top"
           />
         </div>
         {/* <a

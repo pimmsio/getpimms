@@ -68,7 +68,7 @@ export function LinkBuilderHeader({
 
     if (folderId && folderId !== "unsorted" && folder?.id !== folderId)
       return (
-        <div className="h-7 w-24 animate-pulse rounded-md bg-neutral-200" />
+        <div className="h-7 w-24 animate-pulse rounded bg-neutral-200" />
       );
 
     let selectedFolder =
@@ -99,7 +99,7 @@ export function LinkBuilderHeader({
             {linkToFolder && canAddFolder ? (
               <Link
                 href={`/${workspace.slug}/links?folderId=${folderId ?? "unsorted"}`}
-                className="flex min-w-0 items-center gap-2 rounded-md py-1 pl-1 pr-2 hover:bg-neutral-100"
+                className="flex min-w-0 items-center gap-2 rounded py-1 pl-1 pr-2 hover:bg-neutral-100"
                 onClick={
                   isDirty
                     ? (e) => {

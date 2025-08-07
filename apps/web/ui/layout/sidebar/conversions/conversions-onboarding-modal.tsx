@@ -164,7 +164,7 @@ function PaymentProcessorSelection() {
           <button
             key={index}
             type="button"
-            className="group flex flex-col items-center rounded-lg bg-neutral-200/40 p-8 pb-6 transition-colors duration-100 hover:bg-neutral-200/60"
+            className="group flex flex-col items-center rounded bg-neutral-200/40 p-8 pb-6 transition-colors duration-100 hover:bg-neutral-200/60"
             onClick={() => {
               setPaymentProcessorIndex(index);
             }}
@@ -195,7 +195,7 @@ function Docs() {
     <div>
       <div className="flex grid-cols-2 gap-12 sm:grid sm:gap-4">
         <div>
-          <div className="flex size-12 items-center justify-center rounded-lg border border-neutral-200 text-neutral-900">
+          <div className="flex size-12 items-center justify-center rounded border border-neutral-200 text-neutral-900">
             <paymentProcessor.icon className="size-8" />
           </div>
           <h3 className="mt-6 text-lg font-semibold text-neutral-800">
@@ -220,14 +220,14 @@ function Docs() {
             key={label}
             href={url || "https://dub.co/docs/conversions/quickstart"}
             target="_blank"
-            className="group flex flex-col items-center rounded-lg bg-neutral-200/40 pb-4 pt-6 transition-colors duration-100 hover:bg-neutral-200/60"
+            className="group flex flex-col items-center rounded bg-neutral-200/40 pb-4 pt-6 transition-colors duration-100 hover:bg-neutral-200/60"
           >
             <div className="flex w-full justify-center px-6">
               {thumbnail ? (
                 <BlurImage
                   src={thumbnail}
                   alt={`${label} thumbnail`}
-                  className="aspect-[1200/630] w-full max-w-[240px] rounded-lg bg-neutral-800 object-cover"
+                  className="aspect-[1200/630] w-full max-w-[240px] rounded bg-neutral-800 object-cover"
                   width={1200}
                   height={630}
                 />
@@ -242,8 +242,8 @@ function Docs() {
           </Link>
         ))}
       </div>
-      <div className="mt-4 flex items-start gap-3 rounded-lg border border-neutral-300 p-4">
-        <div className="hidden rounded-md border border-neutral-300 p-1.5 sm:block">
+      <div className="mt-4 flex items-start gap-3 rounded border border-neutral-300 p-4">
+        <div className="hidden rounded border border-neutral-300 p-1.5 sm:block">
           <SquareChart className="size-5" />
         </div>
         <div>

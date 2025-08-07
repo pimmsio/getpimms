@@ -92,7 +92,7 @@ export function ConfigureWebhook({
 
   return (
     <form onSubmit={onSubmit}>
-      <div className="w-full rounded-xl border-[6px] border-neutral-100 bg-white">
+      <div className="w-full rounded border border-neutral-100 bg-white">
         <div className="flex items-center gap-x-2 border-b-[6px] border-neutral-100 px-6 py-4">
           <Link className="size-4" />
           <p className="text-sm font-medium text-neutral-700">Webhook events</p>
@@ -212,7 +212,7 @@ export function ConfigureWebhook({
           </div>
         </div>
 
-        <div className="flex items-center justify-end rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-50 px-4 py-3">
+        <div className="flex items-center justify-end rounded-b border-t-[6px] border-neutral-100 bg-neutral-50 px-4 py-3">
           <div className="shrink-0">
             <Button
               text="Save changes"

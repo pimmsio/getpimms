@@ -108,7 +108,7 @@ export function NewSaleAlertProgramOwner({
       <Preview>You received a sale from a customer referred! 💰</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border border-solid border-neutral-100 px-10 py-5">
             <Section className="my-8">
               <Img
                 src={program.logo || "https://assets.pimms.io/logo.png"}
@@ -133,7 +133,7 @@ export function NewSaleAlertProgramOwner({
             </Text>
 
             <Section className="my-8 w-full">
-              <div className="rounded-xl border-[6px] border-neutral-100">
+              <div className="rounded border border-neutral-100">
                 <Row>
                   <Column>
                     <Text className="m-0 text-sm leading-6 text-neutral-600">

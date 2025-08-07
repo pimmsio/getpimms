@@ -80,7 +80,7 @@ export function NavMobile({
           open && "block",
         )}
       >
-        <ul className="grid divide-y-[6px] divide-neutral-100 dark:divide-white/[0.15]">
+        <ul className="grid divide-y divide-neutral-100 dark:divide-white/[0.15]">
           {navItems.map(({ name, href, childItems }, idx) => (
             <MobileNavItem
               key={idx}
@@ -231,7 +231,7 @@ const ChildItem = ({
     >
       <div
         className={cn(
-          "flex size-10 items-center justify-center rounded-xl border-[6px] border-neutral-100 bg-gradient-to-t from-neutral-100",
+          "flex size-10 items-center justify-center rounded border border-neutral-100 bg-gradient-to-t from-neutral-100",
           size === "small" && "size-8",
         )}
       >
@@ -263,7 +263,7 @@ export function AuthButton({
     <Link
       {...rest}
       className={cn(
-        "flex h-8 w-fit items-center whitespace-nowrap rounded-xl border-[6px] px-3 text-[0.8125rem]",
+        "flex h-8 w-fit items-center whitespace-nowrap rounded border px-3 text-[0.8125rem]",
         buttonVariants({ variant }),
         className,
       )}

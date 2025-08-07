@@ -64,7 +64,7 @@ function PayoutDetailsSheetContent({
               payout.program.logo || `${OG_AVATAR_URL}${payout.program.name}`
             }
             alt={payout.program.name}
-            className="mr-1.5 size-4 rounded-sm"
+            className="mr-1.5 size-4 rounded"
           />
           <span>{payout.program.name}</span>
           <ExpandingArrow className="size-3" />
@@ -193,7 +193,7 @@ function PayoutDetailsSheetContent({
                     target="_blank"
                     className={cn(
                       buttonVariants({ variant: "secondary" }),
-                      "flex h-7 items-center rounded-xl border-[3px] px-2 text-sm",
+                      "flex h-7 items-center rounded border px-2 text-sm",
                     )}
                   >
                     View all

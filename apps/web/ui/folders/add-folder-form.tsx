@@ -59,7 +59,7 @@ export const AddFolderForm = ({ onSuccess, onCancel }: AddFolderFormProps) => {
 
   const selectDropdown = (
     <select
-      className="h-full rounded-md rounded-l-none border-0 border-l border-neutral-300 bg-white py-2 pl-2 pr-8 text-xs text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-0"
+      className="h-full rounded rounded-l-none border-0 border-l border-neutral-300 bg-white py-2 pl-2 pr-8 text-xs text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-0"
       value={accessLevel}
       onChange={(e) => setAccessLevel(e.target.value as FolderAccessLevel)}
       disabled={!canManageFolderPermissions}
@@ -98,12 +98,12 @@ export const AddFolderForm = ({ onSuccess, onCancel }: AddFolderFormProps) => {
                 <label className="text-sm font-normal text-neutral-500">
                   Name
                 </label>
-                <div className="mt-2 flex rounded-xl border-[2px] border-neutral-300 bg-white">
+                <div className="mt-2 flex rounded border border-neutral-300 bg-white">
                   <input
                     type="text"
                     required
                     autoComplete="off"
-                    className="block w-full rounded-md border-0 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-0 sm:text-sm"
+                    className="block w-full rounded border-0 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-0 sm:text-sm"
                     aria-invalid="true"
                     placeholder="Acme Links"
                     autoFocus={!isMobile}
@@ -123,7 +123,7 @@ export const AddFolderForm = ({ onSuccess, onCancel }: AddFolderFormProps) => {
                 <label className="text-sm font-normal text-neutral-500">
                   Workspace access
                 </label>
-                <div className="mt-2 flex h-10 items-center justify-between rounded-xl border-[2px] border-neutral-300 bg-white">
+                <div className="mt-2 flex h-10 items-center justify-between rounded border border-neutral-300 bg-white">
                   <div className="flex items-center gap-2 pl-2">
                     <BlurImage
                       src={workspace.logo || `${OG_AVATAR_URL}${name}`}

@@ -25,7 +25,7 @@ export default function DashboardPasswordForm() {
         <label htmlFor="password" className="block text-xs text-neutral-600">
           PASSWORD
         </label>
-        <div className="relative mt-1 rounded-md shadow-sm">
+        <div className="relative mt-1 rounded shadow-sm">
           <input type="hidden" name="dashboardId" value={dashboardId} />
           <input
             type="password"
@@ -35,9 +35,9 @@ export default function DashboardPasswordForm() {
             required
             className={`${
               state.error
-                ? "border-red-300 pr-10 text-red-500 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
-                : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-500"
-            } block w-full rounded-md focus:outline-none sm:text-sm`}
+                ? "border-red-300 pr-10 text-red-500 placeholder-red-300 focus:border-red-500 focus:ring-0"
+                : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0"
+            } block w-full rounded focus:outline-none sm:text-sm`}
           />
           {state.error && (
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">

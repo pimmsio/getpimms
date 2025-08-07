@@ -50,7 +50,7 @@ export default function WorkspacePeopleClient() {
     <>
       <InviteTeammateModal />
       <InviteCodeModal />
-      <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
+      <div className="rounded border border-neutral-100 bg-white">
         <div className="flex flex-col items-center justify-between space-y-3 p-5 sm:flex-row sm:space-y-0 sm:p-10">
           <div className="flex flex-col space-y-3">
             <h2 className="text-xl font-medium">People</h2>
@@ -96,14 +96,14 @@ export default function WorkspacePeopleClient() {
             >
               <button
                 onClick={() => setCurrentTab(tab)}
-                className="rounded-md px-3 py-1.5 text-sm transition-all duration-75 hover:bg-neutral-100 active:bg-neutral-200"
+                className="rounded px-3 py-1.5 text-sm transition-all duration-75 hover:bg-neutral-100 active:bg-neutral-200"
               >
                 {tab}
               </button>
             </div>
           ))}
         </div>
-        <div className="grid divide-y-[6px] divide-neutral-100">
+        <div className="grid divide-y divide-neutral-100">
           {users ? (
             users.length > 0 ? (
               users.map((user) => (
@@ -116,7 +116,7 @@ export default function WorkspacePeopleClient() {
                 cardContent={() => (
                   <>
                     <UserCheck className="size-4 text-neutral-700" />
-                    <div className="h-2.5 w-24 min-w-0 rounded-sm bg-neutral-200" />
+                    <div className="h-2.5 w-24 min-w-0 rounded bg-neutral-200" />
                   </>
                 )}
                 className="border-none"
@@ -208,7 +208,7 @@ const UserCard = ({
               !isMachine && (
                 <select
                   className={cn(
-                    "rounded-xl border-[2px] border-neutral-100 text-xs text-neutral-500 focus:border-neutral-600 focus:ring-neutral-600",
+                    "rounded border border-neutral-100 text-xs text-neutral-500 focus:border-neutral-600 focus:ring-neutral-600",
                     {
                       "cursor-not-allowed bg-neutral-100": permissionsError,
                     },
@@ -264,7 +264,7 @@ const UserCard = ({
                     setOpenPopover(false);
                     setShowRemoveTeammateModal(true);
                   }}
-                  className="rounded-md p-2 text-left text-sm font-medium text-red-600 transition-all duration-75 hover:bg-red-600 hover:text-white"
+                  className="rounded p-2 text-left text-sm font-medium text-red-600 transition-all duration-75 hover:bg-red-600 hover:text-white"
                 >
                   <IconMenu
                     text={

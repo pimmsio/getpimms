@@ -244,7 +244,7 @@ export const GET = withSession(async ({ session, params }) => {
 
         <View
           style={tw(
-            "flex-row justify-between border-[6px] border-neutral-100 rounded-xl mb-6",
+            "flex-row justify-between border border-neutral-100 rounded mb-6",
           )}
         >
           <View style={tw("flex-col gap-2 w-1/2 p-4")}>
@@ -273,7 +273,7 @@ export const GET = withSession(async ({ session, params }) => {
           </View>
         </View>
 
-        <View style={tw("mb-6 border-[6px] border-neutral-100 rounded-xl")}>
+        <View style={tw("mb-6 border border-neutral-100 rounded")}>
           <View style={tw("flex-row border-neutral-200 border-b")}>
             <Text
               style={tw("w-2/6 p-3.5 text-sm font-medium text-neutral-700")}
@@ -344,7 +344,7 @@ export const GET = withSession(async ({ session, params }) => {
 
         <View
           style={tw(
-            "flex-col gap-2 mb-10 p-4 border border-neutral-100 rounded-xl bg-neutral-50",
+            "flex-col gap-2 mb-10 p-4 border border-neutral-100 rounded bg-neutral-50",
           )}
         >
           {invoiceSummaryDetails.map((row) => (

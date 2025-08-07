@@ -67,7 +67,7 @@ export function ReferralsEmbedLeaderboard() {
         cardContent={() => (
           <>
             <Users className="text-content-default size-4" />
-            <div className="bg-bg-emphasis h-2.5 w-24 min-w-0 rounded-sm" />
+            <div className="bg-bg-emphasis h-2.5 w-24 min-w-0 rounded" />
           </>
         )}
         className="border-none md:min-h-fit"
@@ -80,7 +80,7 @@ export function ReferralsEmbedLeaderboard() {
 
   return (
     <motion.div
-      className="border-border-subtle relative rounded-md border"
+      className="border-border-subtle relative rounded border"
       {...TAB_ITEM_ANIMATION_SETTINGS}
     >
       <Table
@@ -88,7 +88,7 @@ export function ReferralsEmbedLeaderboard() {
         table={table}
         containerClassName="border-none max-h-[26rem] overflow-auto"
       />
-      <div className="from-bg-default pointer-events-none absolute -bottom-px left-0 h-16 w-full rounded-b-lg bg-gradient-to-t sm:bottom-0" />
+      <div className="from-bg-default pointer-events-none absolute -bottom-px left-0 h-16 w-full rounded-b bg-gradient-to-t sm:bottom-0" />
     </motion.div>
   );
 }

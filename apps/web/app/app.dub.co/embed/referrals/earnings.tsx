@@ -98,7 +98,7 @@ export function ReferralsEmbedEarnings({ salesCount }: { salesCount: number }) {
       <Table
         {...tableProps}
         table={table}
-        containerClassName="rounded-md border border-border-subtle"
+        containerClassName="rounded border border-border-subtle"
         scrollWrapperClassName="min-h-[22rem]"
       />
     </motion.div>

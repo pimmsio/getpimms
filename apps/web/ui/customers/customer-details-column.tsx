@@ -59,7 +59,7 @@ export function CustomerDetailsColumn({
             </ConditionalLink>
           )
         ) : (
-          <div className="h-5 w-24 animate-pulse rounded-md bg-neutral-100" />
+          <div className="h-5 w-24 animate-pulse rounded bg-neutral-100" />
         )}
         {click
           ? [
@@ -112,7 +112,7 @@ export function CustomerDetailsColumn({
                 </ConditionalLink>
               ))
           : (isCustomerActivityLoading || !customer) && (
-              <div className="h-5 w-12 animate-pulse rounded-md bg-neutral-100" />
+              <div className="h-5 w-12 animate-pulse rounded bg-neutral-100" />
             )}
       </div>
 
@@ -127,7 +127,7 @@ export function CustomerDetailsColumn({
             })}
           </span>
         ) : (
-          <div className="h-5 w-12 animate-pulse rounded-md bg-neutral-100" />
+          <div className="h-5 w-12 animate-pulse rounded bg-neutral-100" />
         )}
       </div>
 
@@ -151,7 +151,7 @@ export function CustomerDetailsColumn({
       <div className="flex flex-col gap-2">
         <DetailHeading>Lifetime value</DetailHeading>
         {!customer || isCustomerActivityLoading ? (
-          <div className="h-5 w-12 animate-pulse rounded-md bg-neutral-100" />
+          <div className="h-5 w-12 animate-pulse rounded bg-neutral-100" />
         ) : (
           <span>
             {customerActivity?.ltv !== undefined
@@ -167,7 +167,7 @@ export function CustomerDetailsColumn({
       <div className="flex flex-col gap-2">
         <DetailHeading>Referral link</DetailHeading>
         {!customer || isCustomerActivityLoading ? (
-          <div className="h-5 w-12 animate-pulse rounded-md bg-neutral-100" />
+          <div className="h-5 w-12 animate-pulse rounded bg-neutral-100" />
         ) : link ? (
           <ConditionalLink
             href={`/${programSlug ? `programs/${programSlug}` : slug}/analytics?domain=${link.domain}&key=${link.key}`}

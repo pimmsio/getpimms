@@ -80,7 +80,7 @@ export function DefaultDomains() {
           return (
             <div
               key={slug}
-              className="flex items-center justify-between gap-4 rounded-xl border-[6px] border-neutral-100 bg-white p-5"
+              className="flex items-center justify-between gap-4 rounded border border-neutral-100 bg-white p-5"
             >
               <DomainCardTitleColumn
                 domain={slug}

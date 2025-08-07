@@ -97,7 +97,7 @@ export default async function PasswordProtectedLinkPage({
       <NewBackground />
       <main className="relative mb-10 flex w-screen flex-col items-center">
         <Wordmark className="mt-6 h-8" />
-        <div className="z-10 mt-8 w-full max-w-[400px] overflow-hidden rounded-2xl border-[6px] border-neutral-100 shadow-sm md:mt-24">
+        <div className="z-10 mt-8 w-full max-w-[400px] overflow-hidden rounded border border-neutral-100 shadow-sm md:mt-24">
           <div className="flex flex-col items-center justify-center gap-3 border-b-[6px] border-neutral-100 bg-white px-4 py-6 text-center">
             {link.project?.logo ? (
               <BlurImage

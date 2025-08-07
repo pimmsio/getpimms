@@ -19,11 +19,11 @@ import { toast } from "sonner";
 
 export function ResourceCardSkeleton() {
   return (
-    <div className="border-border-subtle flex w-full items-center gap-4 rounded-xl border-[6px] p-4">
-      <div className="bg-bg-emphasis flex size-10 shrink-0 animate-pulse items-center justify-center rounded-md" />
+    <div className="border-border-subtle flex w-full items-center gap-4 rounded border p-4">
+      <div className="bg-bg-emphasis flex size-10 shrink-0 animate-pulse items-center justify-center rounded" />
       <div className="flex min-w-0 animate-pulse flex-col gap-1">
-        <div className="bg-bg-emphasis h-4 w-32 max-w-full rounded-md" />
-        <div className="bg-bg-emphasis h-4 w-16 max-w-full rounded-md" />
+        <div className="bg-bg-emphasis h-4 w-32 max-w-full rounded" />
+        <div className="bg-bg-emphasis h-4 w-16 max-w-full rounded" />
       </div>
     </div>
   );
@@ -52,9 +52,9 @@ export function ResourceCard({
   const [copied, copyToClipboard] = useCopyToClipboard();
 
   return (
-    <div className="border-border-subtle flex w-full items-center justify-between gap-4 rounded-xl border-[6px] p-4 shadow-sm">
+    <div className="border-border-subtle flex w-full items-center justify-between gap-4 rounded border p-4 shadow-sm">
       <div className="flex min-w-0 items-center gap-4">
-        <div className="border-border-subtle flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md border">
+        <div className="border-border-subtle flex size-10 shrink-0 items-center justify-center overflow-hidden rounded border">
           {icon}
         </div>
         <div className="flex min-w-0 flex-col">
@@ -83,7 +83,7 @@ export function ResourceCard({
                         })}
                     className={cn(
                       buttonVariants({ variant: "outline" }),
-                      "flex h-9 items-center justify-start gap-2 rounded-md px-2 text-sm font-medium",
+                      "flex h-9 items-center justify-start gap-2 rounded px-2 text-sm font-medium",
                     )}
                     onClick={() => setOpenPopover(false)}
                   >
@@ -165,7 +165,7 @@ export function ResourceCard({
                     })}
                 className={cn(
                   buttonVariants({ variant: "secondary" }),
-                  "flex h-8 items-center justify-start gap-2 rounded-md border px-2 text-sm",
+                  "flex h-8 items-center justify-start gap-2 rounded border px-2 text-sm",
                 )}
                 onClick={() => setOpenPopover(false)}
               >

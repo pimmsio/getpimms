@@ -62,7 +62,7 @@ function DomainVerificationModalInner({
           DNS provider:
         </p>
 
-        <div className="mt-4 flex flex-col gap-2 rounded-xl border-[6px] border-neutral-100 p-4 text-sm text-neutral-600">
+        <div className="mt-4 flex flex-col gap-2 rounded border border-neutral-100 p-4 text-sm text-neutral-600">
           <div className="flex justify-between gap-12">
             <div className="font-medium text-neutral-800">Type</div>
             <div className="font-mono">TXT</div>

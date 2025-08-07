@@ -103,7 +103,7 @@ function LinksSettingsForm({ program }: { program: ProgramProps }) {
 
   return (
     <form
-      className="rounded-xl border-[6px] border-neutral-100 bg-white"
+      className="rounded border border-neutral-100 bg-white"
       onSubmit={handleSubmit(async (data) => {
         await executeAsync({
           ...data,
@@ -115,7 +115,7 @@ function LinksSettingsForm({ program }: { program: ProgramProps }) {
         reset({}, { keepValues: true });
       })}
     >
-      <div className="divide-y-[6px] divide-neutral-100 px-6">
+      <div className="divide-y divide-neutral-100 px-6">
         <SettingsRow heading="Default Referral Link">
           <div className="flex flex-col gap-6">
             <div>
@@ -125,9 +125,9 @@ function LinksSettingsForm({ program }: { program: ProgramProps }) {
               >
                 Default domain
               </label>
-              <div className="relative mt-2 rounded-md shadow-sm">
+              <div className="relative mt-2 rounded shadow-sm">
                 <select
-                  className="block w-full rounded-md border-neutral-300 text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                  className="block w-full rounded border-neutral-300 text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
                   {...register("domain", {
                     required: true,
                   })}
@@ -154,12 +154,12 @@ function LinksSettingsForm({ program }: { program: ProgramProps }) {
               >
                 Destination URL
               </label>
-              <div className="mt-2 rounded-md shadow-sm">
+              <div className="mt-2 rounded shadow-sm">
                 <input
                   type="url"
                   placeholder="https://example.com"
                   className={cn(
-                    "block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                    "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                   )}
                   {...register("url", {
                     required: true,
@@ -179,7 +179,7 @@ function LinksSettingsForm({ program }: { program: ProgramProps }) {
                 <label
                   key={type.label}
                   className={cn(
-                    "relative flex w-full cursor-pointer items-start gap-0.5 rounded-xl border-[2px] border-neutral-100 bg-white p-3 text-neutral-600",
+                    "relative flex w-full cursor-pointer items-start gap-0.5 rounded border border-neutral-100 bg-white p-3 text-neutral-600",
                     type.comingSoon
                       ? "cursor-default opacity-80"
                       : "hover:bg-neutral-50",
@@ -219,9 +219,9 @@ function LinksSettingsForm({ program }: { program: ProgramProps }) {
               <span className="text-sm font-medium text-neutral-800">
                 Cookie length
               </span>
-              <div className="relative mt-2 rounded-md shadow-sm">
+              <div className="relative mt-2 rounded shadow-sm">
                 <select
-                  className="block w-full rounded-md border-neutral-300 text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                  className="block w-full rounded border-neutral-300 text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
                   {...register("cookieLength", {
                     required: true,
                     valueAsNumber: true,
@@ -267,10 +267,10 @@ function LinksSettingsForm({ program }: { program: ProgramProps }) {
               >
                 Default Folder
               </label>
-              <div className="relative mt-2 rounded-md shadow-sm">
+              <div className="relative mt-2 rounded shadow-sm">
                 <select
                   className={cn(
-                    "block w-full rounded-md border-neutral-300 text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                    "block w-full rounded border-neutral-300 text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                     loadingFolders && "opacity-50",
                   )}
                   {...register("defaultFolderId", {
@@ -295,7 +295,7 @@ function LinksSettingsForm({ program }: { program: ProgramProps }) {
         </SettingsRow>
       </div>
 
-      <div className="flex items-center justify-end rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-50 px-6 py-5">
+      <div className="flex items-center justify-end rounded-b border-t-[6px] border-neutral-100 bg-neutral-50 px-6 py-5">
         <div>
           <Button
             text="Save changes"

@@ -123,10 +123,10 @@ function BanPartnerModal({
           <label htmlFor="reason" className="flex items-center space-x-2">
             <h2 className="text-sm font-medium text-neutral-900">Ban reason</h2>
           </label>
-          <div className="relative mt-2 rounded-md shadow-sm">
+          <div className="relative mt-2 rounded shadow-sm">
             <select
               className={cn(
-                "block w-full rounded-md border-neutral-300 text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                "block w-full rounded border-neutral-300 text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                 errors.reason && "border-red-600",
               )}
               {...register("reason", {
@@ -151,10 +151,10 @@ function BanPartnerModal({
               To verify, type <strong>confirm ban {partner.name}</strong> below
             </h2>
           </label>
-          <div className="relative mt-2 rounded-md shadow-sm">
+          <div className="relative mt-2 rounded shadow-sm">
             <input
               className={cn(
-                "block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                 errors.confirm && "border-red-600",
               )}
               placeholder={`confirm ban ${partner.name}`}

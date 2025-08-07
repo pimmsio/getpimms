@@ -80,7 +80,7 @@ export const VerifyEmailForm = () => {
                         "border-y border-r border-neutral-200 bg-white first:rounded-l-lg first:border-l last:rounded-r-lg",
                         "ring-0 transition-all",
                         isActive &&
-                          "z-10 border border-neutral-500 ring-2 ring-neutral-200",
+                          "z-10 border border-neutral-500 ring-2 ring-transparent",
                         isInvalidCode && "border-red-500 ring-red-200",
                       )}
                     >

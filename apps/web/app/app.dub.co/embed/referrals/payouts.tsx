@@ -10,7 +10,7 @@ export function ReferralsEmbedPayouts({
   programSlug: string;
 }) {
   return (
-    <div className="border-border-subtle bg-bg-default flex flex-col justify-between gap-4 rounded-xl border-[6px] p-4">
+    <div className="border-border-subtle bg-bg-default flex flex-col justify-between gap-4 rounded border p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1">
           <p className="text-content-subtle text-sm">Payouts</p>

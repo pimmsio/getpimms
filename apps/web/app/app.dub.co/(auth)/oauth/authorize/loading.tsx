@@ -3,10 +3,10 @@ import { ArrowLeftRight } from "lucide-react";
 
 export default function AuthorizeLoading() {
   return (
-    <div className="relative z-10 m-auto w-full max-w-md border-y border-neutral-200 sm:rounded-2xl sm:border sm:shadow-xl">
+    <div className="relative z-10 m-auto w-full max-w-md border-y border-neutral-200 sm:rounded sm:border sm:shadow-xl">
       <div className="flex flex-col items-center justify-center gap-3 border-b-[6px] border-neutral-100 bg-white px-4 py-6 pt-8 text-center sm:rounded-t-2xl sm:px-16">
         <div className="flex items-center gap-3">
-          <div className="size-12 rounded-full border-[6px] border-neutral-100 bg-gradient-to-t from-neutral-100" />
+          <div className="size-12 rounded-full border border-neutral-100 bg-gradient-to-t from-neutral-100" />
           <ArrowLeftRight className="size-5 text-neutral-300" />
           <Logo className="size-12 text-neutral-700" />
         </div>

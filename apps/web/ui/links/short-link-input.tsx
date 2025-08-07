@@ -264,7 +264,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
             </div>
           )}
         </div>
-        <div className="relative mt-1 flex rounded-xl shadow-sm">
+        <div className="relative mt-1 flex rounded shadow-sm">
           <div className="z-[1]">
             <DomainCombobox
               domain={domain}
@@ -293,10 +293,10 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
             autoComplete="off"
             autoCapitalize="none"
             className={cn(
-              "block w-full rounded-r-xl border-2 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
+              "block w-full rounded-r-xl border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
               "z-0 focus:z-[1]",
               {
-                "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500":
+                "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0":
                   error,
                 "border-amber-300 pr-10 text-amber-900 placeholder-amber-300 focus:border-amber-500 focus:ring-amber-500":
                   isLongLink,
@@ -528,7 +528,7 @@ function DomainCombobox({
         className: cn(
           "w-32 sm:w-40 h-full rounded-l-xl rounded-r-none border-r-transparent justify-start px-2.5",
           "data-[state=open]:ring-0 data-[state=open]:ring-neutral-500 data-[state=open]:border-neutral-500",
-          "focus:ring-0 focus:ring-neutral-500 focus:border-neutral-500 transition-none",
+          "focus:ring-0 focus:ring-0 focus:border-neutral-500 transition-none",
         ),
       }}
       optionClassName="sm:max-w-[225px]"

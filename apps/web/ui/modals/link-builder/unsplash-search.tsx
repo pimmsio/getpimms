@@ -34,7 +34,7 @@ export default function UnsplashSearch({
       // Fixes a Webkit issue where elements outside of the visible area are still interactable
       style={{ WebkitClipPath: "inset(0 0 0 0)" }}
     >
-      <div className="relative mt-1 rounded-md shadow-sm">
+      <div className="relative mt-1 rounded shadow-sm">
         <input
           type="text"
           name="search"
@@ -44,7 +44,7 @@ export default function UnsplashSearch({
           autoComplete="off"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="block w-full rounded-md border-neutral-300 py-1 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+          className="block w-full rounded border-neutral-300 py-1 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
         />
       </div>
       {data ? (
@@ -67,7 +67,7 @@ export default function UnsplashSearch({
                     }),
                   });
                 }}
-                className="relative flex h-24 w-full items-center justify-center overflow-hidden rounded-md bg-neutral-100 transition-all hover:brightness-75"
+                className="relative flex h-24 w-full items-center justify-center overflow-hidden rounded bg-neutral-100 transition-all hover:brightness-75"
               >
                 <img
                   src={photo.urls.small}

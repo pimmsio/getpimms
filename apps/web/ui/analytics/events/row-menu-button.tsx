@@ -69,7 +69,7 @@ function MenuItem({
   return (
     <Command.Item
       className={cn(
-        "flex cursor-pointer select-none items-center gap-2 whitespace-nowrap rounded-md px-3.5 py-2 text-sm text-neutral-950",
+        "flex cursor-pointer select-none items-center gap-2 whitespace-nowrap rounded px-3.5 py-2 text-sm text-neutral-950",
         "data-[selected=true]:bg-neutral-100",
       )}
       onSelect={onSelect}

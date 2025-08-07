@@ -283,7 +283,7 @@ const CommissionTableInner = memo(
             cardContent={() => (
               <>
                 <MoneyBill2 className="size-4 text-neutral-700" />
-                <div className="h-2.5 w-24 min-w-0 rounded-sm bg-neutral-200" />
+                <div className="h-2.5 w-24 min-w-0 rounded bg-neutral-200" />
               </>
             )}
           />

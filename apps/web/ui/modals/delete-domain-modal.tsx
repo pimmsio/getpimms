@@ -79,7 +79,7 @@ function DeleteDomainModal({
             To verify, type{" "}
             <span className="font-semibold">confirm delete {domain}</span> below
           </label>
-          <div className="relative mt-1 rounded-md shadow-sm">
+          <div className="relative mt-1 rounded shadow-sm">
             <input
               type="text"
               name="verification"
@@ -88,7 +88,7 @@ function DeleteDomainModal({
               required
               autoFocus={!isMobile}
               autoComplete="off"
-              className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-300 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+              className="block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-300 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
             />
           </div>
         </div>

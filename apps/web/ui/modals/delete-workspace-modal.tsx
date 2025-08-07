@@ -84,7 +84,7 @@ function DeleteWorkspaceModal({
             <span className="font-semibold text-black">{slug}</span> to
             continue:
           </label>
-          <div className="relative mt-1 rounded-md shadow-sm">
+          <div className="relative mt-1 rounded shadow-sm">
             <input
               type="text"
               name="workspace-slug"
@@ -94,7 +94,7 @@ function DeleteWorkspaceModal({
               pattern={slug}
               disabled={!isOwner}
               className={cn(
-                "block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                 {
                   "cursor-not-allowed bg-neutral-100": !isOwner,
                 },
@@ -114,7 +114,7 @@ function DeleteWorkspaceModal({
             </span>{" "}
             below
           </label>
-          <div className="relative mt-1 rounded-md shadow-sm">
+          <div className="relative mt-1 rounded shadow-sm">
             <input
               type="text"
               name="verification"
@@ -124,7 +124,7 @@ function DeleteWorkspaceModal({
               autoComplete="off"
               disabled={!isOwner}
               className={cn(
-                "block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                 {
                   "cursor-not-allowed bg-neutral-100": !isOwner,
                 },

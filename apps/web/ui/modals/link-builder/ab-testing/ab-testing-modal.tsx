@@ -306,7 +306,7 @@ function ABTestingEdit({
               }
               side="right"
             >
-              <kbd className="flex size-6 cursor-default items-center justify-center rounded-md border border-neutral-200 font-sans text-xs text-neutral-950">
+              <kbd className="flex size-6 cursor-default items-center justify-center rounded border border-neutral-200 font-sans text-xs text-neutral-950">
                 A
               </kbd>
             </Tooltip>
@@ -332,7 +332,7 @@ function ABTestingEdit({
               <div className="flex flex-col gap-2 p-1">
                 {testVariants.map((_, index) => (
                   <div key={index} className="flex items-center gap-2">
-                    <label className="relative block flex grow items-center overflow-hidden rounded-xl border-[6px] border-neutral-200 focus-within:border-neutral-500 focus-within:ring-1 focus-within:ring-neutral-500">
+                    <label className="relative block flex grow items-center overflow-hidden rounded border border-neutral-200 focus-within:border-neutral-500 focus-within:ring-1 focus-within:ring-neutral-500">
                       <span className="flex h-9 w-8 items-center justify-center border-r border-neutral-300 text-center text-sm font-medium text-neutral-800">
                         {index + 1}
                       </span>
@@ -434,7 +434,7 @@ function ABTestingEdit({
               }
             /> */}
           </div>
-          <div className="mt-2 flex w-full items-center justify-between rounded-xl border-[6px] border-neutral-200 bg-white shadow-sm transition-all focus-within:border-neutral-800 focus-within:outline-none focus-within:ring-1 focus-within:ring-neutral-500">
+          <div className="mt-2 flex w-full items-center justify-between rounded border border-neutral-200 bg-white shadow-sm transition-all focus-within:border-neutral-800 focus-within:outline-none focus-within:ring-1 focus-within:ring-neutral-500">
             <input
               id={`${id}-testCompletedAt`}
               type="text"
@@ -477,7 +477,7 @@ function ABTestingEdit({
         </div>
 
         {testVariantsParent && (
-          <div className="mt-6 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-4">
+          <div className="mt-6 flex items-start gap-2 rounded border border-amber-200 bg-amber-50 p-4">
             <TriangleWarning className="mt-0.5 size-4 shrink-0 text-amber-500" />
             <p className="text-sm font-medium text-amber-900">
               Changing the original A/B test settings will impact your future
@@ -569,7 +569,7 @@ function ABTestingComplete({
           {testVariants?.map((test, index) => (
             <div
               key={index}
-              className="relative block flex grow items-center overflow-hidden rounded-xl border-[6px] border-neutral-200 focus-within:border-neutral-500 focus-within:ring-1 focus-within:ring-neutral-500"
+              className="relative block flex grow items-center overflow-hidden rounded border border-neutral-200 focus-within:border-neutral-500 focus-within:ring-1 focus-within:ring-neutral-500"
             >
               <span className="flex h-9 w-8 shrink-0 items-center justify-center border-r border-neutral-300 text-center text-sm font-medium text-neutral-800">
                 {index + 1}

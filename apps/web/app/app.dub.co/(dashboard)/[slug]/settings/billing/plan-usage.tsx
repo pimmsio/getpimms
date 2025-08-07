@@ -85,7 +85,7 @@ export default function PlanUsage() {
   }, [billingCycleStart]);
 
   return (
-    <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
+    <div className="rounded border border-neutral-100 bg-white">
       <div className="flex flex-col items-start justify-between gap-y-4 p-6 md:p-8 lg:flex-row">
         <div>
           <h2 className="text-xl font-medium">{capitalize(plan)} Plan</h2>
@@ -106,7 +106,7 @@ export default function PlanUsage() {
               href={`/${slug}/settings/billing/upgrade`}
               className={cn(
                 buttonVariants({ variant: "primary" }),
-                "flex h-9 w-full items-center justify-center whitespace-nowrap rounded-md border px-4 text-sm",
+                "flex h-9 w-full items-center justify-center whitespace-nowrap rounded border px-4 text-sm",
               )}
             >
               Upgrade
@@ -116,7 +116,7 @@ export default function PlanUsage() {
             href={`/${slug}/settings/billing/invoices`}
             className={cn(
               buttonVariants({ variant: "secondary" }),
-              "flex h-9 w-full items-center justify-center whitespace-nowrap rounded-md border px-4 text-sm",
+              "flex h-9 w-full items-center justify-center whitespace-nowrap rounded border px-4 text-sm",
             )}
           >
             View invoices
@@ -124,7 +124,7 @@ export default function PlanUsage() {
           {stripeId && plan !== "free" && <SubscriptionMenu />}
         </div>
       </div>
-      <div className="grid grid-cols-[minmax(0,1fr)] divide-y-[6px] divide-neutral-100 border-t-[6px] border-neutral-100">
+      <div className="grid grid-cols-[minmax(0,1fr)] divide-y divide-neutral-100 border-t-[6px] border-neutral-100">
         <div>
           <div className="grid gap-4 p-6 md:p-8 lg:gap-6 grid-cols-1 md:grid-cols-3">
             <UsageTabCard
@@ -157,10 +157,10 @@ export default function PlanUsage() {
         </div>
         {/* <div
           className={cn(
-            "grid grid-cols-1 gap-[1px] overflow-hidden rounded-b-lg bg-neutral-200 md:grid-cols-3",
+            "grid grid-cols-1 gap-[1px] overflow-hidden rounded-b bg-neutral-200 md:grid-cols-3",
             flags?.linkFolders &&
               "md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4",
-            !partnersEnabled && "rounded-b-lg",
+            !partnersEnabled && "rounded-b",
           )}
         >
           <UsageCategory
@@ -265,9 +265,9 @@ function UsageTabCard({
   return (
     <button
       className={cn(
-        "rounded-xl border-[6px] border-neutral-200 bg-white px-4 py-3 text-left transition-colors duration-75",
-        "outline-none focus-visible:border-blue-600 focus-visible:ring-1 focus-visible:ring-blue-600",
-        isActive && "border-neutral-200 ring-1 ring-neutral-200",
+        "rounded border border-neutral-200 bg-white px-4 py-3 text-left transition-colors duration-75",
+        "outline-none focus-visible:border-blue-600 focus-visible:ring-0 focus-visible:ring-blue-600",
+        isActive && "border-neutral-200 ring-1 ring-transparent",
         requiresUpgrade
           ? "border-neutral-100 bg-neutral-100 hover:bg-neutral-100"
           : "hover:bg-neutral-50 lg:px-5 lg:py-4",
@@ -293,7 +293,7 @@ function UsageTabCard({
               </div>
             }
           >
-            <span className="flex items-center gap-1 rounded-full border-[2px] border-neutral-300 px-2 py-0.5 text-xs text-neutral-500">
+            <span className="flex items-center gap-1 rounded-full border border-neutral-300 px-2 py-0.5 text-xs text-neutral-500">
               <CrownSmall className="size-" />
               Pro
             </span>
@@ -319,7 +319,7 @@ function UsageTabCard({
             }
           />
         ) : (
-          <div className="h-5 w-16 animate-pulse rounded-md bg-neutral-200" />
+          <div className="h-5 w-16 animate-pulse rounded bg-neutral-200" />
         )}
       </div>
       <div className="mt-5">
@@ -358,7 +358,7 @@ function UsageTabCard({
               : `${prefix}${nFormatter(remaining, { full: true })} remaining of ${prefix}${nFormatter(limit, { full: limit < INFINITY_NUMBER })}`}
           </span>
         ) : (
-          <div className="h-4 w-20 animate-pulse rounded-md bg-neutral-200" />
+          <div className="h-4 w-20 animate-pulse rounded bg-neutral-200" />
         )}
       </div>
     </button>
@@ -397,7 +397,7 @@ function UsageCategory(data: {
               : usage}
           </p>
         ) : (
-          <div className="size-5 animate-pulse rounded-md bg-neutral-200" />
+          <div className="size-5 animate-pulse rounded bg-neutral-200" />
         )}
         {usageLimit !== undefined && (
           <>

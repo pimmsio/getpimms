@@ -38,7 +38,7 @@ export function ProductContent({ domain }: { domain: string }) {
               domain,
               getUtmParams({ domain, utm_content: "PIMMS Links" }),
             )}
-            className="group relative flex flex-col overflow-hidden rounded-xl border border-neutral-100 bg-neutral-50 dark:border-white/20 dark:bg-white/10"
+            className="group relative flex flex-col overflow-hidden rounded border border-neutral-100 bg-neutral-50 dark:border-white/20 dark:bg-white/10"
           >
             <div className="p-5 pb-0">
               <span className="text-sm font-medium text-neutral-900 dark:text-white">
@@ -62,7 +62,7 @@ export function ProductContent({ domain }: { domain: string }) {
                 domain,
                 getUtmParams({ domain, utm_content: "PIMMS Analytics" }),
               )}
-              className="group relative flex flex-col overflow-hidden rounded-xl border border-neutral-100 bg-neutral-50 dark:border-white/20 dark:bg-white/10"
+              className="group relative flex flex-col overflow-hidden rounded border border-neutral-100 bg-neutral-50 dark:border-white/20 dark:bg-white/10"
             >
               <AnalyticsGraphic className="absolute bottom-0 h-auto w-full translate-y-[15%] [mask-image:linear-gradient(90deg,transparent,black)]" />
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,#36D78F,transparent)] opacity-[0.07] transition-opacity duration-150 group-hover:opacity-[0.2]" />
@@ -107,7 +107,7 @@ export function ProductContent({ domain }: { domain: string }) {
                   getUtmParams({ domain, utm_content: title }),
                 )}
                 icon={
-                  <div className="shrink-0 rounded-[10px] border-[6px] border-neutral-100 bg-white/50 p-2 dark:border-white/20 dark:bg-white/10">
+                  <div className="shrink-0 rounded-[10px] border border-neutral-200 bg-white/50 p-2 dark:border-white/20 dark:bg-white/10">
                     <Icon
                       className={cn(
                         "h-4 w-4 shrink-0 text-neutral-600 transition-colors dark:text-white/60",

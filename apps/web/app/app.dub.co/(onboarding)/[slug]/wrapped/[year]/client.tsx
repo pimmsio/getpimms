@@ -52,9 +52,9 @@ export default function WrappedPageClient() {
         Here's a look back at your activity in {year}:
       </p>
 
-      <div className="animate-slide-up-fade mb-4 mt-8 rounded-xl border-[6px] border-neutral-100 bg-white p-2 shadow-md [animation-delay:450ms] [animation-duration:1s] [animation-fill-mode:both]">
+      <div className="animate-slide-up-fade mb-4 mt-8 rounded border border-neutral-100 bg-white p-2 shadow-md [animation-delay:450ms] [animation-duration:1s] [animation-fill-mode:both]">
         <div
-          className="flex h-24 flex-col items-center justify-center rounded-lg"
+          className="flex h-24 flex-col items-center justify-center rounded"
           style={{
             backgroundImage: `url(https://assets.dub.co/misc/year-in-review-header.jpg)`,
             backgroundSize: "cover",
@@ -75,7 +75,7 @@ export default function WrappedPageClient() {
           ) : (
             <>
               <div className="h-8 animate-pulse rounded-full bg-neutral-200" />
-              <div className="h-5 w-12 animate-pulse rounded-md bg-neutral-200" />
+              <div className="h-5 w-12 animate-pulse rounded bg-neutral-200" />
             </>
           )}
         </div>
@@ -105,7 +105,7 @@ export default function WrappedPageClient() {
       </div>
 
       <Link
-        className="group flex flex-col gap-4 rounded-xl border-[6px] border-neutral-100 bg-white p-4 sm:flex-row"
+        className="group flex flex-col gap-4 rounded border border-neutral-100 bg-white p-4 sm:flex-row"
         href="https://dub.co/blog/2024"
         target="_blank"
       >
@@ -114,7 +114,7 @@ export default function WrappedPageClient() {
           alt="PIMMS logo with confetti"
           width={1838}
           height={1172}
-          className="w-1/3 rounded-md"
+          className="w-1/3 rounded"
           draggable={false}
         />
         <div className="flex flex-col gap-2">
@@ -174,7 +174,7 @@ const StatTable = ({
         }}
         initial="hidden"
         animate="show"
-        className="grid divide-y-[6px] divide-neutral-100 text-sm"
+        className="grid divide-y divide-neutral-100 text-sm"
       >
         {value.map(({ item, count }, index) => {
           const [domain, ...pathParts] = item.split("/");
@@ -201,7 +201,7 @@ const StatTable = ({
                 className="group flex justify-between py-1.5"
               >
                 {item === "placeholder" ? (
-                  <div className="h-4 w-12 animate-pulse rounded-md bg-neutral-200" />
+                  <div className="h-4 w-12 animate-pulse rounded bg-neutral-200" />
                 ) : (
                   <div className="flex items-center gap-2">
                     {title === "Top Countries" && (

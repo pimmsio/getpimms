@@ -156,7 +156,7 @@ function CreatePayoutSheetContent(props: CreatePayoutSheetProps) {
                   className: cn(
                     "w-full justify-start border-neutral-300 px-3",
                     "data-[state=open]:ring-1 data-[state=open]:ring-neutral-500 data-[state=open]:border-neutral-500",
-                    "focus:ring-1 focus:ring-neutral-500 focus:border-neutral-500 transition-none",
+                    "focus:ring-0 focus:ring-0 focus:border-neutral-500 transition-none",
                     !partnerId && "text-neutral-400",
                     errors.partnerId && "border-red-500",
                   ),
@@ -177,13 +177,13 @@ function CreatePayoutSheetContent(props: CreatePayoutSheetProps) {
             >
               Amount
             </label>
-            <div className="relative mt-2 rounded-md shadow-sm">
+            <div className="relative mt-2 rounded shadow-sm">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-sm text-neutral-400">
                 $
               </span>
               <input
                 className={cn(
-                  "block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                  "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                   "pl-6 pr-12",
                   errors.amount &&
                     "border-red-600 focus:border-red-500 focus:ring-red-600",
@@ -213,7 +213,7 @@ function CreatePayoutSheetContent(props: CreatePayoutSheetProps) {
             </label>
             <textarea
               {...register("description")}
-              className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+              className="block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
               placeholder="A note to the partner about this payout. Max 190 characters."
               maxLength={190}
               onKeyDown={handleKeyDown}

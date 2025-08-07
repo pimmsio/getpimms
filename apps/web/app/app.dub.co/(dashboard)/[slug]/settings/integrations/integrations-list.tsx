@@ -18,7 +18,7 @@ export async function IntegrationsList() {
       <Suspense
         fallback={
           <>
-            <div className="box-content h-9 animate-pulse rounded-md bg-neutral-200 py-px" />
+            <div className="box-content h-9 animate-pulse rounded bg-neutral-200 py-px" />
             <FeaturedIntegrationsLoader />
             <IntegrationsCardsLoader />
           </>

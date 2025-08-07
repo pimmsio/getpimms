@@ -309,7 +309,7 @@ export function Table<T>({
   return (
     <div
       className={cn(
-        "relative rounded-xl border-[6px] border-neutral-100 bg-white",
+        "relative rounded border border-neutral-200 bg-white",
         containerClassName,
       )}
     >
@@ -542,7 +542,7 @@ export function Table<T>({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="bg-bg-default/50 absolute inset-0 flex h-[50vh] items-center justify-center rounded-xl"
+            className="bg-bg-default/50 absolute inset-0 flex h-[50vh] items-center justify-center rounded"
           >
             <LoadingSpinner />
           </motion.div>

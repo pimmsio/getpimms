@@ -93,7 +93,7 @@ export const MoveLinkForm = ({
                   onFolderSelect={(folder) => {
                     setSelectedFolderId(folder.id);
                   }}
-                  buttonClassName="w-full max-w-full md:max-w-full border-[6px] border-neutral-100 bg-white"
+                  buttonClassName="w-full max-w-full md:max-w-full border border-neutral-100 bg-white"
                   buttonTextClassName="text-base md:text-base font-normal"
                   selectedFolderId={selectedFolderId ?? undefined}
                 />

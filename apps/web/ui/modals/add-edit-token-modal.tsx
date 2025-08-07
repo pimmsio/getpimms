@@ -165,10 +165,10 @@ function AddEditTokenModal({
             <label htmlFor="name">
               <h2 className="text-sm font-medium text-neutral-900">Name</h2>
             </label>
-            <div className="relative mt-2 rounded-md shadow-sm">
+            <div className="relative mt-2 rounded shadow-sm">
               <input
                 id="name"
-                className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                className="block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
                 required
                 value={name}
                 onChange={(e) => setData({ ...data, name: e.target.value })}
@@ -190,7 +190,7 @@ function AddEditTokenModal({
                   setData({ ...data, isMachine: value === "machine" })
                 }
               >
-                <div className="flex w-1/2 items-center space-x-2 rounded-xl border-[2px] border-neutral-300 bg-white transition-all hover:bg-neutral-50 active:bg-neutral-100">
+                <div className="flex w-1/2 items-center space-x-2 rounded border border-neutral-300 bg-white transition-all hover:bg-neutral-50 active:bg-neutral-100">
                   <RadioGroupItem value="user" id="user" className="ml-3" />
                   <Label
                     htmlFor="user"
@@ -202,7 +202,7 @@ function AddEditTokenModal({
                 </div>
                 <div
                   className={cn(
-                    "flex w-1/2 items-center space-x-2 rounded-xl border-[2px] border-neutral-300 bg-white transition-all hover:bg-neutral-50 active:bg-neutral-100",
+                    "flex w-1/2 items-center space-x-2 rounded border border-neutral-300 bg-white transition-all hover:bg-neutral-50 active:bg-neutral-100",
                     {
                       "cursor-not-allowed opacity-75": !isOwner,
                     },
@@ -256,9 +256,9 @@ function AddEditTokenModal({
                   setData({ ...data, scopes: {} });
                 }
               }}
-              className="grid grid-cols-3 rounded-xl border-[2px] border-neutral-300 bg-neutral-100"
+              className="grid grid-cols-3 rounded border border-neutral-300 bg-neutral-100"
               optionClassName="w-full h-8 flex items-center justify-center text-sm text-neutral-800"
-              indicatorClassName="rounded-md bg-white border border-neutral-300 shadow-sm"
+              indicatorClassName="rounded bg-white border border-neutral-300 shadow-sm"
             />
           </div>
 

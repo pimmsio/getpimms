@@ -90,7 +90,7 @@ function SubmitOAuthAppModal({
           minRows={5}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="mt-1 block w-full rounded-md border-neutral-300 shadow-sm focus:border-neutral-500 focus:ring-neutral-500 sm:text-sm"
+          className="mt-1 block w-full rounded border-neutral-300 shadow-sm focus:border-neutral-500 focus:ring-0 sm:text-sm"
           maxLength={1000}
         />
         <Button

@@ -38,11 +38,11 @@ function InviteCodeModal({
       </div>
 
       <div className="flex flex-col space-y-3 bg-neutral-50 px-4 py-8 text-left sm:px-16">
-        <div className="flex items-center justify-between rounded-xl border-[2px] border-neutral-300 bg-white px-3 py-1.5">
+        <div className="flex items-center justify-between rounded border border-neutral-300 bg-white px-3 py-1.5">
           <p className="scrollbar-hide w-[88%] overflow-scroll font-mono text-xs text-neutral-500">
             {inviteLink}
           </p>
-          <CopyButton value={inviteLink} className="rounded-md" />
+          <CopyButton value={inviteLink} className="rounded" />
         </div>
         <Button
           text="Reset invite link"

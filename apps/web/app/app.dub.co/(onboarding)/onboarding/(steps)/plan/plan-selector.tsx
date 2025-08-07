@@ -50,7 +50,7 @@ export function PlanSelector() {
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className="flex flex-col rounded-xl border-[6px] border-neutral-100 bg-white p-6 pb-8"
+              className="flex flex-col rounded border border-neutral-100 bg-white p-6 pb-8"
             >
               <div className="flex items-center gap-2">
                 <h2 className="text-xl font-semibold text-neutral-800">
@@ -84,7 +84,7 @@ export function PlanSelector() {
               <div className="my-6 flex gap-2">
                 <button
                   type="button"
-                  className="h-full w-fit rounded-lg bg-neutral-100 px-2.5 transition-colors duration-75 hover:bg-neutral-200/80 enabled:active:bg-neutral-200 disabled:opacity-30 lg:hidden"
+                  className="h-full w-fit rounded bg-neutral-100 px-2.5 transition-colors duration-75 hover:bg-neutral-200/80 enabled:active:bg-neutral-200 disabled:opacity-30 lg:hidden"
                   disabled={mobilePlanIndex === 0}
                   onClick={() => setMobilePlanIndex(mobilePlanIndex - 1)}
                 >
@@ -94,11 +94,11 @@ export function PlanSelector() {
                   plan={plan.name.toLowerCase()}
                   period={period}
                   text="Get started"
-                  className="h-10 rounded-lg shadow-sm"
+                  className="h-10 rounded shadow-sm"
                 />
                 <button
                   type="button"
-                  className="h-full w-fit rounded-lg bg-neutral-100 px-2.5 transition-colors duration-75 hover:bg-neutral-200/80 active:bg-neutral-200 disabled:opacity-30 lg:hidden"
+                  className="h-full w-fit rounded bg-neutral-100 px-2.5 transition-colors duration-75 hover:bg-neutral-200/80 active:bg-neutral-200 disabled:opacity-30 lg:hidden"
                   disabled={mobilePlanIndex >= plans.length - 1}
                   onClick={() => setMobilePlanIndex(mobilePlanIndex + 1)}
                 >

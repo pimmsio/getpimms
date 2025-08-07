@@ -48,7 +48,7 @@ function EndABTestingModal({
               <button
                 key={index}
                 onClick={() => setSelectedUrl(test.url)}
-                className={`relative flex w-full items-center rounded-md border bg-white p-0 text-left ring-0 ring-black transition-all duration-100 hover:bg-neutral-50 ${
+                className={`relative flex w-full items-center rounded border bg-white p-0 text-left ring-0 ring-black transition-all duration-100 hover:bg-neutral-50 ${
                   selectedUrl === test.url
                     ? "border-black ring-1"
                     : "border-neutral-300"
@@ -66,7 +66,7 @@ function EndABTestingModal({
                   <div
                     className={`size-4 rounded-full border transition-all ${
                       selectedUrl === test.url
-                        ? "border-4 border-black"
+                        ? "border-2 border-black"
                         : "border-neutral-400"
                     }`}
                   />

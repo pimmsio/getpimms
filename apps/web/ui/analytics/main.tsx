@@ -147,7 +147,7 @@ export default function Main() {
       <div className="relative">
         <div
           className={cn(
-            "relative overflow-hidden rounded-lg border border-gray-200/50 bg-white",
+            "relative overflow-hidden rounded border border-gray-200/50 bg-white",
             showPaywall &&
               "pointer-events-none [mask-image:linear-gradient(#0006,#0006_25%,transparent_40%)]",
           )}
@@ -155,7 +155,7 @@ export default function Main() {
           {totalEvents && !totalEventsLoading ? (
             <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto m-2">
               <div
-                className="group rounded-md bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-[#EBF1FF] to-[#EFF1FF] border border-[#C2D4FF] hover:border-[#C2D4FF] transition-all duration-200"
+                className="group rounded bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-[#EBF1FF] to-[#EFF1FF] border border-[#C2D4FF] hover:border-[#C2D4FF] transition-all duration-200"
               >
                 <div
                   className="flex items-center gap-1 text-xs text-[#00237A]"
@@ -175,7 +175,7 @@ export default function Main() {
               </div>
 
               <div
-                className="group rounded-md bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-[#FFF6EB] to-[#FFF3EB] border border-[#FFB85C] hover:border-[#FFB85C] transition-all duration-200"
+                className="group rounded bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-[#FFF6EB] to-[#FFF3EB] border border-[#FFB85C] hover:border-[#FFB85C] transition-all duration-200"
               >
                 <div
                   className="flex items-center gap-1 text-xs text-[#522E00]"
@@ -193,7 +193,7 @@ export default function Main() {
               </div>
 
               <div
-                className="group rounded-md bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-[#EBFFFA] to-[#EBFFFA] border border-[#47FFD1] hover:border-[#47FFD1] transition-all duration-200"
+                className="group rounded bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-[#EBFFFA] to-[#EBFFFA] border border-[#47FFD1] hover:border-[#47FFD1] transition-all duration-200"
               >
                 <div
                   className="flex items-center gap-1 text-xs text-[#002e25]"
@@ -218,7 +218,7 @@ export default function Main() {
               {/* Only show recent visitors for 24h hourly data */}
               {additionalMetrics.showRecentVisitors && (
                 <div
-                  className="group rounded-md bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-slate-50/70 to-gray-100/40 border border-gray-200/50 hover:border-gray-300/60 transition-all duration-200"
+                  className="group rounded bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-slate-50/70 to-gray-100/40 border border-gray-200/50 hover:border-gray-300/60 transition-all duration-200"
                 >
                   <div
                     className="flex items-center gap-1 text-xs text-gray-600"
@@ -235,7 +235,7 @@ export default function Main() {
               )}
 
               <div
-                className="group rounded-md bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-slate-50/70 to-gray-100/40 border border-gray-200/50 hover:border-gray-300/60 transition-all duration-200"
+                className="group rounded bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-slate-50/70 to-gray-100/40 border border-gray-200/50 hover:border-gray-300/60 transition-all duration-200"
               >
                 <div className="text-xs text-gray-600">
                   Revenue/click
@@ -248,7 +248,7 @@ export default function Main() {
               </div>
 
               <div
-                className="group rounded-md bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-slate-50/70 to-gray-100/40 border border-gray-200/50 hover:border-gray-300/60 transition-all duration-200"
+                className="group rounded bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-slate-50/70 to-gray-100/40 border border-gray-200/50 hover:border-gray-300/60 transition-all duration-200"
               >
                 <div className="text-xs text-gray-600">
                   Click → Lead
@@ -261,7 +261,7 @@ export default function Main() {
               </div>
 
               <div
-                className="group rounded-md bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-slate-50/70 to-gray-100/40 border border-gray-200/50 hover:border-gray-300/60 transition-all duration-200"
+                className="group rounded bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-slate-50/70 to-gray-100/40 border border-gray-200/50 hover:border-gray-300/60 transition-all duration-200"
               >
                 <div className="text-xs text-gray-600">
                   Lead → Sale
@@ -274,7 +274,7 @@ export default function Main() {
               </div>
 
               <div
-                className="group rounded-md bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-slate-50/70 to-gray-100/40 border border-gray-200/50 hover:border-gray-300/60 transition-all duration-200"
+                className="group rounded bg-gradient-to-br p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0 from-slate-50/70 to-gray-100/40 border border-gray-200/50 hover:border-gray-300/60 transition-all duration-200"
               >
                 <div className="text-xs text-gray-600">
                   Avg order
@@ -289,71 +289,71 @@ export default function Main() {
           ) : (
             <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto m-2">
               {/* Clicks skeleton */}
-              <div className="group rounded-md border border-[#C2D4FF]/30 bg-gradient-to-br from-[#EBF1FF] to-[#EFF1FF] p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="group rounded border border-[#C2D4FF]/30 bg-gradient-to-br from-[#EBF1FF] to-[#EFF1FF] p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
                 <div className="flex items-center gap-1 text-xs text-[#00237A]">
                   <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#3870FF]/50"></div>
-                  <div className="h-3 w-8 animate-pulse rounded-md bg-[#3870FF]/50"></div>
+                  <div className="h-3 w-8 animate-pulse rounded bg-[#3870FF]/50"></div>
                 </div>
-                <div className="mt-1 h-5 w-6 animate-pulse rounded-md bg-[#3870FF]/50 sm:h-6 lg:h-7"></div>
+                <div className="mt-1 h-5 w-6 animate-pulse rounded bg-[#3870FF]/50 sm:h-6 lg:h-7"></div>
               </div>
 
               {/* Conversions skeleton */}
-              <div className="group rounded-md border border-[#FFB85C]/30 bg-gradient-to-br from-[#FFF6EB] to-[#FFF3EB] p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="group rounded border border-[#FFB85C]/30 bg-gradient-to-br from-[#FFF6EB] to-[#FFF3EB] p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
                 <div className="flex items-center gap-1 text-xs text-[#522E00]">
                   <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#FFD399]/70"></div>
-                  <div className="h-3 w-6 animate-pulse rounded-md bg-[#FFD399]/70"></div>
+                  <div className="h-3 w-6 animate-pulse rounded bg-[#FFD399]/70"></div>
                 </div>
-                <div className="mt-1 h-5 w-4 animate-pulse rounded-md bg-[#FFD399]/70 sm:h-6 lg:h-7"></div>
+                <div className="mt-1 h-5 w-4 animate-pulse rounded bg-[#FFD399]/70 sm:h-6 lg:h-7"></div>
               </div>
 
               {/* Revenue skeleton */}
-              <div className="group rounded-md border border-[#47FFD1]/30 bg-gradient-to-br from-[#EBFFFA] to-[#EBFFFA] p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="group rounded border border-[#47FFD1]/30 bg-gradient-to-br from-[#EBFFFA] to-[#EBFFFA] p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
                 <div className="flex items-center gap-1 text-xs text-[#002e25]">
                   <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#00F5B8]/70"></div>
-                  <div className="h-3 w-6 animate-pulse rounded-md bg-[#00F5B8]/70"></div>
+                  <div className="h-3 w-6 animate-pulse rounded bg-[#00F5B8]/70"></div>
                 </div>
-                <div className="mt-1 h-5 w-6 animate-pulse rounded-md bg-[#00F5B8]/70 sm:h-6 lg:h-7"></div>
+                <div className="mt-1 h-5 w-6 animate-pulse rounded bg-[#00F5B8]/70 sm:h-6 lg:h-7"></div>
               </div>
 
               {/* Recent visitors skeleton */}
-              <div className="group rounded-md border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="group rounded border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
                 <div className="flex items-center gap-1 text-xs text-gray-600">
                   <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-gray-300"></div>
-                  <div className="h-3 w-8 animate-pulse rounded-md bg-gray-300"></div>
+                  <div className="h-3 w-8 animate-pulse rounded bg-gray-300"></div>
                 </div>
-                <div className="mt-1 h-5 w-3 animate-pulse rounded-md bg-gray-400 sm:h-6 lg:h-7"></div>
+                <div className="mt-1 h-5 w-3 animate-pulse rounded bg-gray-400 sm:h-6 lg:h-7"></div>
               </div>
 
               {/* Revenue/click skeleton */}
-              <div className="group rounded-md border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="group rounded border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
                 <div className="text-xs text-gray-600">
-                  <div className="h-3 w-10 animate-pulse rounded-md bg-gray-300"></div>
+                  <div className="h-3 w-10 animate-pulse rounded bg-gray-300"></div>
                 </div>
-                <div className="mt-1 h-5 w-8 animate-pulse rounded-md bg-gray-400 sm:h-6 lg:h-7"></div>
+                <div className="mt-1 h-5 w-8 animate-pulse rounded bg-gray-400 sm:h-6 lg:h-7"></div>
               </div>
 
               {/* Click → Lead rate skeleton */}
-              <div className="group rounded-md border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="group rounded border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
                 <div className="text-xs text-gray-600">
-                  <div className="h-3 w-8 animate-pulse rounded-md bg-gray-300"></div>
+                  <div className="h-3 w-8 animate-pulse rounded bg-gray-300"></div>
                 </div>
-                <div className="mt-1 h-5 w-6 animate-pulse rounded-md bg-gray-400 sm:h-6 lg:h-7"></div>
+                <div className="mt-1 h-5 w-6 animate-pulse rounded bg-gray-400 sm:h-6 lg:h-7"></div>
               </div>
 
               {/* Lead → Sale rate skeleton */}
-              <div className="group rounded-md border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="group rounded border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
                 <div className="text-xs text-gray-600">
-                  <div className="h-3 w-8 animate-pulse rounded-md bg-gray-300"></div>
+                  <div className="h-3 w-8 animate-pulse rounded bg-gray-300"></div>
                 </div>
-                <div className="mt-1 h-5 w-6 animate-pulse rounded-md bg-gray-400 sm:h-6 lg:h-7"></div>
+                <div className="mt-1 h-5 w-6 animate-pulse rounded bg-gray-400 sm:h-6 lg:h-7"></div>
               </div>
 
               {/* Avg order value skeleton */}
-              <div className="group rounded-md border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="group rounded border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
                 <div className="text-xs text-gray-600">
-                  <div className="h-3 w-10 animate-pulse rounded-md bg-gray-300"></div>
+                  <div className="h-3 w-10 animate-pulse rounded bg-gray-300"></div>
                 </div>
-                <div className="mt-1 h-5 w-8 animate-pulse rounded-md bg-gray-400 sm:h-6 lg:h-7"></div>
+                <div className="mt-1 h-5 w-8 animate-pulse rounded bg-gray-400 sm:h-6 lg:h-7"></div>
               </div>
             </div>
           )}
@@ -376,7 +376,7 @@ function ConversionTrackingPaywall() {
   return (
     <div className="animate-slide-up-fade pointer-events-none absolute inset-0 flex items-center justify-center pt-24">
       <div className="pointer-events-auto flex flex-col items-center">
-        <div className="flex size-16 items-center justify-center rounded-full border-[6px] border-neutral-100 bg-neutral-50">
+        <div className="flex size-16 items-center justify-center rounded-full border border-neutral-100 bg-neutral-50">
           <Coins className="size-6 text-neutral-800" />
         </div>
         <h2 className="mt-7 text-base font-semibold text-neutral-700">
@@ -396,7 +396,7 @@ function ConversionTrackingPaywall() {
           href={`/${slug}/upgrade`}
           className={cn(
             buttonVariants({ variant: "primary" }),
-            "mt-4 flex h-9 items-center justify-center rounded-md border px-4 text-sm",
+            "mt-4 flex h-9 items-center justify-center rounded border px-4 text-sm",
           )}
         >
           Upgrade to Pro

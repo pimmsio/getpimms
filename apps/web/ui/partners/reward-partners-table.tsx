@@ -162,7 +162,7 @@ export function RewardPartnersTable({
             <Button
               variant="secondary"
               icon={<X className="size-4" />}
-              className="size-4 rounded-md border-0 bg-neutral-50 p-0 hover:bg-neutral-100"
+              className="size-4 rounded border-0 bg-neutral-50 p-0 hover:bg-neutral-100"
               onClick={() => {
                 setPartnerIds(
                   partnerIds.filter((id) => id !== row.original.id),
@@ -212,7 +212,7 @@ export function RewardPartnersTable({
           className: cn(
             "w-full justify-start border-neutral-300 px-3",
             "data-[state=open]:ring-1 data-[state=open]:ring-neutral-500 data-[state=open]:border-neutral-500",
-            "focus:ring-1 focus:ring-neutral-500 focus:border-neutral-500 transition-none",
+            "focus:ring-0 focus:ring-0 focus:border-neutral-500 transition-none",
             !selectedPartnersOptions.length && "text-neutral-400",
           ),
         }}

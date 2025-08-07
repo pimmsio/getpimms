@@ -80,7 +80,7 @@ export function ProgramColorPicker({
         className={cn(
           "relative size-7 overflow-hidden rounded-full outline-none ring-black/10 transition-all duration-75",
           "hover:ring focus:ring data-[state=open]:ring data-[state=open]:ring-black/20",
-          "focus-visible:ring-1 focus-visible:ring-black/40 focus-visible:ring-offset-2",
+          "focus-visible:ring-0 focus-visible:ring-black/40 focus-visible:ring-offset-2",
         )}
         style={{
           backgroundColor: color ?? undefined,
@@ -109,8 +109,8 @@ function Swatch({
           onClick={onSelect}
           className={cn(
             "relative block size-6 overflow-hidden rounded-full ring-transparent ring-offset-2 transition-all duration-75",
-            "hover:ring-1 hover:ring-[var(--ring-color)]",
-            "outline-none focus-visible:ring-1 focus-visible:ring-[var(--ring-color)]",
+            "hover:ring-0 hover:ring-[var(--ring-color)]",
+            "outline-none focus-visible:ring-0 focus-visible:ring-[var(--ring-color)]",
           )}
           style={
             {

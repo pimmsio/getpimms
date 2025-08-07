@@ -236,7 +236,7 @@ export default function MixedAnalyticsChart({
 
               return (
                 <div 
-                  className="bg-white rounded-lg px-3 py-2.5 shadow-xl min-w-[180px] border-0"
+                  className="bg-white rounded px-3 py-2.5 shadow-xl min-w-[180px] border-0"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <p className="text-neutral-900 font-medium mb-2 text-sm">

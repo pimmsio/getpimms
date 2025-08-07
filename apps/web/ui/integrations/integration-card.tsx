@@ -61,7 +61,7 @@ function Wrapper({
   const { slug } = useWorkspace();
 
   const className = cn(
-    "group relative rounded-xl border-[6px] border-neutral-100 bg-white p-4 transition-[filter]",
+    "group relative rounded border border-neutral-100 bg-white p-4 transition-[filter]",
     integration.comingSoon ? "cursor-default" : "hover:drop-shadow-card-hover",
   );
 

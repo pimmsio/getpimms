@@ -147,7 +147,7 @@ function ImportCsvModal({
     >
       <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-8 sm:px-16">
         <div className="flex items-center gap-x-3 py-4">
-          <div className="flex size-10 items-center justify-center rounded-xl border-[6px] border-neutral-100 bg-neutral-50">
+          <div className="flex size-10 items-center justify-center rounded border border-neutral-100 bg-neutral-50">
             <TableIcon className="size-5" />
           </div>
           <ArrowRight className="size-5 text-neutral-600" />
@@ -162,7 +162,7 @@ function ImportCsvModal({
 
       <div className="relative">
         {page === "confirm-import" && (
-          <div className="absolute inset-x-0 -top-6 mx-4 grid grid-cols-[1fr_min-content_1fr] items-center gap-x-4 gap-y-2 rounded-xl border-[2px] border-neutral-100 bg-white p-2 text-center text-sm font-medium uppercase text-neutral-600 sm:mx-12">
+          <div className="absolute inset-x-0 -top-6 mx-4 grid grid-cols-[1fr_min-content_1fr] items-center gap-x-4 gap-y-2 rounded border border-neutral-100 bg-white p-2 text-center text-sm font-medium uppercase text-neutral-600 sm:mx-12">
             <p>CSV data column</p>
             <ArrowRight className="size-4 text-neutral-500" />
             <p>PIMMS data field</p>

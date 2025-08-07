@@ -310,7 +310,7 @@ export default function WorldMap({ data, maxVisitors }: WorldMapProps) {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="fixed pointer-events-none z-50 rounded-xl border-[6px] border-neutral-100 bg-white shadow-sm w-[180px]"
+          className="fixed pointer-events-none z-50 rounded border border-neutral-200 bg-white shadow-sm w-[180px]"
           style={{
             left: Math.max(10, Math.min(hoveredCountry.x + 15, window.innerWidth - 195)),
             top: Math.max(10, hoveredCountry.y - 80),
@@ -325,7 +325,7 @@ export default function WorldMap({ data, maxVisitors }: WorldMapProps) {
           <div className="px-3 py-2 text-sm space-y-1.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <div className="h-2 w-2 shrink-0 rounded-sm bg-blue-400 opacity-50"></div>
+                <div className="h-2 w-2 shrink-0 rounded bg-blue-400 opacity-50"></div>
                 <span className="text-neutral-600 text-xs">Visitors</span>
               </div>
               <span className="font-medium text-neutral-900 tabular-nums text-xs">
@@ -335,7 +335,7 @@ export default function WorldMap({ data, maxVisitors }: WorldMapProps) {
             
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <div className="h-2 w-2 shrink-0 rounded-sm bg-orange-400 opacity-50"></div>
+                <div className="h-2 w-2 shrink-0 rounded bg-orange-400 opacity-50"></div>
                 <span className="text-neutral-600 text-xs">Revenue</span>
               </div>
               <span className="font-medium text-neutral-900 tabular-nums text-xs">

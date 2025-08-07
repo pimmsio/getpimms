@@ -18,7 +18,7 @@ export function Collaboration() {
           {Array.from({ length: 36 }).map((_, idx) => (
             <div
               key={idx}
-              className="aspect-square rounded-lg bg-neutral-300 transition-transform hover:scale-110 sm:rounded-xl"
+              className="aspect-square rounded bg-neutral-300 transition-transform hover:scale-110 sm:rounded"
               style={{
                 backgroundImage: "url(https://assets.dub.co/home/people.png)",
                 backgroundSize: "3600%", // 36 images

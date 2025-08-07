@@ -76,7 +76,7 @@ export const DestinationUrlInput = forwardRef<
           </div>
           {right}
         </div>
-        <div className="relative mt-2 flex rounded-md shadow-sm">
+        <div className="relative mt-2 flex rounded shadow-sm">
           <input
             ref={ref}
             name="url"
@@ -90,8 +90,8 @@ export const DestinationUrlInput = forwardRef<
             className={`${
               error
                 ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-[#DC2E65] ring-[6px] ring-[#FFEAF1] focus:ring-[6px] focus:ring-[#FFEAF1]"
-                : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 ring-[6px] ring-neutral-100 focus:ring-[6px] focus:ring-neutral-200"
-            } block w-full rounded-xl border-2 border-neutral-200 text-black outline-none placeholder:text-neutral-400 sm:text-sm transition-all`}
+                : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 ring-[6px] ring-neutral-100 focus:ring-[6px] focus:ring-transparent"
+            } block w-full rounded border border-neutral-200 text-black outline-none placeholder:text-neutral-400 sm:text-sm transition-all`}
             aria-invalid="true"
             {...inputProps}
             {...(formContext && {

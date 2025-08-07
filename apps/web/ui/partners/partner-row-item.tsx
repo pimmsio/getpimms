@@ -25,7 +25,7 @@ export function PartnerRowItem({
                 Payouts {partner.payoutsEnabledAt ? "enabled" : "disabled"}
                 <div
                   className={cn(
-                    "flex size-5 items-center justify-center rounded-md border border-green-300 bg-green-200 text-green-800",
+                    "flex size-5 items-center justify-center rounded border border-green-300 bg-green-200 text-green-800",
                     !partner.payoutsEnabledAt &&
                       "border-red-300 bg-red-200 text-red-800",
                   )}

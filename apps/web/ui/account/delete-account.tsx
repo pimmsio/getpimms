@@ -7,7 +7,7 @@ export default function DeleteAccountSection() {
     useDeleteAccountModal();
 
   return (
-    <div className="rounded-xl border-[6px] border-red-400 bg-white">
+    <div className="rounded border border-red-400 bg-white">
       <DeleteAccountModal />
       <div className="flex flex-col space-y-3 p-5 sm:p-10">
         <h2 className="text-xl font-medium">Delete Account</h2>

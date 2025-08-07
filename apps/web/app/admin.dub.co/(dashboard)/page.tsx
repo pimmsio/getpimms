@@ -10,7 +10,7 @@ export const metadata = constructMetadata({
 
 export default function AdminPage() {
   return (
-    <div className="mx-auto flex w-full max-w-screen-sm flex-col divide-y-[6px] divide-neutral-100 overflow-auto bg-white">
+    <div className="mx-auto flex w-full max-w-screen-sm flex-col divide-y divide-neutral-100 overflow-auto bg-white">
       <div className="flex flex-col space-y-4 px-5 py-10">
         <h2 className="text-xl font-semibold">Impersonate User</h2>
         <p className="text-sm text-neutral-500">Get a login link for a user</p>

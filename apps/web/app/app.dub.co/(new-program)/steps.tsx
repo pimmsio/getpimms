@@ -63,7 +63,7 @@ export function ProgramOnboardingSteps() {
               <h2 className="text-sm font-medium">Program Setup</h2>
               <button
                 onClick={() => setIsOpen(false)}
-                className="rounded-md p-1 hover:bg-neutral-100"
+                className="rounded p-1 hover:bg-neutral-100"
               >
                 <X className="h-5 w-5 text-neutral-600" />
               </button>
@@ -84,7 +84,7 @@ export function ProgramOnboardingSteps() {
                     <div
                       key={step}
                       className={cn(
-                        "flex items-center gap-2 rounded-md px-3 py-2",
+                        "flex items-center gap-2 rounded px-3 py-2",
                         "cursor-not-allowed opacity-60",
                       )}
                     >
@@ -109,7 +109,7 @@ export function ProgramOnboardingSteps() {
                       key={step}
                       href={`/${slug}${href}`}
                       className={cn(
-                        "flex items-center gap-2 rounded-md px-3 py-2 hover:bg-neutral-100",
+                        "flex items-center gap-2 rounded px-3 py-2 hover:bg-neutral-100",
                         current && "bg-blue-50",
                       )}
                     >
@@ -120,7 +120,7 @@ export function ProgramOnboardingSteps() {
                           current && "bg-[#3971ff] text-white",
                           !current &&
                             !completed &&
-                            "border-[6px] border-neutral-100 text-neutral-500",
+                            "border border-neutral-100 text-neutral-500",
                         )}
                       >
                         {stepNumber === 5 ? (

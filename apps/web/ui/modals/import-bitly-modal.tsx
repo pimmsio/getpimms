@@ -157,7 +157,7 @@ function ImportBitlyModal({
             }}
             className="flex flex-col space-y-4"
           >
-            <div className="divide-y-[6px] divide-neutral-100">
+            <div className="divide-y divide-neutral-100">
               {groups.length > 0 ? (
                 groups.map(({ guid, bsds, tags }) => (
                   <div key={guid} className="flex flex-col space-y-2">
@@ -174,7 +174,7 @@ function ImportBitlyModal({
                     {bsds.map((bsd) => (
                       <div
                         key={bsd}
-                        className="flex items-center justify-between space-x-2 rounded-xl border-[2px] border-neutral-100 bg-white px-4 py-2"
+                        className="flex items-center justify-between space-x-2 rounded border border-neutral-100 bg-white px-4 py-2"
                       >
                         <p className="font-medium text-neutral-800">{bsd}</p>
                         <Switch
@@ -199,7 +199,7 @@ function ImportBitlyModal({
                       </div>
                     ))}
                     {tags?.length > 0 && (
-                      <div className="flex items-center justify-between space-x-2 rounded-md py-1 pl-2 pr-4">
+                      <div className="flex items-center justify-between space-x-2 rounded py-1 pl-2 pr-4">
                         <p className="text-xs text-neutral-500">
                           {tags.length} tags found. Import all?
                         </p>
@@ -251,7 +251,7 @@ function ImportBitlyModal({
                 <img
                   src="https://assets.dub.co/misc/icons/bitly.svg"
                   alt="Bitly logo"
-                  className="h-5 w-5 rounded-full border-[6px] border-neutral-100"
+                  className="h-5 w-5 rounded-full border border-neutral-100"
                 />
               }
               onClick={() => {

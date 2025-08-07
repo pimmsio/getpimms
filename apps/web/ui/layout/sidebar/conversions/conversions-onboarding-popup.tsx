@@ -57,12 +57,12 @@ export function ConversionOnboardingPopup({
         style={floatingStyles}
         className="drop-shadow-sm"
       >
-        <div className="animate-slide-up-fade relative flex w-[240px] flex-col rounded-xl border-[6px] border-neutral-100 bg-white p-3 text-center">
+        <div className="animate-slide-up-fade relative flex w-[240px] flex-col rounded border border-neutral-100 bg-white p-3 text-center">
           {/* <div className="relative">
             <Link
               href="https://d.to/conversions"
               target="_blank"
-              className="group relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-xl border-[2px] border-neutral-100 bg-neutral-100"
+              className="group relative flex aspect-video w-full items-center justify-center overflow-hidden rounded border border-neutral-100 bg-neutral-100"
             >
               <BlurImage
                 src="https://assets.dub.co/blog/conversion-analytics.png"
@@ -77,7 +77,7 @@ export function ConversionOnboardingPopup({
             <button
               type="button"
               onClick={onDismiss}
-              className="absolute right-2 top-2 rounded-xl border-[2px] border-neutral-100 bg-white p-1.5 shadow-sm transition-colors duration-75 hover:bg-neutral-50"
+              className="absolute right-2 top-2 rounded border border-neutral-100 bg-white p-1.5 shadow-sm transition-colors duration-75 hover:bg-neutral-50"
             >
               <X className="size-4 text-neutral-500" />
             </button>

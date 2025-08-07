@@ -36,7 +36,7 @@ export function PartnerInvite({
       </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border border-solid border-neutral-100 px-10 py-5">
             <Section className="mb-8 mt-6">
               <Img
                 src={program.logo || "https://assets.pimms.io/logo.png"}
@@ -64,7 +64,7 @@ export function PartnerInvite({
 
             <Section className="mb-12 mt-8">
               <Link
-                className="cursor-pointer rounded-xl bg-[#dc2e65] px-5 py-3 font-semibold text-white no-underline outline outline-[6px] outline-[#ffeaf1] transition"
+                className="cursor-pointer rounded bg-[#3971ff] px-5 py-3 font-semibold text-white text-md no-underline border-none transition duration-500 hover:opacity-90"
                 href="https://partners.pimms.io/register"
               >
                 Accept Invite

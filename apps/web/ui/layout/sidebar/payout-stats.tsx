@@ -56,7 +56,7 @@ export const PayoutStats = memo(() => {
                   )}
                 </p>
               ) : (
-                <div className="h-5 w-24 animate-pulse rounded-md bg-neutral-200" />
+                <div className="h-5 w-24 animate-pulse rounded bg-neutral-200" />
               )}
             </div>
           </div>
@@ -76,7 +76,7 @@ export const PayoutStats = memo(() => {
                 )}
               </p>
             ) : (
-              <div className="h-5 w-24 animate-pulse rounded-md bg-neutral-200" />
+              <div className="h-5 w-24 animate-pulse rounded bg-neutral-200" />
             )}
           </div>
         </div>

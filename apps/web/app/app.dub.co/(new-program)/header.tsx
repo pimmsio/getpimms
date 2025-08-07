@@ -74,7 +74,7 @@ export function ProgramOnboardingHeader() {
       <div className="flex items-center gap-5">
         <button
           onClick={() => setIsOpen(true)}
-          className="rounded-md p-1 hover:bg-neutral-100 md:hidden"
+          className="rounded p-1 hover:bg-neutral-100 md:hidden"
         >
           <Menu className="h-5 w-5 text-neutral-600" />
         </button>
@@ -88,7 +88,7 @@ export function ProgramOnboardingHeader() {
       <div className="flex items-center gap-2">
         <Link
           href={`/${workspaceSlug}`}
-          className="group flex h-8 w-auto items-center justify-center gap-2 whitespace-nowrap rounded-md border border-transparent px-4 text-sm text-neutral-600 transition-all hover:bg-neutral-100"
+          className="group flex h-8 w-auto items-center justify-center gap-2 whitespace-nowrap rounded border border-transparent px-4 text-sm text-neutral-600 transition-all hover:bg-neutral-100"
         >
           Cancel
         </Link>

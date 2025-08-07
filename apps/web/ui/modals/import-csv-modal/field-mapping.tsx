@@ -140,7 +140,7 @@ function FieldRow({
                           setIsOpen(false);
                         }}
                         className={cn(
-                          "flex w-full items-center justify-between space-x-2 rounded-md px-1 py-2 hover:bg-neutral-100 active:bg-neutral-200",
+                          "flex w-full items-center justify-between space-x-2 rounded px-1 py-2 hover:bg-neutral-100 active:bg-neutral-200",
                           column === "None" && "text-neutral-400",
                         )}
                       >
@@ -218,7 +218,7 @@ function FieldRow({
           <ArrowRight className="size-4 text-neutral-500" />
         </div>
       )}
-      <span className="flex h-9 items-center gap-1 rounded-xl border-[2px] border-neutral-100 bg-neutral-100 px-3">
+      <span className="flex h-9 items-center gap-1 rounded border border-neutral-100 bg-neutral-100 px-3">
         <span className="grow whitespace-nowrap text-sm font-normal text-neutral-700">
           {label} {required && <span className="text-red-700">*</span>}
         </span>

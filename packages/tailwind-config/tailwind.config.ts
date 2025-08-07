@@ -247,6 +247,10 @@ const config: Config = {
       dropShadow: {
         "card-hover": ["0 8px 12px #222A350d", "0 32px 80px #2f30370f"],
       },
+
+      borderRadius: {
+        "DEFAULT": "0.75rem", // 12px - standardize to rounded-xl
+      },
     },
   },
   plugins: [

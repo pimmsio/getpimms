@@ -34,7 +34,7 @@ export function PartnerStats() {
     ) ?? {};
 
   return (
-    <div className="xs:grid-cols-4 xs:divide-x xs:divide-y-0 grid divide-y-[6px] divide-neutral-100 overflow-hidden rounded-xl border-[6px] border-neutral-100">
+    <div className="xs:grid-cols-4 xs:divide-x xs:divide-y-0 grid divide-y divide-neutral-100 overflow-hidden rounded border border-neutral-100">
       <ProgramStatsFilter
         label="All"
         href={`/${slug}/programs/${programId}/partners`}

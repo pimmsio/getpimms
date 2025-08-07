@@ -21,7 +21,7 @@ export function LinkActionBar({ children }: PropsWithChildren) {
       <div
         className={cn(
           "mx-auto flex max-w-3xl items-center justify-between gap-4 overflow-hidden px-4 py-3",
-          "border-t border-neutral-200 bg-white lg:rounded-xl lg:border",
+          "border-t border-neutral-200 bg-white lg:rounded lg:border",
           "lg:transition-[opacity,transform]",
           !showActionBar && "lg:translate-y-4 lg:scale-90 lg:opacity-0",
         )}

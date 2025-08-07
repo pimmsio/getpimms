@@ -45,7 +45,7 @@ export function StepPage({
 
 function StepIcon({ icon: Icon }: { icon: Icon }) {
   return (
-    <div className="rounded-full border-[6px] border-neutral-100 bg-white p-2.5">
+    <div className="rounded-full border border-neutral-100 bg-white p-2.5">
       <Icon className="size-[18px]" />
     </div>
   );

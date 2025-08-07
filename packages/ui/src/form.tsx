@@ -35,7 +35,7 @@ export function Form({
         });
         setSaving(false);
       }}
-      className="rounded-xl border-[6px] border-neutral-100 bg-white"
+      className="rounded border border-neutral-200 bg-white"
     >
       <div className="relative flex flex-col space-y-6 p-5 sm:p-10">
         <div className="flex flex-col space-y-3">
@@ -52,7 +52,7 @@ export function Form({
             disabled={disabledTooltip ? true : false}
             onChange={(e) => setValue(e.target.value)}
             className={cn(
-              "w-full max-w-md rounded-xl border-[2px] border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+              "w-full max-w-md rounded border border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
               {
                 "cursor-not-allowed bg-neutral-100 text-neutral-400":
                   disabledTooltip,
@@ -60,11 +60,11 @@ export function Form({
             )}
           />
         ) : (
-          <div className="h-[2.35rem] w-full max-w-md animate-pulse rounded-md bg-neutral-200" />
+          <div className="h-[2.35rem] w-full max-w-md animate-pulse rounded bg-neutral-200" />
         )}
       </div>
 
-      <div className="flex items-center justify-between space-x-4 rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-50 p-3 sm:px-10">
+              <div className="flex items-center justify-between space-x-4 rounded-b border-t border-neutral-200 bg-neutral-50 p-3 sm:px-10">
         {typeof helpText === "string" ? (
           <p
             className="prose-sm prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-neutral-700 text-neutral-500 transition-colors"

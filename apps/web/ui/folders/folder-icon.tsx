@@ -88,7 +88,7 @@ export const FolderIcon = ({
     <div
       className={cn(
         "border",
-        shape === "rounded" ? "rounded-full bg-white p-0.5" : "rounded-md",
+        shape === "rounded" ? "rounded-full bg-white p-0.5" : "rounded",
         borderColor,
         shape !== "rounded" && bgColor,
         className,
@@ -96,7 +96,7 @@ export const FolderIcon = ({
     >
       <div
         className={cn(
-          shape === "rounded" ? "rounded-full p-2" : "rounded-md p-1",
+          shape === "rounded" ? "rounded-full p-2" : "rounded p-1",
           bgColor,
           innerClassName,
         )}

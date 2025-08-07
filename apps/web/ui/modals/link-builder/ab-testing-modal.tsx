@@ -273,7 +273,7 @@ function ABTestingModal({
               }
               side="right"
             >
-              <kbd className="flex size-6 cursor-default items-center justify-center rounded-md border border-neutral-200 font-sans text-xs text-neutral-950">
+              <kbd className="flex size-6 cursor-default items-center justify-center rounded border border-neutral-200 font-sans text-xs text-neutral-950">
                 A
               </kbd>
             </Tooltip>
@@ -299,7 +299,7 @@ function ABTestingModal({
               <div className="flex flex-col gap-2 p-1">
                 {testVariants.map((_, index) => (
                   <div key={index} className="flex items-center gap-2">
-                    <label className="relative flex grow items-center overflow-hidden rounded-xl border-[2px] border-neutral-200 focus-within:border-neutral-500 focus-within:ring-1 focus-within:ring-neutral-500">
+                    <label className="relative flex grow items-center overflow-hidden rounded border border-neutral-200 focus-within:border-neutral-500 focus-within:ring-1 focus-within:ring-neutral-500">
                       <span className="flex h-9 w-8 items-center justify-center border-r border-neutral-300 text-center text-sm font-medium text-neutral-800">
                         {index + 1}
                       </span>
@@ -401,7 +401,7 @@ function ABTestingModal({
               }
             /> */}
           </div>
-          <div className="hidden mt-2 flex w-full items-center justify-between rounded-xl border-[2px] border-neutral-200 bg-white shadow-sm transition-all focus-within:border-neutral-800 focus-within:outline-none focus-within:ring-1 focus-within:ring-neutral-500">
+          <div className="hidden mt-2 flex w-full items-center justify-between rounded border border-neutral-200 bg-white shadow-sm transition-all focus-within:border-neutral-800 focus-within:outline-none focus-within:ring-1 focus-within:ring-neutral-500">
             <input
               id={`${id}-testCompletedAt`}
               type="text"
@@ -444,7 +444,7 @@ function ABTestingModal({
         </div>
 
         {testVariantsParent && (
-          <div className="mt-6 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-4">
+          <div className="mt-6 flex items-start gap-2 rounded border border-amber-200 bg-amber-50 p-4">
             <TriangleWarning className="mt-0.5 size-4 shrink-0 text-amber-500" />
             <p className="text-sm font-medium text-amber-900">
               Changing the original A/B test settings will impact your future
@@ -552,7 +552,7 @@ function ABTestingButton({
       variant="secondary"
       text={label}
       icon={<Flask className={cn("size-4", enabled && "text-blue-500")} />}
-      className="flex h-auto w-full items-center gap-2 rounded-md border-0 px-1 py-1 text-neutral-700 outline-none hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-neutral-500 active:bg-neutral-200 group-hover:bg-neutral-100"
+      className="flex h-auto w-full items-center gap-2 rounded border-0 px-1 py-1 text-neutral-700 outline-none hover:bg-neutral-100 focus-visible:ring-0 focus-visible:ring-neutral-500 active:bg-neutral-200 group-hover:bg-neutral-100"
       onClick={() => setShowABTestingModal(true)}
     />
   );
@@ -662,7 +662,7 @@ function TrafficSplitSlider({
             style={{ width: `${test.percentage}%` }}
           >
             {i > 0 && <div className="w-1.5" />}
-            <div className="flex h-full grow items-center justify-center gap-2 rounded-xl border-[2px] border-neutral-200 text-xs">
+            <div className="flex h-full grow items-center justify-center gap-2 rounded border border-neutral-200 text-xs">
               <span className="text-xs font-semibold text-neutral-900">
                 {i + 1}
               </span>

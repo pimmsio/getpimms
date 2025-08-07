@@ -56,7 +56,7 @@ const SAMLSection = () => {
       return {
         status: "unconfigured",
         logo: (
-          <div className="rounded-full border-[6px] border-neutral-100 p-2">
+          <div className="rounded-full border border-neutral-100 p-2">
             <Lock className="h-4 w-4 text-neutral-600" />
           </div>
         ),
@@ -71,7 +71,7 @@ const SAMLSection = () => {
   return (
     <>
       {configured ? <RemoveSAMLModal /> : <SAMLModal />}
-      <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
+      <div className="rounded border border-neutral-100 bg-white">
         <div className="relative flex flex-col space-y-6 p-5 sm:p-10">
           <div className="flex flex-col space-y-3">
             <h2 className="text-xl font-medium">SAML Single Sign-On</h2>
@@ -81,7 +81,7 @@ const SAMLSection = () => {
             </p>
           </div>
 
-          <div className="mt-2 flex items-center justify-between rounded-xl border-[2px] border-neutral-100 px-4 py-3">
+          <div className="mt-2 flex items-center justify-between rounded border border-neutral-100 px-4 py-3">
             <div className="flex items-center space-x-4">
               {data.logo || (
                 <div className="h-8 w-8 animate-pulse rounded-full bg-neutral-100" />
@@ -90,18 +90,18 @@ const SAMLSection = () => {
                 {data.title ? (
                   <h3 className="font-medium">{data.title}</h3>
                 ) : (
-                  <div className="h-5 w-20 animate-pulse rounded-md bg-neutral-100" />
+                  <div className="h-5 w-20 animate-pulse rounded bg-neutral-100" />
                 )}
                 {data.description ? (
                   <p className="text-sm text-neutral-500">{data.description}</p>
                 ) : (
-                  <div className="mt-2 h-4 w-40 animate-pulse rounded-md bg-neutral-100" />
+                  <div className="mt-2 h-4 w-40 animate-pulse rounded bg-neutral-100" />
                 )}
               </div>
             </div>
             <div>
               {loading ? (
-                <div className="h-9 w-24 animate-pulse rounded-md bg-neutral-100" />
+                <div className="h-9 w-24 animate-pulse rounded bg-neutral-100" />
               ) : configured ? (
                 <Popover
                   content={
@@ -111,7 +111,7 @@ const SAMLSection = () => {
                           setShowRemoveSAMLModal(true);
                           setOpenPopover(false);
                         }}
-                        className="rounded-md p-2 text-left text-sm font-medium text-red-600 transition-all duration-75 hover:bg-red-600 hover:text-white"
+                        className="rounded p-2 text-left text-sm font-medium text-red-600 transition-all duration-75 hover:bg-red-600 hover:text-white"
                       >
                         <IconMenu
                           text="Remove"
@@ -130,7 +130,7 @@ const SAMLSection = () => {
                       e.stopPropagation();
                       setOpenPopover(!openPopover);
                     }}
-                    className="rounded-md px-1 py-2 transition-all duration-75 hover:bg-neutral-100 active:bg-neutral-200"
+                    className="rounded px-1 py-2 transition-all duration-75 hover:bg-neutral-100 active:bg-neutral-200"
                   >
                     <span className="sr-only">Edit</span>
                     <ThreeDots className="h-5 w-5 text-neutral-500" />
@@ -157,7 +157,7 @@ const SAMLSection = () => {
           </div>
         </div>
 
-        {/* <div className="flex items-center justify-between rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-50 px-3 py-5 sm:px-10">
+        {/* <div className="flex items-center justify-between rounded-b border-t-[6px] border-neutral-100 bg-neutral-50 px-3 py-5 sm:px-10">
           <a
             href="https://dub.co/help/category/saml-sso"
             target="_blank"
@@ -200,7 +200,7 @@ const SCIMSection = () => {
     } else
       return {
         logo: (
-          <div className="rounded-full border-[6px] border-neutral-100 p-2">
+          <div className="rounded-full border border-neutral-100 p-2">
             <FolderSync className="h-4 w-4 text-neutral-600" />
           </div>
         ),
@@ -215,7 +215,7 @@ const SCIMSection = () => {
     <>
       <SCIMModal />
       {configured && <RemoveSCIMModal />}
-      <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
+      <div className="rounded border border-neutral-100 bg-white">
         <div className="relative flex flex-col space-y-6 p-5 sm:p-10">
           <div className="flex flex-col space-y-3">
             <h2 className="text-xl font-medium">Directory Sync</h2>
@@ -225,7 +225,7 @@ const SCIMSection = () => {
             </p>
           </div>
 
-          <div className="mt-2 flex items-center justify-between rounded-xl border-[2px] border-neutral-100 px-4 py-3">
+          <div className="mt-2 flex items-center justify-between rounded border border-neutral-100 px-4 py-3">
             <div className="flex items-center space-x-4">
               {data.logo || (
                 <div className="h-8 w-8 animate-pulse rounded-full bg-neutral-100" />
@@ -234,18 +234,18 @@ const SCIMSection = () => {
                 {data.title ? (
                   <h3 className="font-medium">{data.title}</h3>
                 ) : (
-                  <div className="h-5 w-20 animate-pulse rounded-md bg-neutral-100" />
+                  <div className="h-5 w-20 animate-pulse rounded bg-neutral-100" />
                 )}
                 {data.description ? (
                   <p className="text-sm text-neutral-500">{data.description}</p>
                 ) : (
-                  <div className="mt-2 h-4 w-40 animate-pulse rounded-md bg-neutral-100" />
+                  <div className="mt-2 h-4 w-40 animate-pulse rounded bg-neutral-100" />
                 )}
               </div>
             </div>
             <div>
               {loading ? (
-                <div className="h-9 w-24 animate-pulse rounded-md bg-neutral-100" />
+                <div className="h-9 w-24 animate-pulse rounded bg-neutral-100" />
               ) : configured ? (
                 <Popover
                   content={
@@ -255,7 +255,7 @@ const SCIMSection = () => {
                           setShowSCIMModal(true);
                           setOpenPopover(false);
                         }}
-                        className="rounded-md p-2 text-sm font-medium text-neutral-500 transition-all duration-75 hover:bg-neutral-100"
+                        className="rounded p-2 text-sm font-medium text-neutral-500 transition-all duration-75 hover:bg-neutral-100"
                       >
                         <IconMenu
                           text="View configuration"
@@ -267,7 +267,7 @@ const SCIMSection = () => {
                           setShowRemoveSCIMModal(true);
                           setOpenPopover(false);
                         }}
-                        className="rounded-md p-2 text-left text-sm font-medium text-red-600 transition-all duration-75 hover:bg-red-600 hover:text-white"
+                        className="rounded p-2 text-left text-sm font-medium text-red-600 transition-all duration-75 hover:bg-red-600 hover:text-white"
                       >
                         <IconMenu
                           text="Remove"
@@ -286,7 +286,7 @@ const SCIMSection = () => {
                       e.stopPropagation();
                       setOpenPopover(!openPopover);
                     }}
-                    className="rounded-md px-1 py-2 transition-all duration-75 hover:bg-neutral-100 active:bg-neutral-200"
+                    className="rounded px-1 py-2 transition-all duration-75 hover:bg-neutral-100 active:bg-neutral-200"
                   >
                     <span className="sr-only">Edit</span>
                     <ThreeDots className="h-5 w-5 text-neutral-500" />
@@ -313,7 +313,7 @@ const SCIMSection = () => {
           </div>
         </div>
 
-        {/* <div className="flex items-center justify-between rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-50 px-3 py-5 sm:px-10">
+        {/* <div className="flex items-center justify-between rounded-b border-t-[6px] border-neutral-100 bg-neutral-50 px-3 py-5 sm:px-10">
           <a
             href="https://dub.co/help/category/saml-sso"
             target="_blank"

@@ -121,7 +121,7 @@ export function OnlinePresenceForm({
           <div
             className={cn(
               "flex w-full flex-col gap-4 text-left",
-              variant === "settings" && "gap-0 divide-y-[6px] divide-neutral-100 p-5",
+              variant === "settings" && "gap-0 divide-y divide-neutral-100 p-5",
             )}
           >
             <FormRow
@@ -131,10 +131,10 @@ export function OnlinePresenceForm({
                 <input
                   type="text"
                   className={cn(
-                    "block w-full rounded-md focus:outline-none sm:text-sm",
+                    "block w-full rounded focus:outline-none sm:text-sm",
                     errors.website
-                      ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
-                      : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-500",
+                      ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
+                      : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0",
                   )}
                   placeholder="example.com"
                   {...register("website")}
@@ -181,7 +181,7 @@ export function OnlinePresenceForm({
               variant={variant}
               label="YouTube"
               input={
-                <div className="flex rounded-md">
+                <div className="flex rounded">
                   <span className="inline-flex items-center rounded-l-md border border-r-0 border-neutral-300 bg-neutral-50 px-3 text-neutral-500 sm:text-sm">
                     youtube.com
                   </span>
@@ -193,8 +193,8 @@ export function OnlinePresenceForm({
                     className={cn(
                       "block w-full rounded-none rounded-r-md pl-7 focus:outline-none sm:text-sm",
                       errors.youtube
-                        ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
-                        : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-500",
+                        ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
+                        : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0",
                     )}
                     placeholder="handle"
                     onPaste={onPasteSocial}
@@ -218,7 +218,7 @@ export function OnlinePresenceForm({
               variant={variant}
               label="X/Twitter"
               input={
-                <div className="flex rounded-md">
+                <div className="flex rounded">
                   <span className="inline-flex items-center rounded-l-md border border-r-0 border-neutral-300 bg-neutral-50 px-3 text-neutral-500 sm:text-sm">
                     x.com
                   </span>
@@ -227,8 +227,8 @@ export function OnlinePresenceForm({
                     className={cn(
                       "block w-full rounded-none rounded-r-md focus:outline-none sm:text-sm",
                       errors.twitter
-                        ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
-                        : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-500",
+                        ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
+                        : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0",
                     )}
                     placeholder="handle"
                     onPaste={onPasteSocial}
@@ -252,7 +252,7 @@ export function OnlinePresenceForm({
               variant={variant}
               label="LinkedIn"
               input={
-                <div className="flex rounded-md">
+                <div className="flex rounded">
                   <span className="inline-flex items-center rounded-l-md border border-r-0 border-neutral-300 bg-neutral-50 px-3 text-neutral-500 sm:text-sm">
                     linkedin.com/in
                   </span>
@@ -261,8 +261,8 @@ export function OnlinePresenceForm({
                     className={cn(
                       "block w-full rounded-none rounded-r-md focus:outline-none sm:text-sm",
                       errors.linkedin
-                        ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
-                        : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-500",
+                        ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
+                        : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0",
                     )}
                     placeholder="handle"
                     onPaste={onPasteSocial}
@@ -287,7 +287,7 @@ export function OnlinePresenceForm({
               variant={variant}
               label="Instagram"
               input={
-                <div className="flex rounded-md">
+                <div className="flex rounded">
                   <span className="inline-flex items-center rounded-l-md border border-r-0 border-neutral-300 bg-neutral-50 px-3 text-neutral-500 sm:text-sm">
                     instagram.com
                   </span>
@@ -296,8 +296,8 @@ export function OnlinePresenceForm({
                     className={cn(
                       "block w-full rounded-none rounded-r-md focus:outline-none sm:text-sm",
                       errors.instagram
-                        ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
-                        : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-500",
+                        ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
+                        : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0",
                     )}
                     placeholder="handle"
                     onPaste={onPasteSocial}
@@ -322,7 +322,7 @@ export function OnlinePresenceForm({
               variant={variant}
               label="TikTok"
               input={
-                <div className="flex rounded-md">
+                <div className="flex rounded">
                   <span className="inline-flex items-center rounded-l-md border border-r-0 border-neutral-300 bg-neutral-50 px-3 text-neutral-500 sm:text-sm">
                     tiktok.com
                   </span>
@@ -334,8 +334,8 @@ export function OnlinePresenceForm({
                     className={cn(
                       "block w-full rounded-none rounded-r-md pl-7 focus:outline-none sm:text-sm",
                       errors.tiktok
-                        ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
-                        : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-500",
+                        ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
+                        : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0",
                     )}
                     placeholder="handle"
                     onPaste={onPasteSocial}
@@ -364,7 +364,7 @@ export function OnlinePresenceForm({
               loading={isSubmitting || isSubmitSuccessful}
             />
           ) : (
-            <div className="flex justify-end rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-100 px-5 py-3.5">
+            <div className="flex justify-end rounded-b border-t-[6px] border-neutral-100 bg-neutral-100 px-5 py-3.5">
               <Button
                 type="submit"
                 text="Save changes"

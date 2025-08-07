@@ -36,7 +36,7 @@ export const FolderCard = ({ folder }: { folder: Folder }) => {
   return (
     <div
       className={cn(
-        "hover:drop-shadow-card-hover relative flex flex-col justify-between rounded-xl border-[6px] border-neutral-100 bg-white px-5 py-4 transition-all duration-200 sm:h-36",
+        "hover:drop-shadow-card-hover relative flex flex-col justify-between rounded border border-neutral-100 bg-white px-5 py-4 transition-all duration-200 sm:h-36",
         folder.type === "mega" && "sm:h-32",
       )}
     >
@@ -102,7 +102,7 @@ function LinksCount({ folderId }: { folderId: string }) {
       <Globe className="size-3.5" />
 
       {loading ? (
-        <div className="h-5 w-12 animate-pulse rounded-md bg-neutral-200" />
+        <div className="h-5 w-12 animate-pulse rounded bg-neutral-200" />
       ) : (
         <span className="text-sm font-normal">
           {nFormatter(linkCount)} link{linkCount !== 1 && "s"}

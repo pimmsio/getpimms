@@ -129,7 +129,7 @@ export default async function SuccessPage({
             <div className="absolute -inset-[50%] rounded-full bg-white blur-lg" />
 
             {programSlug !== "pimms" && (
-              <div className="relative flex items-center gap-2 rounded-full border-[2px] border-neutral-100 bg-gradient-to-b from-white to-neutral-50 p-2 shadow-[0_8px_28px_0_#00000017]">
+              <div className="relative flex items-center gap-2 rounded-full border border-neutral-100 bg-gradient-to-b from-white to-neutral-50 p-2 shadow-[0_8px_28px_0_#00000017]">
                 <img
                   className="size-10 shrink-0 rounded-full"
                   src={program.logo || `${OG_AVATAR_URL}${program.name}`}

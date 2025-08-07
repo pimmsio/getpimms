@@ -155,7 +155,7 @@ export default function AnalyticsAreaChart({
             tooltipContent={(d) => {
               return (
                 <div 
-                  className="bg-white rounded-lg shadow-xl border-0"
+                  className="bg-white rounded shadow-xl border-0"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <p className="border-b border-neutral-100/80 px-3 py-2 text-sm text-neutral-900 font-medium">
@@ -173,7 +173,7 @@ export default function AnalyticsAreaChart({
                         <div
                           className={cn(
                             activeSeries.colorClassName,
-                            "h-2 w-2 rounded-sm bg-current opacity-50 shadow-[inset_0_0_0_1px_#0003]",
+                            "h-2 w-2 rounded bg-current opacity-50 shadow-[inset_0_0_0_1px_#0003]",
                           )}
                         />
                       )} */}

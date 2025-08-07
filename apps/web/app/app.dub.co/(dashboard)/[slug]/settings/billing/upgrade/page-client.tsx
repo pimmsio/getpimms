@@ -66,9 +66,9 @@ export function WorkspaceBillingUpgradePageClient() {
           ]}
           selected={period}
           selectAction={(option) => setPeriod(option as "monthly" | "yearly")}
-          className="rounded-lg border-neutral-300 bg-neutral-100 p-0.5"
+          className="rounded border-neutral-300 bg-neutral-100 p-0.5"
           optionClassName="text-xs text-neutral-800 data-[selected=true]:text-neutral-800 px-3 sm:px-5 py-2 leading-none"
-          indicatorClassName="bg-white border-neutral-200 rounded-md"
+          indicatorClassName="bg-white border-neutral-200 rounded"
         />
       </div>
 
@@ -105,7 +105,7 @@ export function WorkspaceBillingUpgradePageClient() {
                     key={plan.name}
                     className={cn(
                       "relative top-0 flex h-full flex-col gap-6 bg-white p-5",
-                      "max-lg:rounded-xl max-lg:border max-lg:border-neutral-200",
+                      "max-lg:rounded max-lg:border max-lg:border-neutral-200",
 
                       idx !== mobilePlanIndex && "max-lg:opacity-0",
                     )}
@@ -155,7 +155,7 @@ export function WorkspaceBillingUpgradePageClient() {
                     <div className="flex gap-3">
                       <button
                         type="button"
-                        className="h-full w-fit rounded-lg bg-neutral-100 px-2.5 transition-colors duration-75 hover:bg-neutral-200/80 enabled:active:bg-neutral-200 disabled:opacity-30 lg:hidden"
+                        className="h-full w-fit rounded bg-neutral-100 px-2.5 transition-colors duration-75 hover:bg-neutral-200/80 enabled:active:bg-neutral-200 disabled:opacity-30 lg:hidden"
                         disabled={mobilePlanIndex === 0}
                         onClick={() => setMobilePlanIndex(mobilePlanIndex - 1)}
                       >
@@ -166,8 +166,8 @@ export function WorkspaceBillingUpgradePageClient() {
                           href="https://pimms.io/contact"
                           target="_blank"
                           className={cn(
-                            "flex h-8 w-full items-center justify-center rounded-md text-center text-sm ring-gray-200 transition-all duration-200 ease-in-out",
-                            "border-[6px] border-neutral-100 bg-white text-neutral-900 shadow-sm hover:bg-neutral-50",
+                            "flex h-8 w-full items-center justify-center rounded text-center text-sm ring-transparent transition-all duration-200 ease-in-out",
+                            "border border-neutral-100 bg-white text-neutral-900 shadow-sm hover:bg-neutral-50",
                           )}
                         >
                           {plan.name === "Enterprise"
@@ -192,7 +192,7 @@ export function WorkspaceBillingUpgradePageClient() {
                       )}
                       <button
                         type="button"
-                        className="h-full w-fit rounded-lg bg-neutral-100 px-2.5 transition-colors duration-75 hover:bg-neutral-200/80 active:bg-neutral-200 disabled:opacity-30 lg:hidden"
+                        className="h-full w-fit rounded bg-neutral-100 px-2.5 transition-colors duration-75 hover:bg-neutral-200/80 active:bg-neutral-200 disabled:opacity-30 lg:hidden"
                         disabled={mobilePlanIndex >= plans.length - 1}
                         onClick={() => setMobilePlanIndex(mobilePlanIndex + 1)}
                       >

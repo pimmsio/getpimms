@@ -16,7 +16,7 @@ export function LinkLogo({
     <BlurImage
       src={getGoogleFavicon(apexDomain, false)}
       alt={apexDomain}
-      className={cn("h-8 w-8 sm:h-10 sm:w-10 rounded-md", className)}
+      className={cn("h-8 w-8 sm:h-10 sm:w-10 rounded", className)}
       width={20}
       height={20}
       draggable={false}

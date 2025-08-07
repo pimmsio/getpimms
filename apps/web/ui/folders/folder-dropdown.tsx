@@ -186,7 +186,7 @@ export const FolderDropdown = ({
             <Link
               href={`/${slug}/settings/library/folders`}
               onClick={() => setOpenPopover(false)}
-              className="rounded-xl border-[2px] border-neutral-100 px-2 py-1 text-xs transition-colors hover:bg-neutral-100"
+              className="rounded border border-neutral-100 px-2 py-1 text-xs transition-colors hover:bg-neutral-100"
             >
               View All
             </Link>
@@ -216,7 +216,7 @@ export const FolderDropdown = ({
         }
         buttonProps={{
           className: cn(
-            "group flex items-center gap-2 rounded-lg px-2 py-1 w-fit",
+            "group flex items-center gap-2 rounded px-2 py-1 w-fit",
             variant === "inline" && "border-none !ring-0",
             "transition-colors hover:bg-neutral-100 active:bg-neutral-200 data-[state=open]:bg-neutral-100",
             buttonClassName,
@@ -264,5 +264,5 @@ export const FolderDropdown = ({
 };
 
 const FolderSwitcherPlaceholder = () => {
-  return <div className="h-10 w-40 animate-pulse rounded-lg bg-neutral-200" />;
+  return <div className="h-10 w-40 animate-pulse rounded bg-neutral-200" />;
 };

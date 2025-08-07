@@ -27,7 +27,7 @@ export function PendingPayouts() {
   const isLoading = !payouts && !error;
 
   return (
-    <div className="rounded-xl border-[6px] border-neutral-100">
+    <div className="rounded border border-neutral-100">
       <div className="flex items-center justify-between border-b-[6px] border-neutral-100 p-5">
         <h2 className="text-base font-semibold text-neutral-900">
           Pending payouts
@@ -37,7 +37,7 @@ export function PendingPayouts() {
           href={`/${slug}/programs/${programId}/payouts?status=pending`}
           className={cn(
             buttonVariants({ variant: "secondary" }),
-            "flex h-7 items-center rounded-xl border-[3px] px-2 text-sm",
+            "flex h-7 items-center rounded border px-2 text-sm",
           )}
         >
           View all
@@ -92,7 +92,7 @@ function PayoutRow({ payout }: { payout: PayoutResponse }) {
       <button
         key={payout.id}
         type="button"
-        className="flex h-12 items-center justify-between rounded-md p-2 text-left transition-colors duration-75 hover:bg-neutral-50 active:bg-neutral-100"
+        className="flex h-12 items-center justify-between rounded p-2 text-left transition-colors duration-75 hover:bg-neutral-50 active:bg-neutral-100"
         onClick={() => setShowPayoutDetailsSheet(true)}
       >
         <div className="flex items-center gap-2 text-xs">

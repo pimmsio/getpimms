@@ -49,7 +49,7 @@ export default async function dashboardPage({
     return (
       <main className="flex h-screen w-screen items-center justify-center">
         <NewBackground />
-        <div className="z-10 w-full max-w-md overflow-hidden rounded-2xl border border-neutral-100 shadow-xl">
+        <div className="z-10 w-full max-w-md overflow-hidden rounded border border-neutral-100 shadow-xl">
           <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 bg-white px-4 py-6 pt-8 text-center sm:px-16">
             <Logo />
             <h3 className="text-xl font-semibold">Enter Password</h3>

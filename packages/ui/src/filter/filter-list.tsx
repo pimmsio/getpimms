@@ -49,7 +49,7 @@ export function FilterList({
                     key={`loader-${filterValue}`}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="h-9 w-48 animate-pulse rounded-xl border-[6px] border-neutral-100 bg-white"
+                    className="h-9 w-48 animate-pulse rounded border border-neutral-200 bg-white"
                   />
                 );
               }
@@ -96,7 +96,7 @@ export function FilterList({
                     key={`${key}-${value}`}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center rounded-xl border-[6px] border-neutral-100 bg-white text-sm text-black"
+                    className="flex items-center rounded border border-neutral-200 bg-white text-sm text-black"
                   >
                     {/* Filter */}
                     <div className="flex items-center gap-2.5 px-2 py-2">
@@ -137,14 +137,14 @@ export function FilterList({
                           )}
                         </>
                       ) : (
-                        <div className="h-5 w-12 animate-pulse rounded-xl bg-neutral-200" />
+                        <div className="h-5 w-12 animate-pulse rounded bg-neutral-200" />
                       )}
                     </div>
 
                     {/* Remove */}
                     <button
                       type="button"
-                      className="h-full rounded-r-md p-2 text-neutral-500 ring-inset ring-neutral-500 hover:bg-neutral-100 hover:text-neutral-800 focus:outline-none focus-visible:ring-1"
+                      className="h-full rounded-r-md p-2 text-neutral-500 ring-inset ring-neutral-500 hover:bg-neutral-100 hover:text-neutral-800 focus:outline-none focus-visible:ring-0"
                       onClick={() => onRemove(key, value)}
                     >
                       <X className="h-3.5 w-3.5" />
@@ -158,7 +158,7 @@ export function FilterList({
         {activeFilters?.length !== 0 && (
           <button
             type="button"
-            className="group mt-px flex items-center gap-2 whitespace-nowrap rounded-xl border-[6px] border-transparent px-1 py-2 text-sm ring-inset transition-colors hover:text-black focus:outline-none"
+            className="group mt-px flex items-center gap-2 whitespace-nowrap rounded border border-transparent px-1 py-2 text-sm ring-inset transition-colors hover:text-black focus:outline-none"
             onClick={onRemoveAll}
           >
             Clear

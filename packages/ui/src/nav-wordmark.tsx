@@ -84,7 +84,7 @@ export function NavWordmark({
     //         setIsPopoverOpen(false);
     //       }}
     //     >
-    //       <div className="grid gap-1 rounded-xl border-[6px] border-neutral-100 bg-white p-2 drop-shadow-sm sm:min-w-[240px] dark:border-white/[0.15] dark:bg-black">
+    //       <div className="grid gap-1 rounded border border-neutral-100 bg-white p-2 drop-shadow-sm sm:min-w-[240px] dark:border-white/[0.15] dark:bg-black">
     //         <ContextMenuButton
     //           text="Copy Logo as SVG"
     //           variant="outline"

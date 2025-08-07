@@ -50,7 +50,7 @@ export function HelpArticles({
           >
             <Command.Empty
               onClick={() => setScreen("contact")}
-              className="flex cursor-pointer items-center space-x-2 rounded-md bg-neutral-100 px-4 py-2 text-sm text-neutral-600"
+              className="flex cursor-pointer items-center space-x-2 rounded bg-neutral-100 px-4 py-2 text-sm text-neutral-600"
             >
               <MessageSquareText className="h-4 w-4 text-neutral-400" />
               <div className="flex flex-col space-y-1">
@@ -126,7 +126,7 @@ const CommandResults = () => {
         });
         window.open(`https://dub.co/help/article/${slug}`);
       }}
-      className="group flex cursor-pointer items-center justify-between space-x-2 rounded-md px-4 py-2 hover:bg-neutral-100 active:bg-neutral-200 aria-selected:bg-neutral-100"
+      className="group flex cursor-pointer items-center justify-between space-x-2 rounded px-4 py-2 hover:bg-neutral-100 active:bg-neutral-200 aria-selected:bg-neutral-100"
     >
       <div className="flex flex-col space-y-1">
         <Highlighter

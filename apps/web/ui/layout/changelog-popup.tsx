@@ -32,7 +32,7 @@ export function ChangelogPopupInner() {
         translateY: 0,
       }}
       exit={{ opacity: 0, y: "100%" }}
-      className="group fixed bottom-4 z-40 mx-2 overflow-hidden rounded-xl border-[6px] border-neutral-100 bg-white shadow-md sm:left-4 sm:mx-auto sm:max-w-sm"
+      className="group fixed bottom-4 z-40 mx-2 overflow-hidden rounded border border-neutral-100 bg-white shadow-md sm:left-4 sm:mx-auto sm:max-w-sm"
     >
       <button
         className="absolute right-2.5 top-2.5 z-10 rounded-full p-1 transition-colors hover:bg-neutral-100 active:scale-90"

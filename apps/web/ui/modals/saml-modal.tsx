@@ -46,7 +46,7 @@ function SAMLModal({
   return (
     <Modal showModal={showSAMLModal} setShowModal={setShowSAMLModal}>
       <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-8 sm:px-16">
-        <div className="rounded-full border-[6px] border-neutral-100 p-3">
+        <div className="rounded-full border border-neutral-100 p-3">
           <Lock className="h-5 w-5 text-neutral-600" />
         </div>
         <h3 className="text-lg font-medium">Configure SAML</h3>
@@ -101,7 +101,7 @@ function SAMLModal({
               onChange={(e) =>
                 setSelectedProvider(e.target.value as SAMLProviderProps["saml"])
               }
-              className="mt-1 block w-full appearance-none rounded-xl border-[2px] border-neutral-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
+              className="mt-1 block w-full appearance-none rounded border border-neutral-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-0 sm:text-sm"
             >
               <option disabled selected>
                 Select a provider
@@ -155,7 +155,7 @@ function SAMLModal({
                 </div>
                 <label
                   htmlFor="metadataRaw"
-                  className="group relative mt-1 flex h-24 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-[2px] border-neutral-300 bg-white shadow-sm transition-all hover:bg-neutral-50"
+                  className="group relative mt-1 flex h-24 w-full cursor-pointer flex-col items-center justify-center rounded border border-neutral-300 bg-white shadow-sm transition-all hover:bg-neutral-50"
                 >
                   {file ? (
                     <>
@@ -218,7 +218,7 @@ function SAMLModal({
                   placeholder="https://"
                   autoComplete="off"
                   required
-                  className="mt-1 block w-full appearance-none rounded-xl border-[2px] border-neutral-300 px-3 py-2 placeholder-neutral-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
+                  className="mt-1 block w-full appearance-none rounded border border-neutral-300 px-3 py-2 placeholder-neutral-400 shadow-sm focus:border-black focus:outline-none focus:ring-0 sm:text-sm"
                 />
               </div>
             ))}

@@ -112,7 +112,7 @@ export const FolderActions = ({
       {folderPermissionsPanel}
       <Popover
         content={
-          <div className="grid w-full divide-y-[6px] divide-neutral-100 sm:w-52">
+          <div className="grid w-full divide-y divide-neutral-100 sm:w-52">
             <div className="grid gap-px p-2">
               <Button
                 text="Analytics"

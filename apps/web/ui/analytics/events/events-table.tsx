@@ -575,7 +575,7 @@ export default function EventsTable({
         !integrationsLoading &&
         !requiresUpgrade &&
         integrations && (
-          <div className="mt-4 rounded-xl border-[6px] border-neutral-100 py-4">
+          <div className="mt-4 rounded border border-neutral-100 py-4">
             <IntegrationsCardsLight
               integrations={integrations}
               integrationsToShow={

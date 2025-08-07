@@ -11,7 +11,7 @@ export default function Feedback() {
   const [submitted, setSubmitted] = useState(false);
 
   return (
-    <div className="scrollbar-hide relative z-0 h-[400px] overflow-scroll bg-white rounded-lg border border-gray-200/50 hover:border-gray-300/50 transition-all duration-200 px-4 py-4">
+    <div className="scrollbar-hide relative z-0 h-[400px] overflow-scroll bg-white rounded border border-gray-200/50 hover:border-gray-300/50 transition-all duration-200 px-4 py-4">
       <div className="mb-4 flex">
         <h1 className="text-xl font-semibold">Feedback</h1>
       </div>
@@ -48,7 +48,7 @@ export default function Feedback() {
                 type="email"
                 placeholder="cheers@pimms.io"
                 autoComplete="email"
-                className="block w-full rounded-lg border border-gray-200/50 text-gray-900 placeholder-gray-400 focus:border-gray-300/50 focus:outline-none focus:ring-1 focus:ring-gray-300/50 sm:text-sm px-3 py-2"
+                className="block w-full rounded border border-gray-200/50 text-gray-900 placeholder-gray-400 focus:border-gray-300/50 focus:outline-none focus:ring-0 focus:ring-transparent/50 sm:text-sm px-3 py-2"
               />
             </div>
             <div>
@@ -63,7 +63,7 @@ export default function Feedback() {
                 id="feedback"
                 required={true}
                 rows={6}
-                className="block w-full rounded-lg border border-gray-200/50 text-gray-900 placeholder-gray-400 focus:border-gray-300/50 focus:outline-none focus:ring-1 focus:ring-gray-300/50 sm:text-sm px-3 py-2"
+                className="block w-full rounded border border-gray-200/50 text-gray-900 placeholder-gray-400 focus:border-gray-300/50 focus:outline-none focus:ring-0 focus:ring-transparent/50 sm:text-sm px-3 py-2"
                 placeholder="What other data would you like to see?"
                 aria-invalid="true"
               />

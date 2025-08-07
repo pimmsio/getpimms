@@ -62,7 +62,7 @@ export function ImportExportButtons() {
                   setOpenPopover(false);
                   setShowExportPartnersModal(true);
                 }}
-                className="w-full rounded-md p-2 hover:bg-neutral-100 active:bg-neutral-200"
+                className="w-full rounded p-2 hover:bg-neutral-100 active:bg-neutral-200"
               >
                 <IconMenu
                   text="Export as CSV"
@@ -97,7 +97,7 @@ function ImportOption({
   return (
     <button
       onClick={onClick}
-      className="w-full rounded-md p-2 hover:bg-neutral-100 active:bg-neutral-200"
+      className="w-full rounded p-2 hover:bg-neutral-100 active:bg-neutral-200"
     >
       {children}
     </button>

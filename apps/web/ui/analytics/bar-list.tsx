@@ -122,7 +122,7 @@ export default function BarList({
           <input
             type="text"
             autoFocus={!isMobile}
-            className="w-full rounded-xl border-[2px] border-neutral-300 py-2 pl-10 text-black placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-4 focus:ring-neutral-200 sm:text-sm"
+            className="w-full rounded border border-neutral-300 py-2 pl-10 text-black placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 focus:ring-transparent sm:text-sm"
             placeholder={`Search ${tab}...`}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -198,7 +198,7 @@ export function LineItem({
             position: "absolute",
             inset: 0,
           }}
-          className={cn("-z-10 h-full origin-left rounded-md", barBackground)}
+          className={cn("-z-10 h-full origin-left rounded", barBackground)}
           transition={{ ease: "easeOut", duration: 0.3 }}
           initial={{ transform: "scaleX(0)" }}
           animate={{ transform: "scaleX(1)" }}
@@ -212,7 +212,7 @@ export function LineItem({
             <Tooltip
               content={
                 <div 
-                  className="w-64 p-3 bg-white rounded-lg shadow-xl border-0"
+                  className="w-64 p-3 bg-white rounded shadow-xl border-0"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className="mb-2 font-semibold text-gray-900 text-sm">
@@ -290,7 +290,7 @@ export function LineItem({
             <Tooltip
               content={
                 <div 
-                  className="w-64 p-3 bg-white rounded-lg shadow-xl border-0"
+                  className="w-64 p-3 bg-white rounded shadow-xl border-0"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <LinkifyTooltipContent tooltipClassName="max-w-md">

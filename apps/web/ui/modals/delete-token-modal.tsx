@@ -57,7 +57,7 @@ function DeleteTokenModal({
       </div>
 
       <div className="flex flex-col space-y-4 bg-neutral-50 px-4 py-4 sm:px-6">
-        <div className="relative flex items-center gap-2 space-x-3 rounded-xl border-[2px] border-neutral-300 bg-white px-4 py-2">
+        <div className="relative flex items-center gap-2 space-x-3 rounded border border-neutral-300 bg-white px-4 py-2">
           <Key className="size-5 text-neutral-500" />
 
           <div className="flex flex-1 flex-col gap-0.5">

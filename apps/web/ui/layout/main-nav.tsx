@@ -72,7 +72,7 @@ export function MainNav({
         {/* Side nav */}
         <div
           className={cn(
-            "relative h-[calc(100%-20px)] sm:h-[calc(100vh-20px)] top-[10px] left-[10px] w-[220px] border-[6px] border-zinc-300 bg-white shadow-sm md:border-0 md:shadow-none md:bg-transparent rounded-3xl max-w-full transition-transform md:translate-x-0",
+            "relative h-[calc(100%-20px)] sm:h-[calc(100vh-20px)] top-[10px] left-[10px] w-[220px] border border-zinc-300 bg-white shadow-sm md:border-0 md:shadow-none md:bg-transparent rounded-3xl max-w-full transition-transform md:translate-x-0",
             !isOpen && "-translate-x-[calc(100%+20px)]",
           )}
         >
@@ -88,7 +88,7 @@ export function MainNav({
         </div>
       </div>
       <div className="bg-zinc-100 md:pt-[10px]">
-        <div className="relative overflow-hidden min-h-full bg-[#fafafa] pt-px md:rounded-tl-3xl md:border-[6px] md:border-b-0 md:border-r-0 md:border-neutral-200 md:bg-white shadow-sm">
+        <div className="relative overflow-hidden min-h-full bg-[#fafafa] pt-px md:rounded-tl-3xl md:border md:border-b-0 md:border-r-0 md:border-neutral-200 md:bg-white shadow-sm">
           <SideNavContext.Provider value={{ isOpen, setIsOpen }}>
             {children}
           </SideNavContext.Provider>

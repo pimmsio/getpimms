@@ -47,7 +47,7 @@ export function SolutionsContent({ domain }: { domain: string }) {
                   getUtmParams({ domain, utm_content: title }),
                 )}
                 className={cn(
-                  "group relative isolate z-0 flex flex-col justify-between overflow-hidden rounded-xl border border-neutral-100 bg-neutral-50 px-5 py-4 transition-colors duration-75",
+                  "group relative isolate z-0 flex flex-col justify-between overflow-hidden rounded border border-neutral-100 bg-neutral-50 px-5 py-4 transition-colors duration-75",
                   "dark:border-white/20 dark:bg-neutral-900",
                 )}
               >
@@ -93,7 +93,7 @@ export function SolutionsContent({ domain }: { domain: string }) {
                 getUtmParams({ domain, utm_content: title }),
               )}
               icon={
-                <div className="shrink-0 rounded-[10px] border-[6px] border-neutral-100 bg-white/50 p-1 dark:border-white/20 dark:bg-white/10">
+                <div className="shrink-0 rounded-[10px] border border-neutral-200 bg-white/50 p-1 dark:border-white/20 dark:bg-white/10">
                   <Icon
                     className={cn(
                       "size-5 text-neutral-600 transition-colors dark:text-white/60",

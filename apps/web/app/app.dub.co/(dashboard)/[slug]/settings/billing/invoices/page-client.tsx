@@ -30,7 +30,7 @@ export default function WorkspaceInvoicesClient() {
   );
 
   return (
-    <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
+    <div className="rounded border border-neutral-100 bg-white">
       <div className="flex flex-col items-start justify-between gap-y-4 p-6 md:p-8 md:pb-2 lg:flex-row">
         <div>
           <h2 className="text-xl font-medium">Invoices</h2>
@@ -56,7 +56,7 @@ export default function WorkspaceInvoicesClient() {
           }}
         />
       )}
-      <div className="grid divide-y-[6px] divide-neutral-100 border-t-[6px] border-neutral-100">
+      <div className="grid divide-y divide-neutral-100 border-t-[6px] border-neutral-100">
         {invoices ? (
           invoices.length > 0 ? (
             invoices.map((invoice) => (
@@ -69,7 +69,7 @@ export default function WorkspaceInvoicesClient() {
               cardContent={() => (
                 <>
                   <Receipt2 className="size-4 text-neutral-700" />
-                  <div className="h-2.5 w-24 min-w-0 rounded-sm bg-neutral-200" />
+                  <div className="h-2.5 w-24 min-w-0 rounded bg-neutral-200" />
                 </>
               )}
               className="border-none"
@@ -132,7 +132,7 @@ const InvoiceCard = ({ invoice }: { invoice: InvoiceProps }) => {
             target="_blank"
             className={cn(
               buttonVariants({ variant: "secondary" }),
-              "flex size-8 items-center justify-center rounded-md border text-sm sm:size-auto sm:h-9 sm:px-3",
+              "flex size-8 items-center justify-center rounded border text-sm sm:size-auto sm:h-9 sm:px-3",
             )}
           >
             <p className="hidden sm:block">View invoice</p>
@@ -159,14 +159,14 @@ const InvoiceCardSkeleton = () => {
   return (
     <div className="flex items-center justify-between px-6 py-4 sm:px-12">
       <div className="flex flex-col gap-1 text-sm">
-        <div className="h-4 w-32 animate-pulse rounded-md bg-neutral-200" />
-        <div className="h-4 w-24 animate-pulse rounded-md bg-neutral-200" />
+        <div className="h-4 w-32 animate-pulse rounded bg-neutral-200" />
+        <div className="h-4 w-24 animate-pulse rounded bg-neutral-200" />
       </div>
       <div className="flex flex-col gap-1">
-        <div className="h-4 w-16 animate-pulse rounded-md bg-neutral-200" />
-        <div className="h-4 w-20 animate-pulse rounded-md bg-neutral-200" />
+        <div className="h-4 w-16 animate-pulse rounded bg-neutral-200" />
+        <div className="h-4 w-20 animate-pulse rounded bg-neutral-200" />
       </div>
-      <div className="h-8 w-16 animate-pulse rounded-md bg-neutral-200" />
+      <div className="h-8 w-16 animate-pulse rounded bg-neutral-200" />
     </div>
   );
 };

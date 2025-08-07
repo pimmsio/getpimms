@@ -96,7 +96,7 @@ export function LinkTitleColumn({ link }: { link: ResponseLink }) {
                 innerClassName="p-1.5"
               />
             ) : (
-              <div className="size-4 rounded-md bg-neutral-200" />
+              <div className="size-4 rounded bg-neutral-200" />
             )}
           </Link>
         )}
@@ -210,7 +210,7 @@ function SettingsBadge({ link }: { link: ResponseLink }) {
           <HoverCard.Content
             side="bottom"
             sideOffset={8}
-            className="animate-slide-up-fade z-[99] items-center overflow-hidden rounded-xl border-[6px] border-neutral-100 bg-white shadow-sm"
+            className="animate-slide-up-fade z-[99] items-center overflow-hidden rounded border border-neutral-100 bg-white shadow-sm"
           >
             <div className="flex w-[340px] flex-col p-3 text-sm">
               {settings.map(({ label, icon: Icon }) => (
@@ -221,7 +221,7 @@ function SettingsBadge({ link }: { link: ResponseLink }) {
                     setOpen(false);
                     setShowLinkBuilder(true);
                   }}
-                  className="flex items-center justify-between gap-4 rounded-lg p-3 transition-colors hover:bg-neutral-100"
+                  className="flex items-center justify-between gap-4 rounded p-3 transition-colors hover:bg-neutral-100"
                 >
                   <div className="flex items-center gap-3">
                     <Icon className="size-4 text-neutral-600" />
@@ -262,7 +262,7 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
       )}
     >
       {/* Link logo background circle */}
-      <div className="absolute inset-0 shrink-0 rounded-xl border-[2px] border-neutral-100 opacity-100" />
+      <div className="absolute inset-0 shrink-0 rounded border border-neutral-100 opacity-100" />
       <div className="relative transition-[padding,transform] group-hover:scale-90 group-data-[variant=loose]/card-list:sm:p-1">
         <div className="hidden sm:block">
           {link.archived ? (
@@ -290,7 +290,7 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
       {/* Checkbox */}
       {/* <div
         className={cn(
-          "pointer-events-none absolute inset-0 flex items-center justify-center rounded-full border-[2px] border-neutral-400 bg-white ring-0 ring-black/5",
+          "pointer-events-none absolute inset-0 flex items-center justify-center rounded-full border border-neutral-400 bg-white ring-0 ring-black/5",
           "opacity-100 max-sm:ring sm:opacity-0",
           "transition-all duration-150 group-hover:opacity-100 group-hover:ring group-focus-visible:opacity-100 group-focus-visible:ring",
           "group-data-[checked=true]:opacity-100",

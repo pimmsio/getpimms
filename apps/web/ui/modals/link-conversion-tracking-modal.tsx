@@ -118,7 +118,7 @@ function LinkConversionTrackingModalInner({
               <label
                 key={option.value}
                 className={cn(
-                  "relative flex w-full cursor-pointer items-start gap-0.5 rounded-xl border-[2px] border-neutral-100 bg-white p-3 text-neutral-600 hover:bg-neutral-50",
+                  "relative flex w-full cursor-pointer items-start gap-0.5 rounded border border-neutral-100 bg-white p-3 text-neutral-600 hover:bg-neutral-50",
                   "transition-all duration-150",
                   isSelected &&
                     "border-black bg-neutral-50 text-neutral-900 ring-1 ring-black",

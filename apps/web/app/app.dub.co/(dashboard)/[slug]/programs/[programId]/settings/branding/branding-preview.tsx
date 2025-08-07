@@ -13,7 +13,7 @@ export function BrandingPreview() {
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>(TABS[0]["id"]);
 
   return (
-    <div className="rounded-xl bg-neutral-50 px-8 py-6">
+    <div className="rounded bg-neutral-50 px-8 py-6">
       <div className="flex justify-between">
         <span className="text-sm font-semibold text-black">Preview</span>
         <ToggleGroup
@@ -30,7 +30,7 @@ export function BrandingPreview() {
       </div>
       <div className="flex size-full items-center justify-center">
         <div className="w-full p-1">
-          <div className="w-full rounded-xl border-[6px] border-neutral-100">
+          <div className="w-full rounded border border-neutral-100">
             <div className="flex items-center justify-between gap-4 rounded-[inherit] bg-white px-4 py-1.5">
               <div className="hidden grow basis-0 items-center gap-2 sm:flex">
                 {[...Array(3)].map((_, idx) => (
@@ -40,7 +40,7 @@ export function BrandingPreview() {
                   />
                 ))}
               </div>
-              <div className="relative flex min-w-0 grow items-center justify-center gap-2 truncate rounded-md bg-neutral-50 px-2 py-1">
+              <div className="relative flex min-w-0 grow items-center justify-center gap-2 truncate rounded bg-neutral-50 px-2 py-1">
                 <LockFill className="size-2.5 shrink-0 text-neutral-900" />
                 <span className="select-none truncate text-xs font-medium leading-none">
                   partners.pimms.io

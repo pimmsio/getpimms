@@ -20,7 +20,7 @@ export function AnalyticsLoadingSpinner() {
       <Link
         href={slug ? `/${slug}/upgrade` : "https://pimms.io/pricing"}
         {...(slug ? {} : { target: "_blank" })}
-        className="w-full rounded-md border border-black bg-black px-3 py-1.5 text-center text-sm text-white transition-all hover:bg-neutral-800 hover:ring-4 hover:ring-neutral-200"
+        className="w-full rounded border border-black bg-black px-3 py-1.5 text-center text-sm text-white transition-all hover:bg-neutral-800 hover:ring-0 hover:ring-transparent"
       >
         Upgrade to {nextPlan.name}
       </Link>

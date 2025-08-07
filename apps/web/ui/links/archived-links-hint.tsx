@@ -50,7 +50,7 @@ function ArchivedLinksHintHelper() {
           </div>
         }
       >
-        <div className="flex cursor-default items-center gap-1.5 rounded-md bg-neutral-100 px-2 py-0.5 text-sm font-medium text-neutral-950 hover:bg-neutral-200">
+        <div className="flex cursor-default items-center gap-1.5 rounded bg-neutral-100 px-2 py-0.5 text-sm font-medium text-neutral-950 hover:bg-neutral-200">
           <BoxArchive className="h-3 w-3" />
           {archivedCount}
         </div>

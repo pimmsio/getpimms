@@ -84,7 +84,7 @@ function WebhooksModalInner({
             }
             side="right"
           >
-            <kbd className="flex size-6 cursor-default items-center justify-center rounded-md border border-neutral-200 font-sans text-xs text-neutral-950">
+            <kbd className="flex size-6 cursor-default items-center justify-center rounded border border-neutral-200 font-sans text-xs text-neutral-950">
               W
             </kbd>
           </Tooltip>
@@ -241,7 +241,7 @@ const NoWebhooksFound = () => {
 
   return (
     <div className="flex h-full flex-col items-center justify-center gap-2 px-2 py-4 text-center text-sm">
-      <div className="flex items-center justify-center rounded-2xl border border-neutral-200 bg-neutral-50 p-3">
+      <div className="flex items-center justify-center rounded border border-neutral-200 bg-neutral-50 p-3">
         <Webhook className="size-6 text-neutral-700" />
       </div>
       <p className="mt-2 font-medium text-neutral-950">No webhooks found</p>

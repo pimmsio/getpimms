@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 export function EmbedSection() {
   return (
-    <div className="rounded-xl border-[6px] border-neutral-100 bg-white px-6 py-8">
+    <div className="rounded border border-neutral-100 bg-white px-6 py-8">
       <div>
         <h2 className="text-lg font-semibold text-neutral-900">
           Embed snippets
@@ -56,7 +56,7 @@ function Snippet({
   }, [code, lang]);
 
   return (
-    <div className="rounded-xl border-[6px] border-neutral-100 p-6">
+    <div className="rounded border border-neutral-100 p-6">
       <div className="flex justify-between">
         <h3 className="text-base font-medium text-neutral-900">{name}</h3>
         <Button

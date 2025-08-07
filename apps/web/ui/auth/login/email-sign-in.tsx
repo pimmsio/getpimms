@@ -132,7 +132,7 @@ export const EmailSignIn = ({ next }: { next?: string }) => {
             onChange={(e) => setEmail(e.target.value)}
             size={1}
             className={cn(
-              "block w-full min-w-0 appearance-none rounded-xl border-2 border-neutral-200 text-black placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
+              "block w-full min-w-0 appearance-none rounded border border-neutral-200 text-black placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
               {
                 "pr-10": isPending,
               },

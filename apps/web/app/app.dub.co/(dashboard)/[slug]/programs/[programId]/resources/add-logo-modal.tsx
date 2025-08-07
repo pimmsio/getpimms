@@ -119,7 +119,7 @@ function AddLogoModalInner({ setShowAddLogoModal }: AddLogoModalProps) {
                   <FileUpload
                     accept="programResourceImages"
                     className={cn(
-                      "aspect-[4.2] w-full rounded-xl border-[2px] border-neutral-300",
+                      "aspect-[4.2] w-full rounded border border-neutral-300",
                       errors.file && "border-red-300 ring-1 ring-red-500",
                     )}
                     iconClassName="size-5"
@@ -164,9 +164,9 @@ function AddLogoModalInner({ setShowAddLogoModal }: AddLogoModalProps) {
                 id="name"
                 type="text"
                 className={cn(
-                  "block w-full rounded-md border-neutral-300 shadow-sm focus:border-neutral-500 focus:ring-neutral-500 sm:text-sm",
+                  "block w-full rounded border-neutral-300 shadow-sm focus:border-neutral-500 focus:ring-0 sm:text-sm",
                   errors.name &&
-                    "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500",
+                    "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0",
                 )}
                 {...register("name", { required: "Name is required" })}
               />

@@ -146,19 +146,19 @@ function PayoutInvoiceSheetContent({ setIsOpen }: PayoutInvoiceSheetProps) {
     if (eligiblePayoutsCountLoading) {
       return {
         Method: (
-          <div className="h-4 w-24 animate-pulse rounded-md bg-neutral-200" />
+          <div className="h-4 w-24 animate-pulse rounded bg-neutral-200" />
         ),
         Amount: (
-          <div className="h-4 w-24 animate-pulse rounded-md bg-neutral-200" />
+          <div className="h-4 w-24 animate-pulse rounded bg-neutral-200" />
         ),
         Fee: (
-          <div className="h-4 w-24 animate-pulse rounded-md bg-neutral-200" />
+          <div className="h-4 w-24 animate-pulse rounded bg-neutral-200" />
         ),
         Duration: (
-          <div className="h-4 w-24 animate-pulse rounded-md bg-neutral-200" />
+          <div className="h-4 w-24 animate-pulse rounded bg-neutral-200" />
         ),
         Total: (
-          <div className="h-4 w-24 animate-pulse rounded-md bg-neutral-200" />
+          <div className="h-4 w-24 animate-pulse rounded bg-neutral-200" />
         ),
       };
     }
@@ -174,10 +174,10 @@ function PayoutInvoiceSheetContent({ setIsOpen }: PayoutInvoiceSheetProps) {
       Method: (
         <div className="flex items-center gap-2 pr-6">
           {paymentMethodsLoading ? (
-            <div className="h-[30px] w-full animate-pulse rounded-md bg-neutral-200" />
+            <div className="h-[30px] w-full animate-pulse rounded bg-neutral-200" />
           ) : (
             <select
-              className="h-auto flex-1 rounded-xl border-[2px] border-neutral-100 py-1.5 text-xs focus:border-neutral-600 focus:ring-neutral-600"
+              className="h-auto flex-1 rounded border border-neutral-100 py-1.5 text-xs focus:border-neutral-600 focus:ring-neutral-600"
               value={selectedPaymentMethod?.id || ""}
               onChange={(e) =>
                 setSelectedPaymentMethod(
@@ -198,7 +198,7 @@ function PayoutInvoiceSheetContent({ setIsOpen }: PayoutInvoiceSheetProps) {
             href={`/${slug}/settings/billing`}
             className={cn(
               buttonVariants({ variant: "secondary" }),
-              "flex items-center rounded-xl border-[2px] border-neutral-100 px-2 py-1.5 text-sm",
+              "flex items-center rounded border border-neutral-100 px-2 py-1.5 text-sm",
             )}
             target="_blank"
           >
@@ -230,7 +230,7 @@ function PayoutInvoiceSheetContent({ setIsOpen }: PayoutInvoiceSheetProps) {
           </span>
         </Tooltip>
       ) : (
-        <div className="h-4 w-24 animate-pulse rounded-md bg-neutral-200" />
+        <div className="h-4 w-24 animate-pulse rounded bg-neutral-200" />
       ),
 
       Duration: (
@@ -238,7 +238,7 @@ function PayoutInvoiceSheetContent({ setIsOpen }: PayoutInvoiceSheetProps) {
           {selectedPaymentMethod ? (
             selectedPaymentMethod?.duration
           ) : (
-            <div className="h-4 w-24 animate-pulse rounded-md bg-neutral-200" />
+            <div className="h-4 w-24 animate-pulse rounded bg-neutral-200" />
           )}
         </div>
       ),

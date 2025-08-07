@@ -133,7 +133,7 @@ function UTMTemplateOption({
     <div className="group relative">
       <button
         onClick={onClick}
-        className="flex w-full items-center justify-between gap-2 rounded-md p-2 text-neutral-700 outline-none hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-neutral-500 active:bg-neutral-200 group-hover:bg-neutral-100"
+        className="flex w-full items-center justify-between gap-2 rounded p-2 text-neutral-700 outline-none hover:bg-neutral-100 focus-visible:ring-0 focus-visible:ring-neutral-500 active:bg-neutral-200 group-hover:bg-neutral-100"
       >
         <span className="flex items-center gap-2">
           <Note className="size-4 text-neutral-500" />

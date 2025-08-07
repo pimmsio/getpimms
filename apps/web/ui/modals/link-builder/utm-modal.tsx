@@ -226,7 +226,7 @@ function UTMModalInner({ setShowUTMModal, onLoad }: UTMModalProps) {
             }
             side="right"
           >
-            <kbd className="flex size-6 cursor-default items-center justify-center rounded-xl border-[2px] border-neutral-100 font-sans text-xs text-neutral-950">
+            <kbd className="flex size-6 cursor-default items-center justify-center rounded border border-neutral-100 font-sans text-xs text-neutral-950">
               U
             </kbd>
           </Tooltip>
@@ -262,7 +262,7 @@ function UTMModalInner({ setShowUTMModal, onLoad }: UTMModalProps) {
           <span className="block text-sm font-medium text-neutral-700">
             URL Preview
           </span>
-          <div className="scrollbar-hide mt-2 overflow-scroll break-words rounded-lg border-[6px] border-neutral-100 bg-neutral-50 px-2.5 py-2 font-mono text-xs text-neutral-500">
+          <div className="scrollbar-hide mt-2 overflow-scroll break-words rounded border border-neutral-100 bg-neutral-50 px-2.5 py-2 font-mono text-xs text-neutral-500">
             {url}
           </div>
         </div>
@@ -335,7 +335,7 @@ function UTMButton({
           className={cn("size-4", enabled && "text-[#08272E]")}
         />
       }
-      className="flex h-auto w-full items-center gap-2 rounded-md border-0 px-1 py-1 text-neutral-700 outline-none hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-neutral-500 active:bg-neutral-200 group-hover:bg-neutral-100"
+      className="flex h-auto w-full items-center gap-2 rounded border-0 px-1 py-1 text-neutral-700 outline-none hover:bg-neutral-100 focus-visible:ring-0 focus-visible:ring-neutral-500 active:bg-neutral-200 group-hover:bg-neutral-100"
       onClick={() => setShowUTMModal(true)}
     />
   );

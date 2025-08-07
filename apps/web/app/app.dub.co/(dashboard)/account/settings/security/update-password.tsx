@@ -41,7 +41,7 @@ export const UpdatePassword = () => {
 
   return (
     <form
-      className="rounded-xl border-[6px] border-neutral-100 bg-white"
+      className="rounded border border-neutral-100 bg-white"
       onSubmit={onSubmit}
     >
       <div>
@@ -84,7 +84,7 @@ export const UpdatePassword = () => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between space-x-4 rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-50 p-3 sm:px-10">
+      <div className="flex items-center justify-between space-x-4 rounded-b border-t-[6px] border-neutral-100 bg-neutral-50 p-3 sm:px-10">
         <Tooltip content="Passwords must be at least 8 characters long containing at least one number, one uppercase, and one lowercase letter.">
           <p className="text-sm text-neutral-500 underline decoration-dotted underline-offset-2 hover:text-neutral-700">
             Password requirements

@@ -243,7 +243,7 @@ function OGModalInner({
                 }
                 side="right"
               >
-                <kbd className="flex size-6 cursor-default items-center justify-center rounded-xl border-[2px] border-neutral-100 font-sans text-xs text-neutral-950">
+                <kbd className="flex size-6 cursor-default items-center justify-center rounded border border-neutral-100 font-sans text-xs text-neutral-950">
                   L
                 </kbd>
               </Tooltip>
@@ -364,9 +364,9 @@ function OGModalInner({
                   </ButtonTooltip> */}
                 </div>
               </div>
-              <div className="relative mt-1 flex rounded-xl shadow-sm">
+              <div className="relative mt-1 flex rounded shadow-sm">
                 {generatingMetatags && (
-                  <div className="absolute flex h-full w-full items-center justify-center rounded-xl border-[2px] border-neutral-300 bg-white">
+                  <div className="absolute flex h-full w-full items-center justify-center rounded border border-neutral-300 bg-white">
                     <LoadingCircle />
                   </div>
                 )}
@@ -375,7 +375,7 @@ function OGModalInner({
                   id="title"
                   minRows={2}
                   maxLength={120}
-                  className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                  className="block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
                   placeholder="Add a title..."
                   value={title || ""}
                   onChange={(e) => {
@@ -420,9 +420,9 @@ function OGModalInner({
                   </ButtonTooltip> */}
                 </div>
               </div>
-              <div className="relative mt-1 flex rounded-xl shadow-sm">
+              <div className="relative mt-1 flex rounded shadow-sm">
                 {generatingMetatags && (
-                  <div className="absolute flex h-full w-full items-center justify-center rounded-xl border-[2px] border-neutral-300 bg-white">
+                  <div className="absolute flex h-full w-full items-center justify-center rounded border border-neutral-300 bg-white">
                     <LoadingCircle />
                   </div>
                 )}
@@ -431,7 +431,7 @@ function OGModalInner({
                   id="description"
                   minRows={3}
                   maxLength={240}
-                  className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                  className="block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
                   placeholder="Add a description..."
                   value={description || ""}
                   onChange={(e) => {

@@ -157,7 +157,7 @@ function ImportShortModal({
               <div className="flex flex-col space-y-2">
                 <p className="text-sm font-medium text-neutral-700">Domains</p>
                 {domains.map(({ id, domain, links }) => (
-                  <div className="flex items-center justify-between space-x-2 rounded-xl border-[2px] border-neutral-100 bg-white px-4 py-2">
+                  <div className="flex items-center justify-between space-x-2 rounded border border-neutral-100 bg-white px-4 py-2">
                     <div>
                       <p className="font-medium text-neutral-800">{domain}</p>
                       {links > 0 && (
@@ -188,7 +188,7 @@ function ImportShortModal({
                     />
                   </div>
                 ))}
-                <div className="flex items-center justify-between space-x-2 rounded-md py-1 pl-2 pr-4">
+                <div className="flex items-center justify-between space-x-2 rounded py-1 pl-2 pr-4">
                   <p className="text-xs text-neutral-500">Import all tags?</p>
                   <Switch
                     fn={() => setImportTags(!importTags)}
@@ -213,7 +213,7 @@ function ImportShortModal({
                 href="mailto:support@dub.co?subject=I%20need%20help%20with%20importing%20my%20Short.io%20links"
                 className={cn(
                   buttonVariants({ variant: "secondary" }),
-                  "flex h-8 items-center justify-center rounded-md border px-4 text-sm",
+                  "flex h-8 items-center justify-center rounded border px-4 text-sm",
                 )}
               >
                 Contact Support
@@ -269,7 +269,7 @@ function ImportShortModal({
                 placeholder="sk_xxxxxxxxxxxxxxxx"
                 autoComplete="off"
                 required
-                className="mt-1 block w-full appearance-none rounded-xl border-[2px] border-neutral-300 px-3 py-2 placeholder-neutral-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
+                className="mt-1 block w-full appearance-none rounded border border-neutral-300 px-3 py-2 placeholder-neutral-400 shadow-sm focus:border-black focus:outline-none focus:ring-0 sm:text-sm"
               />
             </div>
             <Button text="Confirm API Key" loading={submitting} />

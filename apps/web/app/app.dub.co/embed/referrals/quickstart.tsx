@@ -13,7 +13,7 @@ import {
 import { cn, DUB_LOGO, TAB_ITEM_ANIMATION_SETTINGS } from "@dub/utils";
 import { motion } from "framer-motion";
 
-const BUTTON_CLASSNAME = "h-9 rounded-lg bg-bg-inverted hover:bg-neutral-800";
+const BUTTON_CLASSNAME = "h-9 rounded bg-bg-inverted hover:bg-neutral-800";
 
 export function ReferralsEmbedQuickstart({
   program,
@@ -68,7 +68,7 @@ export function ReferralsEmbedQuickstart({
       illustration: <SuccessKit logo={program.logo ?? DUB_LOGO} />,
       cta: (
         <Button
-          className="h-9 rounded-lg"
+          className="h-9 rounded"
           text={onViewResources ? "View resources" : "No resources"}
           disabled={!onViewResources}
           onClick={onViewResources}
@@ -82,7 +82,7 @@ export function ReferralsEmbedQuickstart({
       illustration: <ConnectPayouts logo={program.logo ?? DUB_LOGO} />,
       cta: (
         <Button
-          className={payoutsDisabled ? "h-9 rounded-lg" : BUTTON_CLASSNAME}
+          className={payoutsDisabled ? "h-9 rounded" : BUTTON_CLASSNAME}
           disabledTooltip={
             payoutsDisabled
               ? "You will be able to withdraw your earnings once you have made at least one sale."
@@ -99,7 +99,7 @@ export function ReferralsEmbedQuickstart({
 
   return (
     <motion.div
-      className="border-border-muted bg-bg-default rounded-xl border-[6px] p-2"
+      className="border-border-muted bg-bg-default rounded border p-2"
       {...TAB_ITEM_ANIMATION_SETTINGS}
     >
       {isMobile ? (
@@ -108,7 +108,7 @@ export function ReferralsEmbedQuickstart({
             {items.map((item) => (
               <CarouselItem
                 key={item.title}
-                className="bg-bg-muted flex flex-col items-center justify-between gap-4 rounded-lg p-8 text-center"
+                className="bg-bg-muted flex flex-col items-center justify-between gap-4 rounded p-8 text-center"
               >
                 {item.illustration}
                 <h3 className="text-content-emphasis text-lg font-medium">
@@ -128,7 +128,7 @@ export function ReferralsEmbedQuickstart({
           {items.map((item) => (
             <div
               key={item.title}
-              className="bg-bg-muted flex flex-col items-center justify-between gap-4 rounded-lg p-8 text-center"
+              className="bg-bg-muted flex flex-col items-center justify-between gap-4 rounded p-8 text-center"
             >
               {item.illustration}
               <h3 className="text-content-emphasis text-lg font-medium">

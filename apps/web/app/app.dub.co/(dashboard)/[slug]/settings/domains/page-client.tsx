@@ -59,7 +59,7 @@ export default function WorkspaceDomainsClient() {
   const { AddEditDomainModal, AddDomainButton, setShowAddEditDomainModal } =
     useAddEditDomainModal({
       buttonProps: {
-        className: "h-9 rounded-lg",
+        className: "h-9 rounded",
       },
     });
 
@@ -167,7 +167,7 @@ export default function WorkspaceDomainsClient() {
                             <span className="uppercase">Pro</span>
                           </Badge>
                         ) : dotLinkClaimed ? (
-                          <span className="rounded-md border border-green-200 bg-green-500/10 px-1 py-0.5 text-xs text-green-900">
+                          <span className="rounded border border-green-200 bg-green-500/10 px-1 py-0.5 text-xs text-green-900">
                             Claimed
                           </span>
                         ) : null}
@@ -187,7 +187,7 @@ export default function WorkspaceDomainsClient() {
             >
               <Button
                 variant="primary"
-                className="h-9 w-fit rounded-lg"
+                className="h-9 w-fit rounded"
                 text={
                   <div className="flex items-center gap-2">
                     Add domain{" "}
@@ -221,7 +221,7 @@ export default function WorkspaceDomainsClient() {
                 ))}
               </ul>
             ) : archived || search ? (
-              <div className="flex flex-col items-center gap-4 rounded-xl border-[6px] border-neutral-100 py-10">
+              <div className="flex flex-col items-center gap-4 rounded border border-neutral-100 py-10">
                 <EmptyState
                   icon={Globe}
                   title={
@@ -239,7 +239,7 @@ export default function WorkspaceDomainsClient() {
                 cardContent={
                   <>
                     <Globe className="size-4 text-neutral-700" />
-                    <div className="h-2.5 w-24 min-w-0 rounded-sm bg-neutral-200" />
+                    <div className="h-2.5 w-24 min-w-0 rounded bg-neutral-200" />
                     <div className="xs:flex hidden grow items-center justify-end gap-1.5 text-neutral-500">
                       <CursorRays className="size-3.5" />
                     </div>

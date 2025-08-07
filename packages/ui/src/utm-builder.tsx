@@ -146,7 +146,7 @@ export function UTMBuilder({
                       ref={idx === 0 ? inputRef : undefined}
                       placeholder={placeholder}
                       disabled={disabled || Boolean(disabledTooltip)}
-                      className="size-full rounded-r-md border border-neutral-300 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-500 disabled:cursor-not-allowed sm:text-sm"
+                      className="size-full rounded-r-md border border-neutral-300 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0 disabled:cursor-not-allowed sm:text-sm"
                       value={values[key] || ""}
                       onChange={(e) => onChange(key, e.target.value)}
                     />

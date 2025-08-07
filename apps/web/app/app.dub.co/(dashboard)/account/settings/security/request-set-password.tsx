@@ -36,7 +36,7 @@ export const RequestSetPassword = () => {
   };
 
   return (
-    <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
+    <div className="rounded border border-neutral-100 bg-white">
       <div className="flex flex-col gap-3 border-b-[6px] border-neutral-100 p-5 sm:p-10">
         <h2 className="text-xl font-medium">Password</h2>
         <p className="pb-2 text-sm text-neutral-500">

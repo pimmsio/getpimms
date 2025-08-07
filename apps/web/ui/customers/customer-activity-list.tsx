@@ -24,7 +24,7 @@ const activityData = {
                 : `/${slug}/links/${getPrettyUrl(event.link.shortLink)}`
             }
             target="_blank"
-            className="flex items-center gap-2 rounded-md bg-neutral-100 px-1.5 py-1 font-mono text-xs leading-none transition-colors hover:bg-neutral-200/80"
+            className="flex items-center gap-2 rounded bg-neutral-100 px-1.5 py-1 font-mono text-xs leading-none transition-colors hover:bg-neutral-200/80"
           >
             <LinkLogo
               className="size-3 shrink-0 sm:size-3"
@@ -42,7 +42,7 @@ const activityData = {
                 : `/${slug}/analytics?referer=${referer === "direct" ? "(direct)" : referer}`
             }
             target="_blank"
-            className="flex items-center gap-2 rounded-md bg-neutral-100 px-1.5 py-1 font-mono text-xs leading-none transition-colors hover:bg-neutral-200/80"
+            className="flex items-center gap-2 rounded bg-neutral-100 px-1.5 py-1 font-mono text-xs leading-none transition-colors hover:bg-neutral-200/80"
           >
             <LinkLogo
               className="size-3 shrink-0 sm:size-3"
@@ -66,7 +66,7 @@ export function CustomerActivityList({
   isLoading: boolean;
 }) {
   return isLoading ? (
-    <div className="flex h-32 w-full animate-pulse rounded-lg border border-transparent bg-neutral-100" />
+    <div className="flex h-32 w-full animate-pulse rounded border border-transparent bg-neutral-100" />
   ) : !activity?.events?.length ? (
     <div className="text-sm text-neutral-500">
       {activity?.events ? "No activity" : "Failed to load activity"}

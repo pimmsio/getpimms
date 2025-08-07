@@ -78,7 +78,7 @@ export function UsageChart() {
                   <div className="grid grid-cols-2 gap-x-6 gap-y-2 px-4 py-3 text-sm">
                     <Fragment key={resource}>
                       <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-sm bg-violet-500 shadow-[inset_0_0_0_1px_#0003]" />
+                        <div className="h-2 w-2 rounded bg-violet-500 shadow-[inset_0_0_0_1px_#0003]" />
                         <p className="capitalize text-neutral-600">
                           {resource}
                         </p>

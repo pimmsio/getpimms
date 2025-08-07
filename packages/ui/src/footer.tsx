@@ -339,7 +339,7 @@ function StatusBadge() {
     <Link
       href="https://status.pimms.io"
       target="_blank"
-      className="group flex max-w-fit items-center gap-2 rounded-xl border-[6px] border-neutral-100 bg-white py-2 pl-2 pr-2.5 transition-colors hover:bg-neutral-50 active:bg-neutral-100"
+      className="group flex max-w-fit items-center gap-2 rounded border border-neutral-100 bg-white py-2 pl-2 pr-2.5 transition-colors hover:bg-neutral-50 active:bg-neutral-100"
     >
       <div className="relative size-2">
         <div
