@@ -13,6 +13,7 @@ import { AnalyticsLoadingSpinner } from "./analytics-loading-spinner";
 import { AnalyticsContext } from "./analytics-provider";
 import MixedBarList from "./mixed-bar-list";
 import ContinentIcon from "./continent-icon";
+import WorldMap from "./world-map";
 import { useAnalyticsFilterOption } from "./utils";
 
 export default function Locations() {
@@ -22,15 +23,16 @@ export default function Locations() {
   const dataKey = selectedTab === "sales" ? saleUnit : "count";
 
   const [tab, setTab] = useState<
-    "countries" | "cities" | "continents" | "regions"
-  >("countries");
+    "map" | "countries" | "cities" | "continents" | "regions"
+  >("map");
 
-  const { data } = useAnalyticsFilterOption(tab);
-  const singularTabName = SINGULAR_ANALYTICS_ENDPOINTS[tab];
+  const { data } = useAnalyticsFilterOption(tab === "map" ? "countries" : tab);
+  const singularTabName = SINGULAR_ANALYTICS_ENDPOINTS[tab === "map" ? "countries" : tab];
 
   return (
     <AnalyticsCard
       tabs={[
+        { id: "map", label: "Map", icon: MapPosition },
         { id: "countries", label: "Countries", icon: FlagWavy },
         { id: "cities", label: "Cities", icon: OfficeBuilding },
         // { id: "regions", label: "Regions", icon: LocationPin },
@@ -44,52 +46,66 @@ export default function Locations() {
       {({ limit, setShowModal }) =>
         data ? (
           data.length > 0 ? (
-            <MixedBarList
-              tab={singularTabName}
-              data={
-                data
-                  ?.map((d) => ({
-                    icon:
-                      tab === "continents" ? (
-                        <ContinentIcon
-                          display={d.continent}
-                          className="size-3"
-                        />
-                      ) : (
-                        <img
-                          alt={d.country}
-                          src={`https://flag.vercel.app/m/${d.country}.svg`}
-                          className="h-3 w-5"
-                        />
-                      ),
-                    title:
-                      tab === "continents"
-                        ? CONTINENTS[d.continent]
-                        : tab === "countries"
-                          ? COUNTRIES[d.country]
-                          : tab === "regions"
-                            ? REGIONS[d.region] || d.region.split("-")[1]
-                            : d.city,
-                    href: queryParams({
-                      ...(searchParams.has(singularTabName)
-                        ? { del: singularTabName }
-                        : {
-                            set: {
-                              [singularTabName]: d[singularTabName],
-                            },
-                          }),
-                      getNewPath: true,
-                    }) as string,
-                    clicks: d.clicks || 0,
-                    leads: d.leads || 0,
-                    sales: d.sales || 0,
-                    saleAmount: d.saleAmount || 0,
-                  }))
-                  ?.sort((a, b) => b.clicks - a.clicks) || []
-              }
-              setShowModal={setShowModal}
-              {...(limit && { limit })}
-            />
+            tab === "map" ? (
+              <WorldMap
+                data={data?.map((d) => ({
+                  country: COUNTRIES[d.country] || d.country,
+                  countryCode: d.country,
+                  clicks: d.clicks || 0,
+                  leads: d.leads || 0,
+                  sales: d.sales || 0,
+                  saleAmount: d.saleAmount || 0,
+                })) || []}
+                maxVisitors={Math.max(...(data?.map((d) => d.clicks || 0) || [0]))}
+              />
+            ) : (
+              <MixedBarList
+                tab={singularTabName}
+                data={
+                  data
+                    ?.map((d) => ({
+                      icon:
+                        tab === "continents" ? (
+                          <ContinentIcon
+                            display={d.continent}
+                            className="size-3"
+                          />
+                        ) : (
+                          <img
+                            alt={d.country}
+                            src={`https://flag.vercel.app/m/${d.country}.svg`}
+                            className="h-3 w-5"
+                          />
+                        ),
+                      title:
+                        tab === "continents"
+                          ? CONTINENTS[d.continent]
+                          : tab === "countries"
+                            ? COUNTRIES[d.country]
+                            : tab === "regions"
+                              ? REGIONS[d.region] || d.region.split("-")[1]
+                              : d.city,
+                      href: queryParams({
+                        ...(searchParams.has(singularTabName)
+                          ? { del: singularTabName }
+                          : {
+                              set: {
+                                [singularTabName]: d[singularTabName],
+                              },
+                            }),
+                        getNewPath: true,
+                      }) as string,
+                      clicks: d.clicks || 0,
+                      leads: d.leads || 0,
+                      sales: d.sales || 0,
+                      saleAmount: d.saleAmount || 0,
+                    }))
+                    ?.sort((a, b) => b.clicks - a.clicks) || []
+                }
+                setShowModal={setShowModal}
+                {...(limit && { limit })}
+              />
+            )
           ) : (
             <div className="flex h-[300px] items-center justify-center">
               <p className="text-sm text-neutral-600">No data</p>

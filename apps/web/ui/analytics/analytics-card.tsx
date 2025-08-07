@@ -82,13 +82,13 @@ export function AnalyticsCard<T extends string>({
             <p className="text-xs uppercase">{EVENT_LABELS[event]}</p>
           </div>
         </div>
-        {/* {subTabs && selectedSubTabId && onSelectSubTab && (
+        {subTabs && selectedSubTabId && onSelectSubTab && (
           <SubTabs
             subTabs={subTabs}
             selectedTab={selectedSubTabId}
             onSelectTab={onSelectSubTab}
           />
-        )} */}
+        )}
         <div className="flex max-h-[70vh] flex-col">
           {children({ setShowModal, event })}
         </div>
@@ -160,18 +160,13 @@ export function AnalyticsCard<T extends string>({
             <p className="text-xs uppercase">{EVENT_LABELS[event]}</p>
           </div>
         </div>
-        {/* <AnimatedSizeContainer
-          height
-          transition={{ ease: "easeInOut", duration: 0.2 }}
-        >
-          {subTabs && selectedSubTabId && onSelectSubTab && (
-            <SubTabs
-              subTabs={subTabs}
-              selectedTab={selectedSubTabId}
-              onSelectTab={onSelectSubTab}
-            />
-          )}
-        </AnimatedSizeContainer> */}
+        {subTabs && selectedSubTabId && onSelectSubTab && (
+          <SubTabs
+            subTabs={subTabs}
+            selectedTab={selectedSubTabId}
+            onSelectTab={onSelectSubTab}
+          />
+        )}
         {children({
           limit: expandLimit,
           event,

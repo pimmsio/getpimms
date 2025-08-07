@@ -19,16 +19,13 @@ export default function Referer() {
 
   const [tab, setTab] = useState<"referers" | "utms">("referers");
   const [utmTag, setUtmTag] = useState<UTM_TAGS_PLURAL>("utm_sources");
-  const [refererType, setRefererType] = useState<"referers" | "referer_urls">(
-    "referers",
-  );
 
   const { data } = useAnalyticsFilterOption({
-    groupBy: tab === "utms" ? utmTag : refererType,
+    groupBy: tab === "utms" ? utmTag : "referers",
   });
 
   const singularTabName =
-    SINGULAR_ANALYTICS_ENDPOINTS[tab === "utms" ? utmTag : refererType];
+    SINGULAR_ANALYTICS_ENDPOINTS[tab === "utms" ? utmTag : "referers"];
 
   const { icon: UTMTagIcon } = UTM_PARAMETERS.find(
     (p) => p.key === utmTag.slice(0, -1),
@@ -38,24 +35,25 @@ export default function Referer() {
     return (
       {
         utms: {
-          subTabs: UTM_TAGS_PLURAL_LIST.map((u) => ({
-            id: u,
-            label: SINGULAR_ANALYTICS_ENDPOINTS[u].replace("utm_", ""),
-          })),
-          selectedSubTabId: utmTag,
-          onSelectSubTab: setUtmTag,
-        },
-        referers: {
           subTabs: [
-            { id: "referers", label: "Domain" },
-            { id: "referer_urls", label: "URL" },
+            { id: "all", label: "All" },
+            ...UTM_TAGS_PLURAL_LIST.map((u) => ({
+              id: u,
+              label: SINGULAR_ANALYTICS_ENDPOINTS[u].replace("utm_", "").charAt(0).toUpperCase() + SINGULAR_ANALYTICS_ENDPOINTS[u].replace("utm_", "").slice(1),
+            })),
           ],
-          selectedSubTabId: refererType,
-          onSelectSubTab: setRefererType,
+          selectedSubTabId: utmTag === "utm_sources" ? "utm_sources" : utmTag,
+          onSelectSubTab: (value: string) => {
+            if (value === "all") {
+              setUtmTag("utm_sources"); // Default to sources when "All" is selected
+            } else {
+              setUtmTag(value as UTM_TAGS_PLURAL);
+            }
+          },
         },
       }[tab] ?? {}
     );
-  }, [tab, utmTag, refererType]);
+  }, [tab, utmTag]);
 
   return (
     <AnalyticsCard
@@ -74,21 +72,19 @@ export default function Referer() {
           {data ? (
             data.length > 0 ? (
               <MixedBarList
-                tab={tab === "referers" ? "Referrer" : "UTM Param"}
+                tab={tab === "utms" ? "UTM Param" : "Referrer"}
                 data={
                   data
                     ?.map((d) => ({
                       icon:
                         tab === "utms" ? (
-                          <UTMTagIcon />
+                          <UTMTagIcon className="h-4 w-4" />
                         ) : d[singularTabName] === "(direct)" ? (
                           <Link2 className="h-4 w-4" />
                         ) : (
                           <BlurImage
                             src={getGoogleFavicon(
-                              tab === "referers"
-                                ? d[singularTabName]
-                                : getApexDomain(d[singularTabName]),
+                              d[singularTabName],
                               false,
                             )}
                             alt={d[singularTabName]}
