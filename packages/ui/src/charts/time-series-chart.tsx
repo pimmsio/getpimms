@@ -79,7 +79,7 @@ function TimeSeriesChartInner<T extends Datum>({
 
   const { minY, maxY } = useMemo(() => {
     const values = series
-      .filter(({ isActive }) => isActive !== false)
+      .filter(({ isActive, excludeFromYScale }) => isActive !== false && !excludeFromYScale)
       .map(({ valueAccessor }) => data.map((d) => valueAccessor(d)))
       .flat()
       .filter((v): v is number => v != null);
@@ -190,7 +190,7 @@ function TimeSeriesChartInner<T extends Datum>({
                   />
 
                   {series
-                    .filter(({ isActive }) => isActive)
+                    .filter(({ isActive, showHoverCircle }) => isActive && showHoverCircle !== false)
                     .map((s) => (
                       <Circle
                         key={s.id}

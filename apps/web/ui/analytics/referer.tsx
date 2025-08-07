@@ -8,7 +8,7 @@ import { useContext, useMemo, useState } from "react";
 import { AnalyticsCard } from "./analytics-card";
 import { AnalyticsLoadingSpinner } from "./analytics-loading-spinner";
 import { AnalyticsContext } from "./analytics-provider";
-import BarList from "./bar-list";
+import MixedBarList from "./mixed-bar-list";
 import { useAnalyticsFilterOption } from "./utils";
 
 export default function Referer() {
@@ -73,7 +73,7 @@ export default function Referer() {
         <>
           {data ? (
             data.length > 0 ? (
-              <BarList
+              <MixedBarList
                 tab={tab === "referers" ? "Referrer" : "UTM Param"}
                 data={
                   data
@@ -108,14 +108,13 @@ export default function Referer() {
                             }),
                         getNewPath: true,
                       }) as string,
-                      value: d[dataKey] || 0,
+                      clicks: d.clicks || 0,
+                      leads: d.leads || 0,
+                      sales: d.sales || 0,
+                      saleAmount: d.saleAmount || 0,
                     }))
-                    ?.sort((a, b) => b.value - a.value) || []
+                    ?.sort((a, b) => b.clicks - a.clicks) || []
                 }
-                unit={selectedTab}
-                maxValue={Math.max(...data?.map((d) => d[dataKey] ?? 0)) ?? 0}
-                barBackground="bg-[#E7EEFF]"
-                hoverBackground="hover:bg-neutral-100"
                 setShowModal={setShowModal}
                 {...(limit && { limit })}
               />

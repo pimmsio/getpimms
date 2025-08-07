@@ -20,6 +20,9 @@ export type Series<T extends Datum = any, TValue = number> = {
   isActive?: boolean;
   valueAccessor: AccessorFn<T, TValue>;
   colorClassName?: string;
+  type?: "line" | "bar";
+  showHoverCircle?: boolean;
+  excludeFromYScale?: boolean; // Exclude this series from Y-scale domain calculation
 };
 
 export type Data<T extends Datum> = TimeSeriesDatum<T>[];

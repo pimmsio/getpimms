@@ -61,11 +61,13 @@ export const AnalyticsContext = createContext<{
   totalEvents?: {
     [key in AnalyticsResponseOptions]: number;
   };
+  totalEventsLoading?: boolean;
   adminPage?: boolean;
   partnerPage?: boolean;
   showConversions?: boolean;
   requiresUpgrade?: boolean;
   dashboardProps?: AnalyticsDashboardProps;
+  workspace?: any;
 }>({
   basePath: "",
   baseApiPath: "",
@@ -82,6 +84,7 @@ export const AnalyticsContext = createContext<{
   showConversions: false,
   requiresUpgrade: false,
   dashboardProps: undefined,
+  workspace: undefined,
 });
 
 export default function AnalyticsProvider({
@@ -94,7 +97,9 @@ export default function AnalyticsProvider({
 }>) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { id: workspaceId, slug, domains } = useWorkspace();
+  const workspace = useWorkspace();
+  // Don't use workspaceId for admin pages - they should see all data
+  const { id: workspaceId, slug, domains } = adminPage ? { id: undefined, slug: undefined, domains: undefined } : workspace;
 
   const [requiresUpgrade, setRequiresUpgrade] = useState(false);
 
@@ -293,7 +298,7 @@ export default function AnalyticsProvider({
   // Reset requiresUpgrade when query changes
   useEffect(() => setRequiresUpgrade(false), [queryString]);
 
-  const { data: totalEvents } = useSWR<{
+  const { data: totalEvents, isLoading: totalEventsLoading } = useSWR<{
     [key in AnalyticsResponseOptions]: number;
   }>(
     `${baseApiPath}?${editQueryString(queryString, {
@@ -301,7 +306,6 @@ export default function AnalyticsProvider({
     })}`,
     fetcher,
     {
-      keepPreviousData: true,
       onSuccess: () => setRequiresUpgrade(false),
       onError: (error) => {
         try {
@@ -349,11 +353,13 @@ export default function AnalyticsProvider({
         interval, /// time period interval
         tagIds, // ids of the tags to filter by
         totalEvents, // totalEvents (clicks, leads, sales)
+        totalEventsLoading, // loading state for totalEvents
         adminPage, // whether the user is an admin
         partnerPage, // whether the user is viewing partner analytics
         dashboardProps,
         showConversions, // Whether to show conversions tabs/data
         requiresUpgrade, // whether an upgrade is required to perform the query
+        workspace: adminPage ? undefined : workspace, // workspace data (undefined for admin)
       }}
     >
       {children}

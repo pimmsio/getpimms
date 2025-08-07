@@ -1,6 +1,5 @@
 import { EventType } from "@/lib/analytics/types";
 import {
-  AnimatedSizeContainer,
   Button,
   Modal,
   Popover,
@@ -8,7 +7,6 @@ import {
   ToggleGroup,
   useMediaQuery,
 } from "@dub/ui";
-import { CursorRays, InvoiceDollar, UserCheck } from "@dub/ui/icons";
 import { cn } from "@dub/utils";
 import { ChevronsUpDown } from "lucide-react";
 import {
@@ -71,7 +69,7 @@ export function AnalyticsCard<T extends string>({
         setShowModal={setShowModal}
         className="max-w-lg px-0"
       >
-        <div className="flex items-center justify-between border-b-[6px] border-neutral-100 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-gray-200/50 px-4 py-3">
           <h1 className="text-lg font-semibold">{selectedTab?.label}</h1>
           <div className="flex items-center gap-1 text-neutral-500">
             {/* {event === "sales" ? (
@@ -91,15 +89,17 @@ export function AnalyticsCard<T extends string>({
             onSelectTab={onSelectSubTab}
           />
         )} */}
-        {children({ setShowModal, event })}
+        <div className="flex max-h-[70vh] flex-col">
+          {children({ setShowModal, event })}
+        </div>
       </Modal>
       <div
         className={cn(
-          "group relative z-0 h-[400px] overflow-hidden border-[6px] border-neutral-100 bg-white rounded-xl",
+          "group relative z-0 h-[400px] overflow-hidden rounded-lg border border-gray-200/50 bg-white transition-all duration-200 hover:border-gray-300/50",
           className,
         )}
       >
-        <div className="flex items-center justify-between border-b-[6px] border-neutral-100 px-4">
+        <div className="flex items-center justify-between border-b border-gray-200/50 p-1">
           {/* Main tabs */}
           {isMobile ? (
             <Popover
@@ -172,13 +172,11 @@ export function AnalyticsCard<T extends string>({
             />
           )}
         </AnimatedSizeContainer> */}
-        <div className="py-4">
-          {children({
-            limit: expandLimit,
-            event,
-            setShowModal,
-          })}
-        </div>
+        {children({
+          limit: expandLimit,
+          event,
+          setShowModal,
+        })}
         {hasMore && (
           <div className="absolute bottom-0 left-0 z-10 flex w-full items-end">
             <button

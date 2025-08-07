@@ -352,7 +352,7 @@ export default function EventsTable({
                 {getValue()}
               </span>
             ) : (
-              <Tooltip content="We do not record IP addresses for EU users.">
+              <Tooltip content={<div onClick={(e) => e.stopPropagation()}>We do not record IP addresses for EU users.</div>}>
                 <span className="cursor-default truncate underline decoration-dotted">
                   Unknown
                 </span>
@@ -396,15 +396,19 @@ export default function EventsTable({
           minSize: 100,
           cell: ({ getValue }) => (
             <Tooltip
-              content={getValue().toLocaleTimeString("en-US", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                second: "numeric",
-                hour12: true,
-              })}
+              content={
+                <div onClick={(e) => e.stopPropagation()}>
+                  {getValue().toLocaleTimeString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric",
+                    hour12: true,
+                  })}
+                </div>
+              }
             >
               <div className="w-full truncate">
                 {getValue().toLocaleTimeString("en-US", {

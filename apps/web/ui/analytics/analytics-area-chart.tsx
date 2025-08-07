@@ -3,7 +3,7 @@ import { EventType } from "@/lib/analytics/types";
 import { editQueryString } from "@/lib/analytics/utils";
 import useCustomersCount from "@/lib/swr/use-customers-count";
 import useListIntegrations from "@/lib/swr/use-list-integrations";
-import useWorkspace from "@/lib/swr/use-workspace";
+
 import { EmptyState } from "@dub/ui";
 import { Areas, TimeSeriesChart, XAxis, YAxis } from "@dub/ui/charts";
 import { cn, currencyFormatter, fetcher, nFormatter } from "@dub/utils";
@@ -45,8 +45,6 @@ export default function AnalyticsAreaChart({
   resource: EventType;
   demo?: boolean;
 }) {
-  const { createdAt, salesUsage } = useWorkspace();
-
   const {
     baseApiPath,
     queryString,
@@ -55,7 +53,10 @@ export default function AnalyticsAreaChart({
     interval,
     saleUnit,
     requiresUpgrade,
+    adminPage,
+    workspace,
   } = useContext(AnalyticsContext);
+  const { createdAt, salesUsage } = workspace || {};
 
   const { data, isLoading } = useSWR<
     {
@@ -82,10 +83,13 @@ export default function AnalyticsAreaChart({
   const dataLeads = data?.reduce((acc, curr) => acc + curr.leads, 0);
   const countNoLeads = !dataLeads || dataLeads === 0;
 
-  const hasNoCustomer = !customersCount || customersCount === 0;
-  const hasNoSales = !salesUsage || salesUsage === 0;
+  // For admin pages, assume there are customers and sales (don't use workspace-specific checks)
+  const hasNoCustomer = adminPage ? false : (!customersCount || customersCount === 0);
+  const hasNoSales = adminPage ? false : (!salesUsage || salesUsage === 0);
 
+  // For admin pages, don't use workspace-specific empty data detection
   const isDataEmpty =
+    !adminPage &&
     !!data &&
     !isLoading &&
     ((resource === "leads" && hasNoCustomer && countNoLeads) ||
@@ -150,8 +154,11 @@ export default function AnalyticsAreaChart({
             tooltipClassName="p-0"
             tooltipContent={(d) => {
               return (
-                <>
-                  <p className="border-b-[6px] border-neutral-100 px-4 py-3 text-sm text-neutral-900">
+                <div 
+                  className="bg-white rounded-lg shadow-xl border-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <p className="border-b border-neutral-100/80 px-3 py-2 text-sm text-neutral-900 font-medium">
                     {formatDateTooltip(d.date, {
                       interval: demo ? "day" : interval,
                       start,
@@ -159,7 +166,7 @@ export default function AnalyticsAreaChart({
                       dataAvailableFrom: createdAt,
                     })}
                   </p>
-                  <div className="grid grid-cols-2 gap-x-6 gap-y-2 px-4 py-3 text-sm">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 px-3 py-2 text-sm">
                     <Fragment key={resource}>
                       <div className="flex items-center gap-2">
                         {/* {activeSeries && (
@@ -181,7 +188,7 @@ export default function AnalyticsAreaChart({
                       </p>
                     </Fragment>
                   </div>
-                </>
+                </div>
               );
             }}
           >

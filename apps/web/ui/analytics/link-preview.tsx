@@ -8,7 +8,10 @@ export default function LinkPreviewTooltip({ data }: { data: LinkProps }) {
   const { domain, key, url, comments } = data;
 
   return (
-    <div className="relative flex w-[28rem] items-center gap-x-2 px-4 py-2">
+    <div 
+      className="relative flex w-80 items-center gap-x-2 px-3 py-2.5 bg-white rounded-lg shadow-xl border-0"
+      onClick={(e) => e.stopPropagation()}
+    >
       <div className="relative flex-none rounded-full border-[6px] border-neutral-100 bg-gradient-to-t from-neutral-100 pr-0.5 sm:p-2">
         <LinkLogo
           apexDomain={getApexDomain(url)}
@@ -24,6 +27,7 @@ export default function LinkPreviewTooltip({ data }: { data: LinkProps }) {
               rel="noopener noreferrer"
               title={linkConstructor({ domain, key, pretty: true })}
               className="truncate text-sm font-semibold leading-6 text-neutral-800 transition-colors hover:text-black"
+              onClick={(e) => e.stopPropagation()}
             >
               {linkConstructor({ domain, key, pretty: true })}
             </a>
@@ -48,6 +52,7 @@ export default function LinkPreviewTooltip({ data }: { data: LinkProps }) {
               rel="noopener noreferrer"
               title={url}
               className="max-w-[20rem] truncate text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2"
+              onClick={(e) => e.stopPropagation()}
             >
               {getPrettyUrl(url)}
             </a>
@@ -55,6 +60,45 @@ export default function LinkPreviewTooltip({ data }: { data: LinkProps }) {
             <span className="truncate text-neutral-400">No URL configured</span>
           )}
         </div>
+        
+        {/* Links section */}
+        {(data.ios || data.android) && (
+          <div className="mt-2 pt-2 border-t border-gray-100/80">
+            <div className="space-y-1.5">
+              {/* iOS deeplink */}
+              {data.ios && (
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-500 font-medium">iOS</span>
+                  <a
+                    href={data.ios}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 hover:text-blue-800 underline max-w-32 truncate"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {data.ios.length > 25 ? `${data.ios.substring(0, 25)}...` : data.ios}
+                  </a>
+                </div>
+              )}
+              
+              {/* Android deeplink */}
+              {data.android && (
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-500 font-medium">Android</span>
+                  <a
+                    href={data.android}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 hover:text-blue-800 underline max-w-32 truncate"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {data.android.length > 25 ? `${data.android.substring(0, 25)}...` : data.android}
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

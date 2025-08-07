@@ -2,7 +2,7 @@
 
 import { LinkProps } from "@/lib/types";
 import { LinkifyTooltipContent, Tooltip, useMediaQuery } from "@dub/ui";
-import { cn, getPrettyUrl } from "@dub/utils";
+import { cn, getPrettyUrl, linkConstructor } from "@dub/utils";
 import NumberFlow, { NumberFlowGroup } from "@number-flow/react";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
@@ -157,7 +157,7 @@ export function LineItem({
   setShowModal: Dispatch<SetStateAction<boolean>>;
   barBackground: string;
   hoverBackground: string;
-  linkData?: LinkProps;
+  linkData?: any;
   limit?: number;
 }) {
   const lineItem = useMemo(() => {
@@ -173,28 +173,19 @@ export function LineItem({
 
   const { saleUnit } = useContext(AnalyticsContext);
 
-  const As = href ? Link : "div";
-
   // Calculate percentage against total sum and round to 1 decimal
   const percentage = Math.round((value / totalSum) * 1000) / 10;
 
   // Check if we're in modal view - if limit is undefined, we're in the modal view
   const isModalView = !limit;
 
-  return (
-    // @ts-ignore - we know if it's a Link it'll get its href
-    <As
-      {...(href && {
-        href,
-        scroll: false,
-        onClick: () => setShowModal(false),
-      })}
-      className={cn(
-        `block min-w-0 border-l-2 border-transparent px-4 py-1 transition-all`,
-        href && hoverBackground,
-        isModalView ? "group" : "",
-      )}
-    >
+  const commonClassName = cn(
+    `block min-w-0 border-l-2 border-transparent px-4 py-1 transition-all`,
+    href && hoverBackground,
+    isModalView ? "group" : "",
+  );
+
+  const content = (
       <div
         className={cn(
           "relative flex items-center justify-between",
@@ -217,10 +208,91 @@ export function LineItem({
             <Tooltip content={<LinkPreviewTooltip data={linkData} />}>
               {lineItem}
             </Tooltip>
+          ) : tab === "urls" && linkData ? (
+            <Tooltip
+              content={
+                <div 
+                  className="w-64 p-3 bg-white rounded-lg shadow-xl border-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="mb-2 font-semibold text-gray-900 text-sm">
+                    {linkData ? (
+                      <a 
+                        href={linkConstructor({ domain: linkData.domain, key: linkData.key })}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 underline truncate block"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {linkConstructor({ domain: linkData.domain, key: linkData.key, pretty: true })}
+                      </a>
+                    ) : (
+                      <span className="truncate block text-gray-400">No short link</span>
+                    )}
+                  </div>
+                  
+                  {/* Links section */}
+                  <div className="space-y-1.5">
+                    {/* Destination URL */}
+                    {linkData.url && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500 font-medium">Destination</span>
+                        <a
+                          href={linkData.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-blue-600 hover:text-blue-800 underline max-w-32 truncate"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {linkData.url.length > 25 ? `${linkData.url.substring(0, 25)}...` : linkData.url}
+                        </a>
+                      </div>
+                    )}
+                    
+                    {/* iOS deeplink */}
+                    {linkData.ios && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500 font-medium">iOS</span>
+                        <a
+                          href={linkData.ios}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-blue-600 hover:text-blue-800 underline max-w-32 truncate"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {linkData.ios.length > 25 ? `${linkData.ios.substring(0, 25)}...` : linkData.ios}
+                        </a>
+                      </div>
+                    )}
+                    
+                    {/* Android deeplink */}
+                    {linkData.android && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500 font-medium">Android</span>
+                        <a
+                          href={linkData.android}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-blue-600 hover:text-blue-800 underline max-w-32 truncate"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {linkData.android.length > 25 ? `${linkData.android.substring(0, 25)}...` : linkData.android}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              }
+            >
+              {lineItem}
+            </Tooltip>
           ) : tab === "urls" ? (
             <Tooltip
               content={
-                <div className="overflow-auto px-4 py-2">
+                <div 
+                  className="w-64 p-3 bg-white rounded-lg shadow-xl border-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <LinkifyTooltipContent tooltipClassName="max-w-md">
                     {title}
                   </LinkifyTooltipContent>
@@ -277,7 +349,25 @@ export function LineItem({
           </div>
         </div>
       </div>
-    </As>
+  );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        scroll={false}
+        onClick={() => setShowModal(false)}
+        className={commonClassName}
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <div className={commonClassName}>
+      {content}
+    </div>
   );
 }
 

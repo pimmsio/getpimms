@@ -11,8 +11,8 @@ export default function Feedback() {
   const [submitted, setSubmitted] = useState(false);
 
   return (
-    <div className="scrollbar-hide relative z-0 h-[400px] overflow-scroll border-[6px] border-neutral-100 bg-white px-7 py-5 sm:rounded-lg sm:border-neutral-100 sm:shadow-lg">
-      <div className="mb-5 flex">
+    <div className="scrollbar-hide relative z-0 h-[400px] overflow-scroll bg-white rounded-lg border border-gray-200/50 hover:border-gray-300/50 transition-all duration-200 px-4 py-4">
+      <div className="mb-4 flex">
         <h1 className="text-xl font-semibold">Feedback</h1>
       </div>
       <AnimatePresence>
@@ -23,7 +23,7 @@ export default function Feedback() {
             animate={{ opacity: 1, y: 0 }}
           >
             <CheckCircle className="h-8 w-8 text-green-500" />
-            <p className="text-neutral-500">Thank you for your feedback!</p>
+            <p className="text-gray-600">Thank you for your feedback!</p>
           </motion.div>
         ) : (
           <motion.form
@@ -32,14 +32,14 @@ export default function Feedback() {
                 setSubmitted(true);
               })
             }
-            className="grid gap-5"
+            className="grid gap-4"
             initial={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
           >
             <div>
               <label
                 htmlFor="email"
-                className="mb-2 block text-xs font-medium text-neutral-500"
+                className="mb-2 block text-xs font-medium text-gray-600"
               >
                 EMAIL
               </label>
@@ -48,13 +48,13 @@ export default function Feedback() {
                 type="email"
                 placeholder="cheers@pimms.io"
                 autoComplete="email"
-                className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                className="block w-full rounded-lg border border-gray-200/50 text-gray-900 placeholder-gray-400 focus:border-gray-300/50 focus:outline-none focus:ring-1 focus:ring-gray-300/50 sm:text-sm px-3 py-2"
               />
             </div>
             <div>
               <label
                 htmlFor="feedback"
-                className="mb-2 block text-xs font-medium text-neutral-500"
+                className="mb-2 block text-xs font-medium text-gray-600"
               >
                 FEEDBACK
               </label>
@@ -63,7 +63,7 @@ export default function Feedback() {
                 id="feedback"
                 required={true}
                 rows={6}
-                className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                className="block w-full rounded-lg border border-gray-200/50 text-gray-900 placeholder-gray-400 focus:border-gray-300/50 focus:outline-none focus:ring-1 focus:ring-gray-300/50 sm:text-sm px-3 py-2"
                 placeholder="What other data would you like to see?"
                 aria-invalid="true"
               />

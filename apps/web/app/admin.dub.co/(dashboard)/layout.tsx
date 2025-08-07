@@ -14,14 +14,14 @@ const tabs = [
     href: "/analytics",
     label: "Analytics",
   },
-  {
-    href: "/payouts",
-    label: "Payouts",
-  },
-  {
-    href: "/demo",
-    label: "Demo",
-  },
+  // {
+  //   href: "/payouts",
+  //   label: "Payouts",
+  // },
+  // {
+  //   href: "/demo",
+  //   label: "Demo",
+  // },
 ];
 
 export default async function AdminLayout({

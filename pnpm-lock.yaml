@@ -153,6 +153,9 @@ importers:
       '@vercel/og':
         specifier: ^0.6.5
         version: 0.6.5
+      '@visx/clip-path':
+        specifier: ^3.12.0
+        version: 3.12.0(react@18.2.0)
       '@visx/curve':
         specifier: ^3.3.0
         version: 3.3.0
@@ -9392,11 +9395,21 @@ packages:
       react: ^16.0.0-0 || ^17.0.0-0 || ^18.0.0-0
       react-dom: ^16.0.0-0 || ^17.0.0-0 || ^18.0.0-0
     dependencies:
-      '@types/react': 18.2.48
+      '@types/react': 18.3.20
       '@types/react-dom': 18.2.14
       prop-types: 15.8.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /@visx/clip-path@3.12.0(react@18.2.0):
+    resolution: {integrity: sha512-pjpjyoQ15lhOrgpDhxfWKAxC4IswzREHGOHhrdWtxQbPoGzVZvFH8HHvwRi4afL11uYDO10z235MDnaDwP8GnQ==}
+    peerDependencies:
+      react: ^16.0.0-0 || ^17.0.0-0 || ^18.0.0-0
+    dependencies:
+      '@types/react': 18.3.20
+      prop-types: 15.8.1
+      react: 18.2.0
     dev: false
 
   /@visx/clip-path@3.3.0(react@18.2.0):
@@ -9476,7 +9489,7 @@ packages:
     peerDependencies:
       react: ^16.0.0-0 || ^17.0.0-0 || ^18.0.0-0
     dependencies:
-      '@types/react': 18.2.48
+      '@types/react': 18.3.20
       classnames: 2.5.1
       prop-types: 15.8.1
       react: 18.2.0
@@ -9553,7 +9566,7 @@ packages:
       react: ^16.3.0-0 || ^17.0.0-0 || ^18.0.0-0
     dependencies:
       '@types/lodash': 4.17.16
-      '@types/react': 18.2.48
+      '@types/react': 18.3.20
       classnames: 2.5.1
       lodash: 4.17.21
       prop-types: 15.8.1
