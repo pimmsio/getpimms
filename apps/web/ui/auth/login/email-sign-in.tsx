@@ -1,7 +1,7 @@
 import { checkAccountExistsAction } from "@/lib/actions/check-account-exists";
 import { Button, Input, useMediaQuery } from "@dub/ui";
 import { InputPassword } from "@dub/ui/icons";
-import { cn } from "@dub/utils";
+import { cn, CBE_DOMAIN } from "@dub/utils";
 import { Mail } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useAction } from "next-safe-action/hooks";
@@ -16,6 +16,10 @@ export const EmailSignIn = ({ next }: { next?: string }) => {
   const searchParams = useSearchParams();
   const finalNext = next ?? searchParams?.get("next");
   const { isMobile } = useMediaQuery();
+  
+  // Check if we're on CBE domain
+  const isCbeDomain = typeof window !== 'undefined' && 
+    (window.location.hostname.includes('cbe.') || window.location.port === '8888');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -82,10 +86,14 @@ export const EmailSignIn = ({ next }: { next?: string }) => {
 
           const provider = password && hasPassword ? "credentials" : "email";
 
+          const callbackUrl = isCbeDomain 
+            ? `${CBE_DOMAIN}/success` 
+            : (finalNext || "/workspaces");
+            
           const response = await signIn(provider, {
             email,
             redirect: false,
-            callbackUrl: finalNext || "/workspaces",
+            callbackUrl,
             ...(password && { password }),
           });
 

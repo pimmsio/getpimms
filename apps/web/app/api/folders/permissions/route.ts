@@ -49,6 +49,8 @@ export const GET = withWorkspace(
   {
     requiredPermissions: ["folders.read"],
     requiredPlan: [
+      "free",
+      "starter",
       "pro",
       "business",
       "business plus",

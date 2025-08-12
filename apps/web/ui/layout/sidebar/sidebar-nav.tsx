@@ -5,7 +5,6 @@ import { ChevronDown, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PropsWithChildren, ReactNode, useMemo, useState } from "react";
-import { CreateProgramCard } from "./create-program-card";
 import SatisMeter from "./satismeter";
 
 export type NavItemCommon = {

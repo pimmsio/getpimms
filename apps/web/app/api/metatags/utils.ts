@@ -56,6 +56,7 @@ export const getMetaTags = async (url: string) => {
       image: null,
     };
   }
+  console.log("html", html);
   const { metaTags, title: titleTag, linkTags } = getHeadChildNodes(html);
 
   let object = {};

@@ -102,102 +102,102 @@ function OGModalInner({
   const [openUnsplashPopover, setOpenUnsplashPopover] = useState(false);
   const [resizing, setResizing] = useState(false);
 
-  const {
-    completion: completionTitle,
-    isLoading: generatingTitle,
-    complete: completeTitle,
-  } = useCompletion({
-    api: `/api/ai/completion?workspaceId=${workspaceId}`,
-    onError: (error) => {
-      if (error.message.includes("Upgrade to Pro")) {
-        toast.custom(() => (
-          <UpgradeRequiredToast
-            title="You've exceeded your AI usage limit"
-            message={error.message}
-          />
-        ));
-      } else {
-        toast.error(error.message);
-      }
-    },
-    onFinish: (_, completion) => {
-      mutate();
-      posthog.capture("ai_meta_title_generated", {
-        title: completion,
-        url,
-      });
-    },
-  });
+  // const {
+  //   completion: completionTitle,
+  //   isLoading: generatingTitle,
+  //   complete: completeTitle,
+  // } = useCompletion({
+  //   api: `/api/ai/completion?workspaceId=${workspaceId}`,
+  //   onError: (error) => {
+  //     if (error.message.includes("Upgrade to Pro")) {
+  //       toast.custom(() => (
+  //         <UpgradeRequiredToast
+  //           title="You've exceeded your AI usage limit"
+  //           message={error.message}
+  //         />
+  //       ));
+  //     } else {
+  //       toast.error(error.message);
+  //     }
+  //   },
+  //   onFinish: (_, completion) => {
+  //     mutate();
+  //     posthog.capture("ai_meta_title_generated", {
+  //       title: completion,
+  //       url,
+  //     });
+  //   },
+  // });
 
-  const generateTitle = async () => {
-    completeTitle(
-      `You are an SEO expert. Generate an SEO-optimized meta title (max 120 characters) for the following URL:
+  // const generateTitle = async () => {
+  //   completeTitle(
+  //     `You are an SEO expert. Generate an SEO-optimized meta title (max 120 characters) for the following URL:
       
-      - URL: ${url}
-      - Meta title: ${title}
-      - Meta description: ${description}. 
+  //     - URL: ${url}
+  //     - Meta title: ${title}
+  //     - Meta description: ${description}. 
 
-      Only respond with the title without quotation marks or special characters.
-      `,
-    );
-  };
+  //     Only respond with the title without quotation marks or special characters.
+  //     `,
+  //   );
+  // };
 
-  useEffect(() => {
-    if (completionTitle) {
-      setValue("title", completionTitle, { shouldDirty: true });
-      if (plan && plan !== "free") {
-        setValue("proxy", true, { shouldDirty: true });
-      }
-    }
-  }, [completionTitle]);
+  // useEffect(() => {
+  //   if (completionTitle) {
+  //     setValue("title", completionTitle, { shouldDirty: true });
+  //     if (plan && plan !== "free") {
+  //       setValue("proxy", true, { shouldDirty: true });
+  //     }
+  //   }
+  // }, [completionTitle]);
 
-  const {
-    completion: completionDescription,
-    isLoading: generatingDescription,
-    complete: completeDescription,
-  } = useCompletion({
-    api: `/api/ai/completion?workspaceId=${workspaceId}`,
-    onError: (error) => {
-      if (error.message.includes("Upgrade to Pro")) {
-        toast.custom(() => (
-          <UpgradeRequiredToast
-            title="You've exceeded your AI usage limit"
-            message={error.message}
-          />
-        ));
-      } else {
-        toast.error(error.message);
-      }
-    },
-    onFinish: (_, completion) => {
-      mutate();
-      posthog.capture("ai_meta_description_generated", {
-        description: completion,
-        url,
-      });
-    },
-  });
+  // const {
+  //   completion: completionDescription,
+  //   isLoading: generatingDescription,
+  //   complete: completeDescription,
+  // } = useCompletion({
+  //   api: `/api/ai/completion?workspaceId=${workspaceId}`,
+  //   onError: (error) => {
+  //     if (error.message.includes("Upgrade to Pro")) {
+  //       toast.custom(() => (
+  //         <UpgradeRequiredToast
+  //           title="You've exceeded your AI usage limit"
+  //           message={error.message}
+  //         />
+  //       ));
+  //     } else {
+  //       toast.error(error.message);
+  //     }
+  //   },
+  //   onFinish: (_, completion) => {
+  //     mutate();
+  //     posthog.capture("ai_meta_description_generated", {
+  //       description: completion,
+  //       url,
+  //     });
+  //   },
+  // });
 
-  const generateDescription = async () => {
-    completeDescription(
-      `You are an SEO expert. Generate an SEO-optimized meta description (max 240 characters) for the following URL:
+  // const generateDescription = async () => {
+  //   completeDescription(
+  //     `You are an SEO expert. Generate an SEO-optimized meta description (max 240 characters) for the following URL:
 
-      - URL: ${url}
-      - Meta title: ${title}
-      - Meta description: ${description}.
+  //     - URL: ${url}
+  //     - Meta title: ${title}
+  //     - Meta description: ${description}.
 
-      Only respond with the description without quotation marks or special characters.`,
-    );
-  };
+  //     Only respond with the description without quotation marks or special characters.`,
+  //   );
+  // };
 
-  useEffect(() => {
-    if (completionDescription) {
-      setValue("description", completionDescription, { shouldDirty: true });
-      if (plan && plan !== "free") {
-        setValue("proxy", true, { shouldDirty: true });
-      }
-    }
-  }, [completionDescription]);
+  // useEffect(() => {
+  //   if (completionDescription) {
+  //     setValue("description", completionDescription, { shouldDirty: true });
+  //     if (plan && plan !== "free") {
+  //       setValue("proxy", true, { shouldDirty: true });
+  //     }
+  //   }
+  // }, [completionDescription]);
 
   return (
     <>

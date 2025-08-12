@@ -15,9 +15,10 @@ import {
   isValidUrl,
   SHORT_DOMAIN,
 } from "@dub/utils";
-import { PARTNERS_HOSTNAMES } from "@dub/utils/src/constants";
+import { PARTNERS_HOSTNAMES, CBE_HOSTNAMES } from "@dub/utils";
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import PartnersMiddleware from "./lib/middleware/partners";
+import CbeMiddleware from "./lib/middleware/cbe";
 import { supportedWellKnownFiles } from "./lib/well-known";
 
 export const config = {
@@ -75,6 +76,10 @@ export default async function middleware(req: NextRequest, ev: NextFetchEvent) {
 
   if (PARTNERS_HOSTNAMES.has(domain)) {
     return PartnersMiddleware(req);
+  }
+
+  if (CBE_HOSTNAMES.has(domain)) {
+    return CbeMiddleware(req);
   }
 
   if (isValidUrl(fullKey)) {

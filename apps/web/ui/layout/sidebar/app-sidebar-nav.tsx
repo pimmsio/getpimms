@@ -255,7 +255,7 @@ export function AppSidebarNav({
   const pathname = usePathname();
   const { getQueryString } = useRouterStuff();
   const { data: session } = useSession();
-  const { programs } = usePrograms();
+  // const { programs } = usePrograms();
 
   const currentArea = useMemo(() => {
     return pathname.startsWith("/account/settings")
@@ -275,7 +275,7 @@ export function AppSidebarNav({
         queryString: getQueryString(undefined, {
           include: ["folderId", "tagIds"],
         }),
-        programs,
+        // programs,
         session: session || undefined,
         showNews: pathname.startsWith(`/${slug}/programs/`) ? false : true,
       }}

@@ -142,51 +142,51 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
       existingLink && key ? [key] : [],
     );
 
-    const {
-      completion,
-      isLoading: generatingAIKey,
-      complete,
-    } = useCompletion({
-      api: `/api/ai/completion?workspaceId=${workspaceId}`,
-      onError: (error) => {
-        if (error.message.includes("Upgrade to Pro")) {
-          toast.custom(() => (
-            <UpgradeRequiredToast
-              title="You've exceeded your AI usage limit"
-              message={error.message}
-            />
-          ));
-        } else {
-          toast.error(error.message);
-        }
-      },
-      onFinish: (_, completion) => {
-        setGeneratedKeys((prev) => [...prev, completion]);
-        mutateWorkspace();
-        posthog.capture("ai_key_generated", {
-          key: completion,
-          url: data.url,
-        });
-      },
-    });
+    // const {
+    //   completion,
+    //   isLoading: generatingAIKey,
+    //   complete,
+    // } = useCompletion({
+    //   api: `/api/ai/completion?workspaceId=${workspaceId}`,
+    //   onError: (error) => {
+    //     if (error.message.includes("Upgrade to Pro")) {
+    //       toast.custom(() => (
+    //         <UpgradeRequiredToast
+    //           title="You've exceeded your AI usage limit"
+    //           message={error.message}
+    //         />
+    //       ));
+    //     } else {
+    //       toast.error(error.message);
+    //     }
+    //   },
+    //   onFinish: (_, completion) => {
+    //     setGeneratedKeys((prev) => [...prev, completion]);
+    //     mutateWorkspace();
+    //     posthog.capture("ai_key_generated", {
+    //       key: completion,
+    //       url: data.url,
+    //     });
+    //   },
+    // });
 
-    useEffect(() => {
-      if (completion) onChange?.({ key: completion });
-    }, [completion]);
+    // useEffect(() => {
+    //   if (completion) onChange?.({ key: completion });
+    // }, [completion]);
 
     const generateAIKey = useCallback(async () => {
       setKeyError(null);
-      complete(
-        `For the following URL, suggest a relevant short link slug that is at most ${Math.max(25 - (domain?.length || 0), 12)} characters long. 
+      // complete(
+      //   `For the following URL, suggest a relevant short link slug that is at most ${Math.max(25 - (domain?.length || 0), 12)} characters long. 
                   
-            - URL: ${data.url}
-            - Meta title: ${data.title}
-            - Meta description: ${data.description}. 
+      //       - URL: ${data.url}
+      //       - Meta title: ${data.title}
+      //       - Meta description: ${data.description}. 
     
-          Only respond with the short link slug and nothing else. Don't use quotation marks or special characters (dash and slash are allowed).
+      //     Only respond with the short link slug and nothing else. Don't use quotation marks or special characters (dash and slash are allowed).
           
-          Make sure your answer does not exist in this list of generated slugs: ${generatedKeys.join(", ")}`,
-      );
+      //     Make sure your answer does not exist in this list of generated slugs: ${generatedKeys.join(", ")}`,
+      // );
     }, [data.url, data.title, data.description, generatedKeys]);
 
     const shortLink = useMemo(() => {
@@ -230,7 +230,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
                   content: "Generate a random key",
                 }}
                 onClick={generateRandomKey}
-                disabled={generatingRandomKey || generatingAIKey}
+                disabled={generatingRandomKey/* || generatingAIKey*/}
               >
                 {generatingRandomKey ? (
                   <LoadingCircle />
