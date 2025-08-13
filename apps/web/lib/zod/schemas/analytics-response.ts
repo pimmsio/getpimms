@@ -93,8 +93,8 @@ export const analyticsResponse = {
         .describe(
           "The 2-letter ISO 3166-1 country code for the country associated with the location of the user. Learn more: https://d.to/geo",
         ),
-      region: z.literal("*").default("*"),
-      city: z.literal("*").default("*"),
+      region: z.string().default("*").describe("The region code, typically '*' for country-level data"),
+      city: z.string().default("*").describe("The city name, typically '*' for country-level data"),
       clicks: z
         .number()
         .describe("The number of clicks from this country")
@@ -124,7 +124,7 @@ export const analyticsResponse = {
         .describe(
           "The 2-letter ISO 3166-2 region code representing the region associated with the location of the user.",
         ),
-      city: z.literal("*").default("*"),
+      city: z.string().default("*").describe("The city name, typically '*' for region-level data"),
       clicks: z
         .number()
         .describe("The number of clicks from this region")
@@ -149,7 +149,7 @@ export const analyticsResponse = {
       country: z
         .enum(COUNTRY_CODES)
         .describe("The 2-letter country code of the city"),
-      region: z.literal("*").default("*"),
+      region: z.string().default("*").describe("The region code, typically '*' for city-level data"),
       city: z.string().describe("The name of the city"),
       clicks: z
         .number()

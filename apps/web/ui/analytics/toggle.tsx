@@ -36,6 +36,7 @@ import {
   useScroll,
   UTM_PARAMETERS,
 } from "@dub/ui";
+import { useAnalyticsUrl } from "@/lib/hooks/use-analytics-url";
 import {
   Cube,
   FlagWavy,
@@ -83,12 +84,14 @@ import { useAnalyticsFilterOption } from "./utils";
 export default function Toggle({
   page = "analytics",
 }: {
-  page?: "analytics" | "events";
+  page?: "analytics" | "events" | "links";
 }) {
   const { slug, plan, flags, createdAt } = useWorkspace();
 
   const { router, queryParams, searchParamsObj, getQueryString } =
     useRouterStuff();
+  
+  const buildAnalyticsUrl = useAnalyticsUrl();
 
   const {
     selectedTab,
@@ -980,10 +983,25 @@ export default function Toggle({
                           }
                           text={isMobile ? undefined : "Switch to Analytics"}
                           onClick={() =>
-                            router.push(`/${slug}/analytics`)
+                            router.push(buildAnalyticsUrl(`/${slug}/analytics`))
                           }
                         />
                         {/* <EventsOptions /> */}
+                      </>
+                    )}
+                    {page === "links" && !partnerPage && (
+                      <>
+                        <Button
+                          variant="secondary"
+                          className="w-fit"
+                          icon={
+                            <ChartLine className="h-4 w-4 text-neutral-600" />
+                          }
+                          text={isMobile ? undefined : "Switch to Analytics"}
+                          onClick={() =>
+                            router.push(buildAnalyticsUrl(`/${slug}/analytics`))
+                          }
+                        />
                       </>
                     )}
                   </div>

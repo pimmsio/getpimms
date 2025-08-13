@@ -32,11 +32,6 @@ export type LinkInsight = {
   leads: number;
   sales: number;
   saleAmount: number;
-  // Additional metrics
-  uniqueClicks?: number;
-  ctr?: number;
-  cpc?: number;
-  cpm?: number;
 };
 
 type ColumnMeta = {
@@ -111,7 +106,7 @@ export default function InsightsTable({
         accessorKey: "clicks",
         size: 90,
         cell: ({ getValue }) => (
-          <div className="font-medium text-blue-600">
+          <div className="font-medium">
             {nFormatter(getValue())}
           </div>
         ),
@@ -122,7 +117,7 @@ export default function InsightsTable({
         accessorKey: "leads",
         size: 90,
         cell: ({ getValue }) => (
-          <div className="font-medium text-orange-600">
+          <div className="font-medium">
             {nFormatter(getValue())}
           </div>
         ),
@@ -133,15 +128,15 @@ export default function InsightsTable({
         accessorKey: "saleAmount",
         size: 110,
         cell: ({ getValue }) => (
-          <div className="font-medium text-green-600">
+          <div className="font-medium">
             ${nFormatter(getValue() / 100)}
           </div>
         ),
       },
       {
         id: "ctr",
-        header: "CTR",
-        size: 80,
+        header: "Click → Lead",
+        size: 100,
         accessorFn: (row) => 
           row.clicks > 0 ? ((row.leads / row.clicks) * 100).toFixed(1) : "0.0",
         cell: ({ getValue }) => (
@@ -151,20 +146,20 @@ export default function InsightsTable({
         ),
       },
       {
-        id: "cpc",
-        header: "CPC",
-        size: 90,
+        id: "lead_to_sale",
+        header: "Lead → Sale",
+        size: 100,
         accessorFn: (row) => 
-          row.clicks > 0 ? ((row.saleAmount / 100) / row.clicks).toFixed(2) : "0.00",
+          row.leads > 0 ? ((row.sales / row.leads) * 100).toFixed(1) : "0.0",
         cell: ({ getValue }) => (
           <div className="text-sm font-medium">
-            ${getValue()}
+            {getValue()}%
           </div>
         ),
       },
       {
         id: "aov",
-        header: "AOV",
+        header: "Avg order",
         size: 90,
         accessorFn: (row) => 
           row.sales > 0 ? ((row.saleAmount / 100) / row.sales).toFixed(0) : "0",
@@ -176,8 +171,8 @@ export default function InsightsTable({
       },
       {
         id: "rpc",
-        header: "Rev/Click",
-        size: 100,
+        header: "Revenue/click",
+        size: 110,
         accessorFn: (row) => 
           row.clicks > 0 ? ((row.saleAmount / 100) / row.clicks).toFixed(2) : "0.00",
         cell: ({ getValue }) => (
@@ -226,13 +221,40 @@ export default function InsightsTable({
         };
       })
       .sort((a, b) => {
-        const aValue = a[sortBy as keyof LinkInsight] || 0;
-        const bValue = b[sortBy as keyof LinkInsight] || 0;
+        let aValue: number, bValue: number;
+        
+        // Handle computed fields that don't exist in the raw data
+        switch (sortBy) {
+          case "ctr":
+            aValue = a.clicks > 0 ? (a.leads / a.clicks) * 100 : 0;
+            bValue = b.clicks > 0 ? (b.leads / b.clicks) * 100 : 0;
+            break;
+          case "lead_to_sale":
+            aValue = a.leads > 0 ? (a.sales / a.leads) * 100 : 0;
+            bValue = b.leads > 0 ? (b.sales / b.leads) * 100 : 0;
+            break;
+          case "revenue":
+            aValue = a.saleAmount;
+            bValue = b.saleAmount;
+            break;
+          case "aov":
+            aValue = a.sales > 0 ? a.saleAmount / a.sales : 0;
+            bValue = b.sales > 0 ? b.saleAmount / b.sales : 0;
+            break;
+          case "rpc":
+            aValue = a.clicks > 0 ? a.saleAmount / a.clicks : 0;
+            bValue = b.clicks > 0 ? b.saleAmount / b.clicks : 0;
+            break;
+          default:
+            // For simple fields like clicks, leads, sales
+            aValue = (a as any)[sortBy] || 0;
+            bValue = (b as any)[sortBy] || 0;
+        }
         
         if (sortOrder === "asc") {
-          return aValue > bValue ? 1 : -1;
+          return aValue - bValue;
         } else {
-          return bValue > aValue ? 1 : -1;
+          return bValue - aValue;
         }
       });
   }, [linksData, sortBy, sortOrder]);
@@ -245,7 +267,7 @@ export default function InsightsTable({
     error: error ? "Failed to fetch insights data." : undefined,
     columns,
     enableColumnResizing: true,
-    sortableColumns: ["clicks", "leads", "revenue", "ctr", "cpc", "aov", "rpc"],
+    sortableColumns: ["clicks", "leads", "revenue", "ctr", "lead_to_sale", "aov", "rpc"],
     sortBy,
     sortOrder,
     onSortChange: ({ sortBy, sortOrder }) =>

@@ -1,6 +1,5 @@
 "use client";
 
-import usePrograms from "@/lib/swr/use-programs";
 import { useRouterStuff } from "@dub/ui";
 import {
   ConnectedDots,
@@ -29,24 +28,36 @@ import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useParams, usePathname } from "next/navigation";
 import { ReactNode, useMemo } from "react";
+import { useAnalyticsUrl } from "@/lib/hooks/use-analytics-url";
 import UserSurveyButton from "../user-survey";
+import { HelpButton } from "./help-button";
 import { ReferralButton } from "./referral-button";
 import { SidebarNav, SidebarNavAreas } from "./sidebar-nav";
 import { Usage } from "./usage";
 import { WorkspaceDropdown } from "./workspace-dropdown";
-import { HelpButton } from "./help-button";
 // import { ReferralButton } from "./referral-button";
 
 const NAV_AREAS: SidebarNavAreas<{
   slug: string;
   pathname: string;
   queryString: string;
+  buildAnalyticsUrl: (
+    basePath: string,
+    additionalParams?: Record<string, string>,
+  ) => string;
   programs?: { id: string }[];
   session?: Session | null;
   showNews?: boolean;
 }> = {
   // Top-level
-  default: ({ slug, pathname, queryString, programs, showNews }) => ({
+  default: ({
+    slug,
+    pathname,
+    queryString,
+    buildAnalyticsUrl,
+    programs,
+    showNews,
+  }) => ({
     showSwitcher: true,
     showNews,
     direction: "left",
@@ -62,24 +73,22 @@ const NAV_AREAS: SidebarNavAreas<{
           {
             name: "Analytics",
             icon: BarChart2,
-            href: `/${slug}/analytics${pathname === `/${slug}/analytics` ? "" : queryString}`,
+            href: buildAnalyticsUrl(`/${slug}/analytics`),
           },
           {
             name: "Links Report",
             icon: Table,
-            href: `/${slug}/insights${pathname === `/${slug}/insights` ? "" : queryString}`,
+            href: buildAnalyticsUrl(`/${slug}/insights`),
           },
           {
             name: "Leads Events",
             icon: Target,
-            // href: `/${slug}/events${pathname === `/${slug}/events` ? "" : queryString}`,
-            href: `/${slug}/leads?event=leads`,
+            href: buildAnalyticsUrl(`/${slug}/leads`, { event: "leads" }),
           },
           {
             name: "Sales Events",
             icon: CoinsIcon,
-            // href: `/${slug}/events${pathname === `/${slug}/events` ? "" : queryString}`,
-            href: `/${slug}/sales?event=sales`,
+            href: buildAnalyticsUrl(`/${slug}/sales`, { event: "sales" }),
           },
           {
             name: "Integrations",
@@ -271,6 +280,9 @@ export function AppSidebarNav({
         : "default";
   }, [slug, pathname]);
 
+  // Use centralized analytics URL builder
+  const buildAnalyticsUrl = useAnalyticsUrl();
+
   return (
     <SidebarNav
       areas={NAV_AREAS}
@@ -281,6 +293,7 @@ export function AppSidebarNav({
         queryString: getQueryString(undefined, {
           include: ["folderId", "tagIds"],
         }),
+        buildAnalyticsUrl,
         // programs,
         session: session || undefined,
         showNews: pathname.startsWith(`/${slug}/programs/`) ? false : true,
