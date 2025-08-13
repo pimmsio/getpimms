@@ -20,6 +20,7 @@ import {
   Settings,
   Settings2,
   Split,
+  Table,
   Target,
   TargetIcon,
   WalletCards,
@@ -64,13 +65,18 @@ const NAV_AREAS: SidebarNavAreas<{
             href: `/${slug}/analytics${pathname === `/${slug}/analytics` ? "" : queryString}`,
           },
           {
-            name: "Conversions",
+            name: "Links Report",
+            icon: Table,
+            href: `/${slug}/insights${pathname === `/${slug}/insights` ? "" : queryString}`,
+          },
+          {
+            name: "Leads Events",
             icon: Target,
             // href: `/${slug}/events${pathname === `/${slug}/events` ? "" : queryString}`,
             href: `/${slug}/leads?event=leads`,
           },
           {
-            name: "Sales tracking",
+            name: "Sales Events",
             icon: CoinsIcon,
             // href: `/${slug}/events${pathname === `/${slug}/events` ? "" : queryString}`,
             href: `/${slug}/sales?event=sales`,
