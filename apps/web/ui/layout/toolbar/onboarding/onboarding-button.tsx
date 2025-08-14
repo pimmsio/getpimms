@@ -35,7 +35,7 @@ function OnboardingButtonInner({
     return null;
   }
 
-  const { totalLinks, conversionEnabled, linksUsage, salesUsage } = useWorkspace();
+  const { totalLinks, conversionEnabled, totalClicks, salesUsage } = useWorkspace();
 
   const { integrations: activeIntegrations } = useIntegrations();
 
@@ -62,7 +62,7 @@ function OnboardingButtonInner({
       {
         display: "Track your first click",
         cta: `/${slug}/analytics`,
-        checked: linksUsage && linksUsage > 0,
+        checked: totalClicks && totalClicks > 0,
       },
       {
         display: "Track a lead / conversion",
