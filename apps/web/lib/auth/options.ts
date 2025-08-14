@@ -332,9 +332,8 @@ export const authOptions: NextAuthOptions = {
     redirect: async ({ url, baseUrl }) => {
       console.log('[NextAuth Redirect]', { url, baseUrl });
       
-      // Check if the request is coming from CBE domain
-      if (url.includes('cbe.') || baseUrl.includes('cbe.') || 
-          url.includes('/success') || url.startsWith('/success')) {
+      // Check if the request is coming from CBE domain (only check domain, not path)
+      if (baseUrl.includes('cbe.')) {
         console.log('[NextAuth] CBE domain detected, redirecting to CBE success');
         return `${CBE_DOMAIN}/success`;
       }

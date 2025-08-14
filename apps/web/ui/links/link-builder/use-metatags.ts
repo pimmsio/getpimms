@@ -2,30 +2,111 @@ import {
   LinkFormData,
   useLinkBuilderContext,
 } from "@/ui/links/link-builder/link-builder-provider";
-import { getUrlWithoutUTMParams, truncate } from "@dub/utils";
-import { useEffect } from "react";
+import { fetcher, getUrlWithoutUTMParams, truncate } from "@dub/utils";
+import { useEffect, useRef } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
+import { mutate } from "swr";
 import { useDebounce } from "use-debounce";
 
 export function useMetatags({ enabled = true }: { enabled?: boolean } = {}) {
-  const { control, setValue } = useFormContext<LinkFormData>();
+  const { control, setValue, getValues } = useFormContext<LinkFormData>();
   const [url, password, proxy, doIndex, title, description, image] = useWatch({
     control,
-    name: ["url", "password", "proxy", "doIndex", "title", "description", "image"],
+    name: [
+      "url",
+      "password",
+      "proxy",
+      "doIndex",
+      "title",
+      "description",
+      "image",
+    ],
   });
   const [debouncedUrl] = useDebounce(getUrlWithoutUTMParams(url), 500);
 
-  const { generatingMetatags, setGeneratingMetatags } = useLinkBuilderContext();
+  const { generatingMetatags, setGeneratingMetatags, props } =
+    useLinkBuilderContext();
+
+  // Flag to skip auto-fetch after discard
+  const isDiscardingRef = useRef<boolean>(false);
+
+  // Track previous values to detect changes
+  const prevValuesRef = useRef<{ url: string; doIndex: boolean }>({
+    url: "",
+    doIndex: false,
+  });
+  const hasInitialized = useRef<boolean>(false);
+
+  // Helper function to fetch metadata via SWR
+  const fetchMetadata = async (url: string, revalidate = false) => {
+    const swrKey = `/api/metatags?url=${encodeURIComponent(url)}`;
+
+    return mutate<{
+      title: string | null;
+      description: string | null;
+      image: string | null;
+    }>(swrKey, async () => fetcher(swrKey), {
+      revalidate,
+      populateCache: true,
+      optimisticData: undefined,
+    });
+  };
+
+  // Unified metadata refresh function
+  const refreshMetadata = async (
+    options: {
+      revalidate?: boolean;
+      clearFirst?: boolean;
+      shouldDirty?: boolean;
+    } = {},
+  ) => {
+    const {
+      revalidate = false,
+      clearFirst = false,
+      shouldDirty = false,
+    } = options;
+    const currentUrl = getValues("url");
+
+    if (!currentUrl) {
+      return;
+    }
+
+    setGeneratingMetatags(true);
+
+    try {
+      const results = await fetchMetadata(currentUrl, revalidate);
+
+      if (results) {
+        // Truncate title and description to match useMetatags behavior
+        const truncatedTitle = truncate(results.title, 120);
+        const truncatedDescription = truncate(results.description, 240);
+
+        // Clear first if requested (but only AFTER we have fresh data)
+        if (clearFirst) {
+          setValue("proxy", false, { shouldDirty });
+        }
+
+        // Update form with fresh metadata - all at once to avoid flashing
+        setValue("title", truncatedTitle, { shouldDirty });
+        setValue("description", truncatedDescription, { shouldDirty });
+        setValue("image", results.image, { shouldDirty });
+        setValue("proxy", true, { shouldDirty });
+
+        return {
+          title: truncatedTitle,
+          description: truncatedDescription,
+          image: results.image,
+        };
+      }
+    } catch (error) {
+      console.error("❌ Failed to fetch metadata via SWR:", error);
+    } finally {
+      setTimeout(() => setGeneratingMetatags(false), 200);
+    }
+  };
 
   useEffect(() => {
-    console.log("proxy", proxy);
-    // no need to generate metatags if proxy is enabled, or if any of the metatags are set
-    // if (proxy) {
-    //   setGeneratingMetatags(false);
-    //   return;
-    // }
-
-    // if there's a password, no need to generate metatags
+    // Handle password-protected links
     if (password) {
       setGeneratingMetatags(false);
       setValue("title", "Password Required");
@@ -37,37 +118,139 @@ export function useMetatags({ enabled = true }: { enabled?: boolean } = {}) {
       return;
     }
 
-    // Only generate metatags if enabled (modal is open and url is not empty)
-    if (enabled !== false && debouncedUrl.length > 0) {
+    // Skip if we're discarding
+    if (isDiscardingRef.current) {
+      // Update prevValuesRef to current values and clear discard flag
+      prevValuesRef.current = { url: debouncedUrl, doIndex };
+      isDiscardingRef.current = false;
+      setGeneratingMetatags(false);
+      return;
+    }
+
+    // Check what actually changed (only URL for this useEffect)
+    const urlChanged = prevValuesRef.current.url !== debouncedUrl;
+    const isNewLink = !props;
+
+    // Determine if we should auto-fetch (only for URL changes)
+    let shouldAutoFetch = false;
+    
+    if (isNewLink) {
+      // New links: fetch if URL exists
+      shouldAutoFetch = debouncedUrl.length > 0;
+    } else {
+      // Existing links: 
+      // - Don't fetch on first render (show saved values)
+      // - Only fetch if URL changed after initialization
+      if (!hasInitialized.current) {
+        hasInitialized.current = true;
+        shouldAutoFetch = false; // Don't fetch on first render
+      } else {
+        shouldAutoFetch = urlChanged;
+      }
+    }
+
+    // Update previous URL AFTER the decision (doIndex handled in separate useEffect)
+    prevValuesRef.current.url = debouncedUrl;
+
+    if (enabled !== false && shouldAutoFetch) {
       try {
-        // if url is valid, continue to generate metatags, else throw error and return null
+        // Validate URL
         new URL(debouncedUrl);
+
         setGeneratingMetatags(true);
-        fetch(`/api/metatags?url=${debouncedUrl}`).then(async (res) => {
-          if (res.status === 200) {
-            const results = await res.json();
-            const truncatedTitle = truncate(results.title, 120);
-            const truncatedDescription = truncate(results.description, 240);
-            if (title !== truncatedTitle) {
-              setValue("title", truncatedTitle);
+
+        // Use the same SWR logic for automatic fetching
+        fetchMetadata(debouncedUrl, false)
+          .then((results) => {
+            if (results) {
+              // Truncate title and description
+              const truncatedTitle = truncate(results.title, 120);
+              const truncatedDescription = truncate(results.description, 240);
+
+              // Only update if values are different to avoid unnecessary re-renders
+              if (title !== truncatedTitle) {
+                setValue("title", truncatedTitle, { shouldDirty: false });
+              }
+              if (description !== truncatedDescription) {
+                setValue("description", truncatedDescription, {
+                  shouldDirty: false,
+                });
+              }
+              if (image !== results.image) {
+                setValue("image", results.image, { shouldDirty: false });
+              }
+
+              // Set proxy if not doIndex
+              if (!doIndex) {
+                setValue("proxy", true, { shouldDirty: false });
+              }
             }
-            if (description !== truncatedDescription)
-              setValue("description", truncatedDescription);
-            if (image !== results.image) setValue("image", results.image);
-          }
-          // set timeout to prevent flickering
-          setTimeout(() => {
-            setGeneratingMetatags(false);
-            if (!doIndex) {
-              setValue("proxy", true, { shouldDirty: true });
-            }
-          }, 200);
-        });
-      } catch (_) {}
+          })
+          .finally(() => {
+            setTimeout(() => setGeneratingMetatags(false), 200);
+          });
+      } catch (_) {
+        setGeneratingMetatags(false);
+      }
     } else {
       setGeneratingMetatags(false);
     }
-  }, [debouncedUrl, password, enabled, doIndex]);
+  }, [debouncedUrl, password, enabled]);
 
-  return { generatingMetatags };
+  // Separate useEffect for doIndex changes only
+  useEffect(() => {
+    // Skip if we're discarding
+    if (isDiscardingRef.current) {
+      isDiscardingRef.current = false; // Clear flag
+      return;
+    }
+
+    // Only handle doIndex changes after initialization  
+    if (!hasInitialized.current || !enabled || !debouncedUrl.length) {
+      return;
+    }
+
+    const doIndexChanged = prevValuesRef.current.doIndex !== doIndex;
+    if (doIndexChanged) {
+      prevValuesRef.current.doIndex = doIndex;
+      
+      try {
+        new URL(debouncedUrl);
+        setGeneratingMetatags(true);
+        fetchMetadata(debouncedUrl, false)
+          .then((results) => {
+            if (results) {
+              const truncatedTitle = truncate(results.title, 120);
+              const truncatedDescription = truncate(results.description, 240);
+
+              if (title !== truncatedTitle) {
+                setValue("title", truncatedTitle, { shouldDirty: false });
+              }
+              if (description !== truncatedDescription) {
+                setValue("description", truncatedDescription, { shouldDirty: false });
+              }
+              if (image !== results.image) {
+                setValue("image", results.image, { shouldDirty: false });
+              }
+
+              if (!doIndex) {
+                setValue("proxy", true, { shouldDirty: false });
+              }
+            }
+          })
+          .finally(() => {
+            setTimeout(() => setGeneratingMetatags(false), 200);
+          });
+      } catch (_) {
+        setGeneratingMetatags(false);
+      }
+    }
+  }, [doIndex]);
+
+  // Function to mark that we're discarding (skips next useEffect)
+  const skipNextAutoFetch = () => {
+    isDiscardingRef.current = true;
+  };
+
+  return { generatingMetatags, refreshMetadata, skipNextAutoFetch };
 }

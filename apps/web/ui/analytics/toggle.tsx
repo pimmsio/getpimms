@@ -46,6 +46,7 @@ import {
   MobilePhone,
   OfficeBuilding,
   QRCode,
+  ReferredVia,
   Tag,
   User,
   Window,
@@ -80,6 +81,7 @@ import { AnalyticsContext } from "./analytics-provider";
 import DeviceIcon from "./device-icon";
 import { ShareButton } from "./share-button";
 import { useAnalyticsFilterOption } from "./utils";
+import RefererIcon from "./referer-icon";
 
 export default function Toggle({
   page = "analytics",
@@ -640,20 +642,20 @@ export default function Toggle({
       //     })) ?? null,
       //   separatorAfter: true,
       // },
-      // {
-      //   key: "referer",
-      //   icon: ReferredVia,
-      //   label: "Referer",
-      //   getOptionIcon: (value, props) => (
-      //     <RefererIcon display={value} className="h-4 w-4" />
-      //   ),
-      //   options:
-      //     referers?.map(({ referer, count }) => ({
-      //       value: referer,
-      //       label: referer,
-      //       right: nFormatter(count, { full: true }),
-      //     })) ?? null,
-      // },
+      {
+        key: "referer",
+        icon: ReferredVia,
+        label: "Referer",
+        getOptionIcon: (value, props) => (
+          <RefererIcon display={value} className="h-4 w-4" />
+        ),
+        options:
+          referers?.map(({ referer, count }) => ({
+            value: referer,
+            label: referer,
+            right: nFormatter(count, { full: true }),
+          })) ?? null,
+      },
       // {
       //   key: "refererUrl",
       //   icon: ReferredVia,

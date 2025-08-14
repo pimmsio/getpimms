@@ -1,4 +1,3 @@
-import useCustomersCount from "@/lib/swr/use-customers-count";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { LinkFormData } from "@/ui/links/link-builder/link-builder-provider";
 import {
@@ -20,7 +19,7 @@ export const ConversionTrackingToggle = memo(() => {
   const { slug, plan } = useWorkspace();
   const { control, setValue } = useFormContext<LinkFormData>();
 
-  const conversionsEnabled = true; //!!plan && plan !== "free" && plan !== "pro";
+  const conversionsEnabled = !!plan && plan !== "free";
 
   const [trackConversion, testVariants] = useWatch({
     control,
@@ -48,7 +47,7 @@ export const ConversionTrackingToggle = memo(() => {
           ) : (
             <span className="text-green-500">enabled</span>
           )}
-          <InfoTooltip content="Track conversions and sales for this link." />
+          <InfoTooltip content="Track leads and sales for this link." />
         </span>
       </div>
       <Switch
@@ -63,10 +62,9 @@ export const ConversionTrackingToggle = memo(() => {
             <TooltipContent title="Conversion tracking must be enabled to use A/B testing." />
           ) : conversionsEnabled ? undefined : (
             <TooltipContent
-              title="Conversion tracking is only available on Business plans and above."
-              cta="Upgrade to Business"
-              href={slug ? `/${slug}/upgrade` : "https://dub.co/pricing"}
-              target="_blank"
+              title="Conversion tracking is only available on Starter plans and above."
+              cta="Upgrade to Starter"
+              href={`/${slug}/upgrade`}
             />
           )
         }

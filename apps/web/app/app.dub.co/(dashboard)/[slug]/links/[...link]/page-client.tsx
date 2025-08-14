@@ -114,8 +114,6 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
     onSuccess: onSubmitSuccess,
   });
 
-  useMetatags();
-
   // Go back to `/links` when ESC is pressed
   useKeyboardShortcut("Escape", () => router.push(`/${workspace.slug}/links`), {
     enabled: !isDirty,

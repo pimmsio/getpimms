@@ -449,20 +449,6 @@ function OGModalInner({
           </div>
 
           <div className="mt-6 flex items-center justify-between">
-            <button
-              type="button"
-              className="text-xs font-medium text-neutral-700 transition-colors hover:text-neutral-950"
-              onClick={() => {
-                setValueParent("proxy", false, { shouldDirty: true });
-                ["title", "description", "image"].forEach(
-                  (key: "title" | "description" | "image") =>
-                    setValueParent(key, null, { shouldDirty: true }),
-                );
-                setShowOGModal(false);
-              }}
-            >
-              Reset to default
-            </button>
             <div className="flex items-center gap-2">
               <Button
                 type="button"

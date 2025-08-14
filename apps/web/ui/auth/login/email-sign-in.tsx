@@ -19,7 +19,7 @@ export const EmailSignIn = ({ next }: { next?: string }) => {
   
   // Check if we're on CBE domain
   const isCbeDomain = typeof window !== 'undefined' && 
-    (window.location.hostname.includes('cbe.') || window.location.port === '8888');
+    window.location.hostname.startsWith('cbe.');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
