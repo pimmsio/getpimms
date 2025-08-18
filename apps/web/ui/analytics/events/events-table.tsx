@@ -1,6 +1,6 @@
 "use client";
 
-import { editQueryString } from "@/lib/analytics/utils";
+import { editQueryString, getReferrerDisplayName } from "@/lib/analytics/utils";
 import useCustomersCount from "@/lib/swr/use-customers-count";
 import useListIntegrations from "@/lib/swr/use-list-integrations";
 import useWorkspace from "@/lib/swr/use-workspace";
@@ -310,7 +310,7 @@ export default function EventsTable({
                   className="size-4 shrink-0 sm:size-4"
                 />
               )}
-              <span className="truncate">{getValue()}</span>
+              <span className="truncate">{getReferrerDisplayName(getValue())}</span>
             </div>
           ),
         },
