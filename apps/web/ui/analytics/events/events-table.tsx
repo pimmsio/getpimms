@@ -1,6 +1,6 @@
 "use client";
 
-import { editQueryString } from "@/lib/analytics/utils";
+import { editQueryString, getReferrerDisplayName, getBestDomainForLogo } from "@/lib/analytics/utils";
 import useCustomersCount from "@/lib/swr/use-customers-count";
 import useListIntegrations from "@/lib/swr/use-list-integrations";
 import useWorkspace from "@/lib/swr/use-workspace";
@@ -306,11 +306,11 @@ export default function EventsTable({
                 <Link2 className="h-4 w-4" />
               ) : (
                 <LinkLogo
-                  apexDomain={getValue()}
+                  apexDomain={getBestDomainForLogo(getReferrerDisplayName(getValue()))}
                   className="size-4 shrink-0 sm:size-4"
                 />
               )}
-              <span className="truncate">{getValue()}</span>
+              <span className="truncate">{getReferrerDisplayName(getValue())}</span>
             </div>
           ),
         },

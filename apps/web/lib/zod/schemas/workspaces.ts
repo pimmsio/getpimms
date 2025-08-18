@@ -44,6 +44,9 @@ export const WorkspaceSchema = z
     totalLinks: z
       .number()
       .describe("The total number of links in the workspace."),
+    totalClicks: z
+      .number()
+      .describe("The total number of clicks in the workspace."),
     usage: z.number().describe("The usage of the workspace."),
     usageLimit: z.number().describe("The usage limit of the workspace."),
     linksUsage: z.number().describe("The links usage of the workspace."),
@@ -73,9 +76,7 @@ export const WorkspaceSchema = z
       ),
     dotLinkClaimed: z
       .boolean()
-      .describe(
-        "Whether the workspace has claimed a free domain.",
-      ),
+      .describe("Whether the workspace has claimed a free domain."),
     partnersEnabled: z
       .boolean()
       .describe("Whether the workspace has PiMMs Partners enabled."),

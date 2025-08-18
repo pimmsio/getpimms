@@ -140,8 +140,8 @@ export function LinkTitleColumn({ link }: { link: ResponseLink }) {
                 className="p-1.5"
                 withText
               />
-              {hasQuickViewSettings && <SettingsBadge link={link} />}
               {link.comments && <CommentsBadge comments={link.comments} />}
+              {hasQuickViewSettings && <SettingsBadge link={link} />}
               {link.testVariants &&
                 link.testCompletedAt &&
                 new Date(link.testCompletedAt) > new Date() && (

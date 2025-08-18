@@ -179,10 +179,12 @@ export const analyticsQuerySchema = z
         "The trigger to retrieve analytics for. If undefined, return both QR and link clicks.",
       ),
     referer: z
-      .string()
+      .union([z.string(), z.array(z.string())])
+      .transform((v) => (Array.isArray(v) ? v : v.split(",")))
       .optional()
-      .describe("The referer to retrieve analytics for.")
-      .openapi({ example: "google.com" }),
+      .describe(
+        "The referers to retrieve analytics for. Can be multiple referers as comma-separated list.",
+      ),
     refererUrl: z
       .string()
       .optional()

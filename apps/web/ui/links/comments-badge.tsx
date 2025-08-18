@@ -26,8 +26,8 @@ export function CommentsBadge({ comments }: { comments: string }) {
           </HoverCard.Content>
         </HoverCard.Portal>
         <HoverCard.Trigger asChild>
-          <div className="rounded-full p-1.5 hover:bg-neutral-100">
-            <Page2 className="size-3.5" />
+          <div className="rounded-full py-1 px-2 hover:bg-neutral-100 text-neutral-600 text-ellipsis line-clamp-1 max-w-sm">
+            {comments}
           </div>
         </HoverCard.Trigger>
       </HoverCard.Root>

@@ -117,7 +117,7 @@ export default function LinkDisplay() {
               </div>
             </div>
           )} */}
-          {/* <div className="p-4">
+          <div className="p-4">
             <span className="text-xs uppercase text-neutral-500">
               Display Properties
             </span>
@@ -158,7 +158,7 @@ export default function LinkDisplay() {
                 );
               })}
             </div>
-          </div> */}
+          </div>
           <AnimatePresence initial={false}>
             {isDirty && (
               <motion.div

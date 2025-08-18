@@ -4,7 +4,7 @@ import {
   INTERVAL_DISPLAYS,
   VALID_ANALYTICS_FILTERS,
 } from "@/lib/analytics/constants";
-import { validDateRangeForPlan } from "@/lib/analytics/utils";
+import { validDateRangeForPlan, getGroupDisplayNameFromDomains } from "@/lib/analytics/utils";
 import { getStartEndDates } from "@/lib/analytics/utils/get-start-end-dates";
 import useCustomer from "@/lib/swr/use-customer";
 import useCustomers from "@/lib/swr/use-customers";
@@ -649,6 +649,17 @@ export default function Toggle({
         getOptionIcon: (value, props) => (
           <RefererIcon display={value} className="h-4 w-4" />
         ),
+        getOptionLabel: (value) => {
+          // If value is a comma-separated list of domains, check if it maps to a group
+          if (typeof value === 'string' && value.includes(',')) {
+            const domains = value.split(',');
+            const groupName = getGroupDisplayNameFromDomains(domains);
+            if (groupName) {
+              return groupName;
+            }
+          }
+          return value;
+        },
         options:
           referers?.map(({ referer, count }) => ({
             value: referer,

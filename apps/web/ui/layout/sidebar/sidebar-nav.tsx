@@ -5,7 +5,6 @@ import { ChevronDown, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PropsWithChildren, ReactNode, useMemo, useState } from "react";
-import SatisMeter from "./satismeter";
 
 export type NavItemCommon = {
   name: string;
@@ -140,13 +139,13 @@ export function SidebarNav<T extends Record<any, any>>({
       <div className="relative mx-auto flex items-center justify-between gap-1 pb-2 pt-1">
         <NavWordmark className="h-2.5" isInApp />
       </div>
-      {data.session?.user?.id && (
+      {/* {data.session?.user?.id && (
         <SatisMeter
           userId={data.session?.user?.id}
           email={data.session?.user?.email}
           name={data.session?.user?.name}
         />
-      )}
+      )} */}
     </ClientOnly>
   );
 }

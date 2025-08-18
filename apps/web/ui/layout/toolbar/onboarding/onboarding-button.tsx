@@ -35,9 +35,7 @@ function OnboardingButtonInner({
     return null;
   }
 
-  const { totalLinks, conversionEnabled, linksUsage, salesUsage } = useWorkspace();
-
-  const { integrations: activeIntegrations } = useIntegrations();
+  const { totalLinks, totalClicks, salesUsage } = useWorkspace();
 
   const { data: domainsCount, loading: domainsLoading } = useDomainsCount({
     ignoreParams: true,
@@ -57,12 +55,12 @@ function OnboardingButtonInner({
       {
         display: "Create a new link",
         cta: `/${slug}`,
-        checked: totalLinks === 0 ? false : true,
+        checked: totalLinks && totalLinks > 0,
       },
       {
         display: "Track your first click",
         cta: `/${slug}/analytics`,
-        checked: linksUsage && linksUsage > 0,
+        checked: totalClicks && totalClicks > 0,
       },
       {
         display: "Track a lead / conversion",
@@ -85,7 +83,7 @@ function OnboardingButtonInner({
         checked: (users && users.length > 1) || (invites && invites.length > 0),
       },
     ];
-  }, [slug, domainsCount, totalLinks, users, invites, conversionEnabled, activeIntegrations]);
+  }, [slug, domainsCount, totalLinks, totalClicks, customersCount, salesUsage, users, invites]);
 
   const [isOpen, setIsOpen] = useState(false);
 
