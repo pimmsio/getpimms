@@ -14,17 +14,19 @@ export default function AnalyticsEvents({
   staticDomain,
   staticUrl,
   adminPage,
+  showTabs,
 }: {
   staticDomain?: string;
   staticUrl?: string;
   adminPage?: boolean;
+  showTabs?: boolean;
 }) {
   return (
     <AnalyticsProvider {...{ staticDomain, staticUrl, adminPage }}>
       <div className="pb-10">
         <Toggle page="events" />
         <div className="mx-auto flex max-w-screen-xl flex-col gap-3 px-3 lg:px-10">
-          {/* <EventsTabs /> */}
+          {showTabs && <EventsTabs />}
           <EventsTableContainer />
         </div>
       </div>

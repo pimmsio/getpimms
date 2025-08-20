@@ -1,4 +1,5 @@
 import { fetcher } from "@dub/utils";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { z } from "zod";
 import { getTagsCountQuerySchema } from "../zod/schemas/tags";
@@ -11,9 +12,19 @@ export default function useTagsCount({
 }: { query?: z.infer<typeof partialQuerySchema> } = {}) {
   const { id } = useWorkspace();
 
+  // Detect if we're on admin
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.host.startsWith("admin.")) {
+      setIsAdmin(true);
+    }
+  }, []);
+
   const { data, error } = useSWR<number>(
-    id &&
-      `/api/tags/count?${new URLSearchParams({ workspaceId: id, ...query } as Record<string, any>).toString()}`,
+    isAdmin
+      ? `/api/admin/tags/count?${new URLSearchParams({ ...query } as Record<string, any>).toString()}`
+      : id &&
+        `/api/tags/count?${new URLSearchParams({ workspaceId: id, ...query } as Record<string, any>).toString()}`,
     fetcher,
     {
       dedupingInterval: 60000,

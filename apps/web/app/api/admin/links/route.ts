@@ -1,59 +1,73 @@
+import { combineTagIds } from "@/lib/api/tags/combine-tag-ids";
+import { transformLink } from "@/lib/api/links/utils";
 import { withAdmin } from "@/lib/auth";
+import { getLinksQuerySchemaExtended } from "@/lib/zod/schemas/links";
 import { prisma } from "@dub/prisma";
 import { DUB_DOMAINS_ARRAY, LEGAL_USER_ID } from "@dub/utils";
 import { NextResponse } from "next/server";
 
-// GET /api/admin/links
+// GET /api/admin/links – get all links for admin (across all workspaces)
 export const GET = withAdmin(async ({ searchParams }) => {
+  const params = getLinksQuerySchemaExtended.parse(searchParams);
+  
   const {
     domain,
+    tagId,
+    tagIds,
+    tagNames,
     search,
-    sort = "createdAt",
-    page,
-  } = searchParams as {
-    domain?: string;
-    search?: string;
-    sort?: "createdAt" | "clicks" | "lastClicked";
-    page?: string;
-  };
+    sortBy = "createdAt",
+    sortOrder = "desc",
+    page = 1,
+    pageSize = 50,
+    userId,
+    showArchived,
+    withTags,
+    includeUser,
+    includeWebhooks,
+    includeDashboard,
+  } = params;
 
-  const response = await prisma.link.findMany({
+  const combinedTagIds = combineTagIds({ tagId, tagIds });
+
+  const links = await prisma.link.findMany({
     where: {
-      ...(domain
-        ? { domain }
-        : {
-            domain: {
-              in: DUB_DOMAINS_ARRAY,
-            },
-          }),
-      OR: [
-        {
-          userId: {
-            not: LEGAL_USER_ID,
-          },
+      // Admin sees all workspaces - no projectId filter, but exclude system links
+      ...(search && {
+        OR: [
+          { shortLink: { contains: search } },
+          { url: { contains: search } },
+        ],
+      }),
+      archived: showArchived ? undefined : false,
+      ...(domain && { domain }),
+      ...(withTags && {
+        tags: {
+          some: {},
         },
-        {
-          userId: null,
-        },
-      ],
-      ...(search &&
-        (search.startsWith("https://")
+      }),
+      ...(combinedTagIds && combinedTagIds.length > 0
+        ? {
+            tags: { some: { tagId: { in: combinedTagIds } } },
+          }
+        : tagNames
           ? {
-              shortLink: search,
+              tags: {
+                some: {
+                  tag: {
+                    name: {
+                      in: tagNames,
+                    },
+                  },
+                },
+              },
             }
-          : {
-              OR: [
-                {
-                  shortLink: { contains: search },
-                },
-                {
-                  url: { contains: search },
-                },
-              ],
-            })),
+          : {}),
+      ...(userId && { userId }),
+      // Exclude system links
+      userId: { not: LEGAL_USER_ID },
     },
     include: {
-      user: true,
       tags: {
         include: {
           tag: {
@@ -65,20 +79,31 @@ export const GET = withAdmin(async ({ searchParams }) => {
           },
         },
       },
+      ...(includeUser && {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+      }),
     },
     orderBy: {
-      [sort]: "desc",
+      [sortBy]: sortOrder,
     },
-    take: 100,
-    ...(page && {
-      skip: (parseInt(page) - 1) * 100,
-    }),
+    take: pageSize,
+    skip: (page - 1) * pageSize,
   });
 
-  const links = response.map((link) => ({
-    ...link,
-    tags: link.tags.map(({ tag }) => tag),
-  }));
+  // Transform links to match expected format
+  const transformedLinks = links.map((link) =>
+    transformLink({
+      ...link,
+      tags: link.tags?.map(({ tag }) => ({ tag })) || [],
+    })
+  );
 
-  return NextResponse.json(links);
+  return NextResponse.json(transformedLinks);
 });

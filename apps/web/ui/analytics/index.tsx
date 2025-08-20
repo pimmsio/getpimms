@@ -54,7 +54,7 @@ export default function Analytics({
 }
 
 function StatsGrid() {
-  const { dashboardProps, selectedTab, view, workspace } =
+  const { dashboardProps, selectedTab, view, workspace, adminPage } =
     useContext(AnalyticsContext);
   const { plan } = workspace || {};
 
@@ -68,7 +68,7 @@ function StatsGrid() {
       <Locations />
       <Referer />
       <Devices />
-      <Feedback />
+      {!adminPage && <Feedback />}
     </div>
   );
 }

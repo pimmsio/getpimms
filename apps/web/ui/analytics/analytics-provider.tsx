@@ -156,8 +156,11 @@ export default function AnalyticsProvider({
   const selectedTab: EventType = useMemo(() => {
     const event = searchParams.get("event");
 
-    return EVENT_TYPES.find((t) => t === event) ?? "clicks";
-  }, [searchParams.get("event")]);
+    // For admin leads page, default to "leads" instead of "clicks"
+    const defaultTab = adminPage && typeof window !== "undefined" && window.location.pathname === "/leads" ? "leads" : "clicks";
+
+    return EVENT_TYPES.find((t) => t === event) ?? defaultTab;
+  }, [searchParams.get("event"), adminPage]);
 
   const [persistedSaleUnit, setPersistedSaleUnit] =
     useLocalStorage<AnalyticsSaleUnit>(`analytics-sale-unit`, "saleAmount");
@@ -194,6 +197,7 @@ export default function AnalyticsProvider({
       return {
         basePath: "analytics",
         baseApiPath: "/api/admin/analytics",
+        eventsApiPath: "/api/admin/events",
         domain: domainSlug,
       };
     } else if (slug) {

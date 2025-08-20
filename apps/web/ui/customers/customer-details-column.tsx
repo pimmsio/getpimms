@@ -164,24 +164,6 @@ export function CustomerDetailsColumn({
         )}
       </div>
 
-      <div className="flex flex-col gap-2">
-        <DetailHeading>Referral link</DetailHeading>
-        {!customer || isCustomerActivityLoading ? (
-          <div className="h-5 w-12 animate-pulse rounded bg-neutral-100" />
-        ) : link ? (
-          <ConditionalLink
-            href={`/${programSlug ? `programs/${programSlug}` : slug}/analytics?domain=${link.domain}&key=${link.key}`}
-            target="_blank"
-            className="min-w-0 overflow-hidden truncate"
-            linkClassName="underline-offset-2 hover:text-neutral-950 hover:underline"
-          >
-            {getPrettyUrl(link.shortLink)}
-          </ConditionalLink>
-        ) : (
-          <span>-</span>
-        )}
-      </div>
-
       {utmParams && Boolean(utmParams.length) && (
         <div className="flex flex-col gap-2">
           <DetailHeading>UTM</DetailHeading>
