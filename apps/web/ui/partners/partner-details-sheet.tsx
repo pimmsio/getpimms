@@ -51,7 +51,7 @@ function PartnerDetailsSheetContent({ partner }: PartnerDetailsSheetProps) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="sticky top-0 z-10 border-b-[6px] border-neutral-100 bg-white">
+      <div className="sticky top-0 z-10 border-b border-neutral-100 bg-white">
         <div className="flex items-start justify-between p-6">
           <Sheet.Title className="text-xl font-semibold">
             Partner details
@@ -197,7 +197,7 @@ function PartnerDetailsSheetContent({ partner }: PartnerDetailsSheetProps) {
       {showPartnerDetails && (
         <>
           {createPayoutSheet}
-          <div className="sticky bottom-0 z-10 border-t-[6px] border-neutral-100 bg-white">
+          <div className="sticky bottom-0 z-10 border-x border-neutral-100 bg-white">
             <div className="p-5">
               <Button
                 variant="primary"

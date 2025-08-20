@@ -85,7 +85,7 @@ export function PayoutStats() {
               <Tooltip
                 content={
                   <div className="w-64">
-                    <div className="border-b-[6px] border-neutral-100 p-3 text-sm font-medium text-neutral-700">
+                    <div className="border-b border-neutral-100 p-3 text-sm font-medium text-neutral-700">
                       Pending payouts
                     </div>
                     <div className="grid gap-1 p-3">
@@ -151,7 +151,7 @@ export function PayoutStats() {
               <Tooltip
                 content={
                   <div className="w-64">
-                    <div className="border-b-[6px] border-neutral-100 p-3 text-sm font-medium text-neutral-700">
+                    <div className="border-b border-neutral-100 p-3 text-sm font-medium text-neutral-700">
                       Total paid
                     </div>
                     <div className="grid gap-1 p-3">

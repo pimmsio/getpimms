@@ -98,7 +98,7 @@ function ImportRebrandlyModal({
         })
       }
     >
-      <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-8 sm:px-16">
+      <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-100 px-4 py-8 sm:px-16">
         <div className="flex items-center space-x-3 py-4">
           <img
             src="https://assets.dub.co/misc/icons/rebrandly.svg"

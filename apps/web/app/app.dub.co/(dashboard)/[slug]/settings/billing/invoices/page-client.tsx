@@ -56,7 +56,7 @@ export default function WorkspaceInvoicesClient() {
           }}
         />
       )}
-      <div className="grid divide-y divide-neutral-100 border-t-[6px] border-neutral-100">
+      <div className="grid divide-y divide-neutral-100 border-x border-neutral-100">
         {invoices ? (
           invoices.length > 0 ? (
             invoices.map((invoice) => (

@@ -45,7 +45,7 @@ export const UpdatePassword = () => {
       onSubmit={onSubmit}
     >
       <div>
-        <div className="flex flex-col gap-3 border-b-[6px] border-neutral-100 p-5 sm:p-10">
+        <div className="flex flex-col gap-3 border-b border-neutral-100 p-5 sm:p-10">
           <h2 className="text-xl font-medium">Password</h2>
           <p className="pb-2 text-sm text-neutral-500">
             Manage your account password on {process.env.NEXT_PUBLIC_APP_NAME}.
@@ -84,7 +84,7 @@ export const UpdatePassword = () => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between space-x-4 rounded-b border-t-[6px] border-neutral-100 bg-neutral-50 p-3 sm:px-10">
+      <div className="flex items-center justify-between space-x-4 rounded-b border-x border-neutral-100 bg-neutral-50 p-3 sm:px-10">
         <Tooltip content="Passwords must be at least 8 characters long containing at least one number, one uppercase, and one lowercase letter.">
           <p className="text-sm text-neutral-500 underline decoration-dotted underline-offset-2 hover:text-neutral-700">
             Password requirements

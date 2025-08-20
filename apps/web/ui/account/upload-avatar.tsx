@@ -61,7 +61,7 @@ export default function UploadAvatar() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between space-x-4 rounded-b border-t-[6px] border-neutral-100 bg-neutral-50 p-3 sm:px-10">
+      <div className="flex items-center justify-between space-x-4 rounded-b border-x border-neutral-100 bg-neutral-50 p-3 sm:px-10">
         <p className="text-sm text-neutral-500">
           Square image recommended. Accepted file types: .png, .jpg. Max file
           size: 2MB.

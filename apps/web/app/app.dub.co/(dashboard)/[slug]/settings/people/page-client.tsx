@@ -86,7 +86,7 @@ export default function WorkspacePeopleClient() {
             />
           </div>
         </div>
-        <div className="flex space-x-3 border-b-[6px] border-neutral-100 px-3 sm:px-7">
+        <div className="flex space-x-3 border-b border-neutral-100 px-3 sm:px-7">
           {tabs.map((tab) => (
             <div
               key={tab}

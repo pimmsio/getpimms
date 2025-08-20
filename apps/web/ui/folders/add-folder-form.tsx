@@ -77,7 +77,7 @@ export const AddFolderForm = ({ onSuccess, onCancel }: AddFolderFormProps) => {
 
   return (
     <>
-      <div className="space-y-2 border-b-[6px] border-neutral-100 px-4 py-4 sm:px-6">
+      <div className="space-y-2 border-b border-neutral-100 px-4 py-4 sm:px-6">
         <h3 className="text-lg font-medium">
           {step === 1 ? "Create new folder" : `${name} access`}
         </h3>
@@ -157,7 +157,7 @@ export const AddFolderForm = ({ onSuccess, onCancel }: AddFolderFormProps) => {
             )}
           </div>
 
-          <div className="mt-8 flex items-center justify-between border-t-[6px] border-neutral-100 px-4 py-4 sm:px-6">
+          <div className="mt-8 flex items-center justify-between border-x border-neutral-100 px-4 py-4 sm:px-6">
             <StepProgressBar step={step} />
             <div className="flex gap-2">
               <Button

@@ -207,7 +207,7 @@ export function Combobox({
         >
           <Command loop shouldFilter={shouldFilter}>
             {!hideSearch && (
-              <div className="flex items-center overflow-hidden rounded-t-lg border-b-[6px] border-neutral-100">
+              <div className="flex items-center overflow-hidden rounded-t-lg border-b border-neutral-100">
                 <CommandInput
                   placeholder={searchPlaceholder}
                   value={search}

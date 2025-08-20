@@ -47,7 +47,7 @@ function Verify() {
   return (
     <>
       <div className="w-full max-w-md overflow-hidden border-y border-neutral-200 sm:rounded sm:border sm:shadow-sm">
-        <div className="flex flex-col items-center justify-center gap-3 border-b-[6px] border-neutral-100 bg-white px-4 pb-6 pt-8 text-center sm:px-16">
+        <div className="flex flex-col items-center justify-center gap-3 border-b border-neutral-100 bg-white px-4 pb-6 pt-8 text-center sm:px-16">
           <h3 className="text-xl font-semibold">Verify your email address</h3>
           <p className="text-sm text-neutral-500">
             Enter the six digit verification code sent to{" "}

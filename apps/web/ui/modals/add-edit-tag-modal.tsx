@@ -81,7 +81,7 @@ function AddEditTagModal({
       showModal={showAddEditTagModal}
       setShowModal={setShowAddEditTagModal}
     >
-      <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-4 pt-8 sm:px-16">
+      <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-100 px-4 py-4 pt-8 sm:px-16">
         <Logo />
         <div className="flex flex-col space-y-1 text-center">
           <h3 className="text-lg font-medium">

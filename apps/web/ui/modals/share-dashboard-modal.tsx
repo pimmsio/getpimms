@@ -182,7 +182,7 @@ function ShareDashboardModalInner({
 
   return (
     <>
-      <h3 className="border-b-[6px] border-neutral-100 px-4 py-4 text-lg font-medium sm:px-6">
+      <h3 className="border-b border-neutral-100 px-4 py-4 text-lg font-medium sm:px-6">
         Share dashboard
       </h3>
       <div className="bg-neutral-50 px-6 pb-6 pt-4">

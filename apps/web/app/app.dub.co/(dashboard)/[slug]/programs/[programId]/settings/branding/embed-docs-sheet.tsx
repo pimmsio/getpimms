@@ -15,7 +15,7 @@ function EmbedDocsSheetContent({ setIsOpen }: EmbedDocsSheetProps) {
   return (
     <>
       <div>
-        <div className="flex items-start justify-between border-b-[6px] border-neutral-100 p-6">
+        <div className="flex items-start justify-between border-b border-neutral-100 p-6">
           <Sheet.Title className="text-xl font-semibold">
             Embed docs
           </Sheet.Title>
@@ -40,7 +40,7 @@ function EmbedDocsSheetContent({ setIsOpen }: EmbedDocsSheetProps) {
             }}
           />
 
-          <div className="border-t-[6px] border-neutral-100 pt-4">
+          <div className="border-x border-neutral-100 pt-4">
             {tab === "react" && (
               <div>
                 <CodeSnippet code={reactSnippet} lang="javascript" />
@@ -60,7 +60,7 @@ function EmbedDocsSheetContent({ setIsOpen }: EmbedDocsSheetProps) {
         </div>
       </div>
       <div className="flex grow flex-col justify-end">
-        <div className="flex items-center justify-end gap-2 border-t-[6px] border-neutral-100 p-5">
+        <div className="flex items-center justify-end gap-2 border-x border-neutral-100 p-5">
           <Button
             type="button"
             variant="secondary"

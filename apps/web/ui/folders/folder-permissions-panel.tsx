@@ -136,7 +136,7 @@ const FolderPermissionsPanel = ({
           }
         >
           <div className="scrollbar-hide flex size-full grow flex-col overflow-y-auto rounded bg-zinc-50">
-            <div className="flex items-center justify-between border-b-[6px] border-neutral-100 px-8 py-5">
+            <div className="flex items-center justify-between border-b border-neutral-100 px-8 py-5">
               <Drawer.Title className="text-xl font-medium text-zinc-900">
                 Folder permissions
               </Drawer.Title>

@@ -201,7 +201,7 @@ function WorkspaceList({
         onScroll={updateScrollProgress}
         className="relative max-h-80 w-full space-y-0.5 overflow-auto rounded bg-white text-base sm:w-64 sm:text-sm"
       >
-        <div className="flex flex-col gap-0.5 border-b-[6px] border-neutral-100 p-2">
+        <div className="flex flex-col gap-0.5 border-b border-neutral-100 p-2">
           {LINKS.map(({ name, icon: Icon, href, target }) => (
             <Link
               key={name}

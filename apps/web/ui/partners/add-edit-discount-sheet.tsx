@@ -198,7 +198,7 @@ function DiscountSheetContent({
         onSubmit={handleSubmit(onSubmit)}
         className="flex h-full flex-col"
       >
-        <div className="flex items-start justify-between border-b-[6px] border-neutral-100 p-6">
+        <div className="flex items-start justify-between border-b border-neutral-100 p-6">
           <Sheet.Title className="text-xl font-semibold">
             {discount ? "Edit" : "Create"} {isDefault ? "default" : ""} discount
           </Sheet.Title>
@@ -431,7 +431,7 @@ function DiscountSheetContent({
           </div>
         </div>
 
-        <div className="flex items-center justify-between border-t-[6px] border-neutral-100 p-5">
+        <div className="flex items-center justify-between border-x border-neutral-100 p-5">
           <div>
             {discount && (
               <Button

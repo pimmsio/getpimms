@@ -29,7 +29,7 @@ export default function UserId() {
             <div className="h-[2.35rem] w-full max-w-md animate-pulse rounded bg-neutral-200" />
           )}
         </div>
-        <div className="h-14 rounded-b border-t-[6px] border-neutral-100 bg-neutral-50" />
+        <div className="h-14 rounded-b border-x border-neutral-100 bg-neutral-50" />
       </div>
     </>
   );

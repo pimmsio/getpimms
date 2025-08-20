@@ -25,7 +25,7 @@ export default function WorkspaceId() {
             <div className="h-[2.35rem] w-full max-w-md animate-pulse rounded bg-neutral-200" />
           )}
         </div>
-        {/* <div className="flex items-center justify-between rounded-b border-t-[6px] border-neutral-100 bg-neutral-50 px-3 py-5 sm:px-10">
+        {/* <div className="flex items-center justify-between rounded-b border-x border-neutral-100 bg-neutral-50 px-3 py-5 sm:px-10">
           <p className="text-sm text-neutral-500">
             Used to identify your workspace when interacting with the{" "}
             <a

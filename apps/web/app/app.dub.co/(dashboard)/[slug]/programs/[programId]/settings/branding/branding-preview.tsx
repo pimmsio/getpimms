@@ -48,7 +48,7 @@ export function BrandingPreview() {
               </div>
               <div className="hidden grow basis-0 sm:block" />
             </div>
-            <div className="flex h-60 items-center justify-center border-t-[6px] border-neutral-100 bg-neutral-100/50 text-sm text-neutral-500">
+            <div className="flex h-60 items-center justify-center border-x border-neutral-100 bg-neutral-100/50 text-sm text-neutral-500">
               Preview coming soon
             </div>
           </div>

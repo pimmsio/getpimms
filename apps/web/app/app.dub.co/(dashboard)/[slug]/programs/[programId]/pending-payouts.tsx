@@ -28,7 +28,7 @@ export function PendingPayouts() {
 
   return (
     <div className="rounded border border-neutral-100">
-      <div className="flex items-center justify-between border-b-[6px] border-neutral-100 p-5">
+      <div className="flex items-center justify-between border-b border-neutral-100 p-5">
         <h2 className="text-base font-semibold text-neutral-900">
           Pending payouts
         </h2>

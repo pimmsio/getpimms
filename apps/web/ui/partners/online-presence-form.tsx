@@ -364,7 +364,7 @@ export function OnlinePresenceForm({
               loading={isSubmitting || isSubmitSuccessful}
             />
           ) : (
-            <div className="flex justify-end rounded-b border-t-[6px] border-neutral-100 bg-neutral-100 px-5 py-3.5">
+            <div className="flex justify-end rounded-b border-x border-neutral-100 bg-neutral-100 px-5 py-3.5">
               <Button
                 type="submit"
                 text="Save changes"

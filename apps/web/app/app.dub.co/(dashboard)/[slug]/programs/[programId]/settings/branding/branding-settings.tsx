@@ -173,7 +173,7 @@ function BrandingSettingsForm({ program }: { program: ProgramProps }) {
         <BrandingPreview />
       </div>
 
-      <div className="flex items-center justify-end rounded-b border-t-[6px] border-neutral-100 bg-neutral-50 px-6 py-5">
+      <div className="flex items-center justify-end rounded-b border-x border-neutral-100 bg-neutral-50 px-6 py-5">
         <div>
           <Button
             text="Save changes"

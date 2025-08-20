@@ -429,7 +429,7 @@ function PartnerLinkModalContent({
         </div>
       </div>
 
-      <div className="flex items-center justify-end border-t-[6px] border-neutral-100 bg-neutral-50 p-4">
+      <div className="flex items-center justify-end border-x border-neutral-100 bg-neutral-50 p-4">
         <Button
           type="submit"
           disabled={saveDisabled}

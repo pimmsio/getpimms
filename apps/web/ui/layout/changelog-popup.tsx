@@ -46,7 +46,7 @@ export function ChangelogPopupInner() {
         className="flex max-w-sm flex-col items-center justify-center"
         onClick={() => hidePopup()}
       >
-        <div className="border-b-[6px] border-neutral-100">
+        <div className="border-b border-neutral-100">
           <BlurImage
             src={CHANGELOG_IMAGE_URL}
             alt="Root Domain Links"

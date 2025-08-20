@@ -155,7 +155,7 @@ function PayoutDetailsSheetContent({
   return (
     <>
       <div>
-        <div className="flex items-start justify-between border-b-[6px] border-neutral-100 p-6">
+        <div className="flex items-start justify-between border-b border-neutral-100 p-6">
           <Sheet.Title className="text-xl font-semibold">
             Payout details
           </Sheet.Title>
@@ -206,7 +206,7 @@ function PayoutDetailsSheetContent({
       </div>
 
       <div className="flex grow flex-col justify-end">
-        <div className="flex items-center justify-end gap-2 border-t-[6px] border-neutral-100 p-5">
+        <div className="flex items-center justify-end gap-2 border-x border-neutral-100 p-5">
           <Button
             type="button"
             variant="secondary"

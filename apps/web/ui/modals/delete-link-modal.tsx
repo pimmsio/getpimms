@@ -48,7 +48,7 @@ function DeleteLinkModalInner({
 
   return (
     <>
-      <div className="space-y-2 border-b-[6px] border-neutral-100 p-4 sm:p-6">
+      <div className="space-y-2 border-b border-neutral-100 p-4 sm:p-6">
         <h3 className="text-lg font-medium leading-none">
           Delete {links.length > 1 ? `${links.length} links` : "link"}
         </h3>
@@ -120,7 +120,7 @@ function DeleteLinkModalInner({
           </div>
         </div>
 
-        <div className="mt-8 flex items-center justify-end gap-2 border-t-[6px] border-neutral-100 bg-neutral-50 px-4 py-5 sm:px-6">
+        <div className="mt-8 flex items-center justify-end gap-2 border-x border-neutral-100 bg-neutral-50 px-4 py-5 sm:px-6">
           <Button
             onClick={() => setShowDeleteLinkModal(false)}
             variant="secondary"

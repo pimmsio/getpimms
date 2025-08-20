@@ -30,7 +30,7 @@ export function ProfileSettingsPageClient() {
   return (
     <MaxWidthWrapper className="mb-20 flex flex-col gap-8">
       <div className="max-w-screen-md rounded border border-neutral-100 bg-white">
-        <div className="border-b-[6px] border-neutral-100 p-6">
+        <div className="border-b border-neutral-100 p-6">
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-medium text-neutral-800">About you</h2>
           </div>
@@ -55,7 +55,7 @@ export function ProfileSettingsPageClient() {
         className="max-w-screen-md rounded border border-neutral-100 bg-white"
         id="online-presence"
       >
-        <div className="border-b-[6px] border-neutral-100 p-6">
+        <div className="border-b border-neutral-100 p-6">
           <h2 className="text-xl font-medium text-neutral-800">
             Online presence
           </h2>
@@ -352,7 +352,7 @@ function ProfileForm({ partner }: { partner: PartnerProps }) {
           </AnimatePresence>
         </div>
       </div>
-      <div className="flex justify-end rounded-b border-t-[6px] border-neutral-100 bg-neutral-100 px-5 py-3.5">
+      <div className="flex justify-end rounded-b border-x border-neutral-100 bg-neutral-100 px-5 py-3.5">
         <Button
           type="submit"
           text="Save changes"

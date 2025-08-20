@@ -25,7 +25,7 @@ function TokenCreatedModal({
       setShowModal={setShowTokenCreatedModal}
       className="max-w-md"
     >
-      <div className="space-y-2 border-b-[6px] border-neutral-100 px-4 py-4 sm:px-6">
+      <div className="space-y-2 border-b border-neutral-100 px-4 py-4 sm:px-6">
         <h3 className="text-lg font-medium">API Key Created</h3>
         <p className="text-sm text-neutral-500">
           For security reasons, we will only show you the key once. Please copy

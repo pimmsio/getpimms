@@ -70,7 +70,7 @@ export const RenameFolderForm = ({
         </div>
       </div>
 
-      <div className="mt-8 flex justify-end gap-2 border-t-[6px] border-neutral-100 px-4 py-4 sm:px-6">
+      <div className="mt-8 flex justify-end gap-2 border-x border-neutral-100 px-4 py-4 sm:px-6">
         <Button
           type="button"
           variant="secondary"

@@ -157,7 +157,7 @@ const SAMLSection = () => {
           </div>
         </div>
 
-        {/* <div className="flex items-center justify-between rounded-b border-t-[6px] border-neutral-100 bg-neutral-50 px-3 py-5 sm:px-10">
+        {/* <div className="flex items-center justify-between rounded-b border-x border-neutral-100 bg-neutral-50 px-3 py-5 sm:px-10">
           <a
             href="https://dub.co/help/category/saml-sso"
             target="_blank"
@@ -313,7 +313,7 @@ const SCIMSection = () => {
           </div>
         </div>
 
-        {/* <div className="flex items-center justify-between rounded-b border-t-[6px] border-neutral-100 bg-neutral-50 px-3 py-5 sm:px-10">
+        {/* <div className="flex items-center justify-between rounded-b border-x border-neutral-100 bg-neutral-50 px-3 py-5 sm:px-10">
           <a
             href="https://dub.co/help/category/saml-sso"
             target="_blank"

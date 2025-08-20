@@ -45,7 +45,7 @@ function SAMLModal({
 
   return (
     <Modal showModal={showSAMLModal} setShowModal={setShowSAMLModal}>
-      <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-8 sm:px-16">
+      <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-100 px-4 py-8 sm:px-16">
         <div className="rounded-full border border-neutral-100 p-3">
           <Lock className="h-5 w-5 text-neutral-600" />
         </div>
@@ -138,7 +138,7 @@ function SAMLModal({
 
           {currentProvider &&
             (selectedProvider === "google" ? (
-              <div className="border-t-[6px] border-neutral-100 pt-4">
+              <div className="border-x border-neutral-100 pt-4">
                 <div className="flex items-center space-x-1">
                   <h2 className="text-sm font-medium text-neutral-900">
                     {currentProvider.samlModalCopy}
@@ -195,7 +195,7 @@ function SAMLModal({
                 />
               </div>
             ) : (
-              <div className="border-t-[6px] border-neutral-100 pt-4">
+              <div className="border-x border-neutral-100 pt-4">
                 <div className="flex items-center space-x-1">
                   <h2 className="text-sm font-medium text-neutral-900">
                     {currentProvider.samlModalCopy}

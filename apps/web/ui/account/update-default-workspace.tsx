@@ -88,7 +88,7 @@ export default function UpdateDefaultWorkspace() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between space-x-4 rounded-b border-t-[6px] border-neutral-100 bg-neutral-50 p-3 sm:px-10">
+      <div className="flex items-center justify-between space-x-4 rounded-b border-x border-neutral-100 bg-neutral-50 p-3 sm:px-10">
         {/* <a
           href="https://dub.co/help/article/how-to-change-default-workspace"
           target="_blank"

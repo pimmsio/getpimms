@@ -59,7 +59,7 @@ export function DefaultDomains() {
   const [submitting, setSubmitting] = useState(false);
 
   return (
-    <div className="my-10 grid gap-5 border-t-[6px] border-neutral-100 py-10">
+    <div className="my-10 grid gap-5 border-x border-neutral-100 py-10">
       <div>
         <h2 className="text-xl font-semibold tracking-tight text-black">
           Default Domains

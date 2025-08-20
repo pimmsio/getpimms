@@ -46,7 +46,7 @@ export default async function Authorize({
 
   return (
     <div className="relative z-10 m-auto w-full max-w-md border-y border-neutral-200 sm:rounded sm:border sm:shadow-xl">
-      <div className="flex flex-col items-center justify-center gap-3 border-b-[6px] border-neutral-100 bg-white px-4 py-6 pt-8 text-center sm:rounded-t-2xl sm:px-16">
+      <div className="flex flex-col items-center justify-center gap-3 border-b border-neutral-100 bg-white px-4 py-6 pt-8 text-center sm:rounded-t-2xl sm:px-16">
         <div className="flex items-center gap-3">
           <a href={integration.website} target="_blank" rel="noreferrer">
             {integration.logo ? (
@@ -93,7 +93,7 @@ export default async function Authorize({
       <div className="flex flex-col space-y-3 bg-white px-2 py-6 sm:px-10">
         <ScopesRequested scopes={requestParams.scope} />
       </div>
-      <div className="flex flex-col space-y-2 border-t-[6px] border-neutral-100 bg-white px-2 py-6 sm:rounded-b-2xl sm:px-10">
+      <div className="flex flex-col space-y-2 border-x border-neutral-100 bg-white px-2 py-6 sm:rounded-b-2xl sm:px-10">
         <Suspense>
           <AuthorizeForm {...requestParams} />
         </Suspense>

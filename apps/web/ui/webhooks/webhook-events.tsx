@@ -146,7 +146,7 @@ const WebhookEvent = ({ event }: { event: WebhookEventProps }) => {
             </ButtonTooltip>
           </div>
         </div>
-        <div className="grid gap-4 border-t-[6px] border-neutral-100 bg-white p-6">
+        <div className="grid gap-4 border-x border-neutral-100 bg-white p-6">
           <h4 className="font-semibold">Response</h4>
           <div className="flex items-center gap-8">
             <p className="text-sm text-neutral-500">HTTP status code</p>
@@ -157,7 +157,7 @@ const WebhookEvent = ({ event }: { event: WebhookEventProps }) => {
             dangerouslySetInnerHTML={{ __html: responseBody }}
           />
         </div>
-        <div className="grid gap-4 border-t-[6px] border-neutral-100 bg-white p-6">
+        <div className="grid gap-4 border-x border-neutral-100 bg-white p-6">
           <h4 className="font-semibold">Request</h4>
           <div
             className="shiki-wrapper overflow-y-scroll text-sm"

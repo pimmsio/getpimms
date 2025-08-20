@@ -141,7 +141,7 @@ export function OverviewChart() {
             tooltipContent={(d) => {
               return (
                 <>
-                  <p className="border-b-[6px] border-neutral-100 px-4 py-3 text-sm text-neutral-900">
+                  <p className="border-b border-neutral-100 px-4 py-3 text-sm text-neutral-900">
                     {formatDateTooltip(d.date, { interval, start, end })}
                   </p>
                   <div className="grid grid-cols-2 gap-x-6 gap-y-2 px-4 py-3 text-sm">

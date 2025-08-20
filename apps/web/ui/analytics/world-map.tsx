@@ -316,7 +316,7 @@ export default function WorldMap({ data, maxVisitors }: WorldMapProps) {
             top: Math.max(10, hoveredCountry.y - 80),
           }}
         >
-          <div className="border-b-[6px] border-neutral-100 px-3 py-2">
+          <div className="border-b border-neutral-100 px-3 py-2">
             <div className="text-sm font-medium text-neutral-900 truncate">
               {hoveredCountry.country}
             </div>

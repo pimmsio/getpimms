@@ -226,7 +226,7 @@ export function WorkspaceBillingUpgradePageClient() {
                 <a
                   href={href}
                   target="_blank"
-                  className="flex items-center gap-2 border-b-[6px] border-neutral-100 px-5 pb-4 pt-2"
+                  className="flex items-center gap-2 border-b border-neutral-100 px-5 pb-4 pt-2"
                 >
                   {Icon && <Icon className="size-4 text-neutral-600" />}
                   <h3 className="text-base font-medium text-black">
@@ -272,7 +272,7 @@ export function WorkspaceBillingUpgradePageClient() {
                               <td
                                 key={id}
                                 className={cn(
-                                  "flex items-center gap-2 border-b-[6px] border-neutral-100 bg-white px-5 py-4",
+                                  "flex items-center gap-2 border-b border-neutral-100 bg-white px-5 py-4",
                                   !isChecked && "text-neutral-300",
                                 )}
                               >

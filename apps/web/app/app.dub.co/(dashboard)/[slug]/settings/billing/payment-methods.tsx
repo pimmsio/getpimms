@@ -62,7 +62,7 @@ export default function PaymentMethods() {
           />
         )}
       </div>
-      <div className="grid gap-4 border-t-[6px] border-neutral-100 bg-neutral-100 p-6">
+      <div className="grid gap-4 border-x border-neutral-100 bg-neutral-100 p-6">
         {regularPaymentMethods ? (
           regularPaymentMethods.length > 0 ? (
             regularPaymentMethods.map((paymentMethod) => (

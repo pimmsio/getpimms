@@ -68,7 +68,7 @@ export function PartnerProgramDropdown() {
         content={
           <ScrollContainer>
             {programEnrollments && programEnrollments.length > 0 && (
-              <div className="border-b-[6px] border-neutral-100 p-2">
+              <div className="border-b border-neutral-100 p-2">
                 <ProgramList
                   partner={partner}
                   selectedProgram={selectedProgram}

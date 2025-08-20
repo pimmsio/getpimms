@@ -174,7 +174,7 @@ export function FilterSelect({
               !selectedFilter || selectedFilter.shouldFilter !== false
             }
           >
-            <div className="flex items-center overflow-hidden rounded-t-lg border-b-[6px] border-neutral-100">
+            <div className="flex items-center overflow-hidden rounded-t-lg border-b border-neutral-100">
               <CommandInput
                 placeholder={`${selectedFilter?.label || "Filter"}...`}
                 value={search}
@@ -226,7 +226,7 @@ export function FilterSelect({
                           onSelect={() => openFilter(filter.key)}
                         />
                         {filter.separatorAfter && (
-                          <Command.Separator className="-mx-1 my-1 border-b-[6px] border-neutral-100" />
+                          <Command.Separator className="-mx-1 my-1 border-b border-neutral-100" />
                         )}
                       </Fragment>
                     ))

@@ -124,7 +124,7 @@ export default function PlanUsage() {
           {stripeId && plan !== "free" && <SubscriptionMenu />}
         </div>
       </div>
-      <div className="grid grid-cols-[minmax(0,1fr)] divide-y divide-neutral-100 border-t-[6px] border-neutral-100">
+      <div className="grid grid-cols-[minmax(0,1fr)] divide-y divide-neutral-100 border-x border-neutral-100">
         <div>
           <div className="grid gap-4 p-6 md:p-8 lg:gap-6 grid-cols-1 md:grid-cols-3">
             <UsageTabCard
@@ -195,7 +195,7 @@ export default function PlanUsage() {
           />
         </div> */}
         {/* {partnersEnabled && (
-        <div className="flex flex-col items-center justify-between space-y-3 border-t-[6px] border-neutral-100 px-6 py-4 text-center md:flex-row md:space-y-0 md:px-8 md:text-left">
+        <div className="flex flex-col items-center justify-between space-y-3 border-x border-neutral-100 px-6 py-4 text-center md:flex-row md:space-y-0 md:px-8 md:text-left">
             <UsageCategory
               title="Partners"
               icon={Users6}

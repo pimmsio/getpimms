@@ -153,7 +153,7 @@ function AddEditTokenModal({
         className="max-w-lg"
         onClose={() => setSelectedToken(null)}
       >
-        <h3 className="border-b-[6px] border-neutral-100 px-4 py-4 text-lg font-medium sm:px-6">
+        <h3 className="border-b border-neutral-100 px-4 py-4 text-lg font-medium sm:px-6">
           {token ? "Edit" : "Create New"} API Key
         </h3>
 

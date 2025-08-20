@@ -169,7 +169,7 @@ export function EarningsCompositeChart() {
               tooltipContent={(d) => {
                 return (
                   <>
-                    <div className="flex justify-between border-b-[6px] border-neutral-100 p-3 text-xs">
+                    <div className="flex justify-between border-b border-neutral-100 p-3 text-xs">
                       <p className="font-medium leading-none text-neutral-900">
                         {formatDateTooltip(d.date, {
                           interval,

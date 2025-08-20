@@ -142,7 +142,7 @@ export function PartnerLinkCard({
     >
       <PartnerLinkModal />
       {isDefaultLink && (
-        <div className="flex items-center justify-between gap-4 rounded-t-[11px] border-b-[6px] border-neutral-100 bg-neutral-100 px-5 py-2">
+        <div className="flex items-center justify-between gap-4 rounded-t-[11px] border-b border-neutral-100 bg-neutral-100 px-5 py-2">
           <div className="flex items-center gap-1.5">
             {programEnrollment && (
               <BlurImage

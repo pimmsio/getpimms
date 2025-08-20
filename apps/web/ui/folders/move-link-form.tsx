@@ -66,7 +66,7 @@ export const MoveLinkForm = ({
 
   return (
     <>
-      <div className="space-y-2 border-b-[6px] border-neutral-100 p-4 sm:p-6">
+      <div className="space-y-2 border-b border-neutral-100 p-4 sm:p-6">
         {links.length === 1 && (
           <LinkLogo apexDomain={getApexDomain(links[0].url)} className="mb-4" />
         )}
@@ -101,7 +101,7 @@ export const MoveLinkForm = ({
             </div>
           </div>
 
-          <div className="mt-8 flex justify-end gap-2 border-t-[6px] border-neutral-100 px-4 py-4 sm:px-6">
+          <div className="mt-8 flex justify-end gap-2 border-x border-neutral-100 px-4 py-4 sm:px-6">
             <Button
               type="button"
               variant="secondary"

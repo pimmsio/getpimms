@@ -313,7 +313,7 @@ export function RegisterDomainForm({
         className={cn(
           "mt-8 flex justify-end gap-2",
           variant === "modal" &&
-            "border-t-[6px] border-neutral-100 px-4 py-4 sm:px-6",
+            "border-x border-neutral-100 px-4 py-4 sm:px-6",
         )}
       >
         {onCancel && variant === "modal" && (

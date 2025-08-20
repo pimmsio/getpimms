@@ -89,7 +89,7 @@ export default function DomainConfiguration({
 
   return (
     <div className="pt-2">
-      <div className="-ml-1.5 border-b-[6px] border-neutral-100">
+      <div className="-ml-1.5 border-b border-neutral-100">
         <TabSelect
           options={[
             { id: "A", label: `A Record${!subdomain ? " (recommended)" : ""}` },

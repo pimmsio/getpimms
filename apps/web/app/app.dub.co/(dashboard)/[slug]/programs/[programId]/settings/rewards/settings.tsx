@@ -68,7 +68,7 @@ export function RewardSettings() {
             These are applied to all reward types
           </p>
         </div>
-        <div className="divide-y divide-neutral-100 border-t-[6px] border-neutral-100 px-6">
+        <div className="divide-y divide-neutral-100 border-x border-neutral-100 px-6">
           <SettingsRow
             heading="Holding period"
             description="Set the holding period before payouts are released"
@@ -124,7 +124,7 @@ export function RewardSettings() {
             </div>
           </SettingsRow>
         </div>
-        <div className="flex items-center justify-end gap-2 border-t-[6px] border-neutral-100 px-6 py-4">
+        <div className="flex items-center justify-end gap-2 border-x border-neutral-100 px-6 py-4">
           <Button
             text="Save changes"
             variant="primary"

@@ -66,7 +66,7 @@ export default function TokensPageClient() {
           </div>
         ) : tokens.length > 0 ? (
           <div>
-            <div className="grid grid-cols-5 border-b-[6px] border-neutral-100 px-5 py-2 text-sm font-medium text-neutral-500 sm:px-10">
+            <div className="grid grid-cols-5 border-b border-neutral-100 px-5 py-2 text-sm font-medium text-neutral-500 sm:px-10">
               <div className="col-span-3">Name</div>
               <div>Key</div>
               <div className="text-center">Last used</div>

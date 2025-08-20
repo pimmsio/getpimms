@@ -186,7 +186,7 @@ function FunnelChartInner({
               "rounded border border-neutral-200 bg-white text-base shadow-sm",
             )}
           >
-            <p className="border-b-[6px] border-neutral-100 px-3 py-2 text-sm text-neutral-900 sm:px-4 sm:py-3">
+            <p className="border-b border-neutral-100 px-3 py-2 text-sm text-neutral-900 sm:px-4 sm:py-3">
               {tooltipStep.label}
             </p>
             <div className="flex flex-wrap justify-between gap-x-4 gap-y-2 px-3 py-2 text-sm sm:px-4 sm:py-3">

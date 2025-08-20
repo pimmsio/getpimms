@@ -125,7 +125,7 @@ function InvitePartnerSheetContent({ setIsOpen }: InvitePartnerSheetProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col">
-      <div className="sticky top-0 z-10 border-b-[6px] border-neutral-100 bg-white">
+      <div className="sticky top-0 z-10 border-b border-neutral-100 bg-white">
         <div className="flex items-start justify-between p-6">
           <Sheet.Title className="text-xl font-semibold">
             Invite partner
@@ -310,7 +310,7 @@ function InvitePartnerSheetContent({ setIsOpen }: InvitePartnerSheetProps) {
         </div>
       </div>
 
-      <div className="sticky bottom-0 z-10 border-t-[6px] border-neutral-100 bg-white">
+      <div className="sticky bottom-0 z-10 border-x border-neutral-100 bg-white">
         <div className="flex items-center justify-end gap-2 p-5">
           <Button
             type="button"
@@ -391,7 +391,7 @@ function EmailPreview() {
             </p>
             <Button type="button" text="Accept Invite" className="w-fit" />
           </div>
-          <div className="grid gap-1 border-t-[6px] border-neutral-100 bg-neutral-50 px-6 py-4">
+          <div className="grid gap-1 border-x border-neutral-100 bg-neutral-50 px-6 py-4">
             <p className="text-sm text-neutral-500">
               <strong className="font-medium text-neutral-900">From: </strong>
               alexandre@pimms.io

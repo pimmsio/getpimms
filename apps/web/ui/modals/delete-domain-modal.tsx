@@ -31,7 +31,7 @@ function DeleteDomainModal({
       showModal={showDeleteDomainModal}
       setShowModal={setShowDeleteDomainModal}
     >
-      <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-4 pt-8 text-center sm:px-16">
+      <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-100 px-4 py-4 pt-8 text-center sm:px-16">
         <LinkLogo apexDomain={domain} />
         <h3 className="text-lg font-medium">Delete {domain}</h3>
         <div className="space-y-2 text-sm text-neutral-500">
