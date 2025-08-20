@@ -12,6 +12,7 @@ import { CustomerActivityList } from "@/ui/customers/customer-activity-list";
 import { CustomerDetailsColumn } from "@/ui/customers/customer-details-column";
 import { CustomerPartnerEarningsTable } from "@/ui/customers/customer-partner-earnings-table";
 import { CustomerSalesTable } from "@/ui/customers/customer-sales-table";
+import { ClickHistoryList } from "@/ui/customers/click-history-list";
 import { BackLink } from "@/ui/shared/back-link";
 import { ArrowUpRight, CopyButton } from "@dub/ui";
 import { OG_AVATAR_URL, fetcher } from "@dub/utils";
@@ -39,6 +40,16 @@ export function CustomerPageClient() {
         `/api/customers/${customer.id}/activity?workspaceId=${workspaceId}`,
       fetcher,
     );
+
+  const { data: clickHistory, isLoading: isClickHistoryLoading } = useSWR<{
+    customer: { id: string; name: string };
+    anonymousId: string | null;
+    totalClicks: number;
+    clickHistory: any[];
+  }>(
+    customer && `/api/customers/${customer.id}/click-history?limit=50`,
+    fetcher,
+  );
 
   if (!customer && !isLoading && !error) notFound();
 
@@ -136,6 +147,23 @@ export function CustomerPageClient() {
               </div>
             </section>
           )}
+
+          <section className="flex flex-col">
+            <div className="flex items-center justify-between py-3">
+              <h2 className="text-lg font-semibold text-neutral-900">
+                Click History
+              </h2>
+              {clickHistory?.anonymousId && (
+                <span className="text-xs text-neutral-500 font-mono">
+                  ID: {clickHistory.anonymousId}
+                </span>
+              )}
+            </div>
+            <ClickHistoryList
+              clickHistory={clickHistory}
+              isLoading={!customer || isClickHistoryLoading}
+            />
+          </section>
 
           <section className="flex flex-col">
             <h2 className="py-3 text-lg font-semibold text-neutral-900">

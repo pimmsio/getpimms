@@ -3,6 +3,7 @@ import {
   LOCALHOST_IP,
   capitalize,
   getDomainWithoutWWW,
+  nanoid,
 } from "@dub/utils";
 import { EU_COUNTRY_CODES } from "@dub/utils/src/constants/countries";
 import { geolocation, ipAddress } from "@vercel/functions";
@@ -38,6 +39,7 @@ export async function recordClick({
   timestamp,
   referrer,
   trackConversion,
+  anonymousId,
 }: {
   req: Request;
   clickId: string;
@@ -51,6 +53,7 @@ export async function recordClick({
   timestamp?: string;
   referrer?: string;
   trackConversion?: boolean;
+  anonymousId?: string;
 }) {
   const searchParams = new URL(req.url).searchParams;
 
@@ -99,15 +102,14 @@ export async function recordClick({
   const ua = userAgent(req);
   const referer = referrer || req.headers.get("referer");
 
-  const identity_hash = await getIdentityHash(req);
-
   const finalUrl = url ? getFinalUrlForRecordClick({ req, url }) : "";
 
   console.log("record click final Url", finalUrl, url, clickId, linkId);
+  console.log("anonymous ID for tracking:", anonymousId);
 
   const clickData = {
     timestamp: timestamp || new Date(Date.now()).toISOString(),
-    identity_hash,
+    identity_hash: anonymousId || `anon_${nanoid(16)}`, // Always ensure non-null anonymousId
     click_id: clickId,
     link_id: linkId,
     alias_link_id: "",

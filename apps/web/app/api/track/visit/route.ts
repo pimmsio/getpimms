@@ -20,7 +20,7 @@ const CORS_HEADERS = {
 // POST /api/track/visit – Track a visit event from the client-side
 export const POST = withAxiom(async (req: AxiomRequest) => {
   try {
-    const { domain, url, referrer } = await parseRequestBody(req);
+    const { domain, url, referrer, anonymousId } = await parseRequestBody(req);
 
     if (!domain || !url) {
       throw new DubApiError({
@@ -73,6 +73,7 @@ export const POST = withAxiom(async (req: AxiomRequest) => {
           workspaceId: link.projectId,
           skipRatelimit: true,
           ...(referrer && { referrer }),
+          anonymousId: anonymousId || `api_${nanoid(16)}`, // Use provided anonymousId or generate new one
         }),
       );
     }
