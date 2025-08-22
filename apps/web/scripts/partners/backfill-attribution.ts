@@ -4,6 +4,7 @@ import { prisma } from "@dub/prisma";
 import { DUB_WORKSPACE_ID, nanoid } from "@dub/utils";
 import "dotenv-flow/config";
 import { getClickEvent, recordLeadWithTimestamp } from "../../lib/tinybird";
+import { computeAnonymousCustomerFields } from "../../lib/webhook/custom";
 
 const referredUserEmail = "xxx@x.com";
 const referredWorkspaceSlug = "xxx";
@@ -53,6 +54,9 @@ async function main() {
   });
 
   if (!existingCustomer) {
+    const { anonymousId, totalClicks, lastEventAt } =
+      await computeAnonymousCustomerFields(clickData);
+
     const customer = await prisma.customer.create({
       data: {
         id: createId({ prefix: "cus_" }),
@@ -67,6 +71,9 @@ async function main() {
         country: clickData.country,
         clickedAt: new Date(clickData.timestamp),
         createdAt: leadTime,
+        anonymousId,
+        totalClicks,
+        lastEventAt,
       },
     });
 

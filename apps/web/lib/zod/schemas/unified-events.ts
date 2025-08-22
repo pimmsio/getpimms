@@ -1,4 +1,5 @@
 import z from "@/lib/zod";
+import { normalizePaymentProcessor } from "../../sales/payment-processor";
 import { clickEventSchema } from "./clicks";
 import { CustomerSchema } from "./customers";
 import { commonDeprecatedEventFields } from "./deprecated";
@@ -19,7 +20,11 @@ export const unifiedEventResponseSchema = z
     sale: z.object({
       amount: z.number(), // 0 for leads, actual amount for sales
       invoiceId: z.string().nullable().optional(),
-      paymentProcessor: z.enum(["stripe", "shopify", "polar", "paddle", "custom"]).nullable().optional(),
+      paymentProcessor: z
+        .string()
+        .transform((val) => normalizePaymentProcessor(val))
+        .nullable()
+        .optional(),
     }),
     saleAmount: z.number(), // Top-level for compatibility
     // Optional fields for backwards compatibility

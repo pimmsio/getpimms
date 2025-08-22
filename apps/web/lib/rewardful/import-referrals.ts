@@ -3,6 +3,7 @@ import { nanoid } from "@dub/utils";
 import { Program, Project } from "@prisma/client";
 import { createId } from "../api/create-id";
 import { recordClick } from "../tinybird/record-click";
+import { computeAnonymousCustomerFields } from "../webhook/custom";
 import { recordLeadWithTimestamp } from "../tinybird/record-lead";
 import { clickEventSchemaTB } from "../zod/schemas/clicks";
 import { RewardfulApi } from "./api";
@@ -167,6 +168,9 @@ async function createReferral({
 
   const customerId = createId({ prefix: "cus_" });
 
+  const { anonymousId, totalClicks, lastEventAt } =
+    await computeAnonymousCustomerFields(clickEvent);
+
   await Promise.all([
     prisma.customer.create({
       data: {
@@ -186,6 +190,9 @@ async function createReferral({
         createdAt: new Date(referral.became_lead_at),
         externalId: referral.customer.id,
         stripeCustomerId: referral.stripe_customer_id,
+        anonymousId,
+        totalClicks,
+        lastEventAt,
       },
     }),
 

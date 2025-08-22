@@ -22,6 +22,7 @@ import { waitUntil } from "@vercel/functions";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { tb } from "@/lib/tinybird";
+import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
 
 type ClickData = z.infer<typeof clickEventSchemaTB>;
 
@@ -29,8 +30,6 @@ type ClickData = z.infer<typeof clickEventSchemaTB>;
 export const POST = withWorkspace(
   async ({ req, workspace }) => {
     const userAgent = req.headers.get("user-agent")?.toLowerCase() || "";
-
-    console.log("userAgent", userAgent);
 
     const body = await parseRequestBody(req);
 
@@ -121,26 +120,9 @@ export const POST = withWorkspace(
 
       const leadEventId = nanoid(16);
 
-      // Prefetch identity hash and historical clicks so we can set them in upsert
-      let anonymousId: string | null = clickData.identity_hash || null;
-      let totalHistoricalClicks: number = 0;
-      try {
-        if (anonymousId) {
-          const pipe = tb.buildPipe({
-            pipe: "get_anonymous_event",
-            parameters: z.object({
-              identityHash: z.string(),
-              limit: z.number().optional().default(1000),
-            }),
-            data: z.any(),
-          });
-
-          const resp = await pipe({ identityHash: anonymousId, limit: 1000 });
-          totalHistoricalClicks = resp.data.length || 0;
-        }
-      } catch (e) {
-        console.warn("Failed to prefetch historical clicks from clickId", e);
-      }
+      // Prefetch anonymous fields using shared util
+      const { anonymousId, totalClicks: totalHistoricalClicks, lastEventAt } =
+        await computeAnonymousCustomerFields(clickData);
 
       // Create a function to handle customer upsert to avoid duplication
       const upsertCustomer = async () => {
@@ -165,7 +147,7 @@ export const POST = withWorkspace(
             clickedAt: new Date(clickData.timestamp + "Z"),
             anonymousId,
             totalClicks: totalHistoricalClicks,
-            lastEventAt: new Date(clickData.timestamp + "Z"),
+            lastEventAt: lastEventAt || new Date(clickData.timestamp + "Z"),
           },
           update: {}, // no updates needed if the customer exists
         });
