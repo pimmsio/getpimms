@@ -20,13 +20,13 @@ export default function Welcome() {
               />
             ))}
           </div>
-          <Wordmark className="relative h-16" />
+          <Wordmark className="relative h-4" />
         </div>
         <h1 className="animate-slide-up-fade mt-10 text-2xl font-medium [--offset:10px] [animation-delay:250ms] [animation-duration:1s] [animation-fill-mode:both]">
           Welcome to PIMMS
         </h1>
         <p className="animate-slide-up-fade mt-2 text-neutral-500 [--offset:10px] [animation-delay:500ms] [animation-duration:1s] [animation-fill-mode:both]">
-          Turn every click into lead and revenue
+          Turn more clicks into sales
         </p>
         <div className="animate-slide-up-fade mt-10 w-full [--offset:10px] [animation-delay:750ms] [animation-duration:1s] [animation-fill-mode:both]">
           <NextButton text="Get started" step="workspace" />

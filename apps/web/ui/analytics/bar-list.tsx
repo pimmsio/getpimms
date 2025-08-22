@@ -21,6 +21,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { areEqual, FixedSizeList } from "react-window";
 import { AnalyticsContext } from "./analytics-provider";
 import LinkPreviewTooltip from "./link-preview";
+import { UrlDecompositionTooltip } from "../shared/url-decomposition-tooltip";
 
 export default function BarList({
   tab,
@@ -209,98 +210,17 @@ export function LineItem({
               {lineItem}
             </Tooltip>
           ) : tab === "urls" && linkData ? (
-            <Tooltip
-              content={
-                <div 
-                  className="w-64 p-3 bg-white rounded shadow-xl border-0"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="mb-2 font-semibold text-gray-900 text-sm">
-                    {linkData ? (
-                      <a 
-                        href={linkConstructor({ domain: linkData.domain, key: linkData.key })}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 underline truncate block"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {linkConstructor({ domain: linkData.domain, key: linkData.key, pretty: true })}
-                      </a>
-                    ) : (
-                      <span className="truncate block text-gray-400">No short link</span>
-                    )}
-                  </div>
-                  
-                  {/* Links section */}
-                  <div className="space-y-1.5">
-                    {/* Destination URL */}
-                    {linkData.url && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500 font-medium">Destination</span>
-                        <a
-                          href={linkData.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-blue-600 hover:text-blue-800 underline max-w-32 truncate"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {linkData.url.length > 25 ? `${linkData.url.substring(0, 25)}...` : linkData.url}
-                        </a>
-                      </div>
-                    )}
-                    
-                    {/* iOS deeplink */}
-                    {linkData.ios && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500 font-medium">iOS</span>
-                        <a
-                          href={linkData.ios}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-blue-600 hover:text-blue-800 underline max-w-32 truncate"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {linkData.ios.length > 25 ? `${linkData.ios.substring(0, 25)}...` : linkData.ios}
-                        </a>
-                      </div>
-                    )}
-                    
-                    {/* Android deeplink */}
-                    {linkData.android && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500 font-medium">Android</span>
-                        <a
-                          href={linkData.android}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-blue-600 hover:text-blue-800 underline max-w-32 truncate"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {linkData.android.length > 25 ? `${linkData.android.substring(0, 25)}...` : linkData.android}
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              }
-            >
-              {lineItem}
-            </Tooltip>
+            <UrlDecompositionTooltip url={linkData.url || title}>
+              <div>
+                {lineItem}
+              </div>
+            </UrlDecompositionTooltip>
           ) : tab === "urls" ? (
-            <Tooltip
-              content={
-                <div 
-                  className="w-64 p-3 bg-white rounded shadow-xl border-0"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <LinkifyTooltipContent tooltipClassName="max-w-md">
-                    {title}
-                  </LinkifyTooltipContent>
-                </div>
-              }
-            >
-              {lineItem}
-            </Tooltip>
+            <UrlDecompositionTooltip url={title}>
+              <div>
+                {lineItem}
+              </div>
+            </UrlDecompositionTooltip>
           ) : (
             lineItem
           )}

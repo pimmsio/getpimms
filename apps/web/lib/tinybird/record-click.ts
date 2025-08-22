@@ -3,6 +3,7 @@ import {
   LOCALHOST_IP,
   capitalize,
   getDomainWithoutWWW,
+  nanoid,
 } from "@dub/utils";
 import { EU_COUNTRY_CODES } from "@dub/utils/src/constants/countries";
 import { geolocation, ipAddress } from "@vercel/functions";
@@ -13,7 +14,6 @@ import {
   detectBot,
   detectQr,
   getFinalUrlForRecordClick,
-  getIdentityHash,
 } from "../middleware/utils";
 import { conn } from "../planetscale";
 import { WorkspaceProps } from "../types";
@@ -38,6 +38,7 @@ export async function recordClick({
   timestamp,
   referrer,
   trackConversion,
+  anonymousId,
 }: {
   req: Request;
   clickId: string;
@@ -51,6 +52,7 @@ export async function recordClick({
   timestamp?: string;
   referrer?: string;
   trackConversion?: boolean;
+  anonymousId?: string;
 }) {
   const searchParams = new URL(req.url).searchParams;
 
@@ -99,15 +101,14 @@ export async function recordClick({
   const ua = userAgent(req);
   const referer = referrer || req.headers.get("referer");
 
-  const identity_hash = await getIdentityHash(req);
-
   const finalUrl = url ? getFinalUrlForRecordClick({ req, url }) : "";
 
   console.log("record click final Url", finalUrl, url, clickId, linkId);
+  console.log("anonymous ID for tracking:", anonymousId);
 
   const clickData = {
     timestamp: timestamp || new Date(Date.now()).toISOString(),
-    identity_hash,
+    identity_hash: anonymousId || `anon_${nanoid(16)}`, // Always ensure non-null anonymousId
     click_id: clickId,
     link_id: linkId,
     alias_link_id: "",
@@ -141,7 +142,7 @@ export async function recordClick({
 
   const hasWebhooks = webhookIds && webhookIds.length > 0;
 
-  const [, , , , workspaceRows] = await Promise.allSettled([
+  const [, , , , workspaceRows, ] = await Promise.allSettled([
     fetch(
       `${process.env.TINYBIRD_API_URL}/v0/events?name=dub_click_events&wait=true`,
       {
@@ -182,6 +183,14 @@ export async function recordClick({
       ? conn.execute(
           "SELECT usage, usageLimit FROM Project WHERE id = ? LIMIT 1",
           [workspaceId],
+        )
+      : null,
+    
+    // Increment customer click count and update last event if customer exists with this anonymousId
+    anonymousId
+      ? conn.execute(
+          "UPDATE Customer SET totalClicks = totalClicks + 1, lastEventAt = NOW() WHERE anonymousId = ?",
+          [anonymousId],
         )
       : null,
   ]);

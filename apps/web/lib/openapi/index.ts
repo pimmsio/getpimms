@@ -25,7 +25,7 @@ export const document = createDocument({
   info: {
     title: "PIMMS API",
     description:
-      "PIMMS | Turn every click into lead and revenue",
+      "PIMMS | Turn more clicks into sales",
     version: "0.0.1",
     contact: {
       name: "PIMMS Support",

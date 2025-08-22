@@ -145,7 +145,7 @@ function PartnerDetailsSheetContent({ partner }: PartnerDetailsSheetProps) {
               Analytics
             </Link>
             <Link
-              href={`/${slug}/events?programId=${program!.id}&partnerId=${partner.id}&interval=all`}
+              href={`/${slug}/conversions?programId=${program!.id}&partnerId=${partner.id}&interval=all`}
               target="_blank"
               className={cn(
                 buttonVariants({ variant: "secondary" }),
@@ -328,7 +328,7 @@ const PartnerLinks = ({ partner }: { partner: EnrolledPartnerProps }) => {
         minSize: 1,
         cell: ({ row }) => (
           <Link
-            href={`/${slug}/events?event=clicks&interval=all&domain=${row.original.domain}&key=${row.original.key}`}
+            href={`/${slug}/conversions?event=clicks&interval=all&domain=${row.original.domain}&key=${row.original.key}`}
             target="_blank"
             className="block w-full cursor-alias decoration-dotted hover:underline"
           >
@@ -342,7 +342,7 @@ const PartnerLinks = ({ partner }: { partner: EnrolledPartnerProps }) => {
         minSize: 1,
         cell: ({ row }) => (
           <Link
-            href={`/${slug}/events?event=leads&interval=all&domain=${row.original.domain}&key=${row.original.key}`}
+            href={`/${slug}/conversions?event=leads&interval=all&domain=${row.original.domain}&key=${row.original.key}`}
             target="_blank"
             className="block w-full cursor-alias decoration-dotted hover:underline"
           >
@@ -356,7 +356,7 @@ const PartnerLinks = ({ partner }: { partner: EnrolledPartnerProps }) => {
         minSize: 1,
         cell: ({ row }) => (
           <Link
-            href={`/${slug}/events?event=sales&interval=all&domain=${row.original.domain}&key=${row.original.key}`}
+            href={`/${slug}/conversions?event=sales&interval=all&domain=${row.original.domain}&key=${row.original.key}`}
             target="_blank"
             className="block w-full cursor-alias decoration-dotted hover:underline"
           >
@@ -375,7 +375,7 @@ const PartnerLinks = ({ partner }: { partner: EnrolledPartnerProps }) => {
         minSize: 1,
         cell: ({ row }) => (
           <Link
-            href={`/${slug}/events?event=sales&interval=all&domain=${row.original.domain}&key=${row.original.key}`}
+            href={`/${slug}/conversions?event=sales&interval=all&domain=${row.original.domain}&key=${row.original.key}`}
             target="_blank"
             className="block w-full cursor-alias decoration-dotted hover:underline"
           >

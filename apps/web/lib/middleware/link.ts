@@ -217,8 +217,15 @@ export default async function LinkMiddleware(
   }
 
   const pimmsIdCookieName = `pimms_id_${domain}_${key}`;
+  const pimmsAnonymousIdCookieName = `pimms_anonymous_id`;
 
   const cookieStore = cookies();
+
+  // Get or create persistent anonymous visitor ID
+  let anonymousId = cookieStore.get(pimmsAnonymousIdCookieName)?.value;
+  if (!anonymousId) {
+    anonymousId = `anon_${nanoid(16)}`;
+  }
 
   let clickId = cookieStore.get(pimmsIdCookieName)?.value;
 
@@ -241,6 +248,8 @@ export default async function LinkMiddleware(
     pimmsIdCookieName,
     pimmsIdCookieValue: clickId,
     pimmsTestUrlValue: testUrl,
+    pimmsAnonymousIdCookieName,
+    pimmsAnonymousIdCookieValue: anonymousId,
   };
 
   // for root domain links, if there's no destination URL, rewrite to placeholder page
@@ -256,6 +265,7 @@ export default async function LinkMiddleware(
         webhookIds,
         workspaceId,
         trackConversion,
+        anonymousId,
       }),
     );
 
@@ -310,6 +320,7 @@ export default async function LinkMiddleware(
         webhookIds,
         workspaceId,
         trackConversion,
+        anonymousId,
       }),
     );
 
@@ -355,6 +366,7 @@ export default async function LinkMiddleware(
         webhookIds,
         workspaceId,
         trackConversion,
+        anonymousId,
       }),
     );
 
@@ -392,6 +404,7 @@ export default async function LinkMiddleware(
         webhookIds,
         workspaceId,
         trackConversion,
+        anonymousId,
       }),
     );
 
@@ -431,6 +444,7 @@ export default async function LinkMiddleware(
         webhookIds,
         workspaceId,
         trackConversion,
+        anonymousId,
       }),
     );
 
@@ -464,6 +478,7 @@ export default async function LinkMiddleware(
         webhookIds,
         workspaceId,
         trackConversion,
+        anonymousId,
       }),
     );
 
@@ -497,6 +512,7 @@ export default async function LinkMiddleware(
         webhookIds,
         workspaceId,
         trackConversion,
+        anonymousId,
       }),
     );
 
@@ -543,6 +559,7 @@ export default async function LinkMiddleware(
         webhookIds,
         workspaceId,
         trackConversion,
+        anonymousId,
       }),
     );
 
@@ -595,6 +612,7 @@ export default async function LinkMiddleware(
         webhookIds,
         workspaceId,
         trackConversion,
+        anonymousId,
       }),
     );
 
@@ -647,6 +665,7 @@ export default async function LinkMiddleware(
         webhookIds,
         workspaceId,
         trackConversion,
+        anonymousId,
       }),
     );
 

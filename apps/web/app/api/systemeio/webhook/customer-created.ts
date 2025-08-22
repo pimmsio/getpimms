@@ -77,7 +77,7 @@ export async function customerCreated(body: any) {
   const leadData = {
     ...clickData,
     event_id: nanoid(16),
-    event_name: "New customer",
+    event_name: "New lead",
     customer_id: customer.id,
   };
 
@@ -111,11 +111,11 @@ export async function customerCreated(body: any) {
     workspace,
     data: transformLeadEventData({
       ...clickData,
-      eventName: "New customer",
+      eventName: "New lead",
       link: linkUpdated,
       customer,
     }),
   });
 
-  return `Systeme.io customer created: ${customer.id}`;
+  return `Systeme.io lead created: ${customer.id}`;
 }
