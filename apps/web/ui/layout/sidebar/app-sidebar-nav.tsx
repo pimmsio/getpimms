@@ -76,19 +76,14 @@ const NAV_AREAS: SidebarNavAreas<{
             href: buildAnalyticsUrl(`/${slug}/analytics`),
           },
           {
-            name: "Links Report",
+            name: "Conversions",
+            icon: Target,
+            href: buildAnalyticsUrl(`/${slug}/conversions`, { event: "leads" }),
+          },
+          {
+            name: "Link Insights",
             icon: Table,
             href: buildAnalyticsUrl(`/${slug}/insights`),
-          },
-          {
-            name: "Leads Events",
-            icon: Target,
-            href: buildAnalyticsUrl(`/${slug}/leads`, { event: "leads" }),
-          },
-          {
-            name: "Sales Events",
-            icon: CoinsIcon,
-            href: buildAnalyticsUrl(`/${slug}/sales`, { event: "sales" }),
           },
           {
             name: "Integrations",

@@ -15,7 +15,7 @@ import {
 import { fetcher, formatDate, nFormatter } from "@dub/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { Users } from "lucide-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import useSWR from "swr";
 import { toast } from "sonner";
 import { useWorkspaceFilters } from "./use-workspace-filters";
@@ -55,17 +55,12 @@ export default function UserReportsTable() {
   const sortBy = searchParams.get("sortBy") || "createdAt";
   const sortOrder = searchParams.get("sortOrder") === "asc" ? "asc" : "desc";
   const search = searchParams.get("search") || "";
-  const plan = searchParams.get("plan") || "free"; // Default to free plan
+  const plan = searchParams.get("plan") || "";
 
   const { pagination, setPagination } = usePagination();
   const { filters, activeFilters, onSelect, onRemove, onRemoveAll } = useWorkspaceFilters();
 
-  // Initialize plan filter if not set
-  useEffect(() => {
-    if (!searchParams.get("plan")) {
-      queryParams({ set: { plan: "free" } });
-    }
-  }, [searchParams, queryParams]);
+  
 
   const columns = useMemo<ColumnDef<WorkspaceReport, any>[]>(
     () => [

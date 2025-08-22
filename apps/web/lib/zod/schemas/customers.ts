@@ -44,6 +44,19 @@ export const createCustomerBodySchema = z.object({
   externalId: z
     .string()
     .describe("Unique identifier for the customer in the client's app."),
+  anonymousId: z
+    .string()
+    .nullish()
+    .describe("Anonymous ID for the customer for history tracking."),
+  totalClicks: z
+    .number()
+    .optional()
+    .default(0)
+    .describe("Total number of clicks for this customer."),
+  lastEventAt: z
+    .date()
+    .nullish()
+    .describe("Last event timestamp (click/lead/sale)."),
 });
 
 export const updateCustomerBodySchema = createCustomerBodySchema.partial();
@@ -61,6 +74,9 @@ export const CustomerSchema = z.object({
   email: z.string().nullish().describe("Email of the customer."),
   avatar: z.string().nullish().describe("Avatar URL of the customer."),
   country: z.string().nullish().describe("Country of the customer."),
+  anonymousId: z.string().nullish().describe("Anonymous ID for the customer for history tracking."),
+  totalClicks: z.number().optional().default(0).describe("Total number of clicks for this customer."),
+  lastEventAt: z.date().nullish().describe("Last event timestamp (click/lead/sale)."),
   createdAt: z.date().describe("The date the customer was created."),
 });
 

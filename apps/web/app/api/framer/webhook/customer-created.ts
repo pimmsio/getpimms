@@ -5,7 +5,7 @@ import { sendWorkspaceWebhook } from "@/lib/webhook/publish";
 import { transformLeadEventData } from "@/lib/webhook/transform";
 import { prisma } from "@dub/prisma";
 import { nanoid } from "@dub/utils";
-import { getFirstAvailableField } from "@/lib/webhook/custom";
+import { computeAnonymousCustomerFields, getFirstAvailableField } from "@/lib/webhook/custom";
 import { Link } from "@prisma/client";
 
 export async function customerCreated(data: any, pimmsId: string, link: Link, clickData: any) {
@@ -29,7 +29,8 @@ export async function customerCreated(data: any, pimmsId: string, link: Link, cl
     (firstName && lastName && `${firstName} ${lastName}`) ||
     firstName;
 
-  console.log("fullname", name);
+  const { anonymousId, totalClicks, lastEventAt } =
+    await computeAnonymousCustomerFields(clickData);
 
   const customer = await prisma.customer.create({
     data: {
@@ -42,7 +43,10 @@ export async function customerCreated(data: any, pimmsId: string, link: Link, cl
       projectId: link.projectId,
       linkId: link.id,
       clickId: pimmsId,
-      clickedAt: new Date(clickData.timestamp + "Z")
+      clickedAt: new Date(clickData.timestamp + "Z"),
+      anonymousId,
+      totalClicks,
+      lastEventAt,
     },
   });
 

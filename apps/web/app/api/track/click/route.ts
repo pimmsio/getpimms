@@ -20,7 +20,7 @@ const CORS_HEADERS = {
 // POST /api/track/click – Track a click event from the client-side
 export const POST = withAxiom(async (req: AxiomRequest) => {
   try {
-    const { domain, key, url, referrer } = await parseRequestBody(req);
+    const { domain, key, url, referrer, anonymousId } = await parseRequestBody(req);
 
     if (!domain || !key) {
       throw new DubApiError({
@@ -63,6 +63,7 @@ export const POST = withAxiom(async (req: AxiomRequest) => {
           skipRatelimit: true,
           ...(referrer && { referrer }),
           trackConversion: link.trackConversion,
+          anonymousId,
         }),
       );
     }

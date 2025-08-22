@@ -978,7 +978,7 @@ export default function Toggle({
                               window.open("https://d.to/events");
                             } else {
                               router.push(
-                                `/${slug}/events${getQueryString({}, { exclude: ["view"] })}`,
+                                `/${slug}/conversions${getQueryString({}, { exclude: ["view"] })}`,
                               );
                             }
                           }}

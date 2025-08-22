@@ -4,6 +4,7 @@ import { notifyPartnerSale } from "@/lib/api/partners/notify-partner-sale";
 import { createPartnerCommission } from "@/lib/partners/create-partner-commission";
 import { getClickEvent, recordLead, recordSale } from "@/lib/tinybird";
 import { redis } from "@/lib/upstash";
+import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
 import { sendWorkspaceWebhook } from "@/lib/webhook/publish";
 import {
   transformLeadEventData,
@@ -63,6 +64,9 @@ export async function saleCreated(body: any) {
     },
   });
 
+  const { anonymousId, totalClicks, lastEventAt } =
+    await computeAnonymousCustomerFields(clickEvent);
+
   const payload = {
     name: customerName,
     email: customerEmail,
@@ -72,6 +76,9 @@ export async function saleCreated(body: any) {
     linkId,
     country: clickEvent.country,
     clickedAt: new Date(clickEvent.timestamp + "Z"),
+    anonymousId,
+    totalClicks,
+    lastEventAt,
   };
 
   if (existingCustomer) {

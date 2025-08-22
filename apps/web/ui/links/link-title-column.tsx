@@ -44,6 +44,7 @@ import { useSearchParams } from "next/navigation";
 import { memo, PropsWithChildren, useContext, useRef, useState } from "react";
 import { FolderIcon } from "../folders/folder-icon";
 import { useLinkBuilder } from "../modals/link-builder";
+import { UrlDecompositionTooltip } from "../shared/url-decomposition-tooltip";
 import { CommentsBadge } from "./comments-badge";
 import { useLinkSelection } from "./link-selection-provider";
 import { ResponseLink } from "./links-container";
@@ -336,15 +337,16 @@ const Details = memo(
             ))}
           {displayProperties.includes("url") ? (
             url ? (
-              <a
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                title={url}
-                className="truncate text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2"
-              >
-                {getPrettyUrl(url)}
-              </a>
+              <UrlDecompositionTooltip url={url}>
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="truncate text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2"
+                >
+                  {getPrettyUrl(url)}
+                </a>
+              </UrlDecompositionTooltip>
             ) : (
               <span className="truncate text-neutral-400">
                 No URL configured

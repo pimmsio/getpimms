@@ -6,10 +6,13 @@ model Customer {
   externalId       String?
   stripeCustomerId String? @unique
 
-  linkId    String?
-  clickId   String?
-  clickedAt DateTime?
-  country   String?
+  linkId         String?
+  clickId        String?
+  clickedAt      DateTime?
+  country        String?
+  anonymousId    String?
+  totalClicks    Int       @default(0)
+  lastEventAt    DateTime?
 
   projectId        String
   projectConnectId String?

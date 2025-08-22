@@ -5,7 +5,7 @@ import { PageContent } from "@/ui/layout/page-content";
 import { Suspense } from "react";
 import AnalyticsClient from "../analytics/client";
 
-export default function WorkspaceAnalyticsEvents() {
+export default function WorkspaceAnalyticsConversions() {
   return (
     <Suspense fallback={<LayoutLoader />}>
       <PageContent title="Conversions">

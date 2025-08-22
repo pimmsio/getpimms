@@ -1,6 +1,7 @@
 import { ArrowTurnRight2, Flag2, Globe } from "@dub/ui/icons";
 import { cn, getPrettyUrl, punycode } from "@dub/utils";
 import { Star } from "lucide-react";
+import { UrlDecompositionTooltip } from "../shared/url-decomposition-tooltip";
 
 export function DomainCardTitleColumn({
   domain,
@@ -67,14 +68,16 @@ export function DomainCardTitleColumn({
                 <ArrowTurnRight2 className="h-3 w-3 text-neutral-400" />
                 {url !== undefined ? (
                   url ? (
-                    <a
-                      href={url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="truncate text-neutral-500 transition-all hover:text-neutral-700 hover:underline hover:underline-offset-2"
-                    >
-                      {getPrettyUrl(url)}
-                    </a>
+                    <UrlDecompositionTooltip url={url}>
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="truncate text-neutral-500 transition-all hover:text-neutral-700 hover:underline hover:underline-offset-2"
+                      >
+                        {getPrettyUrl(url)}
+                      </a>
+                    </UrlDecompositionTooltip>
                   ) : (
                     <span className="truncate text-neutral-400">
                       No redirect configured

@@ -138,15 +138,17 @@ export function useMetatags({ enabled = true }: { enabled?: boolean } = {}) {
       // New links: fetch if URL exists
       shouldAutoFetch = debouncedUrl.length > 0;
     } else {
-      // Existing links: 
-      // - Don't fetch on first render (show saved values)
-      // - Only fetch if URL changed after initialization
-      if (!hasInitialized.current) {
-        hasInitialized.current = true;
-        shouldAutoFetch = false; // Don't fetch on first render
-      } else {
-        shouldAutoFetch = urlChanged;
-      }
+          // Existing links: 
+    // - Don't fetch on first render IF metadata exists (show saved values)
+    // - Auto-fetch if metadata is missing (null/empty) OR URL changed after initialization
+    if (!hasInitialized.current) {
+      hasInitialized.current = true;
+      // Auto-fetch if metadata is missing (null or empty)
+      const hasMetadata = title || description || image;
+      shouldAutoFetch = !hasMetadata && debouncedUrl.length > 0;
+    } else {
+      shouldAutoFetch = urlChanged;
+    }
     }
 
     // Update previous URL AFTER the decision (doIndex handled in separate useEffect)

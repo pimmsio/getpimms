@@ -8,6 +8,7 @@ import { leadEventSchemaTB } from "@/lib/zod/schemas/leads";
 import { prisma } from "@dub/prisma";
 import { nanoid } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
+import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
 import { orderSchema } from "./schema";
 
 export async function createShopifyLead({
@@ -30,6 +31,9 @@ export async function createShopifyLead({
   const { link_id: linkId, country, timestamp } = clickData;
 
   // create customer
+  const { anonymousId, totalClicks, lastEventAt } =
+    await computeAnonymousCustomerFields(clickData);
+
   const customer = await prisma.customer.create({
     data: {
       id: createId({ prefix: "cus_" }),
@@ -42,6 +46,9 @@ export async function createShopifyLead({
       clickId,
       linkId,
       country,
+      anonymousId,
+      totalClicks,
+      lastEventAt,
     },
   });
 

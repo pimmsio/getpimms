@@ -8,7 +8,7 @@ export const GET = withAdmin(async ({ searchParams }) => {
   try {
     const {
       search,
-      plan = "free",
+      plan,
       sortBy = "createdAt",
       sortOrder = "desc",
       page = "1",

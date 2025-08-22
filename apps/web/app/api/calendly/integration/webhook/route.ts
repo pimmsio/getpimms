@@ -9,6 +9,7 @@ import { Customer } from "@prisma/client";
 import { waitUntil } from "@vercel/functions";
 import { log } from "@dub/utils";
 import { NextResponse } from "next/server";
+import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
 
 // POST /api/calendly/webhook — handle Calendly webhooks
 export const POST = async (req: Request) => {
@@ -138,6 +139,8 @@ export const POST = async (req: Request) => {
 
     // Create a function to handle customer upsert to avoid duplication
     const upsertCustomer = async () => {
+      const { anonymousId, totalClicks, lastEventAt } =
+        await computeAnonymousCustomerFields(clickData);
       return prisma.customer.upsert({
         where: {
           projectId_externalId: {
@@ -156,6 +159,9 @@ export const POST = async (req: Request) => {
           linkId: clickData.link_id,
           country: clickData.country,
           clickedAt: new Date(clickData.timestamp + "Z"),
+          anonymousId,
+          totalClicks,
+          lastEventAt,
         },
         update: {}, // no updates needed if the customer exists
       });
