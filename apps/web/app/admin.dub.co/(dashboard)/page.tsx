@@ -10,30 +10,46 @@ export const metadata = constructMetadata({
 
 export default function AdminPage() {
   return (
-    <div className="mx-auto flex w-full max-w-screen-sm flex-col divide-y-[6px] divide-neutral-100 overflow-auto bg-white">
-      <div className="flex flex-col space-y-4 px-5 py-10">
-        <h2 className="text-xl font-semibold">Impersonate User</h2>
-        <p className="text-sm text-neutral-500">Get a login link for a user</p>
-        <ImpersonateUser />
+    <div className="min-h-screen w-full">
+      <div className="sticky top-0 z-20 border-b border-neutral-100 bg-white/90 backdrop-blur-sm">
+        <div className="px-4 py-4">
+          <h1 className="text-2xl font-semibold text-neutral-900">
+            Admin Dashboard
+          </h1>
+          <p className="text-sm text-neutral-600 mt-1">
+            Manage system settings and user operations
+          </p>
+        </div>
       </div>
-      <div className="flex flex-col space-y-4 px-5 py-10">
-        <h2 className="text-xl font-semibold">Impersonate Workspace</h2>
-        <p className="text-sm text-neutral-500">
-          Get a login link for the owner of a workspace
-        </p>
-        <ImpersonateWorkspace />
-      </div>
-      <div className="flex flex-col space-y-4 px-5 py-10">
-        <h2 className="text-xl font-semibold">Refresh Domain</h2>
-        <p className="text-sm text-neutral-500">
-          Remove and re-add domain from Vercel
-        </p>
-        <RefreshDomain />
-      </div>
-      <div className="flex flex-col space-y-4 px-5 py-10">
-        <h2 className="text-xl font-semibold">Ban Link</h2>
-        <p className="text-sm text-neutral-500">Ban a pim.ms link</p>
-        <BanLink />
+      <div className="p-6">
+        <div className="mx-auto max-w-4xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-lg border border-neutral-200 p-6">
+              <h2 className="text-xl font-semibold mb-2">Impersonate User</h2>
+              <p className="text-sm text-neutral-500 mb-4">Get a login link for a user</p>
+              <ImpersonateUser />
+            </div>
+            <div className="bg-white rounded-lg border border-neutral-200 p-6">
+              <h2 className="text-xl font-semibold mb-2">Impersonate Workspace</h2>
+              <p className="text-sm text-neutral-500 mb-4">
+                Get a login link for the owner of a workspace
+              </p>
+              <ImpersonateWorkspace />
+            </div>
+            <div className="bg-white rounded-lg border border-neutral-200 p-6">
+              <h2 className="text-xl font-semibold mb-2">Refresh Domain</h2>
+              <p className="text-sm text-neutral-500 mb-4">
+                Remove and re-add domain from Vercel
+              </p>
+              <RefreshDomain />
+            </div>
+            <div className="bg-white rounded-lg border border-neutral-200 p-6">
+              <h2 className="text-xl font-semibold mb-2">Ban Link</h2>
+              <p className="text-sm text-neutral-500 mb-4">Ban a pim.ms link</p>
+              <BanLink />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

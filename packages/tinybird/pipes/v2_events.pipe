@@ -52,7 +52,7 @@ SQL >
         {% if defined(device) %} AND device = {{ device }} {% end %}
         {% if defined(browser) %} AND browser = {{ browser }} {% end %}
         {% if defined(os) %} AND os = {{ os }} {% end %}
-        {% if defined(referer) %} AND referer = {{ referer }} {% end %}
+        {% if defined(referer) %} AND referer IN splitByChar(',', {{ referer }}) {% end %}
         {% if defined(refererUrl) %} AND splitByString('?', referer_url)[1] = {{ refererUrl }} {% end %}
         {% if defined(utm_source) %}
             AND url LIKE concat('%utm_source=', {{ String(utm_source) }}, '%')
@@ -102,7 +102,7 @@ SQL >
         {% if defined(device) %} AND device = {{ device }} {% end %}
         {% if defined(browser) %} AND browser = {{ browser }} {% end %}
         {% if defined(os) %} AND os = {{ os }} {% end %}
-        {% if defined(referer) %} AND referer = {{ referer }} {% end %}
+        {% if defined(referer) %} AND referer IN splitByChar(',', {{ referer }}) {% end %}
         {% if defined(refererUrl) %} AND splitByString('?', referer_url)[1] = {{ refererUrl }} {% end %}
         {% if defined(utm_source) %} AND url LIKE concat('%utm_source=', {{ String(utm_source) }}, '%') {% end %}
         {% if defined(utm_medium) %} AND url LIKE concat('%utm_medium=', {{ String(utm_medium) }}, '%') {% end %}
@@ -143,7 +143,7 @@ SQL >
         {% if defined(device) %} AND device = {{ device }} {% end %}
         {% if defined(browser) %} AND browser = {{ browser }} {% end %}
         {% if defined(os) %} AND os = {{ os }} {% end %}
-        {% if defined(referer) %} AND referer = {{ referer }} {% end %}
+        {% if defined(referer) %} AND referer IN splitByChar(',', {{ referer }}) {% end %}
         {% if defined(refererUrl) %} AND splitByString('?', referer_url)[1] = {{ refererUrl }} {% end %}
         {% if defined(utm_source) %} AND url LIKE concat('%utm_source=', {{ String(utm_source) }}, '%') {% end %}
         {% if defined(utm_medium) %} AND url LIKE concat('%utm_medium=', {{ String(utm_medium) }}, '%') {% end %}

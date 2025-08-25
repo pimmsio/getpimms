@@ -66,6 +66,7 @@ export const AnalyticsContext = createContext<{
   showConversions?: boolean;
   requiresUpgrade?: boolean;
   dashboardProps?: AnalyticsDashboardProps;
+  workspace?: any;
 }>({
   basePath: "",
   baseApiPath: "",
@@ -82,6 +83,7 @@ export const AnalyticsContext = createContext<{
   showConversions: false,
   requiresUpgrade: false,
   dashboardProps: undefined,
+  workspace: undefined,
 });
 
 export default function AnalyticsProvider({
@@ -94,7 +96,8 @@ export default function AnalyticsProvider({
 }>) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { id: workspaceId, slug, domains } = useWorkspace();
+  const workspace = useWorkspace();
+  const { id: workspaceId, slug, domains } = workspace;
 
   const [requiresUpgrade, setRequiresUpgrade] = useState(false);
 
@@ -354,6 +357,7 @@ export default function AnalyticsProvider({
         dashboardProps,
         showConversions, // Whether to show conversions tabs/data
         requiresUpgrade, // whether an upgrade is required to perform the query
+        workspace: adminPage ? undefined : workspace, // workspace data (undefined for admin)
       }}
     >
       {children}

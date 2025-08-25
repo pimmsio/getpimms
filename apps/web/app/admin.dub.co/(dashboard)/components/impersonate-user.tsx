@@ -70,7 +70,7 @@ const Form = () => {
   const { pending } = useFormStatus();
 
   return (
-    <div className="relative flex w-full rounded-md shadow-sm">
+    <div className="relative flex w-full rounded shadow-sm">
       <input
         name="email"
         id="email"
@@ -79,7 +79,7 @@ const Form = () => {
         disabled={pending}
         autoComplete="off"
         className={cn(
-          "block w-full rounded-md border-neutral-300 text-sm text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500",
+          "block w-full rounded border-neutral-300 text-sm text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0",
           pending && "bg-neutral-100",
         )}
         placeholder="stey@vercel.com"
