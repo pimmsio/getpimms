@@ -327,7 +327,7 @@ export function PartnerTable() {
           cardContent={() => (
             <>
               <Users className="size-4 text-neutral-700" />
-              <div className="h-2.5 w-24 min-w-0 rounded-sm bg-neutral-200" />
+              <div className="h-2.5 w-24 min-w-0 rounded bg-neutral-200" />
             </>
           )}
         />
@@ -513,7 +513,7 @@ function MenuItem({
   return (
     <Command.Item
       className={cn(
-        "flex cursor-pointer select-none items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm",
+        "flex cursor-pointer select-none items-center gap-2 whitespace-nowrap rounded p-2 text-sm",
         "data-[selected=true]:bg-neutral-100",
         text,
       )}

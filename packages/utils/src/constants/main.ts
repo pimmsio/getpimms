@@ -51,6 +51,12 @@ export const PARTNERS_HOSTNAMES = new Set([
   "partners.localhost:8888",
 ]);
 
+export const CBE_HOSTNAMES = new Set([
+  `cbe.${process.env.NEXT_PUBLIC_APP_DOMAIN}`,
+  `cbe-staging.${process.env.NEXT_PUBLIC_APP_DOMAIN}`,
+  "cbe.localhost:8888",
+]);
+
 export const PARTNERS_DOMAIN =
   process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
     ? `https://partners.${process.env.NEXT_PUBLIC_APP_DOMAIN}`
@@ -65,6 +71,20 @@ export const PARTNERS_DOMAIN_WITH_NGROK =
       ? `https://partners-staging.${process.env.NEXT_PUBLIC_APP_DOMAIN}`
       : process.env.NEXT_PUBLIC_NGROK_URL || "http://partners.localhost:8888";
 
+export const CBE_DOMAIN =
+  process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
+    ? `https://cbe.${process.env.NEXT_PUBLIC_APP_DOMAIN}`
+    : process.env.NEXT_PUBLIC_VERCEL_ENV === "preview"
+      ? `https://cbe-staging.${process.env.NEXT_PUBLIC_APP_DOMAIN}`
+      : "http://cbe.localhost:8888";
+
+export const CBE_DOMAIN_WITH_NGROK =
+  process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
+    ? `https://cbe.${process.env.NEXT_PUBLIC_APP_DOMAIN}`
+    : process.env.NEXT_PUBLIC_VERCEL_ENV === "preview"
+      ? `https://cbe-staging.${process.env.NEXT_PUBLIC_APP_DOMAIN}`
+      : process.env.NEXT_PUBLIC_NGROK_URL || "http://cbe.localhost:8888";
+
 export const DUB_LOGO = "https://assets.pimms.io/logo.png";
 export const DUB_QR_LOGO = "https://assets.pimms.io/logo.png";
 export const DUB_WORDMARK = "https://assets.pimms.io/wordmark-black.png";
@@ -75,4 +95,4 @@ export const ACME_WORKSPACE_ID = "clrei1gld0002vs9mzn93p8ik";
 export const LEGAL_WORKSPACE_ID = "clrflia0j0000vs7sqfhz9c7q";
 export const LEGAL_USER_ID = "clqei1lgc0000vsnzi01pbf47";
 
-export const R2_URL = process.env.STORAGE_BASE_URL as string;
+export const R2_URL = process.env.STORAGE_BASE_URL || "";

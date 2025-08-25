@@ -16,9 +16,9 @@ const cardListCardVariants = cva(
     variants: {
       variant: {
         compact:
-          "first-of-type:rounded-t-xl last-of-type:rounded-b-xl first-of-type:border-t-[6px] border-b-[6px] border-x-[6px] data-[hover-state-enabled=true]:hover:bg-neutral-50 transition-colors",
+          "border border-x-0 border-b-0 border-neutral-200 transition-[filter] data-[hover-state-enabled=true]:hover:bg-neutral-50 transition-colors",
         loose:
-          "border-[6px] border-x-0 border-b-0 border-neutral-100 transition-[filter] data-[hover-state-enabled=true]:hover:drop-shadow-card-hover",
+          "border border-x-0 border-b-0 border-neutral-200 transition-[filter] data-[hover-state-enabled=true]:hover:drop-shadow-card-hover",
       },
     },
   },

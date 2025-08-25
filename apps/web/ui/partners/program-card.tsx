@@ -36,14 +36,14 @@ export function ProgramCard({
   const card = (
     <div
       className={cn(
-        "block rounded-xl border-[2px] border-neutral-300 bg-white p-4",
+        "block rounded border border-neutral-300 bg-white p-4",
         status === "approved"
           ? "hover:drop-shadow-card-hover transition-[filter]"
           : "",
       )}
     >
       <div className="flex items-center gap-4">
-        <div className="flex size-10 items-center justify-center rounded-full border-[6px] border-neutral-100 bg-gradient-to-t from-neutral-100">
+        <div className="flex size-10 items-center justify-center rounded-full border border-neutral-100 bg-gradient-to-t from-neutral-100">
           <BlurImage
             width={96}
             height={96}
@@ -68,7 +68,7 @@ export function ProgramCard({
       {status === "approved" ? (
         <ProgramCardEarnings program={program} />
       ) : (
-        <div className="mt-4 flex h-24 items-center justify-center text-balance rounded-md border border-neutral-100 bg-neutral-50 p-5 text-center text-sm text-neutral-500">
+        <div className="mt-4 flex h-24 items-center justify-center text-balance rounded border border-neutral-100 bg-neutral-50 p-5 text-center text-sm text-neutral-500">
           {status === "pending"
             ? `Applied ${formatDate(createdAt)}`
             : status === "banned"
@@ -108,7 +108,7 @@ function ProgramCardEarnings({ program }: { program: ProgramProps }) {
     [timeseries],
   );
   return (
-    <div className="mt-4 grid h-24 grid-cols-[min-content,minmax(0,1fr)] gap-4 rounded-md border border-neutral-100 bg-neutral-50 p-5">
+    <div className="mt-4 grid h-24 grid-cols-[min-content,minmax(0,1fr)] gap-4 rounded border border-neutral-100 bg-neutral-50 p-5">
       <div>
         <div className="whitespace-nowrap text-sm text-neutral-500">
           Earnings
@@ -118,7 +118,7 @@ function ProgramCardEarnings({ program }: { program: ProgramProps }) {
             {currencyFormatter(total / 100 || 0)}
           </div>
         ) : (
-          <div className="mt-1 h-6 w-20 animate-pulse rounded-md bg-neutral-200" />
+          <div className="mt-1 h-6 w-20 animate-pulse rounded bg-neutral-200" />
         )}
       </div>
       {/* {chartData && (
@@ -132,15 +132,15 @@ function ProgramCardEarnings({ program }: { program: ProgramProps }) {
 
 export function ProgramCardSkeleton() {
   return (
-    <div className="rounded-xl border-[2px] border-neutral-300 p-4">
+    <div className="rounded border border-neutral-300 p-4">
       <div className="flex items-center gap-4">
         <div className="size-12 rounded-full bg-neutral-200" />
         <div className="flex flex-col gap-0.5">
-          <div className="h-6 w-24 min-w-0 rounded-md bg-neutral-200" />
-          <div className="h-3.5 w-20 animate-pulse rounded-md bg-neutral-200" />
+          <div className="h-6 w-24 min-w-0 rounded bg-neutral-200" />
+          <div className="h-3.5 w-20 animate-pulse rounded bg-neutral-200" />
         </div>
       </div>
-      <div className="mt-6 grid h-[90px] animate-pulse rounded-md bg-neutral-100" />
+      <div className="mt-6 grid h-[90px] animate-pulse rounded bg-neutral-100" />
     </div>
   );
 }

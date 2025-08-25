@@ -198,7 +198,7 @@ function DiscountSheetContent({
         onSubmit={handleSubmit(onSubmit)}
         className="flex h-full flex-col"
       >
-        <div className="flex items-start justify-between border-b-[6px] border-neutral-100 p-6">
+        <div className="flex items-start justify-between border-b border-neutral-100 p-6">
           <Sheet.Title className="text-xl font-semibold">
             {discount ? "Edit" : "Create"} {isDefault ? "default" : ""} discount
           </Sheet.Title>
@@ -238,7 +238,7 @@ function DiscountSheetContent({
                               <label
                                 key={label}
                                 className={cn(
-                                  "relative flex w-full cursor-pointer items-start gap-0.5 rounded-xl border-[2px] border-neutral-100 bg-white p-3 text-neutral-600 hover:bg-neutral-50",
+                                  "relative flex w-full cursor-pointer items-start gap-0.5 rounded border border-neutral-100 bg-white p-3 text-neutral-600 hover:bg-neutral-50",
                                   "transition-all duration-150",
                                   isSelected &&
                                     "border-black bg-neutral-50 text-neutral-900 ring-1 ring-black",
@@ -286,9 +286,9 @@ function DiscountSheetContent({
                             >
                               Duration
                             </label>
-                            <div className="relative mt-2 rounded-md shadow-sm">
+                            <div className="relative mt-2 rounded shadow-sm">
                               <select
-                                className="block w-full rounded-md border-neutral-300 text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                                className="block w-full rounded border-neutral-300 text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
                                 {...register("maxDuration", {
                                   valueAsNumber: true,
                                 })}
@@ -314,9 +314,9 @@ function DiscountSheetContent({
                         >
                           Discount model
                         </label>
-                        <div className="relative mt-2 rounded-md shadow-sm">
+                        <div className="relative mt-2 rounded shadow-sm">
                           <select
-                            className="block w-full rounded-md border-neutral-300 text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                            className="block w-full rounded border-neutral-300 text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
                             {...register("type")}
                           >
                             <option value="percentage">Percentage</option>
@@ -332,7 +332,7 @@ function DiscountSheetContent({
                         >
                           Amount
                         </label>
-                        <div className="relative mt-2 rounded-md shadow-sm">
+                        <div className="relative mt-2 rounded shadow-sm">
                           {type === "flat" && (
                             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-sm text-neutral-400">
                               $
@@ -340,7 +340,7 @@ function DiscountSheetContent({
                           )}
                           <input
                             className={cn(
-                              "block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                              "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                               errors.amount &&
                                 "border-red-600 focus:border-red-500 focus:ring-red-600",
                               type === "flat" ? "pl-6 pr-12" : "pr-7",
@@ -368,10 +368,10 @@ function DiscountSheetContent({
                         >
                           Stripe coupon ID
                         </label>
-                        <div className="relative mt-2 rounded-md shadow-sm">
+                        <div className="relative mt-2 rounded shadow-sm">
                           <input
                             className={cn(
-                              "block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                              "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                               errors.couponId &&
                                 "border-red-600 pr-7 focus:border-red-500 focus:ring-red-600",
                             )}
@@ -402,10 +402,10 @@ function DiscountSheetContent({
                         >
                           Stripe test coupon ID (optional)
                         </label>
-                        <div className="relative mt-2 rounded-md shadow-sm">
+                        <div className="relative mt-2 rounded shadow-sm">
                           <input
                             className={cn(
-                              "block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                              "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                             )}
                             {...register("couponTestId")}
                             placeholder="2NMXz81x"
@@ -431,7 +431,7 @@ function DiscountSheetContent({
           </div>
         </div>
 
-        <div className="flex items-center justify-between border-t-[6px] border-neutral-100 p-5">
+        <div className="flex items-center justify-between border-x border-neutral-100 p-5">
           <div>
             {discount && (
               <Button

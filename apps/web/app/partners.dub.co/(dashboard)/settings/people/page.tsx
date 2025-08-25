@@ -13,7 +13,7 @@ export default function PeopleSettings() {
           cardContent={
             <>
               <UserCheck className="size-4 text-neutral-700" />
-              <div className="h-2.5 w-28 min-w-0 rounded-sm bg-neutral-200" />
+              <div className="h-2.5 w-28 min-w-0 rounded bg-neutral-200" />
             </>
           }
           pillContent="Coming soon"

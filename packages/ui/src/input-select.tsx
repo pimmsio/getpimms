@@ -197,7 +197,7 @@ export function InputSelect({
           <Drawer.Overlay className="fixed inset-0 z-40 bg-neutral-100 bg-opacity-10 backdrop-blur" />
           <Drawer.Portal>
             <Drawer.Content
-              className="fixed bottom-0 left-0 right-0 z-50 mt-24 rounded-t-lg border-t-[6px] border-neutral-100 bg-white"
+              className="fixed bottom-0 left-0 right-0 z-50 mt-24 rounded-t-lg border-x border-neutral-100 bg-white"
               onPointerDownOutside={(e) => {
                 // Prevent dismissal when clicking inside a toast
                 if (
@@ -259,7 +259,7 @@ export function InputSelect({
               ref={floatingRefs.setFloating}
               style={floatingStyles}
               {...getFloatingProps()}
-              className="z-20 flex w-full min-w-[160px] flex-col overflow-hidden rounded-xl border-[2px] border-neutral-100 bg-white shadow-md"
+              className="z-20 flex w-full min-w-[160px] flex-col overflow-hidden rounded border border-neutral-200 bg-white shadow-md"
             >
               <div
                 ref={scrollRef}
@@ -308,7 +308,7 @@ const InputGroup = forwardRef<HTMLLabelElement, InputGroupProps>(
       <label
         ref={ref}
         className={cn(
-          "group relative flex cursor-pointer gap-2 rounded-xl border-[2px] border-neutral-100 bg-white px-1 pl-3 transition-all focus-within:border-neutral-500 focus-within:ring-4 focus-within:ring-neutral-200",
+          "group relative flex cursor-pointer gap-2 rounded border border-neutral-200 bg-white px-1 pl-3 transition-all focus-within:border-neutral-500 focus-within:ring-0",
           className,
         )}
         {...rest}
@@ -359,7 +359,7 @@ const CommandInput = forwardRef<HTMLInputElement>((_, ref) => {
         }
       }}
       disabled={disabled}
-      className="block w-full truncate rounded-md border-none px-0 text-base text-neutral-900 placeholder-neutral-400 outline-none outline-0 transition-all duration-300 focus:ring-0 md:text-sm"
+      className="block w-full truncate rounded border-none px-0 text-base text-neutral-900 placeholder-neutral-400 outline-none outline-0 transition-all duration-300 focus:ring-0 md:text-sm"
       autoCapitalize="none"
     />
   );
@@ -414,7 +414,7 @@ function SelectorList({ items }: { items: InputSelectItemProps[] }) {
         setInputValue(item.value);
         setOpenCommandList(false);
       }}
-      className="group flex cursor-pointer items-center justify-between rounded-md px-4 py-2 text-sm text-neutral-900 hover:bg-neutral-100 hover:text-neutral-900 active:bg-neutral-200 aria-disabled:cursor-not-allowed aria-disabled:opacity-75 aria-disabled:hover:bg-white aria-selected:bg-neutral-100 aria-selected:text-neutral-900"
+      className="group flex cursor-pointer items-center justify-between rounded px-4 py-2 text-sm text-neutral-900 hover:bg-neutral-100 hover:text-neutral-900 active:bg-neutral-200 aria-disabled:cursor-not-allowed aria-disabled:opacity-75 aria-disabled:hover:bg-white aria-selected:bg-neutral-100 aria-selected:text-neutral-900"
     >
       <div className="flex items-center space-x-2">
         {item.icon ||
@@ -430,7 +430,7 @@ function SelectorList({ items }: { items: InputSelectItemProps[] }) {
         <p
           className={cn(
             "whitespace-nowrap py-0.5 text-sm",
-            item.color && "rounded-md px-2",
+            item.color && "rounded px-2",
             item.color === "red" && "bg-red-100 text-red-600",
             item.color === "yellow" && "bg-yellow-100 text-yellow-600",
             item.color === "green" && "bg-green-100 text-green-600",

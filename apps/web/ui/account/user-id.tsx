@@ -12,7 +12,7 @@ export default function UserId() {
 
   return (
     <>
-      <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
+      <div className="rounded border border-neutral-100 bg-white">
         <div className="relative flex flex-col space-y-6 p-5 sm:p-10">
           <div className="flex flex-col space-y-3">
             <h2 className="text-xl font-medium">Your User ID</h2>
@@ -21,15 +21,15 @@ export default function UserId() {
             </p>
           </div>
           {session?.user?.id ? (
-            <div className="flex w-full max-w-md items-center justify-between rounded-xl border-[2px] border-neutral-300 bg-white p-2">
+            <div className="flex w-full max-w-md items-center justify-between rounded border border-neutral-300 bg-white p-2">
               <p className="text-sm text-neutral-500">{session.user.id}</p>
-              <CopyButton value={session.user.id} className="rounded-md" />
+              <CopyButton value={session.user.id} className="rounded" />
             </div>
           ) : (
-            <div className="h-[2.35rem] w-full max-w-md animate-pulse rounded-md bg-neutral-200" />
+            <div className="h-[2.35rem] w-full max-w-md animate-pulse rounded bg-neutral-200" />
           )}
         </div>
-        <div className="h-14 rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-50" />
+        <div className="h-14 rounded-b border-x border-neutral-100 bg-neutral-50" />
       </div>
     </>
   );

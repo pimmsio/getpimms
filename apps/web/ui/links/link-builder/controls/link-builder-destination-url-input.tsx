@@ -14,6 +14,7 @@ import {
 import { DestinationUrlInput } from "../../destination-url-input";
 import { useAvailableDomains } from "../../use-available-domains";
 
+
 /**
  * Wraps the DestinationUrlInput component with link-builder-specific context & logic
  * @see DestinationUrlInput
@@ -21,7 +22,6 @@ import { useAvailableDomains } from "../../use-available-domains";
 export const LinkBuilderDestinationUrlInput = memo(
   forwardRef<HTMLInputElement>((_, ref) => {
     const { control, setValue, clearErrors } = useFormContext<LinkFormData>();
-    0;
 
     const { errors } = useFormState({ control, name: ["url"] });
     const [domain, key, url] = useWatch({

@@ -31,7 +31,7 @@ export default function Plan() {
         </a> */}
         <LaterButton
           next="finish"
-          className="underline-offset-4 hover:underline"
+          className="underline-offset-4 hover:underline font-bold"
         >
           Start for free, pick a plan later
         </LaterButton>

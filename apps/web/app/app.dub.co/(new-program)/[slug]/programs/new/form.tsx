@@ -141,7 +141,7 @@ export function Form() {
         <p className="mb-4 mt-1 text-sm text-neutral-600">
           A square logo that will be used in various parts of your program
         </p>
-        <div className="flex w-full items-center justify-center gap-2 rounded-xl border-[6px] border-neutral-100 p-1">
+        <div className="flex w-full items-center justify-center gap-2 rounded border border-neutral-100 p-1">
           <Controller
             control={control}
             name="logo"
@@ -149,7 +149,7 @@ export function Form() {
             render={({ field }) => (
               <FileUpload
                 accept="images"
-                className="size-14 rounded-lg"
+                className="size-14 rounded"
                 iconClassName="size-4 text-neutral-800"
                 icon={Plus}
                 variant="plain"
@@ -180,11 +180,11 @@ export function Form() {
             Default domain
           </label>
           {loading ? (
-            <div className="mt-2 h-10 w-full animate-pulse rounded-md bg-neutral-100" />
+            <div className="mt-2 h-10 w-full animate-pulse rounded bg-neutral-100" />
           ) : (
             <select
               {...register("domain", { required: true })}
-              className="mt-2 block w-full rounded-xl border-[2px] border-neutral-300 bg-white py-2 pl-3 pr-10 text-sm text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500"
+              className="mt-2 block w-full rounded border border-neutral-300 bg-white py-2 pl-3 pr-10 text-sm text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-0"
             >
               {domains?.map(({ slug }) => (
                 <option value={slug} key={slug}>
@@ -224,7 +224,7 @@ export function Form() {
               <label
                 key={type.id}
                 className={cn(
-                  "relative flex w-full cursor-pointer items-start gap-0.5 rounded-xl border-[2px] border-neutral-100 bg-white p-3 text-neutral-600 hover:bg-neutral-50",
+                  "relative flex w-full cursor-pointer items-start gap-0.5 rounded border border-neutral-100 bg-white p-3 text-neutral-600 hover:bg-neutral-50",
                   "transition-all duration-150",
                   isSelected &&
                     "border-black bg-neutral-50 text-neutral-900 ring-1 ring-black",

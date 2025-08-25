@@ -40,7 +40,7 @@ function PromptModal({
 
   return (
     <Modal showModal={showPromptModal} setShowModal={setShowPromptModal}>
-      <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-4 pt-8 text-center sm:px-16">
+      <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-100 px-4 py-4 pt-8 text-center sm:px-16">
         <LinkLogo />
         <h3 className="text-lg font-medium">{title}</h3>
         {description && (
@@ -62,7 +62,7 @@ function PromptModal({
       >
         <label className="block">
           <p className="text-sm text-neutral-700">{label}</p>
-          <div className="relative mt-1 rounded-md shadow-sm">
+          <div className="relative mt-1 rounded shadow-sm">
             <input
               type="text"
               value={value}
@@ -70,7 +70,7 @@ function PromptModal({
               required
               autoFocus={!isMobile}
               autoComplete="off"
-              className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+              className="block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
               {...inputProps}
             />
           </div>

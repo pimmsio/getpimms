@@ -71,11 +71,11 @@ export function Modal({
             }}
             className={cn(
               "fixed bottom-0 left-0 right-0 z-50 flex flex-col",
-              "rounded-t-[10px] border-t-[6px] border-neutral-100 bg-white",
+              "rounded-t border-t border-neutral-200 bg-white glass-subtle",
               className,
             )}
           >
-            <div className="scrollbar-hide flex-1 overflow-y-auto rounded-t-[10px] bg-inherit">
+            <div className="scrollbar-hide flex-1 overflow-y-auto rounded-t bg-inherit">
               <VisuallyHidden.Root>
                 <Drawer.Title>Modal</Drawer.Title>
                 <Drawer.Description>This is a modal</Drawer.Description>
@@ -119,7 +119,7 @@ export function Modal({
           }}
           className={cn(
             "fixed inset-0 z-40 m-auto h-fit w-full max-w-md",
-            "border-[6px] border-neutral-100 bg-white p-0 shadow-xl sm:rounded-2xl",
+            "border border-neutral-200 bg-white p-0 shadow-xl sm:rounded glass-subtle",
             "scrollbar-hide animate-scale-in overflow-y-auto",
             className,
           )}
@@ -137,7 +137,7 @@ export function Modal({
 
 function DrawerIsland() {
   return (
-    <div className="sticky top-0 z-20 flex items-center justify-center rounded-t-[10px] bg-inherit">
+    <div className="sticky top-0 z-20 flex items-center justify-center rounded-t bg-inherit">
       <div className="my-3 h-1 w-12 rounded-full bg-neutral-300" />
     </div>
   );

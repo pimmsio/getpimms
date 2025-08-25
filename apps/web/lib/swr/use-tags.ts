@@ -1,5 +1,6 @@
 import { TagProps } from "@/lib/types";
 import { fetcher } from "@dub/utils";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { z } from "zod";
 import { getTagsQuerySchema } from "../zod/schemas/tags";
@@ -18,14 +19,27 @@ export default function useTags({
 } = {}) {
   const { id } = useWorkspace();
 
+  // Detect if we're on admin
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.host.startsWith("admin.")) {
+      setIsAdmin(true);
+    }
+  }, []);
+
   const { data: tags, isValidating } = useSWR<TagProps[]>(
-    id &&
-      enabled &&
-      `/api/tags?${new URLSearchParams({
-        workspaceId: id,
-        ...query,
-        includeLinksCount,
-      } as Record<string, any>).toString()}`,
+    enabled &&
+      (isAdmin
+        ? `/api/admin/tags?${new URLSearchParams({
+            ...query,
+            includeLinksCount,
+          } as Record<string, any>).toString()}`
+        : id &&
+          `/api/tags?${new URLSearchParams({
+            workspaceId: id,
+            ...query,
+            includeLinksCount,
+          } as Record<string, any>).toString()}`),
     fetcher,
     {
       dedupingInterval: 60000,

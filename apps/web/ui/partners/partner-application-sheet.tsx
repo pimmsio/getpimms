@@ -54,7 +54,7 @@ function PartnerApplicationSheetContent({
 
         {partner.status === "pending" && (
           <div className="flex grow flex-col justify-end">
-            <div className="border-t-[6px] border-neutral-100 p-5">
+            <div className="border-x border-neutral-100 p-5">
               <PartnerApproval partner={partner} setIsOpen={setIsOpen} />
             </div>
           </div>
@@ -132,7 +132,7 @@ function PartnerApplication({ applicationId }: { applicationId: string }) {
                 {field.value || "No response provided"}
               </Linkify>
             ) : (
-              <div className="h-5 w-28 min-w-0 animate-pulse rounded-md bg-neutral-200" />
+              <div className="h-5 w-28 min-w-0 animate-pulse rounded bg-neutral-200" />
             )}
           </div>
         </div>

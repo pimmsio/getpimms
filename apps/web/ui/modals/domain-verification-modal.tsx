@@ -45,7 +45,7 @@ function DomainVerificationModalInner({
 
   return (
     <>
-      <div className="flex items-center justify-between border-b-[6px] border-neutral-100 p-4 sm:px-6">
+      <div className="flex items-center justify-between border-b border-neutral-100 p-4 sm:px-6">
         <h3 className="text-lg font-medium leading-none">Verify your domain</h3>
         <button
           type="button"
@@ -62,7 +62,7 @@ function DomainVerificationModalInner({
           DNS provider:
         </p>
 
-        <div className="mt-4 flex flex-col gap-2 rounded-xl border-[6px] border-neutral-100 p-4 text-sm text-neutral-600">
+        <div className="mt-4 flex flex-col gap-2 rounded border border-neutral-100 p-4 text-sm text-neutral-600">
           <div className="flex justify-between gap-12">
             <div className="font-medium text-neutral-800">Type</div>
             <div className="font-mono">TXT</div>
@@ -81,7 +81,7 @@ function DomainVerificationModalInner({
         </div>
       </div>
 
-      <div className="flex justify-end gap-2 border-t-[6px] border-neutral-100 px-4 py-4 sm:px-6">
+      <div className="flex justify-end gap-2 border-x border-neutral-100 px-4 py-4 sm:px-6">
         <Button
           text="Verify"
           className="h-8 w-fit px-3"

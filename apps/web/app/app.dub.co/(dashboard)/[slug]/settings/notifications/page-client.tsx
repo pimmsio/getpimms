@@ -104,11 +104,11 @@ export default function NotificationsSettingsPageClient() {
         {notifications.map(({ type, icon: Icon, title, description }) => (
           <div
             key={type}
-            className="flex items-center justify-between gap-4 rounded-xl border-[6px] border-neutral-100 bg-white p-5"
+            className="flex items-center justify-between gap-4 rounded border border-neutral-100 bg-white p-5"
           >
             <div className="flex min-w-0 items-center gap-4">
-              <div className="hidden rounded-full border-[6px] border-neutral-100 sm:block">
-                <div className="rounded-full border-[2px] border-white bg-gradient-to-t from-neutral-100 p-1 md:p-3">
+              <div className="hidden rounded-full border border-neutral-100 sm:block">
+                <div className="rounded-full border border-white bg-gradient-to-t from-neutral-100 p-1 md:p-3">
                   <Icon className="size-5" />
                 </div>
               </div>

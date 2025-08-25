@@ -76,7 +76,7 @@ export function LinkAnalyticsBadge({
   // return isMobile ? (
   //   <Link
   //     href={`/${slug}/analytics?domain=${domain}&key=${key}`}
-  //     className="flex items-center gap-1 rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-sm text-neutral-800"
+  //     className="flex items-center gap-1 rounded border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-sm text-neutral-800"
   //   >
   //     <CursorRays className="h-4 w-4 text-neutral-600" />
   //     {nFormatter(link.clicks)}
@@ -125,7 +125,7 @@ export function LinkAnalyticsBadge({
                   <CopyButton
                     value={`${APP_DOMAIN}/share/${link.dashboardId}`}
                     variant="neutral"
-                    className="h-7 items-center justify-center rounded-xl border-[6px] border-neutral-200 bg-white p-1.5 hover:bg-neutral-50 active:bg-neutral-100"
+                    className="h-7 items-center justify-center rounded border border-neutral-200 bg-white p-1.5 hover:bg-neutral-50 active:bg-neutral-100"
                   />
                 )}
               </div>
@@ -139,7 +139,7 @@ export function LinkAnalyticsBadge({
     <Link
       href={`/${slug}/analytics?domain=${domain}&key=${key}${url ? `&url=${url}` : ""}&interval=${plan === "free" ? "30d" : plan === "pro" ? "1y" : "all"}`}
       className={cn(
-        "block overflow-hidden rounded-md border border-neutral-200 bg-neutral-50 p-0.5 text-sm text-neutral-600 transition-colors",
+        "block overflow-hidden rounded border border-neutral-200 bg-neutral-50 p-0.5 text-sm text-neutral-600 transition-colors",
         variant === "loose" ? "hover:bg-neutral-100" : "hover:bg-white",
       )}
     >
@@ -151,7 +151,7 @@ export function LinkAnalyticsBadge({
               <div
                 key={tab}
                 className={cn(
-                  "flex items-center gap-1 whitespace-nowrap rounded-md px-1 py-px transition-colors",
+                  "flex items-center gap-1 whitespace-nowrap rounded px-1 py-px transition-colors",
                   className,
                 )}
               >
@@ -168,7 +168,7 @@ export function LinkAnalyticsBadge({
               <div
                 key={tab}
                 className={cn(
-                  "flex items-center gap-1 whitespace-nowrap rounded-md px-1 py-px transition-colors",
+                  "flex items-center gap-1 whitespace-nowrap rounded px-1 py-px transition-colors",
                   className,
                 )}
               >

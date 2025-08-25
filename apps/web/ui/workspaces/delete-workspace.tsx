@@ -19,7 +19,7 @@ export default function DeleteWorkspace() {
 
   return (
     <div
-      className={cn("rounded-xl border-[6px] border-red-400 bg-white", {
+      className={cn("rounded border border-red-400 bg-white", {
         "border-neutral-200": permissionsError,
       })}
     >

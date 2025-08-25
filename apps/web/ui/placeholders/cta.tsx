@@ -42,7 +42,7 @@ export function CTA({
   return (
     <div
       className={cn(
-        "relative mx-auto mb-20 mt-12 w-full max-w-screen-lg overflow-hidden rounded-2xl bg-neutral-50 px-6 pb-16 pt-10 text-center sm:mt-0 sm:px-0 sm:px-12",
+        "relative mx-auto mb-20 mt-12 w-full max-w-screen-lg overflow-hidden rounded bg-neutral-50 px-6 pb-16 pt-10 text-center sm:mt-0 sm:px-0 sm:px-12",
         className,
       )}
     >

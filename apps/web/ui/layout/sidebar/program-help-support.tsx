@@ -44,7 +44,7 @@ export const ProgramHelpSupport = memo(() => {
   if (supportItems.length === 0) return null;
 
   return (
-    <div className="m-2 grid gap-1 rounded-xl border-[2px] border-neutral-300/80 p-1">
+    <div className="m-2 grid gap-1 rounded border border-neutral-300/80 p-1">
       <div className="grid gap-2 p-2.5">
         {program.logo && (
           <img
@@ -52,7 +52,7 @@ export const ProgramHelpSupport = memo(() => {
             alt={program.name}
             width={32}
             height={32}
-            className="size-4 rounded-md"
+            className="size-4 rounded"
           />
         )}
         <p className="text-sm font-medium text-neutral-900">Help & Support</p>
@@ -64,7 +64,7 @@ export const ProgramHelpSupport = memo(() => {
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded-md p-1.5 text-sm text-neutral-500 transition-colors hover:bg-neutral-300/75 hover:text-neutral-700"
+            className="flex items-center gap-2 rounded p-1.5 text-sm text-neutral-500 transition-colors hover:bg-neutral-300/75 hover:text-neutral-700"
           >
             <Icon className="size-4" />
             {label}

@@ -85,10 +85,10 @@ export function PartnerLinkSelector({
           className: cn(
             "w-full justify-start border-neutral-300 px-3 shadow-sm",
             "data-[state=open]:ring-1 data-[state=open]:ring-neutral-500 data-[state=open]:border-neutral-500",
-            "focus:ring-1 focus:ring-neutral-500 focus:border-neutral-500 transition-none",
+            "focus:ring-0 focus:ring-0 focus:border-neutral-500 transition-none",
             !selectedLinkId && "text-neutral-400",
             error &&
-              "border-red-500 focus:border-red-500 focus:ring-red-500 data-[state=open]:ring-red-500 data-[state=open]:border-red-500",
+              "border-red-500 focus:border-red-500 focus:ring-0 data-[state=open]:ring-red-500 data-[state=open]:border-red-500",
           ),
         }}
         shouldFilter={false}

@@ -20,7 +20,7 @@ export default function RegisterPageClient() {
 function SignUp() {
   return (
     <>
-      <div className="w-full max-w-md overflow-hidden border-[6px] border-zinc-200 rounded-3xl sm:shadow-sm">
+      <div className="w-full max-w-md overflow-hidden border border-zinc-200 rounded-3xl sm:shadow-sm">
         <div className="bg-white pb-6 pt-8 text-center">
           <h3 className="text-lg font-semibold">Get started with PIMMS</h3>
         </div>
@@ -46,8 +46,8 @@ function Verify() {
 
   return (
     <>
-      <div className="w-full max-w-md overflow-hidden border-y border-neutral-200 sm:rounded-2xl sm:border sm:shadow-sm">
-        <div className="flex flex-col items-center justify-center gap-3 border-b-[6px] border-neutral-100 bg-white px-4 pb-6 pt-8 text-center sm:px-16">
+      <div className="w-full max-w-md overflow-hidden border-y border-neutral-200 sm:rounded sm:border sm:shadow-sm">
+        <div className="flex flex-col items-center justify-center gap-3 border-b border-neutral-100 bg-white px-4 pb-6 pt-8 text-center sm:px-16">
           <h3 className="text-xl font-semibold">Verify your email address</h3>
           <p className="text-sm text-neutral-500">
             Enter the six digit verification code sent to{" "}

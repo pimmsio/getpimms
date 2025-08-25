@@ -44,7 +44,7 @@ export default function PaymentMethods() {
   }
 
   return (
-    <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
+    <div className="rounded border border-neutral-100 bg-white">
       <div className="flex flex-col items-start justify-between gap-y-4 p-6 md:flex-row md:items-center md:p-8">
         <div>
           <h2 className="text-xl font-medium">Payment methods</h2>
@@ -62,7 +62,7 @@ export default function PaymentMethods() {
           />
         )}
       </div>
-      <div className="grid gap-4 border-t-[6px] border-neutral-100 bg-neutral-100 p-6">
+      <div className="grid gap-4 border-x border-neutral-100 bg-neutral-100 p-6">
         {regularPaymentMethods ? (
           regularPaymentMethods.length > 0 ? (
             regularPaymentMethods.map((paymentMethod) => (
@@ -79,7 +79,7 @@ export default function PaymentMethods() {
               cardContent={() => (
                 <>
                   <CreditCard className="size-4 text-neutral-700" />
-                  <div className="h-2.5 w-24 min-w-0 rounded-sm bg-neutral-200" />
+                  <div className="h-2.5 w-24 min-w-0 rounded bg-neutral-200" />
                 </>
               )}
               className="border-none md:min-h-[250px]"
@@ -146,11 +146,11 @@ const PaymentMethodCard = ({
 
   return (
     <RecommendedForPayoutsWrapper recommended={type === "us_bank_account"}>
-      <div className="flex items-center justify-between rounded-xl border-[6px] border-neutral-100 bg-white p-4 drop-shadow-sm">
+      <div className="flex items-center justify-between rounded border border-neutral-100 bg-white p-4 drop-shadow-sm">
         <div className="flex items-center gap-4">
           <div
             className={cn(
-              "flex size-12 items-center justify-center rounded-lg bg-neutral-100",
+              "flex size-12 items-center justify-center rounded bg-neutral-100",
               iconBgColor,
             )}
           >
@@ -214,12 +214,12 @@ const RecommendedForPayoutsWrapper = ({
 
 const PaymentMethodCardSkeleton = () => {
   return (
-    <div className="flex items-center justify-between rounded-lg border-[6px] border-neutral-100 p-4">
+    <div className="flex items-center justify-between rounded border border-neutral-100 p-4">
       <div className="flex items-center gap-4">
-        <div className="flex size-12 animate-pulse items-center justify-center rounded-lg bg-neutral-200" />
+        <div className="flex size-12 animate-pulse items-center justify-center rounded bg-neutral-200" />
         <div>
-          <div className="h-5 w-24 animate-pulse rounded-md bg-neutral-200" />
-          <div className="mt-1 h-4 w-32 animate-pulse rounded-md bg-neutral-200" />
+          <div className="h-5 w-24 animate-pulse rounded bg-neutral-200" />
+          <div className="mt-1 h-4 w-32 animate-pulse rounded bg-neutral-200" />
         </div>
       </div>
     </div>

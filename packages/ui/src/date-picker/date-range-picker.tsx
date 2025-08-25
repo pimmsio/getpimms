@@ -129,7 +129,7 @@ const DateRangePickerInner = ({
         align={align}
         openPopover={open}
         setOpenPopover={onOpenChange}
-        popoverContentClassName="rounded-xl"
+        popoverContentClassName="rounded"
         content={
           <div className="flex w-full">
             <div className="scrollbar-hide flex w-full flex-col overflow-x-scroll sm:flex-row-reverse sm:items-start">
@@ -137,7 +137,7 @@ const DateRangePickerInner = ({
                 <div
                   className={cn(
                     "relative flex h-16 w-full items-center sm:h-full sm:w-48",
-                    "border-b-[6px] border-neutral-100 sm:border-b-0 sm:border-l",
+                    "border-b border-neutral-100 sm:border-b-0 sm:border-l",
                     "scrollbar-hide overflow-auto",
                   )}
                 >

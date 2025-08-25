@@ -80,7 +80,7 @@ function LinkConversionTrackingModalInner({
 
   return (
     <>
-      <div className="space-y-2 border-b-[6px] border-neutral-100 p-4 sm:p-6">
+      <div className="space-y-2 border-b border-neutral-100 p-4 sm:p-6">
         {links.length === 1 && (
           <LinkLogo apexDomain={getApexDomain(links[0].url)} className="mb-4" />
         )}
@@ -118,7 +118,7 @@ function LinkConversionTrackingModalInner({
               <label
                 key={option.value}
                 className={cn(
-                  "relative flex w-full cursor-pointer items-start gap-0.5 rounded-xl border-[2px] border-neutral-100 bg-white p-3 text-neutral-600 hover:bg-neutral-50",
+                  "relative flex w-full cursor-pointer items-start gap-0.5 rounded border border-neutral-100 bg-white p-3 text-neutral-600 hover:bg-neutral-50",
                   "transition-all duration-150",
                   isSelected &&
                     "border-black bg-neutral-50 text-neutral-900 ring-1 ring-black",
@@ -151,7 +151,7 @@ function LinkConversionTrackingModalInner({
         </div>
       </div>
 
-      <div className="flex items-center justify-end gap-2 border-t-[6px] border-neutral-100 bg-neutral-50 px-4 py-5 sm:px-6">
+      <div className="flex items-center justify-end gap-2 border-x border-neutral-100 bg-neutral-50 px-4 py-5 sm:px-6">
         <Button
           onClick={() => setShowLinkConversionTrackingModal(false)}
           variant="secondary"

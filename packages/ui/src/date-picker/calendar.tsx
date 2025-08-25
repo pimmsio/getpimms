@@ -99,7 +99,7 @@ function Calendar({
         row: "w-full",
         cell: "relative p-0 text-center focus-within:relative text-neutral-900",
         day: cn(
-          "relative size-10 rounded-md text-sm text-neutral-900",
+          "relative size-10 rounded text-sm text-neutral-900",
           "hover:bg-neutral-100 active:bg-neutral-200 outline outline-offset-2 outline-0 focus-visible:outline-2 outline-blue-500",
         ),
         day_today: "font-semibold",

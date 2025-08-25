@@ -1,65 +1,70 @@
 import { NewLinkProps } from "@/lib/types";
 import { combineWords } from "@dub/utils";
 
-export const proFeaturesCheck = (payload: NewLinkProps) => {
+export const starterFeaturesCheck = (payload: NewLinkProps) => {
   const {
-    proxy,
     password,
     rewrite,
     expiresAt,
     ios,
     android,
     geo,
-    testVariants,
     trackConversion,
-    doIndex,
   } = payload;
 
   if (
-    // proxy ||
     password ||
     rewrite ||
     expiresAt ||
-    ios ||
-    android ||
-    geo ||
-    testVariants ||
-    // trackConversion ||
-    doIndex
+    trackConversion
   ) {
-    const proFeaturesString = combineWords(
+    const starterFeaturesString = combineWords(
       [
-        // proxy && "custom social media cards",
         password && "password protection",
         rewrite && "link cloaking",
         expiresAt && "link expiration",
-        ios && "iOS targeting",
-        android && "Android targeting",
-        geo && "geo targeting",
-        doIndex && "search engine indexing",
-        testVariants && "A/B testing",
+        trackConversion && "conversion tracking",
       ].filter(Boolean) as string[],
     );
 
     throw new Error(
-      `You can only use ${proFeaturesString} on a Pro plan and above. Upgrade to Pro to use these features.`,
+      `You can only use ${starterFeaturesString} on a Starter plan and above. Upgrade to Starter to use these features.`,
+    );
+  }
+};
+
+export const proFeaturesCheck = (payload: NewLinkProps) => {
+  const {
+    ios,
+    android,
+    geo,
+    testVariants,
+    doIndex,
+  } = payload;
+
+  if (
+    ios ||
+    android ||
+    geo ||
+    testVariants ||
+    doIndex
+  ) {
+    const starterFeaturesString = combineWords(
+      [
+        ios && "iOS targeting",
+        android && "Android targeting",
+        geo && "geo targeting",
+        testVariants && "A/B testing",
+        doIndex && "search engine indexing",
+      ].filter(Boolean) as string[],
+    );
+
+    throw new Error(
+      `You can only use ${starterFeaturesString} on a Pro plan and above. Upgrade to Pro to use these features.`,
     );
   }
 };
 
 export const businessFeaturesCheck = (payload: NewLinkProps) => {
-  const { testVariants, trackConversion } = payload;
-
-  // if (testVariants) {
-  //   const businessFeaturesString = combineWords(
-  //     [
-  //       testVariants && "A/B testing",
-  //       trackConversion && "conversion tracking",
-  //     ].filter(Boolean) as string[],
-  //   );
-
-  //   throw new Error(
-  //     `You can only use ${businessFeaturesString} on a Business plan and above. Upgrade to Business to use these features.`,
-  //   );
-  // }
+  // Business features have no restrictions
 };

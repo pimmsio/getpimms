@@ -61,7 +61,7 @@ export function PageClient() {
           {GUIDES.map(({ name, icon: Icon }) => (
             <div
               key={name}
-              className="flex items-center justify-between rounded-xl border-[6px] border-neutral-100 bg-neutral-50 p-4"
+              className="flex items-center justify-between rounded border border-neutral-100 bg-neutral-50 p-4"
             >
               <div className="flex items-center gap-3">
                 <Icon className="size-8" />

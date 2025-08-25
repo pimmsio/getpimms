@@ -18,7 +18,7 @@ export default async function LoginPage({
   return (
     <div className="mx-auto my-10 w-full max-w-[480px] md:mt-16 lg:mt-20">
       {program && <PartnerBanner program={program} />}
-      <div className="rounded-xl border-[6px] border-neutral-100 bg-white p-8 pb-10">
+      <div className="rounded border border-neutral-100 bg-white p-8 pb-10">
         <h1 className="text-lg font-medium text-neutral-800">
           Sign in to your PiMMs Partner account
         </h1>

@@ -43,7 +43,7 @@ export const POST = withWorkspace(
     const links = bulkCreateLinksBodySchema.parse(await parseRequestBody(req));
     if (
       workspace.linksUsage + links.length > workspace.linksLimit &&
-      (workspace.plan === "free" || workspace.plan === "pro")
+      (workspace.plan === "free" || workspace.plan === "starter" || workspace.plan === "pro")
     ) {
       throw new DubApiError({
         code: "exceeded_limit",
@@ -211,11 +211,11 @@ export const POST = withWorkspace(
     }
 
     if (checkIfLinksHaveWebhooks(validLinks)) {
-      if (workspace.plan === "free" || workspace.plan === "pro") {
+      if (workspace.plan === "free" || workspace.plan === "starter") {
         throw new DubApiError({
           code: "forbidden",
           message:
-            "You can only use webhooks on a Business plan and above. Upgrade to Business to use this feature.",
+            "You can only use webhooks on a Pro plan and above. Upgrade to Pro to use this feature.",
         });
       }
 

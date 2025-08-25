@@ -295,7 +295,7 @@ export function AddEditDomainForm({
           )}
         </div>
         {props && lockDomain ? (
-          <div className="mt-2 cursor-not-allowed rounded-xl border-[2px] border-neutral-300 bg-neutral-100 px-3 py-2 text-sm text-neutral-500 shadow-sm">
+          <div className="mt-2 cursor-not-allowed rounded border border-neutral-300 bg-neutral-100 px-3 py-2 text-sm text-neutral-500 shadow-sm">
             {domain}
           </div>
         ) : (
@@ -307,7 +307,7 @@ export function AddEditDomainForm({
                   "bg-neutral-200 text-neutral-500",
               )}
             >
-              <div className="flex rounded-xl border-[2px] border-neutral-300 bg-white">
+              <div className="flex rounded border border-neutral-300 bg-white">
                 <input
                   {...register("slug", {
                     onChange: (e) => {
@@ -315,7 +315,7 @@ export function AddEditDomainForm({
                       debouncedValidateDomain(e.target.value);
                     },
                   })}
-                  className="block w-full rounded-md border-0 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-0 sm:text-sm"
+                  className="block w-full rounded border-0 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-0 sm:text-sm"
                   placeholder="go.domain.io"
                   autoFocus={!isMobile}
                 />
@@ -367,7 +367,7 @@ export function AddEditDomainForm({
                   <div key={id}>
                     <label className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
-                        <div className="hidden rounded-xl border-[6px] border-neutral-100 bg-white p-2 sm:block">
+                        <div className="hidden rounded border border-neutral-100 bg-white p-2 sm:block">
                           <Icon className="size-5 text-neutral-500" />
                         </div>
                         <div>
@@ -409,9 +409,9 @@ export function AddEditDomainForm({
                       initial={false}
                       className="-m-1 overflow-hidden p-1"
                     >
-                      <div className="relative mt-2 rounded-md shadow-sm">
+                      <div className="relative mt-2 rounded shadow-sm">
                         {id === "logo" ? (
-                          <div className="flex h-24 items-center justify-center overflow-hidden rounded-xl border-[2px] border-neutral-300">
+                          <div className="flex h-24 items-center justify-center overflow-hidden rounded border border-neutral-300">
                             {/* {!isMobile && (
                               <ShimmerDots className="pointer-events-none z-10 opacity-30" />
                             )} */}
@@ -421,7 +421,7 @@ export function AddEditDomainForm({
                               render={({ field }) => (
                                 <FileUpload
                                   accept="images"
-                                  className="h-24 rounded-md"
+                                  className="h-24 rounded"
                                   iconClassName="size-5 text-neutral-700"
                                   variant="plain"
                                   imageSrc={field.value}
@@ -447,7 +447,7 @@ export function AddEditDomainForm({
                         ) : (
                           <input
                             {...register(id)}
-                            className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                            className="block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
                             placeholder="https://yourwebsite.com"
                           />
                         )}
@@ -484,7 +484,7 @@ export function AddEditDomainForm({
                       <div key={id} className="mt-4 flex flex-col space-y-3">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="hidden rounded-xl border-[6px] border-neutral-100 bg-white p-2 sm:block">
+                            <div className="hidden rounded border border-neutral-100 bg-white p-2 sm:block">
                               <Icon className="size-5 text-neutral-500" />
                             </div>
                             <div>
@@ -523,10 +523,10 @@ export function AddEditDomainForm({
                         </div>
 
                         {showOptionStates[id] && (
-                          <div className="rounded-xl border-[2px] border-neutral-100 bg-white">
+                          <div className="rounded border border-neutral-100 bg-white">
                             <textarea
                               {...register(id)}
-                              className="w-full resize-none rounded-md border-0 bg-transparent px-3 py-2 font-mono text-xs text-neutral-700 focus:outline-none focus:ring-0"
+                              className="w-full resize-none rounded border-0 bg-transparent px-3 py-2 font-mono text-xs text-neutral-700 focus:outline-none focus:ring-0"
                               rows={4}
                               spellCheck={false}
                               onPaste={(e) => {

@@ -207,7 +207,7 @@ export function Combobox({
         >
           <Command loop shouldFilter={shouldFilter}>
             {!hideSearch && (
-              <div className="flex items-center overflow-hidden rounded-t-lg border-b-[6px] border-neutral-100">
+              <div className="flex items-center overflow-hidden rounded-t-lg border-b border-neutral-100">
                 <CommandInput
                   placeholder={searchPlaceholder}
                   value={search}
@@ -229,7 +229,7 @@ export function Combobox({
                 />
                 {inputRight && <div className="mr-2">{inputRight}</div>}
                 {/* {shortcutHint && (
-                  <kbd className="mr-2 hidden shrink-0 rounded border-[6px] border-neutral-100 bg-neutral-100 px-2 py-0.5 text-xs font-light text-neutral-500 md:block">
+                  <kbd className="mr-2 hidden shrink-0 rounded border border-neutral-100 bg-neutral-100 px-2 py-0.5 text-xs font-light text-neutral-500 md:block">
                     {shortcutHint}
                   </kbd>
                 )} */}
@@ -257,7 +257,7 @@ export function Combobox({
                     {search.length > 0 && onCreate && (
                       <CommandItem
                         className={cn(
-                          "flex cursor-pointer items-center gap-3 whitespace-nowrap rounded-md px-3 py-2 text-left text-sm text-neutral-700",
+                          "flex cursor-pointer items-center gap-3 whitespace-nowrap rounded px-3 py-2 text-left text-sm text-neutral-700",
                           "data-[selected=true]:bg-neutral-100",
                           optionClassName,
                         )}
@@ -360,7 +360,7 @@ const Scroll = ({ children }: PropsWithChildren) => {
       </div>
       {/* Bottom scroll fade */}
       <div
-        className="pointer-events-none absolute bottom-0 left-0 hidden h-16 w-full rounded-b-lg bg-gradient-to-t from-white sm:block"
+        className="pointer-events-none absolute bottom-0 left-0 hidden h-16 w-full rounded-b bg-gradient-to-t from-white sm:block"
         style={{ opacity: 1 - Math.pow(scrollProgress, 2) }}
       ></div>
     </>
@@ -387,7 +387,7 @@ function Option({
       <DisabledTooltip disabledTooltip={option.disabledTooltip}>
         <Command.Item
           className={cn(
-            "flex cursor-pointer items-center gap-3 whitespace-nowrap rounded-md px-3 py-2 text-left text-sm",
+            "flex cursor-pointer items-center gap-3 whitespace-nowrap rounded px-3 py-2 text-left text-sm",
             "data-[selected=true]:bg-neutral-100",
             Boolean(option.disabledTooltip) && "cursor-not-allowed opacity-50",
             className,

@@ -101,7 +101,7 @@ export function ReferralsEmbedPageClient({
       className="bg-bg-default flex min-h-screen flex-col"
     >
       <div className="relative z-0 p-5">
-        <div className="border-border-default relative flex flex-col overflow-hidden rounded-xl border-[6px] p-4 md:p-6">
+        <div className="border-border-default relative flex flex-col overflow-hidden rounded border p-4 md:p-6">
           {/* <HeroBackground
             logo={program.logo}
             color={program.brandColor}
@@ -115,7 +115,7 @@ export function ReferralsEmbedPageClient({
               type="text"
               readOnly
               value={getPrettyUrl(links[0].shortLink)}
-              className="border-border-default text-content-default focus:border-border-emphasis bg-bg-default h-10 min-w-0 shrink grow rounded-md border px-3 text-sm focus:outline-none focus:ring-neutral-500"
+              className="border-border-default text-content-default focus:border-border-emphasis bg-bg-default h-10 min-w-0 shrink grow rounded border px-3 text-sm focus:outline-none focus:ring-0"
             />
             <Button
               icon={
@@ -166,7 +166,7 @@ export function ReferralsEmbedPageClient({
             <a
               href="https://dub.partners"
               target="_blank"
-              className="hover:text-content-default text-content-subtle bg-bg-default border-border-subtle flex w-fit items-center gap-1.5 rounded-md border px-2 py-1 transition-colors duration-75"
+              className="hover:text-content-default text-content-subtle bg-bg-default border-border-subtle flex w-fit items-center gap-1.5 rounded border px-2 py-1 transition-colors duration-75"
             >
               <p className="whitespace-nowrap text-xs font-medium leading-none">
                 Powered by

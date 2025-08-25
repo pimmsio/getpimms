@@ -29,6 +29,7 @@ export const linksDisplayPropertyIds = [
   "url",
   "title",
   "description",
+  "comments",
   "createdAt",
   "user",
   "tags",

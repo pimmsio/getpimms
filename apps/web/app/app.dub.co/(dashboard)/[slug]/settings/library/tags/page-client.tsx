@@ -70,10 +70,10 @@ export default function WorkspaceTagsClient() {
             description="Create tags to organize your links"
             cardContent={
               <>
-                <div className="flex size-7 items-center justify-center rounded-xl border-[2px] border-neutral-100 bg-neutral-50">
+                <div className="flex size-7 items-center justify-center rounded border border-neutral-100 bg-neutral-50">
                   <Tag className="size-4 text-neutral-700" />
                 </div>
-                <div className="h-2.5 w-28 min-w-0 rounded-sm bg-neutral-200" />
+                <div className="h-2.5 w-28 min-w-0 rounded bg-neutral-200" />
               </>
             }
             addButton={<AddTagButton />}
@@ -92,7 +92,7 @@ export default function WorkspaceTagsClient() {
                     ))}
               </CardList>
             </TagsListContext.Provider>
-            <div className="sticky bottom-0 rounded-b-[inherit] border-t-[6px] border-neutral-100 bg-white px-3.5 py-2">
+            <div className="sticky bottom-0 rounded-b-[inherit] border-x border-neutral-100 bg-white px-3.5 py-2">
               <PaginationControls
                 pagination={pagination}
                 setPagination={setPagination}

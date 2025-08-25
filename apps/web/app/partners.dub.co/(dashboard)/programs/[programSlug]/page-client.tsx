@@ -91,7 +91,7 @@ export default function ProgramPageClient() {
             }}
             className="overflow-hidden"
           >
-            <div className="relative z-0 mb-4 flex flex-col overflow-hidden rounded-xl border-[6px] border-neutral-200 p-4 sm:mb-10 md:p-6">
+            <div className="relative z-0 mb-4 flex flex-col overflow-hidden rounded border border-neutral-200 p-4 sm:mb-10 md:p-6">
               {program && (
                 <HeroBackground
                   logo={program.logo}
@@ -107,10 +107,10 @@ export default function ProgramPageClient() {
                     type="text"
                     readOnly
                     value={getPrettyUrl(masterLink.shortLink)}
-                    className="border-border-default text-content-default focus:border-border-emphasis bg-bg-default h-10 min-w-0 shrink grow rounded-md border px-3 text-sm focus:outline-none focus:ring-neutral-500"
+                    className="border-border-default text-content-default focus:border-border-emphasis bg-bg-default h-10 min-w-0 shrink grow rounded border px-3 text-sm focus:outline-none focus:ring-0"
                   />
                 ) : (
-                  <div className="h-10 w-16 animate-pulse rounded-md bg-neutral-200 lg:w-72" />
+                  <div className="h-10 w-16 animate-pulse rounded bg-neutral-200 lg:w-72" />
                 )}
                 <Button
                   icon={
@@ -153,7 +153,7 @@ export default function ProgramPageClient() {
                     discount={programEnrollment?.discount}
                   />
                 ) : (
-                  <div className="h-7 w-5/6 animate-pulse rounded-md bg-neutral-200" />
+                  <div className="h-7 w-5/6 animate-pulse rounded bg-neutral-200" />
                 )}
               </div>
             </div>
@@ -170,7 +170,7 @@ export default function ProgramPageClient() {
       >
         <ChartTooltipSync>
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <div className="group rounded-xl border-[6px] border-neutral-200 p-5 pb-3 lg:col-span-2">
+            <div className="group rounded border border-neutral-200 p-5 pb-3 lg:col-span-2">
               <EarningsChart />
             </div>
 
@@ -191,7 +191,7 @@ export default function ProgramPageClient() {
               href={`/programs/${programSlug}/earnings${getQueryString()}`}
               className={cn(
                 buttonVariants({ variant: "secondary" }),
-                "flex h-7 items-center rounded-xl border-[3px] px-2 text-sm",
+                "flex h-7 items-center rounded border px-2 text-sm",
               )}
             >
               View all
@@ -251,7 +251,7 @@ function EarningsChart() {
                 }}
               />
             ) : (
-              <div className="h-[27px] w-24 animate-pulse rounded-md bg-neutral-200" />
+              <div className="h-[27px] w-24 animate-pulse rounded bg-neutral-200" />
             )}
           </div>
         </div>
@@ -311,7 +311,7 @@ function StatCard({
   });
 
   return (
-    <div className="group block rounded-xl border-[6px] border-neutral-200 bg-white p-5 pb-3">
+    <div className="group block rounded border border-neutral-200 bg-white p-5 pb-3">
       <div className="flex justify-between">
         <div>
           <span className="mb-1 block text-base font-semibold leading-none text-neutral-800">
@@ -327,7 +327,7 @@ function StatCard({
               />
             </div>
           ) : (
-            <div className="h-[27px] w-16 animate-pulse rounded-md bg-neutral-200" />
+            <div className="h-[27px] w-16 animate-pulse rounded bg-neutral-200" />
           )}
         </div>
         <ViewMoreButton
@@ -452,7 +452,7 @@ function ViewMoreButton({ href }: { href: string }) {
         <Link
           href={href}
           className={cn(
-            "flex h-7 w-[82px] items-center justify-center whitespace-nowrap rounded-md border px-0 text-xs font-medium",
+            "flex h-7 w-[82px] items-center justify-center whitespace-nowrap rounded border px-0 text-xs font-medium",
             buttonVariants({ variant: "secondary" }),
           )}
         >

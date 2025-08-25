@@ -135,7 +135,7 @@ export function DubWrapped({
       </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border border-solid border-neutral-100 px-10 py-5">
             <Section className="my-8">
               <Img src={DUB_WORDMARK} height="32" alt="PIMMS" className="my-0" />
             </Section>
@@ -147,7 +147,7 @@ export function DubWrapped({
               support! Here's a look back at your activity in 2025:
             </Text>
 
-            <Section className="my-8 rounded-lg border-[6px] border-solid border-neutral-100 p-2">
+            <Section className="my-8 rounded border border-solid border-neutral-100 p-2">
               <div>
                 <div className="-mt-[90px] mb-[30px] text-center">
                   {workspace.logo && (
@@ -155,7 +155,7 @@ export function DubWrapped({
                       src={workspace.logo}
                       height="36"
                       alt={workspace.name}
-                      className="mx-auto rounded-lg"
+                      className="mx-auto rounded"
                     />
                   )}
                   <Text className="mt-1 text-xl font-semibold">
@@ -271,7 +271,7 @@ const StatTable = ({
               </Column>
             </Row>
             {index !== value.length - 1 && (
-              <Hr className="my-0 w-full border-[6px] border-neutral-100" />
+              <Hr className="my-0 w-full border border-neutral-100" />
             )}
           </div>
         );

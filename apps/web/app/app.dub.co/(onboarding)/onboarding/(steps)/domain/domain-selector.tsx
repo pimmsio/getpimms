@@ -96,7 +96,7 @@ function DomainOption({
   return (
     <div
       className={cn(
-        "relative flex flex-col gap-2 rounded-xl border-[6px] border-neutral-200 px-10 pb-4 pt-9 transition-all",
+        "relative flex flex-col gap-2 rounded border border-neutral-200 px-10 pb-4 pt-9 transition-all",
         isSelected && "border-transparent bg-black/[0.03] ring-2 ring-black",
       )}
       role="button"
@@ -106,7 +106,7 @@ function DomainOption({
       {isSelected && (
         <CheckCircleFill className="absolute left-2 top-2 size-5 text-black" />
       )}
-      <div className="flex w-full flex-col gap-2 rounded-xl border-[2px] border-neutral-300 bg-neutral-100 p-2 [mask-image:linear-gradient(to_bottom,black_50%,transparent_95%)]">
+      <div className="flex w-full flex-col gap-2 rounded border border-neutral-300 bg-neutral-100 p-2 [mask-image:linear-gradient(to_bottom,black_50%,transparent_95%)]">
         <div className="relative rounded border-neutral-200 bg-white px-2 py-1.5 text-center text-sm font-medium text-neutral-800">
           <Globe2 className="absolute left-2 top-1/2 size-4 -translate-y-1/2" />
           {example}

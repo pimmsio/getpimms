@@ -20,7 +20,7 @@ export default function LibraryHeader() {
   }
 
   return (
-    <div className="border-b-[6px] border-neutral-100">
+    <div className="border-b border-neutral-100">
       <h1 className="text-2xl font-semibold tracking-tight text-black">
         Library
       </h1>

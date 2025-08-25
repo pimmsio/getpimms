@@ -7,31 +7,21 @@ import useWorkspace from "@/lib/swr/use-workspace";
 import { DOMAINS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/domains";
 import DomainCard from "@/ui/domains/domain-card";
 import DomainCardPlaceholder from "@/ui/domains/domain-card-placeholder";
-import { FreeDotLinkBanner } from "@/ui/domains/free-dot-link-banner";
 import { useAddEditDomainModal } from "@/ui/modals/add-edit-domain-modal";
 import { useRegisterDomainModal } from "@/ui/modals/register-domain-modal";
 import { useRegisterDomainSuccessModal } from "@/ui/modals/register-domain-success-modal";
 import { AnimatedEmptyState } from "@/ui/shared/animated-empty-state";
 import EmptyState from "@/ui/shared/empty-state";
-import { SearchBoxPersisted } from "@/ui/shared/search-box";
 import {
-  Badge,
-  Button,
   CursorRays,
   Globe,
-  InfoTooltip,
-  LinkBroken,
   PaginationControls,
-  Popover,
-  ToggleGroup,
   TooltipContent,
   usePagination,
   useRouterStuff,
 } from "@dub/ui";
 import { capitalize, pluralize } from "@dub/utils";
-import { ChevronDown, Crown } from "lucide-react";
 import { useEffect, useState } from "react";
-import { DefaultDomains } from "./default-domains";
 
 export default function WorkspaceDomainsClient() {
   const {
@@ -59,7 +49,7 @@ export default function WorkspaceDomainsClient() {
   const { AddEditDomainModal, AddDomainButton, setShowAddEditDomainModal } =
     useAddEditDomainModal({
       buttonProps: {
-        className: "h-9 rounded-lg",
+        className: "h-9 rounded",
       },
     });
 
@@ -167,7 +157,7 @@ export default function WorkspaceDomainsClient() {
                             <span className="uppercase">Pro</span>
                           </Badge>
                         ) : dotLinkClaimed ? (
-                          <span className="rounded-md border border-green-200 bg-green-500/10 px-1 py-0.5 text-xs text-green-900">
+                          <span className="rounded border border-green-200 bg-green-500/10 px-1 py-0.5 text-xs text-green-900">
                             Claimed
                           </span>
                         ) : null}
@@ -187,7 +177,7 @@ export default function WorkspaceDomainsClient() {
             >
               <Button
                 variant="primary"
-                className="h-9 w-fit rounded-lg"
+                className="h-9 w-fit rounded"
                 text={
                   <div className="flex items-center gap-2">
                     Add domain{" "}
@@ -221,7 +211,7 @@ export default function WorkspaceDomainsClient() {
                 ))}
               </ul>
             ) : archived || search ? (
-              <div className="flex flex-col items-center gap-4 rounded-xl border-[6px] border-neutral-100 py-10">
+              <div className="flex flex-col items-center gap-4 rounded border border-neutral-100 py-10">
                 <EmptyState
                   icon={Globe}
                   title={
@@ -239,7 +229,7 @@ export default function WorkspaceDomainsClient() {
                 cardContent={
                   <>
                     <Globe className="size-4 text-neutral-700" />
-                    <div className="h-2.5 w-24 min-w-0 rounded-sm bg-neutral-200" />
+                    <div className="h-2.5 w-24 min-w-0 rounded bg-neutral-200" />
                     <div className="xs:flex hidden grow items-center justify-end gap-1.5 text-neutral-500">
                       <CursorRays className="size-3.5" />
                     </div>
@@ -259,7 +249,7 @@ export default function WorkspaceDomainsClient() {
             </ul>
           )}
         </div>
-        <div className="sticky bottom-0 rounded-b-[inherit] border-t-[6px] border-neutral-100 bg-white px-3.5 py-2">
+        <div className="sticky bottom-0 rounded-b-[inherit] border-x border-neutral-100 bg-white px-3.5 py-2">
           <PaginationControls
             pagination={pagination}
             setPagination={setPagination}

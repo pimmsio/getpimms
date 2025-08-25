@@ -7,7 +7,7 @@ export async function PartnerBanner({
   program: Pick<Program, "name" | "logo" | "slug">;
 }) {
   return (
-    <div className="-mb-2 flex items-center justify-center gap-2 rounded-t-lg border-[6px] border-neutral-100 bg-neutral-50 p-3 pb-5">
+    <div className="-mb-2 flex items-center justify-center gap-2 rounded-t-lg border border-neutral-100 bg-neutral-50 p-3 pb-5">
       {program.logo && (
         <div className="relative size-6 shrink-0 overflow-hidden rounded-full">
           <BlurImage

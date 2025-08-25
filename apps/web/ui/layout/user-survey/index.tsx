@@ -49,9 +49,9 @@ export default function UserSurveyButton() {
               >
                 <button
                   className={cn(
-                    "rounded-md p-1 text-left text-xs text-neutral-500 transition-colors duration-75",
+                    "rounded p-1 text-left text-xs text-neutral-500 transition-colors duration-75",
                     "hover:text-neutral-600 data-[state=open]:text-neutral-600",
-                    "outline-none focus-visible:ring-2 focus-visible:ring-black/50",
+                    "outline-none focus-visible:ring-0 focus-visible:ring-black/50",
                   )}
                 >
                   Where did you hear about PiMMs?
@@ -107,7 +107,7 @@ export function UserSurveyPopupInner({ hide }: { hide: () => void }) {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="absolute inset-0 flex flex-col items-center justify-center space-y-3 rounded-lg bg-white text-sm"
+                className="absolute inset-0 flex flex-col items-center justify-center space-y-3 rounded bg-white text-sm"
               >
                 <CheckCircleFill className="h-8 w-8 text-green-500" />
                 <p className="text-neutral-500">Thank you for your response!</p>

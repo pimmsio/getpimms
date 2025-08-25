@@ -21,7 +21,7 @@ export default function EmptyState({
           {...(buttonLink.startsWith("http") ? { target: "_blank" } : {})}
           className={cn(
             buttonVariants(),
-            "mt-4 flex h-9 items-center justify-center rounded-md border px-4 text-sm",
+            "mt-4 flex h-9 items-center justify-center rounded border px-4 text-sm",
           )}
         >
             {buttonText}

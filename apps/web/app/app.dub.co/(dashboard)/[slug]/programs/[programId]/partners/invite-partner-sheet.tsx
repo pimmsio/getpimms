@@ -125,7 +125,7 @@ function InvitePartnerSheetContent({ setIsOpen }: InvitePartnerSheetProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col">
-      <div className="sticky top-0 z-10 border-b-[6px] border-neutral-100 bg-white">
+      <div className="sticky top-0 z-10 border-b border-neutral-100 bg-white">
         <div className="flex items-start justify-between p-6">
           <Sheet.Title className="text-xl font-semibold">
             Invite partner
@@ -147,10 +147,10 @@ function InvitePartnerSheetContent({ setIsOpen }: InvitePartnerSheetProps) {
               <label htmlFor="name" className="flex items-center space-x-2">
                 <h2 className="text-sm font-medium text-neutral-900">Name</h2>
               </label>
-              <div className="relative mt-2 rounded-md shadow-sm">
+              <div className="relative mt-2 rounded shadow-sm">
                 <input
                   {...register("name", { required: true })}
-                  className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                  className="block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
                   placeholder="John Doe"
                   type="text"
                   autoComplete="off"
@@ -163,10 +163,10 @@ function InvitePartnerSheetContent({ setIsOpen }: InvitePartnerSheetProps) {
               <label htmlFor="email" className="flex items-center space-x-2">
                 <h2 className="text-sm font-medium text-neutral-900">Email</h2>
               </label>
-              <div className="relative mt-2 rounded-md shadow-sm">
+              <div className="relative mt-2 rounded shadow-sm">
                 <input
                   {...register("email", { required: true })}
-                  className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                  className="block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
                   placeholder="cheers@pimms.io"
                   type="email"
                   autoComplete="off"
@@ -250,10 +250,10 @@ function InvitePartnerSheetContent({ setIsOpen }: InvitePartnerSheetProps) {
                           <span className="text-neutral-500">(optional)</span>
                         </h2>
                       </label>
-                      <div className="relative mt-2 rounded-md shadow-sm">
+                      <div className="relative mt-2 rounded shadow-sm">
                         <select
                           className={cn(
-                            "block w-full rounded-md border-neutral-300 text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                            "block w-full rounded border-neutral-300 text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                             errors.rewardId && "border-red-600",
                             rewardsLoading && "opacity-50",
                           )}
@@ -281,10 +281,10 @@ function InvitePartnerSheetContent({ setIsOpen }: InvitePartnerSheetProps) {
                           <span className="text-neutral-500">(optional)</span>
                         </h2>
                       </label>
-                      <div className="relative mt-2 rounded-md shadow-sm">
+                      <div className="relative mt-2 rounded shadow-sm">
                         <select
                           className={cn(
-                            "block w-full rounded-md border-neutral-300 text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                            "block w-full rounded border-neutral-300 text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                             errors.discountId && "border-red-600",
                             discountsLoading && "opacity-50",
                           )}
@@ -310,7 +310,7 @@ function InvitePartnerSheetContent({ setIsOpen }: InvitePartnerSheetProps) {
         </div>
       </div>
 
-      <div className="sticky bottom-0 z-10 border-t-[6px] border-neutral-100 bg-white">
+      <div className="sticky bottom-0 z-10 border-x border-neutral-100 bg-white">
         <div className="flex items-center justify-end gap-2 p-5">
           <Button
             type="button"
@@ -343,7 +343,7 @@ function EmailPreview() {
   );
 
   return (
-    <div className="mt-8 rounded-xl border-[2px] border-neutral-100 bg-neutral-100 p-2 pt-2.5">
+    <div className="mt-8 rounded border border-neutral-100 bg-neutral-100 p-2 pt-2.5">
       <div className="flex justify-between px-2">
         <h2 className="text-sm font-medium text-neutral-900">Email preview</h2>
         {/* <button
@@ -365,7 +365,7 @@ function EmailPreview() {
         }}
         className="overflow-hidden"
       >
-        <div className="mt-2 overflow-hidden rounded-xl border-[2px] border-neutral-100 bg-white">
+        <div className="mt-2 overflow-hidden rounded border border-neutral-100 bg-white">
           <div className="grid gap-4 p-6 pb-10">
             <MemoBlurImage
               src={program?.logo || "https://assets.pimms.io/logo.png"}
@@ -391,7 +391,7 @@ function EmailPreview() {
             </p>
             <Button type="button" text="Accept Invite" className="w-fit" />
           </div>
-          <div className="grid gap-1 border-t-[6px] border-neutral-100 bg-neutral-50 px-6 py-4">
+          <div className="grid gap-1 border-x border-neutral-100 bg-neutral-50 px-6 py-4">
             <p className="text-sm text-neutral-500">
               <strong className="font-medium text-neutral-900">From: </strong>
               alexandre@pimms.io

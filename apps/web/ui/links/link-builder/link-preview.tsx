@@ -305,7 +305,7 @@ function DefaultOGPreview({
 
   return (
     <div>
-      <div className="group relative overflow-hidden rounded-xl border-[6px] border-neutral-200">
+      <div className="group relative overflow-hidden rounded border border-neutral-200">
         {children}
       </div>
       <ReactTextareaAutosize
@@ -373,7 +373,7 @@ function FacebookOGPreview({
               }}
             />
             <ReactTextareaAutosize
-              className="mb-1 line-clamp-2 w-full resize-none rounded-md border-none bg-neutral-200 bg-transparent p-0 text-xs text-[#606770] outline-none focus:ring-0"
+              className="mb-1 line-clamp-2 w-full resize-none rounded border-none bg-neutral-200 bg-transparent p-0 text-xs text-[#606770] outline-none focus:ring-0"
               value={description || "Add a description..."}
               maxRows={2}
               disabled={!!doIndex}
@@ -404,9 +404,9 @@ function LinkedInOGPreview({ title, hostname, children }: OGPreviewProps) {
   const { proxy, doIndex } = watch();
 
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-[#8c8c8c33] px-4 py-3">
+    <div className="flex items-center gap-3 rounded border border-[#8c8c8c33] px-4 py-3">
       <div
-        className="relative w-32 shrink-0 overflow-hidden rounded-lg"
+        className="relative w-32 shrink-0 overflow-hidden rounded"
         style={{ "--aspect": "128/72" } as any}
       >
         {children}
@@ -440,7 +440,7 @@ function XOGPreview({ title, hostname, children }: OGPreviewProps) {
 
   return (
     <div>
-      <div className="group relative overflow-hidden rounded-2xl border border-neutral-300">
+      <div className="group relative overflow-hidden rounded border border-neutral-300">
         {children}
         <div className="absolute bottom-2 left-0 w-full px-2">
           <div className="w-fit max-w-full rounded bg-black/[0.77] px-1.5 py-px">

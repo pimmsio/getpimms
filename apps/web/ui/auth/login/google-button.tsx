@@ -1,5 +1,6 @@
 import { Button } from "@dub/ui";
 import { Google } from "@dub/ui/icons";
+import { CBE_DOMAIN } from "@dub/utils";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useContext } from "react";
@@ -12,6 +13,11 @@ export function GoogleButton({ next }: { next?: string }) {
   const { setClickedMethod, clickedMethod, setLastUsedAuthMethod } =
     useContext(LoginFormContext);
 
+  // Check if we're on CBE domain
+  const isCbeDomain =
+    typeof window !== "undefined" &&
+    window.location.hostname.startsWith("cbe.");
+
   return (
     <Button
       text="Continue with Google"
@@ -19,10 +25,11 @@ export function GoogleButton({ next }: { next?: string }) {
       onClick={() => {
         setClickedMethod("google");
         setLastUsedAuthMethod("google");
+
+        const callbackUrl = isCbeDomain ? `${CBE_DOMAIN}/success` : finalNext;
+
         signIn("google", {
-          ...(finalNext && finalNext.length > 0
-            ? { callbackUrl: finalNext }
-            : {}),
+          ...(callbackUrl && callbackUrl.length > 0 ? { callbackUrl } : {}),
         });
       }}
       loading={clickedMethod === "google"}

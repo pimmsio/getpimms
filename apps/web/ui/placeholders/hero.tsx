@@ -10,7 +10,7 @@ const HERO_GRADIENT = `radial-gradient(77% 116% at 37% 67%, #EEA5BA, rgba(238, 1
 
 export function Hero({ children }: PropsWithChildren) {
   return (
-    <div className="relative mx-auto mt-4 w-full max-w-screen-lg overflow-hidden rounded-2xl bg-neutral-50 p-6 text-center sm:p-20 sm:px-0">
+    <div className="relative mx-auto mt-4 w-full max-w-screen-lg overflow-hidden rounded bg-neutral-50 p-6 text-center sm:p-20 sm:px-0">
       {children}
     </div>
   );

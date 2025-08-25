@@ -5,8 +5,6 @@ import { ChevronDown, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PropsWithChildren, ReactNode, useMemo, useState } from "react";
-import { CreateProgramCard } from "./create-program-card";
-import SatisMeter from "./satismeter";
 
 export type NavItemCommon = {
   name: string;
@@ -65,7 +63,7 @@ export function SidebarNav<T extends Record<any, any>>({
                 key={area}
                 href={backHref ?? "/"}
                 className={cn(
-                  "rounded-md px-1 outline-none transition-opacity focus-visible:ring-2 focus-visible:ring-black/50",
+                  "rounded px-1 outline-none transition-opacity focus-visible:ring-0 focus-visible:ring-black/50",
                   area === currentArea
                     ? "relative opacity-100"
                     : "pointer-events-none absolute opacity-0",
@@ -112,7 +110,7 @@ export function SidebarNav<T extends Record<any, any>>({
                   ))}
                 </div>
 
-                {currentArea === "default" && <CreateProgramCard />}
+                {/* {currentArea === "default" && <CreateProgramCard />} */}
 
                 <AnimatePresence>
                   {showNews && (
@@ -141,13 +139,13 @@ export function SidebarNav<T extends Record<any, any>>({
       <div className="relative mx-auto flex items-center justify-between gap-1 pb-2 pt-1">
         <NavWordmark className="h-2.5" isInApp />
       </div>
-      {data.session?.user?.id && (
+      {/* {data.session?.user?.id && (
         <SatisMeter
           userId={data.session?.user?.id}
           email={data.session?.user?.email}
           name={data.session?.user?.name}
         />
-      )}
+      )} */}
     </ClientOnly>
   );
 }
@@ -178,7 +176,7 @@ function NavItem({ item }: { item: NavItemType | NavSubItemType }) {
         onPointerLeave={() => setHovered(false)}
         className={cn(
           "group flex items-center gap-2.5 rounded-full p-0.5 text-sm leading-none text-neutral-600 transition-[background-color,color,font-weight] duration-75 hover:bg-neutral-200/50 active:bg-neutral-200/80 sm:p-2",
-          "outline-none focus-visible:ring-2 focus-visible:ring-black/50",
+          "outline-none focus-visible:ring-0 focus-visible:ring-black/50",
           isActive &&
             !items &&
             "bg-zinc-600 font-medium text-white hover:bg-zinc-700 active:bg-zinc-800",

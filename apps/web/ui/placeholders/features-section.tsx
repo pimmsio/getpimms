@@ -20,7 +20,7 @@ export function FeaturesSection({
   // return (
   //   <div className="mt-20">
   //     <div className="mx-auto w-full max-w-xl px-4 text-center">
-  //       <div className="mx-auto flex h-7 w-fit items-center rounded-full border-[6px] border-neutral-100 bg-white px-4 text-xs text-neutral-800">
+  //       <div className="mx-auto flex h-7 w-fit items-center rounded-full border border-neutral-100 bg-white px-4 text-xs text-neutral-800">
   //         What is Dub?
   //       </div>
   //       <h2 className="font-display mt-2 text-balance text-3xl font-medium text-neutral-900">
@@ -178,8 +178,8 @@ function FeatureCard({
         <Link
           href={href}
           className={cn(
-            "mt-6 w-fit whitespace-nowrap rounded-xl border-[6px] border-neutral-200 bg-white px-3 py-2 text-sm font-medium leading-none text-neutral-900 transition-colors duration-75",
-            "outline-none hover:bg-neutral-50 focus-visible:border-neutral-900 focus-visible:ring-1 focus-visible:ring-neutral-900 active:bg-neutral-100",
+            "mt-6 w-fit whitespace-nowrap rounded border border-neutral-200 bg-white px-3 py-2 text-sm font-medium leading-none text-neutral-900 transition-colors duration-75",
+            "outline-none hover:bg-neutral-50 focus-visible:border-neutral-900 focus-visible:ring-0 focus-visible:ring-neutral-900 active:bg-neutral-100",
           )}
         >
           {linkText}

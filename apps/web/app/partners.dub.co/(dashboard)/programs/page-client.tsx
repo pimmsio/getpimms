@@ -29,7 +29,7 @@ export function PartnersDashboardPageClient() {
           cardContent={
             <>
               <GridIcon className="size-4 text-neutral-700" />
-              <div className="h-2.5 w-24 min-w-0 rounded-sm bg-neutral-200" />
+              <div className="h-2.5 w-24 min-w-0 rounded bg-neutral-200" />
               <div className="xs:flex hidden grow items-center justify-end gap-1.5 text-neutral-500">
                 <CircleDollar className="size-3.5" />
               </div>

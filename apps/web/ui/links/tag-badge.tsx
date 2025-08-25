@@ -21,9 +21,9 @@ export default function TagBadge({
   return (
     <span
       className={cn(
-        "my-auto block whitespace-nowrap rounded-md border px-2 py-0.5 text-sm",
+        "my-auto block whitespace-nowrap rounded border px-2 py-0.5 text-sm",
         (withIcon || plus) &&
-          "flex items-center gap-x-1.5 p-1.5 sm:rounded-md sm:px-2 sm:py-0.5",
+          "flex items-center gap-x-1.5 p-1.5 sm:rounded sm:px-2 sm:py-0.5",
         color === "red" && "border-red-300 bg-red-100 text-red-600",
         color === "yellow" && "border-yellow-300 bg-yellow-100 text-yellow-600",
         color === "green" && "border-green-300 bg-green-100 text-green-600",

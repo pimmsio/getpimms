@@ -25,6 +25,7 @@ export const validDateRangeForPlan = ({
   if (
     (!plan || plan === "free") &&
     (interval === "90d" ||
+      interval === "6m" ||
       interval === "1y" ||
       interval === "ytd" ||
       (start && getDaysDifference(new Date(start), end || now) > 31))
@@ -33,7 +34,24 @@ export const validDateRangeForPlan = ({
       throw new DubApiError({
         code: "forbidden",
         message:
-          "You can only get analytics for up to 30 days on a Free plan. Upgrade to Pro or Business to get analytics for longer periods.",
+          "You can only get analytics for up to 30 days on a Free plan. Upgrade to Starter or Pro to get analytics for longer periods.",
+      });
+    } else {
+      return false;
+    }
+  }
+
+  // Starter plan users can only get analytics for 6 months
+  if (
+    plan === "starter" &&
+    start &&
+    getDaysDifference(new Date(start), end || now) > 183
+  ) {
+    if (throwError) {
+      throw new DubApiError({
+        code: "forbidden",
+        message:
+          "You can only get analytics for up to 6 months on a Starter plan. Upgrade to Pro to get analytics for longer periods.",
       });
     } else {
       return false;

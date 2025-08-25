@@ -12,7 +12,7 @@ export const AllowedHostnames = () => {
   const { allowedHostnames, loading } = useWorkspace();
 
   return (
-    <div className="grid gap-5 rounded-lg border-[6px] border-neutral-100 p-5">
+    <div className="grid gap-5 rounded border border-neutral-100 p-5">
       <div className="flex flex-col gap-1">
         <h2 className="text-xl font-semibold tracking-tight text-black">
           Allowed hostnames
@@ -100,7 +100,7 @@ const AddHostnameForm = () => {
         addHostname();
       }}
     >
-      <div className="relative mt-2 flex-1 rounded-md shadow-sm">
+      <div className="relative mt-2 flex-1 rounded shadow-sm">
         <input
           type="text"
           required
@@ -109,7 +109,7 @@ const AddHostnameForm = () => {
           autoComplete="off"
           placeholder="example.com"
           className={cn(
-            "block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+            "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
           )}
         />
       </div>

@@ -97,10 +97,10 @@ export function OnboardingForm({
         <input
           type="text"
           className={cn(
-            "mt-2 block w-full rounded-md read-only:bg-neutral-100 read-only:text-neutral-500 focus:outline-none sm:text-sm",
+            "mt-2 block w-full rounded read-only:bg-neutral-100 read-only:text-neutral-500 focus:outline-none sm:text-sm",
             errors.name
-              ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
-              : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-500",
+              ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
+              : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0",
           )}
           autoFocus={!isMobile && !errors.name}
           {...register("name", {
@@ -122,7 +122,7 @@ export function OnboardingForm({
               <FileUpload
                 accept="images"
                 className={cn(
-                  "mt-2 size-20 rounded-full border-[2px] border-neutral-300",
+                  "mt-2 size-20 rounded-full border border-neutral-300",
                   errors.image && "border-0 ring-2 ring-red-500",
                 )}
                 iconClassName="size-5"
@@ -141,7 +141,7 @@ export function OnboardingForm({
             <div
               className={cn(
                 buttonVariants({ variant: "secondary" }),
-                "flex h-7 w-fit cursor-pointer items-center rounded-md border px-2 text-xs",
+                "flex h-7 w-fit cursor-pointer items-center rounded border px-2 text-xs",
               )}
             >
               Upload image
@@ -183,10 +183,10 @@ export function OnboardingForm({
         </span>
         <ReactTextareaAutosize
           className={cn(
-            "mt-2 block w-full rounded-md focus:outline-none sm:text-sm",
+            "mt-2 block w-full rounded focus:outline-none sm:text-sm",
             errors.description
-              ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
-              : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-500",
+              ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
+              : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0",
           )}
           placeholder="Tell us about the kind of content you create – e.g. tech, travel, fashion, etc."
           minRows={3}
@@ -219,11 +219,11 @@ export function OnboardingForm({
                 }
               }}
               className={cn(
-                "flex w-full items-center gap-0.5 rounded-lg border-neutral-300 bg-neutral-100 p-0.5",
+                "flex w-full items-center gap-0.5 rounded border-neutral-300 bg-neutral-100 p-0.5",
                 partner?.stripeConnectId && "cursor-not-allowed opacity-70",
               )}
               optionClassName={cn(
-                "h-9 flex items-center justify-center rounded-lg flex-1",
+                "h-9 flex items-center justify-center rounded flex-1",
                 partner?.stripeConnectId && "pointer-events-none",
               )}
               indicatorClassName="bg-white"
@@ -253,10 +253,10 @@ export function OnboardingForm({
                 <input
                   type="text"
                   className={cn(
-                    "mt-2 block w-full rounded-md read-only:bg-neutral-100 read-only:text-neutral-500 focus:outline-none sm:text-sm",
+                    "mt-2 block w-full rounded read-only:bg-neutral-100 read-only:text-neutral-500 focus:outline-none sm:text-sm",
                     errors.companyName
-                      ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
-                      : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-500",
+                      ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
+                      : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0",
                   )}
                   readOnly={!!partner?.companyName || !!errors.companyName}
                   {...register("companyName", {

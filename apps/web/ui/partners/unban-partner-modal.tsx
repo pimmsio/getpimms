@@ -82,7 +82,7 @@ function UnbanPartnerModal({
       showModal={showUnbanPartnerModal}
       setShowModal={setShowUnbanPartnerModal}
     >
-      <div className="flex flex-col items-center justify-center space-y-3 border-b-[6px] border-neutral-100 px-4 py-8 sm:px-10">
+      <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-100 px-4 py-8 sm:px-10">
         <img
           src={partner.image || `${OG_AVATAR_URL}${partner.name}`}
           alt={partner.name}
@@ -116,10 +116,10 @@ function UnbanPartnerModal({
               below
             </h2>
           </label>
-          <div className="relative mt-2 rounded-md shadow-sm">
+          <div className="relative mt-2 rounded shadow-sm">
             <input
               className={cn(
-                "block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                 errors.confirm && "border-red-600",
               )}
               placeholder={`confirm unban ${partner.name}`}

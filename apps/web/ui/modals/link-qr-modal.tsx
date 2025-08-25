@@ -158,7 +158,7 @@ function LinkQRModalInner({
             }
             side="right"
           >
-            <kbd className="flex size-6 cursor-default items-center justify-center rounded-xl border-[2px] border-neutral-100 font-sans text-xs text-neutral-950">
+            <kbd className="flex size-6 cursor-default items-center justify-center rounded border border-neutral-100 font-sans text-xs text-neutral-950">
               Q
             </kbd>
           </Tooltip>
@@ -203,7 +203,7 @@ function LinkQRModalInner({
             </div>
           )}
         </div>
-        <div className="relative mt-2 flex h-44 items-center justify-center overflow-hidden rounded-xl border-[2px] border-neutral-300">
+        <div className="relative mt-2 flex h-44 items-center justify-center overflow-hidden rounded border border-neutral-300">
           {/* {!isMobile && (
             <ShimmerDots className="opacity-30" />
           )} */}
@@ -283,7 +283,7 @@ function LinkQRModalInner({
           QR Code Color
         </span>
         <div className="mt-2 flex gap-6">
-          <div className="relative flex h-9 w-32 shrink-0 rounded-md shadow-sm">
+          <div className="relative flex h-9 w-32 shrink-0 rounded shadow-sm">
             <Tooltip
               content={
                 <div className="flex max-w-xs flex-col items-center space-y-3 p-5 text-center">
@@ -309,7 +309,7 @@ function LinkQRModalInner({
               onChange={onColorChange}
               prefixed
               style={{ borderColor: data.fgColor }}
-              className="block w-full rounded-r-md border-2 border-l-0 pl-3 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-black sm:text-sm"
+              className="block w-full rounded-r-md border border-l-0 pl-3 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-0 sm:text-sm"
             />
           </div>
           <div className="mt-1 flex flex-wrap items-center gap-3">
@@ -325,7 +325,7 @@ function LinkQRModalInner({
                     "flex size-7 items-center justify-center rounded-full transition-all",
                     isSelected
                       ? "ring-1 ring-black ring-offset-[3px]"
-                      : "ring-black/10 hover:ring-4",
+                      : "ring-black/10 hover:ring-0",
                   )}
                   style={{ backgroundColor: color }}
                 >
@@ -424,7 +424,7 @@ function DownloadPopover({
               onClick={async () => {
                 await handleDownload("svg");
               }}
-              className="rounded-md p-2 text-left text-sm font-medium text-neutral-500 transition-all duration-75 hover:bg-neutral-100"
+              className="rounded p-2 text-left text-sm font-medium text-neutral-500 transition-all duration-75 hover:bg-neutral-100"
             >
               <IconMenu
                 text="Download SVG"
@@ -436,7 +436,7 @@ function DownloadPopover({
               onClick={async () => {
                 await handleDownload("png");
               }}
-              className="rounded-md p-2 text-left text-sm font-medium text-neutral-500 transition-all duration-75 hover:bg-neutral-100"
+              className="rounded p-2 text-left text-sm font-medium text-neutral-500 transition-all duration-75 hover:bg-neutral-100"
             >
               <IconMenu
                 text="Download PNG"
@@ -448,7 +448,7 @@ function DownloadPopover({
               onClick={async () => {
                 await handleDownload("jpg");
               }}
-              className="rounded-md p-2 text-left text-sm font-medium text-neutral-500 transition-all duration-75 hover:bg-neutral-100"
+              className="rounded p-2 text-left text-sm font-medium text-neutral-500 transition-all duration-75 hover:bg-neutral-100"
             >
               <IconMenu
                 text="Download JPEG"
@@ -511,7 +511,7 @@ function CopyPopover({
                 error: "Failed to copy",
               });
             }}
-            className="rounded-md p-2 text-left text-sm font-medium text-neutral-500 transition-all duration-75 hover:bg-neutral-100"
+            className="rounded p-2 text-left text-sm font-medium text-neutral-500 transition-all duration-75 hover:bg-neutral-100"
           >
             <IconMenu
               text="Copy Image"
@@ -539,7 +539,7 @@ function CopyPopover({
               });
               setOpenPopover(false);
             }}
-            className="rounded-md p-2 text-left text-sm font-medium text-neutral-500 transition-all duration-75 hover:bg-neutral-100"
+            className="rounded p-2 text-left text-sm font-medium text-neutral-500 transition-all duration-75 hover:bg-neutral-100"
           >
             <IconMenu
               text="Copy URL"

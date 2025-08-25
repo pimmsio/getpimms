@@ -59,7 +59,7 @@ export function DefaultDomains() {
   const [submitting, setSubmitting] = useState(false);
 
   return (
-    <div className="my-10 grid gap-5 border-t-[6px] border-neutral-100 py-10">
+    <div className="my-10 grid gap-5 border-x border-neutral-100 py-10">
       <div>
         <h2 className="text-xl font-semibold tracking-tight text-black">
           Default Domains
@@ -80,7 +80,7 @@ export function DefaultDomains() {
           return (
             <div
               key={slug}
-              className="flex items-center justify-between gap-4 rounded-xl border-[6px] border-neutral-100 bg-white p-5"
+              className="flex items-center justify-between gap-4 rounded border border-neutral-100 bg-white p-5"
             >
               <DomainCardTitleColumn
                 domain={slug}

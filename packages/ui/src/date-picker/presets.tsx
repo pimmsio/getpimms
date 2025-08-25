@@ -77,7 +77,7 @@ const Presets = <TPreset extends Preset, TValue>({
 
   return (
     <Command
-      className="w-full rounded ring-neutral-200 ring-offset-2 focus:outline-none"
+      className="w-full rounded ring-transparent ring-offset-2 focus:outline-none"
       tabIndex={0}
       autoFocus
       loop
@@ -92,7 +92,7 @@ const Presets = <TPreset extends Preset, TValue>({
               title={preset.label}
               value={preset.id}
               className={cn(
-                "group relative flex cursor-pointer items-center justify-between overflow-hidden text-ellipsis whitespace-nowrap rounded border-[6px] border-neutral-100",
+                "group relative flex cursor-pointer items-center justify-between overflow-hidden text-ellipsis whitespace-nowrap rounded border border-neutral-100",
                 "px-2.5 py-1.5 text-left text-sm text-neutral-700 shadow-sm outline-none sm:w-full sm:border-none sm:py-2 sm:shadow-none",
                 "disabled:pointer-events-none disabled:opacity-50",
                 "sm:data-[selected=true]:bg-neutral-100",

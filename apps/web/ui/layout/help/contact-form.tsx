@@ -151,9 +151,9 @@ export function ContactForm({
                 onKeyDown={handleKeyDown}
                 className={`${
                   false
-                    ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
-                    : "border-neutral-300 text-neutral-900 placeholder-neutral-300 focus:border-neutral-500 focus:ring-neutral-500"
-                } mt-1 block w-full resize-none rounded-md focus:outline-none sm:text-sm`}
+                    ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
+                    : "border-neutral-300 text-neutral-900 placeholder-neutral-300 focus:border-neutral-500 focus:ring-0"
+                } mt-1 block w-full resize-none rounded focus:outline-none sm:text-sm`}
               />
             </label>
 
@@ -161,7 +161,7 @@ export function ContactForm({
               {uploads.map((upload) => (
                 <div
                   key={upload.attachmentId}
-                  className="flex w-full items-center justify-between rounded-xl border-[2px] border-neutral-100"
+                  className="flex w-full items-center justify-between rounded border border-neutral-100"
                 >
                   <div className="flex flex-1 items-center space-x-2 p-2">
                     {upload.uploading ? (
@@ -194,14 +194,14 @@ export function ContactForm({
             </div>
             <FileUpload
               accept="any"
-              className="aspect-[5/1] w-full rounded-md border border-dashed border-neutral-300"
+              className="aspect-[5/1] w-full rounded border border-dashed border-neutral-300"
               iconClassName="w-5 h-5"
               variant="plain"
               onChange={async ({ file }) => await handleUpload(file)}
               content="Drag and drop or click to upload."
             /> */}
 
-            <div className="fixed bottom-0 left-0 z-10 flex h-16 w-full items-center justify-center rounded-b-lg bg-white px-3 sm:px-6">
+            <div className="fixed bottom-0 left-0 z-10 flex h-16 w-full items-center justify-center rounded-b bg-white px-3 sm:px-6">
               <Button
                 className="h-9"
                 disabled={!data.message}

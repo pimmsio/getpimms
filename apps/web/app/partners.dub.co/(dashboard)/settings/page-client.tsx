@@ -29,8 +29,8 @@ export function ProfileSettingsPageClient() {
 
   return (
     <MaxWidthWrapper className="mb-20 flex flex-col gap-8">
-      <div className="max-w-screen-md rounded-xl border-[6px] border-neutral-100 bg-white">
-        <div className="border-b-[6px] border-neutral-100 p-6">
+      <div className="max-w-screen-md rounded border border-neutral-100 bg-white">
+        <div className="border-b border-neutral-100 p-6">
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-medium text-neutral-800">About you</h2>
           </div>
@@ -52,10 +52,10 @@ export function ProfileSettingsPageClient() {
       </div>
 
       <div
-        className="max-w-screen-md rounded-xl border-[6px] border-neutral-100 bg-white"
+        className="max-w-screen-md rounded border border-neutral-100 bg-white"
         id="online-presence"
       >
-        <div className="border-b-[6px] border-neutral-100 p-6">
+        <div className="border-b border-neutral-100 p-6">
           <h2 className="text-xl font-medium text-neutral-800">
             Online presence
           </h2>
@@ -163,7 +163,7 @@ function ProfileForm({ partner }: { partner: PartnerProps }) {
                   render={({ field }) => (
                     <FileUpload
                       accept="images"
-                      className="mt-2 size-14 shrink-0 rounded-full border-[2px] border-neutral-300"
+                      className="mt-2 size-14 shrink-0 rounded-full border border-neutral-300"
                       iconClassName="w-5 h-5"
                       previewClassName="size-14 rounded-full"
                       variant="plain"
@@ -182,7 +182,7 @@ function ProfileForm({ partner }: { partner: PartnerProps }) {
                   <div
                     className={cn(
                       buttonVariants({ variant: "secondary" }),
-                      "flex h-7 w-fit cursor-pointer items-center rounded-md border px-2 text-xs",
+                      "flex h-7 w-fit cursor-pointer items-center rounded border px-2 text-xs",
                     )}
                   >
                     Upload image
@@ -204,10 +204,10 @@ function ProfileForm({ partner }: { partner: PartnerProps }) {
                 <input
                   type="text"
                   className={cn(
-                    "mt-2 block w-full rounded-md focus:outline-none sm:text-sm",
+                    "mt-2 block w-full rounded focus:outline-none sm:text-sm",
                     errors.name
-                      ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
-                      : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-500",
+                      ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
+                      : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0",
                   )}
                   placeholder="Acme, Inc."
                   {...register("name", {
@@ -253,10 +253,10 @@ function ProfileForm({ partner }: { partner: PartnerProps }) {
               <div>
                 <ReactTextareaAutosize
                   className={cn(
-                    "mt-2 block w-full rounded-md focus:outline-none sm:text-sm",
+                    "mt-2 block w-full rounded focus:outline-none sm:text-sm",
                     errors.name
-                      ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
-                      : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-500",
+                      ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
+                      : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0",
                   )}
                   placeholder="Tell us about the kind of content you create – e.g. tech, travel, fashion, etc."
                   minRows={3}
@@ -294,11 +294,11 @@ function ProfileForm({ partner }: { partner: PartnerProps }) {
                         }
                       }}
                       className={cn(
-                        "flex w-full items-center gap-0.5 rounded-lg border-neutral-300 bg-neutral-100 p-0.5",
+                        "flex w-full items-center gap-0.5 rounded border-neutral-300 bg-neutral-100 p-0.5",
                         sentPayoutsCount > 0 && "cursor-not-allowed",
                       )}
                       optionClassName={cn(
-                        "h-9 flex items-center justify-center rounded-lg flex-1",
+                        "h-9 flex items-center justify-center rounded flex-1",
                         sentPayoutsCount > 0 && "pointer-events-none",
                       )}
                       indicatorClassName="bg-white"
@@ -334,10 +334,10 @@ function ProfileForm({ partner }: { partner: PartnerProps }) {
                       <input
                         type="text"
                         className={cn(
-                          "mt-2 block w-full rounded-md focus:outline-none sm:text-sm",
+                          "mt-2 block w-full rounded focus:outline-none sm:text-sm",
                           errors.companyName
-                            ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
-                            : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-500",
+                            ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
+                            : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0",
                         )}
                         disabled={sentPayoutsCount > 0}
                         {...register("companyName", {
@@ -352,7 +352,7 @@ function ProfileForm({ partner }: { partner: PartnerProps }) {
           </AnimatePresence>
         </div>
       </div>
-      <div className="flex justify-end rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-100 px-5 py-3.5">
+      <div className="flex justify-end rounded-b border-x border-neutral-100 bg-neutral-100 px-5 py-3.5">
         <Button
           type="submit"
           text="Save changes"

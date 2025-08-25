@@ -168,7 +168,7 @@ export function Form() {
           <span className="block text-sm font-medium text-neutral-700">
             Link Preview
           </span>
-          <div className="relative aspect-[1.91/1] w-full overflow-hidden rounded-xl border-[2px] border-neutral-300 bg-neutral-100">
+          <div className="relative aspect-[1.91/1] w-full overflow-hidden rounded border border-neutral-300 bg-neutral-100">
             {previewImage ? (
               <img
                 src={previewImage}

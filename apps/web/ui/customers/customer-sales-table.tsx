@@ -97,9 +97,9 @@ export function CustomerSalesTable({
   return (
     <div className="overflow-x-auto">
       {isLoading ? (
-        <div className="flex h-32 w-full animate-pulse rounded-lg border border-transparent bg-neutral-100" />
+        <div className="flex h-32 w-full animate-pulse rounded border border-transparent bg-neutral-100" />
       ) : !sales?.length ? (
-        <div className="border-border-subtle flex h-32 w-full items-center justify-center rounded-lg border text-xs text-neutral-500">
+        <div className="border-border-subtle flex h-32 w-full items-center justify-center rounded border text-xs text-neutral-500">
           {sales?.length === 0 ? "No sales yet" : "Failed to load sales"}
         </div>
       ) : (

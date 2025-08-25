@@ -132,7 +132,7 @@ function TargetingModal({
                 }
                 side="right"
               >
-                <kbd className="flex size-6 cursor-default items-center justify-center gap-1 rounded-xl border-[2px] border-neutral-100 font-sans text-xs text-neutral-950">
+                <kbd className="flex size-6 cursor-default items-center justify-center gap-1 rounded border border-neutral-100 font-sans text-xs text-neutral-950">
                   G
                 </kbd>
               </Tooltip>
@@ -206,7 +206,7 @@ function TargetingModal({
                               className: cn(
                                 "w-32 sm:w-40 rounded-r-none border-r-transparent justify-start px-2.5",
                                 "data-[state=open]:ring-1 data-[state=open]:ring-neutral-500 data-[state=open]:border-neutral-500",
-                                "focus:ring-1 focus:ring-neutral-500 focus:border-neutral-500 transition-none",
+                                "focus:ring-0 focus:ring-0 focus:border-neutral-500 transition-none",
                                 !key && "text-neutral-600",
                               ),
                             }}
@@ -217,7 +217,7 @@ function TargetingModal({
                           type="text"
                           id={`${id}-${key}`}
                           placeholder="https://example.com"
-                          className="z-0 h-full grow rounded-r-md border border-neutral-300 text-sm placeholder-neutral-400 focus:z-[1] focus:border-neutral-500 focus:ring-neutral-500"
+                          className="z-0 h-full grow rounded-r-md border border-neutral-300 text-sm placeholder-neutral-400 focus:z-[1] focus:border-neutral-500 focus:ring-0"
                           value={value}
                           onChange={(e) => {
                             setValue(
@@ -298,11 +298,11 @@ function TargetingModal({
                   }
                 /> */}
               </div>
-              <div className="mt-2 rounded-md shadow-sm">
+              <div className="mt-2 rounded shadow-sm">
                 <input
                   id={`${id}-ios-url`}
                   placeholder="https://apps.apple.com/app/1611158928"
-                  className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                  className="block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
                   {...register("ios", {
                     onBlur: (e) => {
                       const newParams = getNewParams(e.target.value);
@@ -338,11 +338,11 @@ function TargetingModal({
                   }
                 /> */}
               </div>
-              <div className="mt-2 rounded-md shadow-sm">
+              <div className="mt-2 rounded shadow-sm">
                 <input
                   id={`${id}-android-url`}
                   placeholder="https://play.google.com/store/apps/details?id=com.disney.disneyplus"
-                  className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                  className="block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
                   {...register("android", {
                     onBlur: (e) => {
                       const newParams = getNewParams(e.target.value);
@@ -454,7 +454,7 @@ function TargetingButton({
       icon={
         <Box className={cn("size-4", enabled && "text-[#08272E]")} />
       }
-      className="flex h-auto w-full items-center gap-2 rounded-md border-0 px-1 py-1 text-neutral-700 outline-none hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-neutral-500 active:bg-neutral-200 group-hover:bg-neutral-100"
+      className="flex h-auto w-full items-center gap-2 rounded border-0 px-1 py-1 text-neutral-700 outline-none hover:bg-neutral-100 focus-visible:ring-0 focus-visible:ring-neutral-500 active:bg-neutral-200 group-hover:bg-neutral-100"
       onClick={() => setShowTargetingModal(true)}
     />
   );

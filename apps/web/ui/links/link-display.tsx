@@ -49,8 +49,8 @@ export default function LinkDisplay() {
   return (
     <Popover
       content={
-        <div className="w-full divide-y-[6px] divide-neutral-100 text-sm md:w-80">
-          {/* <div className="grid grid-cols-2 gap-2 p-3">
+        <div className="w-full divide-y divide-neutral-100 text-sm md:w-80">
+          <div className="grid grid-cols-2 gap-2 p-3">
             {[
               { id: "cards", label: "Cards", icon: GridLayoutRows },
               { id: "rows", label: "Rows", icon: TableRows2 },
@@ -60,7 +60,7 @@ export default function LinkDisplay() {
                 <button
                   key={id}
                   className={cn(
-                    "flex h-16 flex-col items-center justify-center gap-1 rounded-md border border-transparent transition-colors",
+                    "flex h-16 flex-col items-center justify-center gap-1 rounded border border-transparent transition-colors",
                     selected
                       ? "border-neutral-300 bg-neutral-100 text-neutral-950"
                       : "text-neutral-800 hover:bg-neutral-100 hover:text-neutral-950",
@@ -78,7 +78,7 @@ export default function LinkDisplay() {
                 </button>
               );
             })}
-          </div> */}
+          </div>
           {!isMegaFolder && (
             <div className="flex h-16 items-center justify-between gap-2 px-4">
               <span className="flex items-center gap-2">
@@ -95,7 +95,7 @@ export default function LinkDisplay() {
               <div className="flex items-center gap-2">
                 <div className="flex w-6 items-center justify-center">
                   <BoxArchive className="size-4 text-neutral-800 group-hover:hidden" />
-                  <kbd className="hidden rounded border-[6px] border-neutral-100 bg-neutral-100 px-2 py-0.5 text-xs font-light text-neutral-500 group-hover:block">
+                  <kbd className="hidden rounded border border-neutral-100 bg-neutral-100 px-2 py-0.5 text-xs font-light text-neutral-500 group-hover:block">
                     A
                   </kbd>
                 </div>
@@ -117,7 +117,7 @@ export default function LinkDisplay() {
               </div>
             </div>
           )} */}
-          {/* <div className="p-4">
+          <div className="p-4">
             <span className="text-xs uppercase text-neutral-500">
               Display Properties
             </span>
@@ -146,7 +146,7 @@ export default function LinkDisplay() {
                       setDisplayProperties(newDisplayProperties);
                     }}
                     className={cn(
-                      "rounded-md border px-2 py-0.5 text-sm",
+                      "rounded border px-2 py-0.5 text-sm",
                       property.mobile === false && "hidden sm:block",
                       active
                         ? "border-neutral-300 bg-neutral-100 text-neutral-950"
@@ -158,7 +158,7 @@ export default function LinkDisplay() {
                 );
               })}
             </div>
-          </div> */}
+          </div>
           <AnimatePresence initial={false}>
             {isDirty && (
               <motion.div

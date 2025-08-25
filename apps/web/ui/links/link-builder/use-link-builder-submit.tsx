@@ -120,9 +120,12 @@ export function useLinkBuilderSubmit({
 
           if (error) {
             if (error.message.includes("Upgrade to")) {
+              const planToUpgradeTo = error.message.match(
+                /Upgrade to (.*) to use/,
+              )?.[1];
               toast.custom(() => (
                 <UpgradeRequiredToast
-                  title={`You've discovered a ${workspace?.nextPlan?.name} feature!`}
+                  planToUpgradeTo={planToUpgradeTo}
                   message={error.message}
                 />
               ));

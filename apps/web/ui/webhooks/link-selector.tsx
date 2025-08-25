@@ -89,7 +89,7 @@ export function LinksSelector({
           {selectedOptions.slice(0, 10).map((option) => (
             <span
               key={option.value}
-              className="animate-fade-in flex min-w-0 items-center gap-1 rounded-md bg-neutral-100 px-1.5 py-1 text-xs text-neutral-600"
+              className="animate-fade-in flex min-w-0 items-center gap-1 rounded bg-neutral-100 px-1.5 py-1 text-xs text-neutral-600"
             >
               <LinkLogo
                 apexDomain={getApexDomain(option.meta.url)}

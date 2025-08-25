@@ -13,11 +13,11 @@ export function SimpleLinkCard({
   return (
     <div
       className={cn(
-        "flex items-center gap-3 rounded-xl border-[6px] border-neutral-100 bg-white px-4 py-3.5",
+        "flex items-center gap-3 rounded border border-neutral-100 bg-white px-4 py-3.5",
         className,
       )}
     >
-      <div className="relative flex-none rounded-full border-[6px] border-neutral-100 bg-gradient-to-t from-neutral-100 sm:p-1.5">
+      <div className="relative flex-none rounded-full border border-neutral-100 bg-gradient-to-t from-neutral-100 sm:p-1.5">
         <LinkLogo
           apexDomain={getApexDomain(link.url)}
           className="size-4 shrink-0 sm:size-5"

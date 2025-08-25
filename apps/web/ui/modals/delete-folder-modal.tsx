@@ -52,7 +52,7 @@ const DeleteFolderModal = ({
 
   return (
     <Modal showModal={showModal} setShowModal={setShowModal}>
-      <div className="space-y-2 border-b-[6px] border-neutral-100 px-4 py-4 sm:px-6">
+      <div className="space-y-2 border-b border-neutral-100 px-4 py-4 sm:px-6">
         <h3 className="text-lg font-medium">Delete {folder.name}</h3>
         <p className="text-sm text-neutral-500">
           All links within this folder will return to the main folder and will
@@ -80,12 +80,12 @@ const DeleteFolderModal = ({
 
               <div className="mt-2">
                 <div className="-m-1 rounded-[0.625rem] p-1">
-                  <div className="flex rounded-xl border-[2px] border-neutral-300 bg-white">
+                  <div className="flex rounded border border-neutral-300 bg-white">
                     <input
                       type="text"
                       required
                       autoComplete="off"
-                      className="block w-full rounded-md border-0 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-0 sm:text-sm"
+                      className="block w-full rounded border-0 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-0 sm:text-sm"
                       aria-invalid="true"
                       autoFocus={!isMobile}
                       pattern={folder.name}
@@ -96,7 +96,7 @@ const DeleteFolderModal = ({
             </div>
           </div>
 
-          <div className="mt-8 flex justify-end gap-2 border-t-[6px] border-neutral-100 px-4 py-4 sm:px-6">
+          <div className="mt-8 flex justify-end gap-2 border-x border-neutral-100 px-4 py-4 sm:px-6">
             <Button
               type="button"
               variant="secondary"

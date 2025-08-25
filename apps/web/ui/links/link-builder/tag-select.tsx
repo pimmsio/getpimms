@@ -105,51 +105,51 @@ export const TagSelect = memo(() => {
 
   const [suggestedTags, setSuggestedTags] = useState<TagProps[]>([]);
 
-  const { complete } = useCompletion({
-    api: `/api/ai/completion?workspaceId=${workspaceId}`,
-    body: {
-      model: "claude-3-haiku-20240307",
-    },
-    onFinish: (_, completion) => {
-      mutateWorkspace();
-      if (completion) {
-        const completionArr = completion.split(", ");
-        const suggestedTags = completionArr
-          .map((tag: string) => {
-            return availableTags?.find(({ name }) => name === tag) || null;
-          })
-          .filter(Boolean)
-          .slice(0, 5);
-        setSuggestedTags(suggestedTags as TagProps[]);
-      }
-    },
-  });
+  // const { complete } = useCompletion({
+  //   api: `/api/ai/completion?workspaceId=${workspaceId}`,
+  //   body: {
+  //     model: "claude-3-haiku-20240307",
+  //   },
+  //   onFinish: (_, completion) => {
+  //     mutateWorkspace();
+  //     if (completion) {
+  //       const completionArr = completion.split(", ");
+  //       const suggestedTags = completionArr
+  //         .map((tag: string) => {
+  //           return availableTags?.find(({ name }) => name === tag) || null;
+  //         })
+  //         .filter(Boolean)
+  //         .slice(0, 5);
+  //       setSuggestedTags(suggestedTags as TagProps[]);
+  //     }
+  //   },
+  // });
 
-  useEffect(() => {
-    if (
-      !linkId &&
-      debouncedUrl &&
-      title &&
-      description &&
-      !exceededAI &&
-      tags.length === 0 &&
-      suggestedTags.length === 0 &&
-      availableTags &&
-      availableTags.length > 0
-    ) {
-      complete(
-        `From the list of available tags below, suggest relevant tags for this link: 
+  // useEffect(() => {
+  //   if (
+  //     !linkId &&
+  //     debouncedUrl &&
+  //     title &&
+  //     description &&
+  //     !exceededAI &&
+  //     tags.length === 0 &&
+  //     suggestedTags.length === 0 &&
+  //     availableTags &&
+  //     availableTags.length > 0
+  //   ) {
+  //     complete(
+  //       `From the list of available tags below, suggest relevant tags for this link: 
         
-        - URL: ${debouncedUrl}
-        - Meta title: ${title}
-        - Meta description: ${description}. 
+  //       - URL: ${debouncedUrl}
+  //       - Meta title: ${title}
+  //       - Meta description: ${description}. 
         
-        Only return the tag names in comma-separated format, and nothing else. If there are no relevant tags, return an empty string.
+  //       Only return the tag names in comma-separated format, and nothing else. If there are no relevant tags, return an empty string.
         
-        Available tags: ${availableTags.map(({ name }) => name).join(", ")}`,
-      );
-    }
-  }, [linkId, debouncedUrl, title, description, tags]);
+  //       Available tags: ${availableTags.map(({ name }) => name).join(", ")}`,
+  //     );
+  //   }
+  // }, [linkId, debouncedUrl, title, description, tags]);
 
   return (
     <div>

@@ -41,7 +41,7 @@ const DefaultReward = () => {
   });
 
   return (
-    <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
+    <div className="rounded border border-neutral-100 bg-white">
       <div className="flex flex-col gap-6 px-6 py-8">
         <div className="flex items-center justify-between">
           <div>
@@ -58,9 +58,9 @@ const DefaultReward = () => {
         ) : defaultReward ? (
           <Reward reward={defaultReward} />
         ) : (
-          <div className="flex items-center justify-between gap-4 rounded-lg bg-neutral-50 p-4">
+          <div className="flex items-center justify-between gap-4 rounded bg-neutral-50 p-4">
             <div className="flex items-center gap-4">
-              <div className="flex size-10 items-center justify-center rounded-full border-[2px] border-neutral-300">
+              <div className="flex size-10 items-center justify-center rounded-full border border-neutral-300">
                 <MoneyBill className="size-5" />
               </div>
               <p className="text-sm text-neutral-600">
@@ -91,7 +91,7 @@ const AdditionalRewards = () => {
   );
 
   return (
-    <div className="rounded-xl border-[6px] border-neutral-100 bg-white">
+    <div className="rounded border border-neutral-100 bg-white">
       <div className="flex flex-col gap-6 px-6 py-8">
         <div className="flex items-center justify-between">
           <div>
@@ -116,7 +116,7 @@ const AdditionalRewards = () => {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center gap-4 rounded-lg bg-neutral-50 py-12">
+          <div className="flex flex-col items-center justify-center gap-4 rounded bg-neutral-50 py-12">
             <div className="flex items-center justify-center">
               <Gift className="size-6 text-neutral-800" />
             </div>
@@ -146,10 +146,10 @@ const Reward = ({ reward }: { reward: RewardProps }) => {
   return (
     <>
       <div
-        className="flex cursor-pointer items-center gap-4 rounded-xl border-[6px] border-neutral-100 p-4 transition-all hover:border-neutral-300"
+        className="flex cursor-pointer items-center gap-4 rounded border border-neutral-100 p-4 transition-all hover:border-neutral-300"
         onClick={() => setIsOpen(true)}
       >
-        <div className="flex size-10 items-center justify-center rounded-full border-[6px] border-neutral-100 bg-white">
+        <div className="flex size-10 items-center justify-center rounded-full border border-neutral-100 bg-white">
           <Icon className="size-4 text-neutral-600" />
         </div>
         <div className="flex flex-1 items-center justify-between">
@@ -259,8 +259,8 @@ const CreateRewardButton = () => {
 
 const RewardSkeleton = () => {
   return (
-    <div className="flex items-center gap-4 rounded-xl border-[6px] border-neutral-100 p-4">
-      <div className="flex size-10 animate-pulse items-center justify-center rounded-full border-[6px] border-neutral-100 bg-neutral-100" />
+    <div className="flex items-center gap-4 rounded border border-neutral-100 p-4">
+      <div className="flex size-10 animate-pulse items-center justify-center rounded-full border border-neutral-100 bg-neutral-100" />
       <div className="flex flex-1 items-center justify-between">
         <div className="h-4 w-64 animate-pulse rounded bg-neutral-100" />
         <div className="h-6 w-24 animate-pulse rounded-full bg-neutral-100" />

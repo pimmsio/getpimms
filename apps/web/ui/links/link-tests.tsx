@@ -70,7 +70,7 @@ export const LinkTests = memo(({ link }: { link: ResponseLink }) => {
           return (
             <li
               key={idx}
-              className="flex w-full items-center justify-between rounded-xl bg-white p-2.5"
+              className="flex w-full items-center justify-between rounded bg-white p-2.5"
             >
               <div className="flex min-w-0 items-center gap-4">
                 {/* Test percentage */}
@@ -90,7 +90,7 @@ export const LinkTests = memo(({ link }: { link: ResponseLink }) => {
                 {/* Analytics badge */}
                 <div className="flex justify-end">
                   {isLoading ? (
-                    <div className="h-7 w-32 animate-pulse rounded-md bg-neutral-100" />
+                    <div className="h-7 w-32 animate-pulse rounded bg-neutral-100" />
                   ) : error ? null : (
                     <LinkAnalyticsBadge
                       link={{

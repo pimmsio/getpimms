@@ -21,7 +21,7 @@ export default function EditColumnsButton({ table }: { table: Table<any> }) {
                 <Command.Item
                   key={column.id}
                   className={cn(
-                    "flex cursor-pointer select-none items-center gap-2 whitespace-nowrap rounded-md px-3 py-1.5",
+                    "flex cursor-pointer select-none items-center gap-2 whitespace-nowrap rounded px-3 py-1.5",
                     "data-[selected=true]:bg-neutral-100",
                   )}
                   onSelect={() => column.toggleVisibility()}

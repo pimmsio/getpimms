@@ -96,8 +96,8 @@ function WorkspaceLinks() {
 
               {isLoading ? (
                 <div className="flex grow-0 animate-pulse items-center space-x-2">
-                  <div className="h-10 w-24 rounded-md bg-neutral-200" />
-                  <div className="h-10 w-10 rounded-md bg-neutral-200" />
+                  <div className="h-10 w-24 rounded bg-neutral-200" />
+                  <div className="h-10 w-10 rounded bg-neutral-200" />
                 </div>
               ) : canCreateLinks ? (
                 <>
@@ -130,7 +130,7 @@ function WorkspaceLinks() {
                     emptyState={{
                       tagIds: (
                         <div className="flex flex-col items-center gap-2 p-2 text-center text-sm">
-                          <div className="flex items-center justify-center rounded-2xl border border-neutral-200 bg-neutral-50 p-3">
+                          <div className="flex items-center justify-center rounded border border-neutral-200 bg-neutral-50 p-3">
                             <Tag className="size-6 text-neutral-700" />
                           </div>
                           <p className="mt-2 font-medium text-neutral-950">
@@ -150,7 +150,7 @@ function WorkspaceLinks() {
                       ),
                       domain: (
                         <div className="flex flex-col items-center gap-2 p-2 text-center text-sm">
-                          <div className="flex items-center justify-center rounded-2xl border border-neutral-200 bg-neutral-50 p-3">
+                          <div className="flex items-center justify-center rounded border border-neutral-200 bg-neutral-50 p-3">
                             <Globe className="size-6 text-neutral-700" />
                           </div>
                           <p className="mt-2 font-medium text-neutral-950">
@@ -306,7 +306,7 @@ const MoreLinkOptions = () => {
                   setOpenPopover(false);
                   setShowExportLinksModal(true);
                 }}
-                className="w-full rounded-md p-2 hover:bg-neutral-100 active:bg-neutral-200"
+                className="w-full rounded p-2 hover:bg-neutral-100 active:bg-neutral-200"
               >
                 <IconMenu
                   text="Export as CSV"
@@ -350,14 +350,14 @@ function ImportOption({
         />
       }
     >
-      <div className="flex w-full cursor-not-allowed items-center justify-between space-x-2 rounded-md p-2 text-sm text-neutral-400 [&_img]:grayscale">
+      <div className="flex w-full cursor-not-allowed items-center justify-between space-x-2 rounded p-2 text-sm text-neutral-400 [&_img]:grayscale">
         {children}
       </div>
     </Tooltip>
   ) : (
     <button
       onClick={onClick}
-      className="w-full rounded-md p-2 hover:bg-neutral-100 active:bg-neutral-200"
+      className="w-full rounded p-2 hover:bg-neutral-100 active:bg-neutral-200"
     >
       {children}
     </button>

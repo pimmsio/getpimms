@@ -13,7 +13,7 @@ export function ImageBlock({
         alt={block.data.alt}
         width={block.data.width}
         height={block.data.height}
-        className="block rounded-lg"
+        className="block rounded"
       />
     </div>
   );

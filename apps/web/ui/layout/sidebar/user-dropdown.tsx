@@ -14,7 +14,7 @@ export default function UserDropdown() {
   return (
     <Popover
       content={
-        <div className="flex w-full flex-col space-y-px rounded-md bg-white p-2 sm:w-56">
+        <div className="flex w-full flex-col space-y-px rounded bg-white p-2 sm:w-56">
           {session?.user ? (
             <div className="p-2">
               <p className="truncate text-sm font-medium text-neutral-900">
@@ -64,8 +64,8 @@ export default function UserDropdown() {
       <button
         onClick={() => setOpenPopover(!openPopover)}
         className={cn(
-          "group relative rounded-full ring-offset-1 ring-offset-neutral-100 transition-all hover:ring-2 hover:ring-black/10 active:ring-black/15 data-[state='open']:ring-black/15",
-          "outline-none focus-visible:ring-2 focus-visible:ring-black/50",
+          "group relative rounded-full ring-offset-1 ring-offset-neutral-100 transition-all hover:ring-0 hover:ring-black/10 active:ring-black/15 data-[state='open']:ring-black/15",
+          "outline-none focus-visible:ring-0 focus-visible:ring-black/50",
         )}
       >
         {session?.user ? (
@@ -99,7 +99,7 @@ function UserOption<T extends ElementType = "button">({
 
   return (
     <Component
-      className="flex items-center gap-x-4 rounded-md px-2.5 py-2 text-sm transition-all duration-75 hover:bg-neutral-200/50 active:bg-neutral-200/80"
+      className="flex items-center gap-x-4 rounded px-2.5 py-2 text-sm transition-all duration-75 hover:bg-neutral-200/50 active:bg-neutral-200/80"
       {...rest}
     >
       <Icon className="size-4 text-neutral-500" />

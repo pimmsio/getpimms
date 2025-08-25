@@ -118,7 +118,7 @@ export async function GET(req: NextRequest) {
           </div>
           <div tw="mt-10 flex">
             {program.rewardAmount && program.rewardType && (
-              <div tw="w-full flex items-center rounded-md bg-neutral-100 border-[6px] border-neutral-100 p-8 text-2xl">
+              <div tw="w-full flex items-center rounded bg-neutral-100 border border-neutral-100 p-8 text-2xl">
                 {/* @ts-ignore */}
                 <InvoiceDollar tw="w-8 h-8 mr-4" />
                 <strong
@@ -144,7 +144,7 @@ export async function GET(req: NextRequest) {
             )}
           </div>
           <div
-            tw="mt-10 text-white px-4 h-16 flex items-center text-2xl justify-center rounded-lg border-2 border-white/30 shadow-xl"
+            tw="mt-10 text-white px-4 h-16 flex items-center text-2xl justify-center rounded border border-white/30 shadow-xl"
             style={{
               fontFamily: "Inter Semibold",
               backgroundColor: brandColor,

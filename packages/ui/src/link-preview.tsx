@@ -53,7 +53,7 @@ export function LinkPreview({ defaultUrl }: { defaultUrl?: string }) {
             id="url"
             type="url"
             autoFocus={!isMobile}
-            className="block w-full rounded-md border-neutral-200 pl-10 text-sm text-neutral-900 placeholder-neutral-400 shadow-lg focus:border-neutral-500 focus:outline-none focus:ring-neutral-500"
+            className="block w-full rounded border-neutral-200 pl-10 text-sm text-neutral-900 placeholder-neutral-400 shadow-lg focus:border-neutral-500 focus:outline-none focus:ring-0"
             placeholder="Enter your URL"
             defaultValue={url}
             onChange={(e) =>
@@ -68,7 +68,7 @@ export function LinkPreview({ defaultUrl }: { defaultUrl?: string }) {
         </div>
       )}
 
-      <div className="relative overflow-hidden rounded-xl border-[2px] border-neutral-300 bg-neutral-50">
+      <div className="relative overflow-hidden rounded border border-neutral-300 bg-neutral-50">
         {isValidating && (
           <div className="absolute flex h-[250px] w-full flex-col items-center justify-center space-y-4 border-b border-neutral-300 bg-neutral-50">
             <LoadingCircle />
@@ -92,21 +92,21 @@ export function LinkPreview({ defaultUrl }: { defaultUrl?: string }) {
           {hostname ? (
             <p className="text-sm text-[#536471]">{hostname}</p>
           ) : (
-            <div className="mb-1 h-4 w-24 rounded-md bg-neutral-100" />
+            <div className="mb-1 h-4 w-24 rounded bg-neutral-100" />
           )}
           {title ? (
             <h3 className="truncate text-sm font-medium text-[#0f1419]">
               {title}
             </h3>
           ) : (
-            <div className="mb-1 h-4 w-full rounded-md bg-neutral-100" />
+            <div className="mb-1 h-4 w-full rounded bg-neutral-100" />
           )}
           {description ? (
             <p className="line-clamp-2 text-sm text-[#536471]">{description}</p>
           ) : (
             <div className="grid gap-2">
-              <div className="h-4 w-full rounded-md bg-neutral-100" />
-              <div className="h-4 w-48 rounded-md bg-neutral-100" />
+              <div className="h-4 w-full rounded bg-neutral-100" />
+              <div className="h-4 w-48 rounded bg-neutral-100" />
             </div>
           )}
         </div>
@@ -129,12 +129,12 @@ export function LinkPreviewPlaceholder({
           id="url"
           type="url"
           disabled
-          className="block w-full rounded-md border-neutral-200 pl-10 text-sm text-neutral-900 placeholder-neutral-400 shadow-lg focus:border-neutral-500 focus:outline-none focus:ring-neutral-500"
+          className="block w-full rounded border-neutral-200 pl-10 text-sm text-neutral-900 placeholder-neutral-400 shadow-lg focus:border-neutral-500 focus:outline-none focus:ring-0"
           placeholder="Enter your URL"
           defaultValue={defaultUrl || "https://github.com/getpimms/pim-ms"}
         />
       </div>
-      <div className="relative overflow-hidden rounded-xl border-[2px] border-neutral-300 bg-neutral-50">
+      <div className="relative overflow-hidden rounded border border-neutral-300 bg-neutral-50">
         <div className="absolute flex h-[250px] w-full flex-col items-center justify-center space-y-4 border-b border-neutral-300 bg-neutral-50">
           <LoadingCircle />
         </div>

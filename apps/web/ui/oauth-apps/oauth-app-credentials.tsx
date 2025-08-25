@@ -21,11 +21,11 @@ export default function OAuthAppCredentials({
         <label className="text-sm font-medium text-neutral-500">
           Client ID
         </label>
-        <div className="grid grid-cols-[1fr,auto] items-center gap-2 rounded-xl border-[2px] border-neutral-300 bg-white p-3">
+        <div className="grid grid-cols-[1fr,auto] items-center gap-2 rounded border border-neutral-300 bg-white p-3">
           <p className="truncate font-mono text-sm text-neutral-500">
             {clientId}
           </p>
-          <CopyButton value={clientId} className="rounded-md" />
+          <CopyButton value={clientId} className="rounded" />
         </div>
       </div>
 
@@ -34,12 +34,12 @@ export default function OAuthAppCredentials({
           <label className="text-sm font-medium text-neutral-500">
             Client Secret
           </label>
-          <div className="flex items-center justify-between rounded-xl border-[2px] border-neutral-300 bg-white p-3">
+          <div className="flex items-center justify-between rounded border border-neutral-300 bg-white p-3">
             <p className="text-nowrap font-mono text-sm text-neutral-500">
               {clientSecret}
             </p>
             <div className="flex flex-col gap-2">
-              <CopyButton value={clientSecret} className="rounded-md" />
+              <CopyButton value={clientSecret} className="rounded" />
             </div>
           </div>
           <span className="text-xs text-red-400">
@@ -54,7 +54,7 @@ export default function OAuthAppCredentials({
           <label className="text-sm font-medium text-neutral-500">
             Client Secret
           </label>
-          <div className="flex items-center justify-between rounded-xl border-[2px] border-neutral-300 bg-white p-3">
+          <div className="flex items-center justify-between rounded border border-neutral-300 bg-white p-3">
             <p className="text-nowrap font-mono text-sm text-neutral-500">
               {partialClientSecret}
             </p>

@@ -41,3 +41,20 @@ code .line::before {
   background-color: #d1d5db;
   border-radius: 10px;
 }
+
+*,
+*::before,
+*::after {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Subtle glass effect - carefully implemented to avoid UI bugs */
+.glass-subtle {
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  background-color: rgba(255, 255, 255, 0.97);
+}
+
+.dark .glass-subtle {
+  background-color: rgba(0, 0, 0, 0.97);
+}

@@ -18,7 +18,7 @@ export const UpgradeRequiredToast = ({
   planToUpgradeTo = planToUpgradeTo || nextPlan?.name;
 
   return (
-    <div className="flex flex-col space-y-3 rounded-lg bg-white p-6 shadow-lg">
+    <div className="flex flex-col space-y-3 rounded bg-white p-6 shadow-lg">
       <div className="flex items-center space-x-1.5">
         <Crown className="h-5 w-5 text-black" />{" "}
         <p className="font-semibold">
@@ -30,7 +30,7 @@ export const UpgradeRequiredToast = ({
       <Link
         href={slug ? `/${slug}/upgrade` : "https://pimms.io/pricing"}
         target="_blank"
-        className="w-full rounded-md border border-black bg-black px-3 py-1.5 text-center text-sm text-white transition-all hover:bg-neutral-800 hover:ring-4 hover:ring-neutral-200"
+        className="w-full rounded border border-blue-500 bg-[#3971ff] px-3 py-1.5 text-center text-sm text-white transition-all hover:ring-0 hover:ring-transparent"
       >
         {planToUpgradeTo ? `Upgrade to ${planToUpgradeTo}` : "Contact support"}
       </Link>

@@ -27,7 +27,7 @@ export function ProgramStatsFilter({
         <div className="flex items-center gap-4 p-3 text-left transition-colors duration-75 hover:bg-neutral-50 active:bg-neutral-100">
           <div
             className={cn(
-              "flex size-10 items-center justify-center rounded-md",
+              "flex size-10 items-center justify-center rounded",
               iconClassName,
             )}
           >
@@ -40,7 +40,7 @@ export function ProgramStatsFilter({
                 {error ? "-" : nFormatter(count, { full: true })}
               </div>
             ) : (
-              <div className="h-5 w-10 min-w-0 animate-pulse rounded-md bg-neutral-200" />
+              <div className="h-5 w-10 min-w-0 animate-pulse rounded bg-neutral-200" />
             )}
           </div>
         </div>
@@ -49,7 +49,7 @@ export function ProgramStatsFilter({
           <div className="flex items-center gap-2">
             <div
               className={cn(
-                "flex size-6 items-center justify-center gap-2 rounded-md",
+                "flex size-6 items-center justify-center gap-2 rounded",
                 iconClassName,
               )}
             >
@@ -74,8 +74,8 @@ export function ProgramStatsFilter({
               )
             ) : (
               <>
-                <div className="h-5 w-16 animate-pulse rounded-md bg-neutral-200" />
-                <div className="mt-1 h-3 w-24 animate-pulse rounded-md bg-neutral-200" />
+                <div className="h-5 w-16 animate-pulse rounded bg-neutral-200" />
+                <div className="mt-1 h-3 w-24 animate-pulse rounded bg-neutral-200" />
               </>
             )}
           </div>

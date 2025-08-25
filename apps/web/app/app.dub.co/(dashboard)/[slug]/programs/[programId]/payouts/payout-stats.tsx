@@ -54,7 +54,7 @@ export function PayoutStats() {
   return (
     <>
       {payoutInvoiceSheet}
-      <div className="grid grid-cols-1 divide-neutral-200 rounded-xl border-[6px] border-neutral-100 bg-neutral-50 max-sm:divide-y sm:grid-cols-2 sm:divide-x">
+      <div className="grid grid-cols-1 divide-neutral-200 rounded border border-neutral-100 bg-neutral-50 max-sm:divide-y sm:grid-cols-2 sm:divide-x">
         <div className="flex flex-col p-4">
           <div className="flex justify-between gap-5">
             <div className="p-1">
@@ -85,7 +85,7 @@ export function PayoutStats() {
               <Tooltip
                 content={
                   <div className="w-64">
-                    <div className="border-b-[6px] border-neutral-100 p-3 text-sm font-medium text-neutral-700">
+                    <div className="border-b border-neutral-100 p-3 text-sm font-medium text-neutral-700">
                       Pending payouts
                     </div>
                     <div className="grid gap-1 p-3">
@@ -138,7 +138,7 @@ export function PayoutStats() {
               href={`/${slug}/settings/billing/invoices?type=payout`}
               className={cn(
                 buttonVariants({ variant: "secondary" }),
-                "flex h-7 items-center rounded-md border px-2 text-sm",
+                "flex h-7 items-center rounded border px-2 text-sm",
               )}
             >
               View invoices
@@ -151,7 +151,7 @@ export function PayoutStats() {
               <Tooltip
                 content={
                   <div className="w-64">
-                    <div className="border-b-[6px] border-neutral-100 p-3 text-sm font-medium text-neutral-700">
+                    <div className="border-b border-neutral-100 p-3 text-sm font-medium text-neutral-700">
                       Total paid
                     </div>
                     <div className="grid gap-1 p-3">

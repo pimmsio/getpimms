@@ -19,7 +19,7 @@ export function CustomerRowItem({ customer }: { customer: Customer }) {
           {/* <img
             alt={display}
             src={customer.avatar || ""}
-            className="size-4 shrink-0 rounded-full border-[6px] border-neutral-100"
+            className="size-4 shrink-0 rounded-full border border-neutral-100"
           /> */}
           <span className="truncate">{display}</span>
         </div>

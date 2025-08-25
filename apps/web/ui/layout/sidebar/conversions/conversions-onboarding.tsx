@@ -57,7 +57,7 @@ export function ConversionsOnboarding({
         <div className="relative mt-3">
           <button
             type="button"
-            className="flex w-full items-center gap-2 rounded-md bg-neutral-900/5 px-2 py-1.5 text-xs text-neutral-600 transition-colors duration-100 hover:bg-neutral-900/10"
+            className="flex w-full items-center gap-2 rounded bg-neutral-900/5 px-2 py-1.5 text-xs text-neutral-600 transition-colors duration-100 hover:bg-neutral-900/10"
             onClick={() => setShowConversionOnboardingModal(true)}
           >
             <Book2Small className="size-3 text-neutral-800" />

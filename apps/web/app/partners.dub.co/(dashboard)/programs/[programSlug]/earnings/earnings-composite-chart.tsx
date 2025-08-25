@@ -105,7 +105,7 @@ export function EarningsCompositeChart() {
   return (
     <div className="flex flex-col gap-6">
       <EarningsTableControls />
-      <div className="rounded-xl border-[6px] border-neutral-100 p-6">
+      <div className="rounded border border-neutral-100 p-6">
         <div className="flex w-full items-center justify-between">
           <div className="flex flex-col gap-1">
             <span className="text-sm text-neutral-500">Total Earnings</span>
@@ -122,7 +122,7 @@ export function EarningsCompositeChart() {
                   }}
                 />
               ) : (
-                <div className="h-[27px] w-24 animate-pulse rounded-md bg-neutral-200" />
+                <div className="h-[27px] w-24 animate-pulse rounded bg-neutral-200" />
               )}
             </div>
           </div>
@@ -130,7 +130,7 @@ export function EarningsCompositeChart() {
           <ToggleGroup
             className="flex w-fit shrink-0 items-center gap-1 border-neutral-100 bg-neutral-100"
             optionClassName="h-8 px-2.5 flex items-center justify-center"
-            indicatorClassName="border-[6px] border-neutral-100 bg-white"
+            indicatorClassName="border border-neutral-100 bg-white"
             options={[
               {
                 label: (
@@ -169,7 +169,7 @@ export function EarningsCompositeChart() {
               tooltipContent={(d) => {
                 return (
                   <>
-                    <div className="flex justify-between border-b-[6px] border-neutral-100 p-3 text-xs">
+                    <div className="flex justify-between border-b border-neutral-100 p-3 text-xs">
                       <p className="font-medium leading-none text-neutral-900">
                         {formatDateTooltip(d.date, {
                           interval,
@@ -193,7 +193,7 @@ export function EarningsCompositeChart() {
                               <div
                                 className={cn(
                                   colorClassName,
-                                  "size-2 shrink-0 rounded-sm bg-current opacity-50 shadow-[inset_0_0_0_1px_#0003]",
+                                  "size-2 shrink-0 rounded bg-current opacity-50 shadow-[inset_0_0_0_1px_#0003]",
                                 )}
                               />
                               <span className="min-w-0 truncate font-medium text-neutral-700">

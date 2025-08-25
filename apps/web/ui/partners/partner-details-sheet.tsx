@@ -51,7 +51,7 @@ function PartnerDetailsSheetContent({ partner }: PartnerDetailsSheetProps) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="sticky top-0 z-10 border-b-[6px] border-neutral-100 bg-white">
+      <div className="sticky top-0 z-10 border-b border-neutral-100 bg-white">
         <div className="flex items-start justify-between p-6">
           <Sheet.Title className="text-xl font-semibold">
             Partner details
@@ -75,7 +75,7 @@ function PartnerDetailsSheetContent({ partner }: PartnerDetailsSheetProps) {
 
           {/* Stats */}
           {showPartnerDetails && (
-            <div className="xs:grid-cols-3 mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-xl border-[6px] border-neutral-100 bg-neutral-200">
+            <div className="xs:grid-cols-3 mt-6 grid grid-cols-2 gap-px overflow-hidden rounded border border-neutral-100 bg-neutral-200">
               {[
                 [
                   "Clicks",
@@ -138,18 +138,18 @@ function PartnerDetailsSheetContent({ partner }: PartnerDetailsSheetProps) {
               target="_blank"
               className={cn(
                 buttonVariants({ variant: "secondary" }),
-                "flex h-8 items-center justify-center gap-2 rounded-xl border-[6px] px-2 text-sm",
+                "flex h-8 items-center justify-center gap-2 rounded border px-2 text-sm",
               )}
             >
               <LinesY className="size-4 text-neutral-900" />
               Analytics
             </Link>
             <Link
-              href={`/${slug}/events?programId=${program!.id}&partnerId=${partner.id}&interval=all`}
+              href={`/${slug}/conversions?programId=${program!.id}&partnerId=${partner.id}&interval=all`}
               target="_blank"
               className={cn(
                 buttonVariants({ variant: "secondary" }),
-                "flex h-8 items-center justify-center gap-2 rounded-xl border-[6px] px-2 text-sm",
+                "flex h-8 items-center justify-center gap-2 rounded border px-2 text-sm",
               )}
             >
               <CursorRays className="size-4 text-neutral-900" />
@@ -197,7 +197,7 @@ function PartnerDetailsSheetContent({ partner }: PartnerDetailsSheetProps) {
       {showPartnerDetails && (
         <>
           {createPayoutSheet}
-          <div className="sticky bottom-0 z-10 border-t-[6px] border-neutral-100 bg-white">
+          <div className="sticky bottom-0 z-10 border-x border-neutral-100 bg-white">
             <div className="p-5">
               <Button
                 variant="primary"
@@ -279,7 +279,7 @@ function PartnerPayouts({ partner }: { partner: EnrolledPartnerProps }) {
           target="_blank"
           className={cn(
             buttonVariants({ variant: "secondary" }),
-            "flex h-7 items-center rounded-xl border-[3px] px-2 text-sm",
+            "flex h-7 items-center rounded border px-2 text-sm",
           )}
         >
           View all
@@ -293,10 +293,10 @@ function PartnerPayouts({ partner }: { partner: EnrolledPartnerProps }) {
       description="When this partner is eligible for or has received payouts, they will appear here."
       cardContent={() => (
         <>
-          <div className="flex size-7 items-center justify-center rounded-xl border-[2px] border-neutral-100 bg-neutral-50">
+          <div className="flex size-7 items-center justify-center rounded border border-neutral-100 bg-neutral-50">
             <GreekTemple className="size-4 text-neutral-700" />
           </div>
-          <div className="h-2.5 w-28 min-w-0 rounded-sm bg-neutral-200" />
+          <div className="h-2.5 w-28 min-w-0 rounded bg-neutral-200" />
         </>
       )}
     />
@@ -328,7 +328,7 @@ const PartnerLinks = ({ partner }: { partner: EnrolledPartnerProps }) => {
         minSize: 1,
         cell: ({ row }) => (
           <Link
-            href={`/${slug}/events?event=clicks&interval=all&domain=${row.original.domain}&key=${row.original.key}`}
+            href={`/${slug}/conversions?event=clicks&interval=all&domain=${row.original.domain}&key=${row.original.key}`}
             target="_blank"
             className="block w-full cursor-alias decoration-dotted hover:underline"
           >
@@ -342,7 +342,7 @@ const PartnerLinks = ({ partner }: { partner: EnrolledPartnerProps }) => {
         minSize: 1,
         cell: ({ row }) => (
           <Link
-            href={`/${slug}/events?event=leads&interval=all&domain=${row.original.domain}&key=${row.original.key}`}
+            href={`/${slug}/conversions?event=leads&interval=all&domain=${row.original.domain}&key=${row.original.key}`}
             target="_blank"
             className="block w-full cursor-alias decoration-dotted hover:underline"
           >
@@ -356,7 +356,7 @@ const PartnerLinks = ({ partner }: { partner: EnrolledPartnerProps }) => {
         minSize: 1,
         cell: ({ row }) => (
           <Link
-            href={`/${slug}/events?event=sales&interval=all&domain=${row.original.domain}&key=${row.original.key}`}
+            href={`/${slug}/conversions?event=sales&interval=all&domain=${row.original.domain}&key=${row.original.key}`}
             target="_blank"
             className="block w-full cursor-alias decoration-dotted hover:underline"
           >
@@ -375,7 +375,7 @@ const PartnerLinks = ({ partner }: { partner: EnrolledPartnerProps }) => {
         minSize: 1,
         cell: ({ row }) => (
           <Link
-            href={`/${slug}/events?event=sales&interval=all&domain=${row.original.domain}&key=${row.original.key}`}
+            href={`/${slug}/conversions?event=sales&interval=all&domain=${row.original.domain}&key=${row.original.key}`}
             target="_blank"
             className="block w-full cursor-alias decoration-dotted hover:underline"
           >

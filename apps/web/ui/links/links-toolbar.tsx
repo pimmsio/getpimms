@@ -219,7 +219,7 @@ export const LinksToolbar = memo(
               // "max-[1330px]:left-0 max-[1330px]:translate-x-0",
             )}
           >
-            <div className="ring-t-[6px] rounded-t-xl border-[6px] border-b-0 border-neutral-100 bg-zinc-50 p-0 ring-neutral-100">
+            <div className="ring-t-[6px] rounded-t-xl border border-b-0 border-neutral-100 bg-zinc-50 p-0 ring-neutral-100">
               <AnimatedSizeContainer height>
                 <div
                   className={cn(
@@ -274,7 +274,7 @@ export const LinksToolbar = memo(
                           setSelectedLinkIds([]);
                           setIsSelectMode(false);
                         }}
-                        className="rounded-md p-1.5 transition-colors duration-75 hover:bg-neutral-50 active:bg-neutral-100"
+                        className="rounded p-1.5 transition-colors duration-75 hover:bg-neutral-50 active:bg-neutral-100"
                       >
                         <X className="size-4 text-neutral-900" />
                       </button>

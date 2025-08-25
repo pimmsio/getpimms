@@ -26,7 +26,7 @@ export function ReferralsEmbedActivity({
   );
 
   return (
-    <div className="border-border-subtle bg-bg-default rounded-xl border-[6px] sm:col-span-2">
+    <div className="border-border-subtle bg-bg-default rounded border sm:col-span-2">
       {isEmpty ? (
         <EmptyState />
       ) : (

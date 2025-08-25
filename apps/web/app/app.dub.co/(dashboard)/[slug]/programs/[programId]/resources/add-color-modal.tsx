@@ -103,7 +103,7 @@ function AddColorModalInner({ setShowAddColorModal }: AddColorModalProps) {
 
   return (
     <>
-      <div className="space-y-2 border-b-[6px] border-neutral-100 p-4 sm:p-6">
+      <div className="space-y-2 border-b border-neutral-100 p-4 sm:p-6">
         <h3 className="text-lg font-medium leading-none">Add color</h3>
       </div>
 
@@ -143,9 +143,9 @@ function AddColorModalInner({ setShowAddColorModal }: AddColorModalProps) {
                 value={hexInputValue}
                 onChange={handleHexInputChange}
                 className={cn(
-                  "block w-full rounded-md border-neutral-300 shadow-sm focus:border-neutral-500 focus:ring-neutral-500 sm:text-sm",
+                  "block w-full rounded border-neutral-300 shadow-sm focus:border-neutral-500 focus:ring-0 sm:text-sm",
                   !/^#[0-9A-F]{6}$/i.test(hexInputValue) &&
-                    "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500",
+                    "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0",
                 )}
                 placeholder="#000000"
               />
@@ -168,9 +168,9 @@ function AddColorModalInner({ setShowAddColorModal }: AddColorModalProps) {
                 id="name"
                 type="text"
                 className={cn(
-                  "block w-full rounded-md border-neutral-300 shadow-sm focus:border-neutral-500 focus:ring-neutral-500 sm:text-sm",
+                  "block w-full rounded border-neutral-300 shadow-sm focus:border-neutral-500 focus:ring-0 sm:text-sm",
                   errors.name &&
-                    "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500",
+                    "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0",
                 )}
                 {...register("name", { required: "Color name is required" })}
               />
@@ -183,7 +183,7 @@ function AddColorModalInner({ setShowAddColorModal }: AddColorModalProps) {
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2 border-t-[6px] border-neutral-100 bg-neutral-50 px-4 py-5 sm:px-6">
+        <div className="flex items-center justify-end gap-2 border-x border-neutral-100 bg-neutral-50 px-4 py-5 sm:px-6">
           <Button
             onClick={() => setShowAddColorModal(false)}
             variant="secondary"

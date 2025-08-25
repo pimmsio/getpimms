@@ -16,9 +16,9 @@ export const PLAN_COMPARE_FEATURES: {
       | {
           default?: boolean;
           free?: boolean;
+          starter?: boolean;
           pro?: boolean;
           business?: boolean;
-          advanced?: boolean;
           enterprise?: boolean;
         };
   }[];
@@ -28,6 +28,18 @@ export const PLAN_COMPARE_FEATURES: {
     href: "https://pimms.io/", // TODO: update to https://pimms.io/links
     features: [
       {
+        text: ({ plan }) => (
+          <>
+            <strong>
+              {plan.limits.links === INFINITY_NUMBER
+                ? "Unlimited"
+                : `${nFormatter(plan.limits.links)} new`}
+            </strong>{" "}
+            links{plan.limits.links === INFINITY_NUMBER ? "" : "/month"}
+          </>
+        ),
+      },
+      {
         text: () => (
           <>
             <strong>Unlimited</strong> clicks
@@ -35,11 +47,12 @@ export const PLAN_COMPARE_FEATURES: {
         ),
       },
       {
-        text: ({ plan }) => (
-          <>
-            <strong>Unlimited</strong> new links
-          </>
-        ),
+        check: {
+          free: false,
+          default: true,
+        },
+        text: "Redirect to mobile apps",
+        // href: "https://dub.co/help/article/custom-domain-deep-links",
       },
       // {
       //   check: {
@@ -57,10 +70,10 @@ export const PLAN_COMPARE_FEATURES: {
       //     </>
       //   ),
       // },
-      // {
-      //   text: "Custom QR codes",
-      //   // href: "https://dub.co/help/article/custom-qr-codes",
-      // },
+      {
+        text: "Custom QR codes",
+        // href: "https://dub.co/help/article/custom-qr-codes",
+      },
       // {
       //   check: {
       //     free: false,
@@ -72,10 +85,10 @@ export const PLAN_COMPARE_FEATURES: {
       {
         check: {
           free: false,
+          starter: false,
           default: true,
         },
-        text: "Deep links",
-        // href: "https://dub.co/help/article/custom-domain-deep-links",
+        text: "A/B testing",
       },
       // {
       //   check: {
@@ -131,20 +144,24 @@ export const PLAN_COMPARE_FEATURES: {
     category: "Analytics",
     href: "https://pimms.io",
     features: [
-      // {
-      //   text: "Advanced analytics",
-      //   // href: "https://dub.co/help/article/dub-analytics",
-      // },
+      {
+        check: {
+          default: false,
+          starter: true,
+          pro: true,
+          business: true,
+          enterprise: true,
+        },
+        text: "Event tracking",
+        // href: "https://dub.co/help/article/dub-conversions",
+      },
       {
         text: ({ plan }) => (
           <>
             <strong>
-              {plan.name === "Enterprise"
-                ? "Unlimited"
-                : nFormatter(plan.limits.clicks)}
+              Unlimited
             </strong>{" "}
-            tracked clicks
-            {plan.name === "Enterprise" ? "" : "/mo"}
+            tracked events
           </>
         ),
         // href: "https://dub.co/help/article/dub-analytics-limits",
@@ -170,13 +187,12 @@ export const PLAN_COMPARE_FEATURES: {
       {
         check: {
           default: false,
+          starter: true,
           pro: true,
           business: true,
-          advanced: true,
           enterprise: true,
         },
-        text: "Conversion tracking",
-        // href: "https://dub.co/help/article/dub-conversions",
+        text: "100+ integrations incl. Zapier",
       },
     ],
   },
@@ -200,23 +216,31 @@ export const PLAN_COMPARE_FEATURES: {
           default: false,
           pro: true,
           business: true,
-          advanced: true,
           enterprise: true,
         },
         text: ({ id, plan }) =>
-          id === "free" ? (
-            "No tracked sales"
+          id === "free" || id === "starter" ? (
+            "No sales tracking"
           ) : (
             <>
               <strong>
-                {plan.name === "Enterprise"
+                {plan.name === "Business"
                   ? "Unlimited"
-                  : `$${nFormatter(plan.limits.sales / 100)}`}
+                  : `€${nFormatter(plan.limits.sales / 100)}`}
               </strong>{" "}
               tracked sales
-              {plan.name === "Enterprise" ? "" : "/mo"}
+              {plan.name === "Business" ? "" : "/mo"}
             </>
           ),
+      },
+      {
+        check: {
+          default: false,
+          pro: true,
+          business: true,
+          enterprise: true,
+        },
+        text: "Stripe payments integration",
       },
       // {
       //   check: {
@@ -293,7 +317,7 @@ export const PLAN_COMPARE_FEATURES: {
         text: ({ plan }) => (
           <>
             <strong>
-              {plan.name === "Enterprise"
+              {plan.name === "Enterprise" || plan.name === "Business"
                 ? "Unlimited"
                 : nFormatter(plan.limits.domains, { full: true })}
             </strong>{" "}
@@ -357,8 +381,8 @@ export const PLAN_COMPARE_FEATURES: {
       {
         check: {
           default: false,
+          pro: true,
           business: true,
-          advanced: true,
           enterprise: true,
         },
         text: "Event webhooks",
@@ -374,7 +398,7 @@ export const PLAN_COMPARE_FEATURES: {
         text: ({ plan }) => (
           <>
             <strong>
-              {plan.name === "Enterprise"
+              {plan.name === "Enterprise" || plan.name === "Business"
                 ? "Unlimited"
                 : nFormatter(plan.limits.users)}
             </strong>{" "}
@@ -397,8 +421,16 @@ export const PLAN_COMPARE_FEATURES: {
         // href: "https://dub.co/help/article/how-to-use-tags",
       },
       {
-        text: "UTM builder + templates",
+        text: "UTM templates",
         // href: "https://dub.co/help/article/how-to-create-utm-templates",
+      },
+      {
+        check: {
+          default: false,
+          business: true,
+          enterprise: true,
+        },
+        text: "Bulk link operations",
       },
       // {
       //   check: {
@@ -443,9 +475,9 @@ export const PLAN_COMPARE_FEATURES: {
               {
                 {
                   free: "Basic support",
-                  pro: "Elevated support",
+                  starter: "1 month priority support",
+                  pro: "3 months priority support",
                   business: "Priority support",
-                  advanced: "Priority via Slack",
                   enterprise: "Priority with SLA",
                 }[id]
               }

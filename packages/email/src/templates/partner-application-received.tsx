@@ -65,7 +65,7 @@ export function PartnerApplicationReceived({
       </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border border-solid border-neutral-100 px-10 py-5">
             <Section className="mb-8 mt-6">
               <Img src={DUB_WORDMARK} width="61" height="32" alt="dub" />
             </Section>
@@ -86,9 +86,9 @@ export function PartnerApplicationReceived({
               .
             </Text>
 
-            <Container className="mb-8 mt-10 rounded-xl border-[6px] border-solid border-neutral-200">
+            <Container className="mb-8 mt-10 rounded border border-solid border-neutral-200">
               <Section className="p-2">
-                <Container className="mb-4 w-full rounded-xl border-[6px] border-solid border-neutral-100 bg-neutral-50 p-6">
+                <Container className="mb-4 w-full rounded border border-solid border-neutral-100 bg-neutral-50 p-6">
                   <div>
                     <div className="relative w-fit">
                       <Img
@@ -151,7 +151,7 @@ export function PartnerApplicationReceived({
                   <Section className="mt-8 text-center">
                     <Link
                       href={applicationUrl}
-                      className="box-border block w-full rounded-lg bg-black px-0 py-4 text-center text-sm font-semibold leading-none text-white no-underline"
+                      className="box-border block w-full rounded bg-[#3971ff] px-0 py-4 text-center text-md font-semibold leading-none text-white no-underline border-none transition duration-500 hover:opacity-90"
                     >
                       Review application on PiMMs
                     </Link>

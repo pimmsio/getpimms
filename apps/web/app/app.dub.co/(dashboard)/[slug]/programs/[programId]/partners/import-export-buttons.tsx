@@ -51,7 +51,7 @@ export function ImportExportButtons() {
               </ImportOption>
             </div>
 
-            <div className="border-t-[6px] border-neutral-100" />
+            <div className="border-x border-neutral-100" />
 
             <div className="grid gap-px p-2">
               <p className="mb-1.5 mt-1 flex items-center gap-2 px-1 text-xs font-medium text-neutral-500">
@@ -62,7 +62,7 @@ export function ImportExportButtons() {
                   setOpenPopover(false);
                   setShowExportPartnersModal(true);
                 }}
-                className="w-full rounded-md p-2 hover:bg-neutral-100 active:bg-neutral-200"
+                className="w-full rounded p-2 hover:bg-neutral-100 active:bg-neutral-200"
               >
                 <IconMenu
                   text="Export as CSV"
@@ -97,7 +97,7 @@ function ImportOption({
   return (
     <button
       onClick={onClick}
-      className="w-full rounded-md p-2 hover:bg-neutral-100 active:bg-neutral-200"
+      className="w-full rounded p-2 hover:bg-neutral-100 active:bg-neutral-200"
     >
       {children}
     </button>

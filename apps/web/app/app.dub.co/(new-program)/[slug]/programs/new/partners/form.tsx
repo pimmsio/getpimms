@@ -159,7 +159,7 @@ export function Form() {
             Invite new partners in addition to those being imported.
           </p>
 
-          <div className="mt-10 flex items-center justify-between rounded-xl border-[6px] border-neutral-100 bg-neutral-50 px-4 py-3">
+          <div className="mt-10 flex items-center justify-between rounded border border-neutral-100 bg-neutral-50 px-4 py-3">
             <div className="flex items-center gap-2">
               <div className="flex size-5 items-center justify-center rounded-full bg-blue-600">
                 <img
@@ -184,7 +184,7 @@ export function Form() {
           {fields.map((field, index) => (
             <div
               key={field.id}
-              className="grid grid-cols-1 gap-3 rounded-xl border-[6px] border-neutral-100 p-3 sm:grid-cols-2 sm:border-0 sm:p-0"
+              className="grid grid-cols-1 gap-3 rounded border border-neutral-100 p-3 sm:grid-cols-2 sm:border-0 sm:p-0"
             >
               <label>
                 <span className="mb-1.5 block text-sm font-medium text-neutral-800">
@@ -205,7 +205,7 @@ export function Form() {
                   <div className="relative w-full">
                     <div
                       className={cn(
-                        "relative flex items-stretch overflow-hidden rounded-xl border-[2px] border-neutral-300 bg-white focus-within:border-neutral-500 focus-within:ring-1 focus-within:ring-neutral-500",
+                        "relative flex items-stretch overflow-hidden rounded border border-neutral-300 bg-white focus-within:border-neutral-500 focus-within:ring-1 focus-within:ring-neutral-500",
                         keyErrors[index] &&
                           "border-red-500 focus-within:border-red-500 focus-within:ring-red-500",
                       )}

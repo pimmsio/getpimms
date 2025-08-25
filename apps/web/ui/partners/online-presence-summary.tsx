@@ -89,7 +89,7 @@ export function OnlinePresenceSummary({
                 target="_blank"
                 href={href!}
                 rel="noopener noreferrer"
-                className="inline-flex h-7 max-w-full items-center gap-1 rounded-lg px-2 text-neutral-600 hover:bg-neutral-50"
+                className="inline-flex h-7 max-w-full items-center gap-1 rounded px-2 text-neutral-600 hover:bg-neutral-50"
               >
                 <span className="min-w-0 truncate">{value}</span>
                 {verified && (

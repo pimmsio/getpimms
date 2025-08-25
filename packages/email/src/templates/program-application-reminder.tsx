@@ -36,7 +36,7 @@ export default function ProgramApplicationReminder({
       </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border border-solid border-neutral-100 px-10 py-5">
             <Section className="mb-8 mt-6">
               <Img src={DUB_WORDMARK} width="65" height="32" alt="dub" />
             </Section>
@@ -59,7 +59,7 @@ export default function ProgramApplicationReminder({
             <Section className="mt-8 text-center">
               <Link
                 href={`https://partners.pimms.io/${program.slug}/register`}
-                className="box-border block w-full rounded-md bg-black px-0 py-4 text-center text-sm font-medium leading-none text-white no-underline"
+                className="box-border block w-full rounded bg-[#3971ff] px-0 py-4 text-center text-md font-semibold leading-none text-white no-underline border-none transition duration-500 hover:opacity-90"
               >
                 Create your PiMMs Partners account
               </Link>

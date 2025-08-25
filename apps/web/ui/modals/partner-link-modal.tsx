@@ -121,7 +121,7 @@ function QRCodePreview({
           }
         /> */}
       </div>
-      <div className="relative mt-2 h-24 overflow-hidden rounded-xl border-[2px] border-neutral-300">
+      <div className="relative mt-2 h-24 overflow-hidden rounded border border-neutral-300">
         <Button
           type="button"
           variant="secondary"
@@ -304,12 +304,12 @@ function PartnerLinkModalContent({
             </div>
             {isDefaultLink ? (
               <Tooltip content="You cannot edit the default link destination">
-                <div className="mt-2 block w-full rounded-xl border-[2px] border-neutral-300 bg-neutral-50 px-3 py-2 text-neutral-500 sm:text-sm">
+                <div className="mt-2 block w-full rounded border border-neutral-300 bg-neutral-50 px-3 py-2 text-neutral-500 sm:text-sm">
                   {getPrettyUrl(link?.url)}
                 </div>
               </Tooltip>
             ) : (
-              <div className="mt-2 flex rounded-md">
+              <div className="mt-2 flex rounded">
                 <span className="inline-flex items-center rounded-l-md border border-r-0 border-neutral-300 bg-neutral-50 px-3 text-neutral-500 sm:text-sm">
                   {destinationDomain}
                 </span>
@@ -330,7 +330,7 @@ function PartnerLinkModalContent({
                       e.currentTarget.value = text;
                     }
                   }}
-                  className="block w-full rounded-r-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                  className="block w-full rounded-r-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
                 />
               </div>
             )}
@@ -369,7 +369,7 @@ function PartnerLinkModalContent({
                 </button>
               )}
             </div>
-            <div className="mt-2 flex rounded-md">
+            <div className="mt-2 flex rounded">
               <span className="inline-flex items-center rounded-l-md border border-r-0 border-neutral-300 bg-neutral-50 px-3 text-neutral-500 sm:text-sm">
                 {shortLinkDomain}
               </span>
@@ -379,7 +379,7 @@ function PartnerLinkModalContent({
                 id="key"
                 disabled={lockKey}
                 className={cn(
-                  "block w-full rounded-r-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm",
+                  "block w-full rounded-r-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
                   {
                     "cursor-not-allowed border border-neutral-300 bg-neutral-100 text-neutral-500":
                       lockKey,
@@ -412,7 +412,7 @@ function PartnerLinkModalContent({
               {...register("comments")}
               id="comments"
               minRows={3}
-              className="mt-2 block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+              className="mt-2 block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
               placeholder="Add comments (optional)"
               onKeyDown={handleKeyDown}
             />
@@ -429,7 +429,7 @@ function PartnerLinkModalContent({
         </div>
       </div>
 
-      <div className="flex items-center justify-end border-t-[6px] border-neutral-100 bg-neutral-50 p-4">
+      <div className="flex items-center justify-end border-x border-neutral-100 bg-neutral-50 p-4">
         <Button
           type="submit"
           disabled={saveDisabled}

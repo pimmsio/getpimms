@@ -10,14 +10,14 @@ export default function WorkspaceExceededClicks() {
 
   return (
     <MaxWidthWrapper>
-      <div className="my-10 flex flex-col items-center justify-center rounded-xl border-[2px] border-neutral-100 bg-white py-12">
+      <div className="my-10 flex flex-col items-center justify-center rounded border border-neutral-100 bg-white py-12">
         <AnimatedEmptyState
           title="Stats Locked"
           description="Your workspace has exceeded your monthly clicks limits. We're still collecting data on your links, but you need to upgrade to view them."
           cardContent={() => (
             <>
               <CursorRays className="size-4 text-neutral-700" />
-              <div className="h-2.5 w-24 min-w-0 rounded-sm bg-neutral-200" />
+              <div className="h-2.5 w-24 min-w-0 rounded bg-neutral-200" />
             </>
           )}
           className="border-none"

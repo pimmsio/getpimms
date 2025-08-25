@@ -88,10 +88,10 @@ export default function SurveyForm({
             <div
               key={option.value}
               className={cn(
-                "group flex flex-col rounded-xl border-[2px] border-neutral-100 bg-white transition-all active:scale-[0.98]",
+                "group flex flex-col rounded border border-neutral-100 bg-white transition-all active:scale-[0.98]",
                 source === option.value
                   ? "border-white ring-2 ring-neutral-600"
-                  : "hover:border-neutral-500 hover:ring hover:ring-neutral-200 active:ring-2",
+                  : "hover:border-neutral-500 hover:ring hover:ring-transparent active:ring-2",
               )}
             >
               <RadioGroupItem
@@ -131,14 +131,14 @@ export default function SurveyForm({
         {source === "other" && (
           <div className="mt-3">
             <label>
-              <div className="mt-2 flex rounded-md shadow-sm">
+              <div className="mt-2 flex rounded shadow-sm">
                 <input
                   type="text"
                   required
                   maxLength={32}
                   autoFocus={!isMobile}
                   autoComplete="off"
-                  className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                  className="block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
                   placeholder="Reddit, Indie Hackers, etc."
                   value={otherSource}
                   onChange={(e) => setOtherSource(e.target.value)}

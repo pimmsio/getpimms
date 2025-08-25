@@ -89,7 +89,7 @@ export default function DomainConfiguration({
 
   return (
     <div className="pt-2">
-      <div className="-ml-1.5 border-b-[6px] border-neutral-100">
+      <div className="-ml-1.5 border-b border-neutral-100">
         <TabSelect
           options={[
             { id: "A", label: `A Record${!subdomain ? " (recommended)" : ""}` },
@@ -125,7 +125,7 @@ export default function DomainConfiguration({
 const MarkdownText = ({ text }: { text: string }) => {
   return (
     <p
-      className="prose-sm prose-code:rounded-md prose-code:bg-neutral-100 prose-code:p-1 prose-code:text-[.8125rem] prose-code:font-medium prose-code:font-mono prose-code:text-neutral-900 max-w-none"
+      className="prose-sm prose-code:rounded prose-code:bg-neutral-100 prose-code:p-1 prose-code:text-[.8125rem] prose-code:font-medium prose-code:font-mono prose-code:text-neutral-900 max-w-none"
       dangerouslySetInnerHTML={{ __html: text }}
     />
   );
@@ -149,7 +149,7 @@ const DnsRecord = ({
       </div>
       <div
         className={cn(
-          "scrollbar-hide grid items-end gap-x-10 gap-y-1 overflow-x-auto rounded-lg bg-neutral-100/80 p-4 text-sm",
+          "scrollbar-hide grid items-end gap-x-10 gap-y-1 overflow-x-auto rounded bg-neutral-100/80 p-4 text-sm",
           hasTtl
             ? "grid-cols-[repeat(4,min-content)]"
             : "grid-cols-[repeat(3,min-content)]",
@@ -188,7 +188,7 @@ const DnsRecord = ({
       {(warning || hasTtl) && (
         <div
           className={cn(
-            "mt-4 flex items-center gap-2 rounded-lg p-3",
+            "mt-4 flex items-center gap-2 rounded p-3",
             warning
               ? "bg-orange-50 text-orange-600"
               : "bg-indigo-50 text-indigo-600",

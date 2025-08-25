@@ -142,7 +142,7 @@ export function PartnerLinkCard({
     >
       <PartnerLinkModal />
       {isDefaultLink && (
-        <div className="flex items-center justify-between gap-4 rounded-t-[11px] border-b-[6px] border-neutral-100 bg-neutral-100 px-5 py-2">
+        <div className="flex items-center justify-between gap-4 rounded-t-[11px] border-b border-neutral-100 bg-neutral-100 px-5 py-2">
           <div className="flex items-center gap-1.5">
             {programEnrollment && (
               <BlurImage
@@ -173,8 +173,8 @@ export function PartnerLinkCard({
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <div className="relative hidden shrink-0 items-center justify-center sm:flex">
-              <div className="absolute inset-0 shrink-0 rounded-full border-[6px] border-neutral-100">
-                <div className="h-full w-full rounded-full border-[2px] border-white bg-gradient-to-t from-neutral-100" />
+              <div className="absolute inset-0 shrink-0 rounded-full border border-neutral-100">
+                <div className="h-full w-full rounded-full border border-white bg-gradient-to-t from-neutral-100" />
               </div>
               <div className="relative p-2.5">
                 <LinkLogo
@@ -227,7 +227,7 @@ export function PartnerLinkCard({
                   event: chart.key === "saleAmount" ? "sales" : chart.key,
                 },
               )}`}
-              className="rounded-xl border-[6px] border-neutral-100 px-2 py-1.5 lg:px-3"
+              className="rounded border border-neutral-100 px-2 py-1.5 lg:px-3"
             >
               <div className="flex flex-col gap-1 pl-2 pt-3 lg:pl-1.5">
                 <div className="flex items-center gap-1.5">

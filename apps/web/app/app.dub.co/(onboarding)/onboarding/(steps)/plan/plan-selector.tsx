@@ -3,20 +3,20 @@
 import { PlanFeatures } from "@/ui/workspaces/plan-features";
 import { UpgradePlanButton } from "@/ui/workspaces/upgrade-plan-button";
 import { Badge, ToggleGroup } from "@dub/ui";
-import { ADVANCED_PLAN, BUSINESS_PLAN, cn, PRO_PLAN } from "@dub/utils";
+import { cn, PRO_PLAN, STARTER_PLAN } from "@dub/utils";
 import NumberFlow from "@number-flow/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CSSProperties, useState } from "react";
 
-const plans = [PRO_PLAN, BUSINESS_PLAN/*, ADVANCED_PLAN*/];
+const plans = [STARTER_PLAN, PRO_PLAN /*, ADVANCED_PLAN*/];
 
 export function PlanSelector() {
   const [period, setPeriod] = useState<"monthly" | "yearly">("yearly");
   const [mobilePlanIndex, setMobilePlanIndex] = useState(0);
-  
+
   return (
     <div>
-      <div className="flex justify-center">
+      {/* <div className="flex justify-center">
         <ToggleGroup
           options={[
             { value: "monthly", label: "Pay monthly" },
@@ -32,11 +32,11 @@ export function PlanSelector() {
           selected={period}
           selectAction={(period) => setPeriod(period as "monthly" | "yearly")}
         />
-      </div>
+      </div> */}
       <div className="mt-5 overflow-hidden [container-type:inline-size]">
         <div
           className={cn(
-            "grid grid-cols-3 lg:grid-cols-2 gap-x-4",
+            "grid grid-cols-3 gap-x-4 lg:grid-cols-2",
 
             // Mobile
             "max-lg:w-[calc(300cqw+2*32px)] max-lg:translate-x-[calc(-1*var(--index)*(100cqw+32px))] max-lg:gap-x-8 max-lg:transition-transform",
@@ -50,7 +50,7 @@ export function PlanSelector() {
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className="flex flex-col rounded-xl border-[6px] border-neutral-100 bg-white p-6 pb-8"
+              className="flex flex-col rounded border border-neutral-100 bg-white p-6 pb-8"
             >
               <div className="flex items-center gap-2">
                 <h2 className="text-xl font-semibold text-neutral-800">
@@ -62,7 +62,11 @@ export function PlanSelector() {
               </div>
               <div className="mt-1 text-base font-medium text-neutral-400">
                 <NumberFlow
-                  value={plan.name === "Pro" ? plan.price["lifetime"]! : plan.price[period]!}
+                  value={
+                    plan.name === "Pro" || plan.name === "Starter"
+                      ? plan.price["lifetime"]!
+                      : plan.price[period]!
+                  }
                   className="tabular-nums text-neutral-700"
                   format={{
                     style: "currency",
@@ -71,20 +75,16 @@ export function PlanSelector() {
                   }}
                   continuous
                 />
-                {plan.name === "Pro" ? (
-                  <span className="ml-1 font-medium">
-                    One-time payment
-                  </span>
+                {plan.name === "Starter" || plan.name === "Pro" ? (
+                  <span className="ml-1 font-medium">One-time payment</span>
                 ) : (
-                  <span className="ml-1 font-medium">
-                    {period === "monthly" ? "per month" : "billed yearly"}
-                  </span>
+                  <span className="ml-1 font-medium">Contact Sales</span>
                 )}
               </div>
               <div className="my-6 flex gap-2">
                 <button
                   type="button"
-                  className="h-full w-fit rounded-lg bg-neutral-100 px-2.5 transition-colors duration-75 hover:bg-neutral-200/80 enabled:active:bg-neutral-200 disabled:opacity-30 lg:hidden"
+                  className="h-full w-fit rounded bg-neutral-100 px-2.5 transition-colors duration-75 hover:bg-neutral-200/80 enabled:active:bg-neutral-200 disabled:opacity-30 lg:hidden"
                   disabled={mobilePlanIndex === 0}
                   onClick={() => setMobilePlanIndex(mobilePlanIndex - 1)}
                 >
@@ -94,11 +94,11 @@ export function PlanSelector() {
                   plan={plan.name.toLowerCase()}
                   period={period}
                   text="Get started"
-                  className="h-10 rounded-lg shadow-sm"
+                  className="h-10 rounded shadow-sm"
                 />
                 <button
                   type="button"
-                  className="h-full w-fit rounded-lg bg-neutral-100 px-2.5 transition-colors duration-75 hover:bg-neutral-200/80 active:bg-neutral-200 disabled:opacity-30 lg:hidden"
+                  className="h-full w-fit rounded bg-neutral-100 px-2.5 transition-colors duration-75 hover:bg-neutral-200/80 active:bg-neutral-200 disabled:opacity-30 lg:hidden"
                   disabled={mobilePlanIndex >= plans.length - 1}
                   onClick={() => setMobilePlanIndex(mobilePlanIndex + 1)}
                 >

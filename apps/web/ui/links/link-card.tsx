@@ -99,14 +99,14 @@ const LinkCardInner = memo(({ link }: { link: ResponseLink }) => {
         //               iconClassName="size-3"
         //             />
         //           ) : (
-        //             <div className="size-4 rounded-md bg-neutral-200" />
+        //             <div className="size-4 rounded bg-neutral-200" />
         //           )}
         //           {folder ? (
         //             <span className="font-medium text-neutral-900">
         //               {folder.name}
         //             </span>
         //           ) : (
-        //             <div className="h-4 w-20 rounded-md bg-neutral-200" />
+        //             <div className="h-4 w-20 rounded bg-neutral-200" />
         //           )}
         //           <ExpandingArrow className="invisible -ml-1.5 size-3.5 text-neutral-500 group-hover:visible" />
         //         </div>

@@ -53,7 +53,7 @@ export function LinksImportErrors({
       <Preview>Your {provider} links have been imported</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
-          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border-[6px] border-solid border-neutral-100 px-10 py-5">
+          <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border border-solid border-neutral-100 px-10 py-5">
             <Section className="my-8">
               <Img src={DUB_WORDMARK} height="14" alt="PIMMS" className="my-0" />
             </Section>
@@ -101,7 +101,7 @@ export function LinksImportErrors({
                       </Column>
                     </Row>
                     {index !== errorLinks.length - 1 && (
-                      <Hr className="my-2 w-full border-[6px] border-neutral-100" />
+                      <Hr className="my-2 w-full border border-neutral-100" />
                     )}
                   </div>
                 ))}

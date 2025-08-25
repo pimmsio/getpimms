@@ -102,102 +102,102 @@ function OGModalInner({
   const [openUnsplashPopover, setOpenUnsplashPopover] = useState(false);
   const [resizing, setResizing] = useState(false);
 
-  const {
-    completion: completionTitle,
-    isLoading: generatingTitle,
-    complete: completeTitle,
-  } = useCompletion({
-    api: `/api/ai/completion?workspaceId=${workspaceId}`,
-    onError: (error) => {
-      if (error.message.includes("Upgrade to Pro")) {
-        toast.custom(() => (
-          <UpgradeRequiredToast
-            title="You've exceeded your AI usage limit"
-            message={error.message}
-          />
-        ));
-      } else {
-        toast.error(error.message);
-      }
-    },
-    onFinish: (_, completion) => {
-      mutate();
-      posthog.capture("ai_meta_title_generated", {
-        title: completion,
-        url,
-      });
-    },
-  });
+  // const {
+  //   completion: completionTitle,
+  //   isLoading: generatingTitle,
+  //   complete: completeTitle,
+  // } = useCompletion({
+  //   api: `/api/ai/completion?workspaceId=${workspaceId}`,
+  //   onError: (error) => {
+  //     if (error.message.includes("Upgrade to Pro")) {
+  //       toast.custom(() => (
+  //         <UpgradeRequiredToast
+  //           title="You've exceeded your AI usage limit"
+  //           message={error.message}
+  //         />
+  //       ));
+  //     } else {
+  //       toast.error(error.message);
+  //     }
+  //   },
+  //   onFinish: (_, completion) => {
+  //     mutate();
+  //     posthog.capture("ai_meta_title_generated", {
+  //       title: completion,
+  //       url,
+  //     });
+  //   },
+  // });
 
-  const generateTitle = async () => {
-    completeTitle(
-      `You are an SEO expert. Generate an SEO-optimized meta title (max 120 characters) for the following URL:
+  // const generateTitle = async () => {
+  //   completeTitle(
+  //     `You are an SEO expert. Generate an SEO-optimized meta title (max 120 characters) for the following URL:
       
-      - URL: ${url}
-      - Meta title: ${title}
-      - Meta description: ${description}. 
+  //     - URL: ${url}
+  //     - Meta title: ${title}
+  //     - Meta description: ${description}. 
 
-      Only respond with the title without quotation marks or special characters.
-      `,
-    );
-  };
+  //     Only respond with the title without quotation marks or special characters.
+  //     `,
+  //   );
+  // };
 
-  useEffect(() => {
-    if (completionTitle) {
-      setValue("title", completionTitle, { shouldDirty: true });
-      if (plan && plan !== "free") {
-        setValue("proxy", true, { shouldDirty: true });
-      }
-    }
-  }, [completionTitle]);
+  // useEffect(() => {
+  //   if (completionTitle) {
+  //     setValue("title", completionTitle, { shouldDirty: true });
+  //     if (plan && plan !== "free") {
+  //       setValue("proxy", true, { shouldDirty: true });
+  //     }
+  //   }
+  // }, [completionTitle]);
 
-  const {
-    completion: completionDescription,
-    isLoading: generatingDescription,
-    complete: completeDescription,
-  } = useCompletion({
-    api: `/api/ai/completion?workspaceId=${workspaceId}`,
-    onError: (error) => {
-      if (error.message.includes("Upgrade to Pro")) {
-        toast.custom(() => (
-          <UpgradeRequiredToast
-            title="You've exceeded your AI usage limit"
-            message={error.message}
-          />
-        ));
-      } else {
-        toast.error(error.message);
-      }
-    },
-    onFinish: (_, completion) => {
-      mutate();
-      posthog.capture("ai_meta_description_generated", {
-        description: completion,
-        url,
-      });
-    },
-  });
+  // const {
+  //   completion: completionDescription,
+  //   isLoading: generatingDescription,
+  //   complete: completeDescription,
+  // } = useCompletion({
+  //   api: `/api/ai/completion?workspaceId=${workspaceId}`,
+  //   onError: (error) => {
+  //     if (error.message.includes("Upgrade to Pro")) {
+  //       toast.custom(() => (
+  //         <UpgradeRequiredToast
+  //           title="You've exceeded your AI usage limit"
+  //           message={error.message}
+  //         />
+  //       ));
+  //     } else {
+  //       toast.error(error.message);
+  //     }
+  //   },
+  //   onFinish: (_, completion) => {
+  //     mutate();
+  //     posthog.capture("ai_meta_description_generated", {
+  //       description: completion,
+  //       url,
+  //     });
+  //   },
+  // });
 
-  const generateDescription = async () => {
-    completeDescription(
-      `You are an SEO expert. Generate an SEO-optimized meta description (max 240 characters) for the following URL:
+  // const generateDescription = async () => {
+  //   completeDescription(
+  //     `You are an SEO expert. Generate an SEO-optimized meta description (max 240 characters) for the following URL:
 
-      - URL: ${url}
-      - Meta title: ${title}
-      - Meta description: ${description}.
+  //     - URL: ${url}
+  //     - Meta title: ${title}
+  //     - Meta description: ${description}.
 
-      Only respond with the description without quotation marks or special characters.`,
-    );
-  };
+  //     Only respond with the description without quotation marks or special characters.`,
+  //   );
+  // };
 
-  useEffect(() => {
-    if (completionDescription) {
-      setValue("description", completionDescription, { shouldDirty: true });
-      if (plan && plan !== "free") {
-        setValue("proxy", true, { shouldDirty: true });
-      }
-    }
-  }, [completionDescription]);
+  // useEffect(() => {
+  //   if (completionDescription) {
+  //     setValue("description", completionDescription, { shouldDirty: true });
+  //     if (plan && plan !== "free") {
+  //       setValue("proxy", true, { shouldDirty: true });
+  //     }
+  //   }
+  // }, [completionDescription]);
 
   return (
     <>
@@ -243,7 +243,7 @@ function OGModalInner({
                 }
                 side="right"
               >
-                <kbd className="flex size-6 cursor-default items-center justify-center rounded-xl border-[2px] border-neutral-100 font-sans text-xs text-neutral-950">
+                <kbd className="flex size-6 cursor-default items-center justify-center rounded border border-neutral-100 font-sans text-xs text-neutral-950">
                   L
                 </kbd>
               </Tooltip>
@@ -364,9 +364,9 @@ function OGModalInner({
                   </ButtonTooltip> */}
                 </div>
               </div>
-              <div className="relative mt-1 flex rounded-xl shadow-sm">
+              <div className="relative mt-1 flex rounded shadow-sm">
                 {generatingMetatags && (
-                  <div className="absolute flex h-full w-full items-center justify-center rounded-xl border-[2px] border-neutral-300 bg-white">
+                  <div className="absolute flex h-full w-full items-center justify-center rounded border border-neutral-300 bg-white">
                     <LoadingCircle />
                   </div>
                 )}
@@ -375,7 +375,7 @@ function OGModalInner({
                   id="title"
                   minRows={2}
                   maxLength={120}
-                  className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                  className="block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
                   placeholder="Add a title..."
                   value={title || ""}
                   onChange={(e) => {
@@ -420,9 +420,9 @@ function OGModalInner({
                   </ButtonTooltip> */}
                 </div>
               </div>
-              <div className="relative mt-1 flex rounded-xl shadow-sm">
+              <div className="relative mt-1 flex rounded shadow-sm">
                 {generatingMetatags && (
-                  <div className="absolute flex h-full w-full items-center justify-center rounded-xl border-[2px] border-neutral-300 bg-white">
+                  <div className="absolute flex h-full w-full items-center justify-center rounded border border-neutral-300 bg-white">
                     <LoadingCircle />
                   </div>
                 )}
@@ -431,7 +431,7 @@ function OGModalInner({
                   id="description"
                   minRows={3}
                   maxLength={240}
-                  className="block w-full rounded-md border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                  className="block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
                   placeholder="Add a description..."
                   value={description || ""}
                   onChange={(e) => {
@@ -449,20 +449,6 @@ function OGModalInner({
           </div>
 
           <div className="mt-6 flex items-center justify-between">
-            <button
-              type="button"
-              className="text-xs font-medium text-neutral-700 transition-colors hover:text-neutral-950"
-              onClick={() => {
-                setValueParent("proxy", false, { shouldDirty: true });
-                ["title", "description", "image"].forEach(
-                  (key: "title" | "description" | "image") =>
-                    setValueParent(key, null, { shouldDirty: true }),
-                );
-                setShowOGModal(false);
-              }}
-            >
-              Reset to default
-            </button>
             <div className="flex items-center gap-2">
               <Button
                 type="button"

@@ -90,8 +90,8 @@ export function WorkspaceDropdown() {
         <button
           onClick={() => setOpenPopover(!openPopover)}
           className={cn(
-            "flex w-full items-center justify-between rounded-lg p-1.5 text-left text-sm transition-all duration-75 hover:bg-neutral-200/50 active:bg-neutral-200/80 data-[state=open]:bg-neutral-200/80",
-            "outline-none focus-visible:ring-2 focus-visible:ring-black/50",
+            "flex w-full items-center justify-between rounded p-1.5 text-left text-sm transition-all duration-75 hover:bg-neutral-200/50 active:bg-neutral-200/80 data-[state=open]:bg-neutral-200/80",
+            "outline-none focus-visible:ring-0 focus-visible:ring-black/50",
           )}
         >
           <div className="flex min-w-0 items-center gap-x-2.5 pr-2">
@@ -131,9 +131,9 @@ export function WorkspaceDropdown() {
 
 function WorkspaceDropdownPlaceholder() {
   return (
-    <div className="flex w-full animate-pulse items-center gap-x-1.5 rounded-lg p-1.5">
+    <div className="flex w-full animate-pulse items-center gap-x-1.5 rounded p-1.5">
       <div className="size-7 animate-pulse rounded-full bg-neutral-200" />
-      <div className="mb-px mt-0.5 h-8 w-28 grow animate-pulse rounded-md bg-neutral-200" />
+      <div className="mb-px mt-0.5 h-8 w-28 grow animate-pulse rounded bg-neutral-200" />
       <ChevronsUpDown className="h-4 w-4 text-neutral-400" aria-hidden="true" />
     </div>
   );
@@ -199,17 +199,17 @@ function WorkspaceList({
       <div
         ref={scrollRef}
         onScroll={updateScrollProgress}
-        className="relative max-h-80 w-full space-y-0.5 overflow-auto rounded-lg bg-white text-base sm:w-64 sm:text-sm"
+        className="relative max-h-80 w-full space-y-0.5 overflow-auto rounded bg-white text-base sm:w-64 sm:text-sm"
       >
-        <div className="flex flex-col gap-0.5 border-b-[6px] border-neutral-100 p-2">
+        <div className="flex flex-col gap-0.5 border-b border-neutral-100 p-2">
           {LINKS.map(({ name, icon: Icon, href, target }) => (
             <Link
               key={name}
               href={href}
               target={target}
               className={cn(
-                "flex items-center gap-x-4 rounded-md px-2.5 py-2 transition-all duration-75 hover:bg-neutral-200/50 active:bg-neutral-200/80",
-                "outline-none focus-visible:ring-2 focus-visible:ring-black/50",
+                "flex items-center gap-x-4 rounded px-2.5 py-2 transition-all duration-75 hover:bg-neutral-200/50 active:bg-neutral-200/80",
+                "outline-none focus-visible:ring-0 focus-visible:ring-black/50",
               )}
               onClick={() => setOpenPopover(false)}
             >
@@ -231,9 +231,9 @@ function WorkspaceList({
                 <Link
                   key={slug}
                   className={cn(
-                    "relative flex w-full items-center gap-x-2 rounded-md px-2 py-1.5 transition-all duration-75",
+                    "relative flex w-full items-center gap-x-2 rounded px-2 py-1.5 transition-all duration-75",
                     "hover:bg-neutral-200/50 active:bg-neutral-200/80",
-                    "outline-none focus-visible:ring-2 focus-visible:ring-black/50",
+                    "outline-none focus-visible:ring-0 focus-visible:ring-black/50",
                     isActive && "bg-neutral-200/50",
                   )}
                   href={href(slug)}
@@ -276,7 +276,7 @@ function WorkspaceList({
                 setOpenPopover(false);
                 setShowAddWorkspaceModal(true);
               }}
-              className="group flex w-full cursor-pointer items-center gap-x-2 rounded-md p-2 text-neutral-700 transition-all duration-75 hover:bg-neutral-200/50 active:bg-neutral-200/80"
+              className="group flex w-full cursor-pointer items-center gap-x-2 rounded p-2 text-neutral-700 transition-all duration-75 hover:bg-neutral-200/50 active:bg-neutral-200/80"
             >
               <Plus className="mx-1.5 size-4 text-neutral-500" />
               <span className="block truncate">Create new workspace</span>
@@ -286,7 +286,7 @@ function WorkspaceList({
       </div>
       {/* Bottom scroll fade */}
       <div
-        className="pointer-events-none absolute -bottom-px left-0 h-16 w-full rounded-b-lg bg-gradient-to-t from-white sm:bottom-0"
+        className="pointer-events-none absolute -bottom-px left-0 h-16 w-full rounded-b bg-gradient-to-t from-white sm:bottom-0"
         style={{ opacity: 1 - Math.pow(scrollProgress, 2) }}
       />
     </div>

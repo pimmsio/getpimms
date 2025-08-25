@@ -2,15 +2,27 @@ import { Button } from "@dub/ui";
 import { cn } from "@dub/utils";
 import { PropsWithChildren } from "react";
 import { useFormContext, useFormState } from "react-hook-form";
-import { LinkFormData } from "./link-builder-provider";
+import { LinkFormData, useLinkBuilderContext } from "./link-builder-provider";
+import { useMetatags } from "./use-metatags";
 
 export function LinkActionBar({ children }: PropsWithChildren) {
   const { control, reset } = useFormContext<LinkFormData>();
   const { isDirty, isSubmitting, isSubmitSuccessful } = useFormState({
     control,
   });
+  const { props } = useLinkBuilderContext();
+  const { skipNextAutoFetch } = useMetatags();
 
   const showActionBar = isDirty || isSubmitting;
+
+  const handleDiscard = async () => {    
+    if (props) {
+      skipNextAutoFetch(); // Prevent auto-fetch on reset
+      reset(props);
+    } else {
+      reset();
+    }
+  };
 
   return (
     <div
@@ -21,7 +33,7 @@ export function LinkActionBar({ children }: PropsWithChildren) {
       <div
         className={cn(
           "mx-auto flex max-w-3xl items-center justify-between gap-4 overflow-hidden px-4 py-3",
-          "border-t border-neutral-200 bg-white lg:rounded-xl lg:border",
+          "border-t border-neutral-200 bg-white lg:rounded lg:border",
           "lg:transition-[opacity,transform]",
           !showActionBar && "lg:translate-y-4 lg:scale-90 lg:opacity-0",
         )}
@@ -40,7 +52,7 @@ export function LinkActionBar({ children }: PropsWithChildren) {
             text="Discard"
             variant="secondary"
             className="hidden h-7 px-2.5 text-xs lg:flex"
-            onClick={() => reset()}
+            onClick={handleDiscard}
           />
           <Button
             type="submit"

@@ -2,7 +2,7 @@ import { cn } from "@dub/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const badgeVariants = cva(
-  "max-w-fit rounded-full border-[2px] px-2 py-px text-xs font-medium whitespace-nowrap",
+  "max-w-fit rounded-full border px-2 py-px text-xs font-medium whitespace-nowrap",
   {
     variants: {
       variant: {

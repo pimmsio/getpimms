@@ -103,7 +103,7 @@ export function OverviewChart() {
 
         <div className="flex flex-col gap-1 px-4">
           {total === undefined ? (
-            <div className="h-11 w-24 animate-pulse rounded-md bg-neutral-200" />
+            <div className="h-11 w-24 animate-pulse rounded bg-neutral-200" />
           ) : (
             <NumberFlow
               value={total}
@@ -141,12 +141,12 @@ export function OverviewChart() {
             tooltipContent={(d) => {
               return (
                 <>
-                  <p className="border-b-[6px] border-neutral-100 px-4 py-3 text-sm text-neutral-900">
+                  <p className="border-b border-neutral-100 px-4 py-3 text-sm text-neutral-900">
                     {formatDateTooltip(d.date, { interval, start, end })}
                   </p>
                   <div className="grid grid-cols-2 gap-x-6 gap-y-2 px-4 py-3 text-sm">
                     <div className="flex items-center gap-2">
-                      {/* <div className="h-2 w-2 rounded-sm bg-violet-500 shadow-[inset_0_0_0_1px_#0003]" /> */}
+                      {/* <div className="h-2 w-2 rounded bg-violet-500 shadow-[inset_0_0_0_1px_#0003]" /> */}
                       <p className="capitalize text-neutral-600">
                         {viewType === "revenue" ? "Revenue" : "Commissions"}
                       </p>

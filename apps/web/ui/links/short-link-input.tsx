@@ -142,51 +142,51 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
       existingLink && key ? [key] : [],
     );
 
-    const {
-      completion,
-      isLoading: generatingAIKey,
-      complete,
-    } = useCompletion({
-      api: `/api/ai/completion?workspaceId=${workspaceId}`,
-      onError: (error) => {
-        if (error.message.includes("Upgrade to Pro")) {
-          toast.custom(() => (
-            <UpgradeRequiredToast
-              title="You've exceeded your AI usage limit"
-              message={error.message}
-            />
-          ));
-        } else {
-          toast.error(error.message);
-        }
-      },
-      onFinish: (_, completion) => {
-        setGeneratedKeys((prev) => [...prev, completion]);
-        mutateWorkspace();
-        posthog.capture("ai_key_generated", {
-          key: completion,
-          url: data.url,
-        });
-      },
-    });
+    // const {
+    //   completion,
+    //   isLoading: generatingAIKey,
+    //   complete,
+    // } = useCompletion({
+    //   api: `/api/ai/completion?workspaceId=${workspaceId}`,
+    //   onError: (error) => {
+    //     if (error.message.includes("Upgrade to Pro")) {
+    //       toast.custom(() => (
+    //         <UpgradeRequiredToast
+    //           title="You've exceeded your AI usage limit"
+    //           message={error.message}
+    //         />
+    //       ));
+    //     } else {
+    //       toast.error(error.message);
+    //     }
+    //   },
+    //   onFinish: (_, completion) => {
+    //     setGeneratedKeys((prev) => [...prev, completion]);
+    //     mutateWorkspace();
+    //     posthog.capture("ai_key_generated", {
+    //       key: completion,
+    //       url: data.url,
+    //     });
+    //   },
+    // });
 
-    useEffect(() => {
-      if (completion) onChange?.({ key: completion });
-    }, [completion]);
+    // useEffect(() => {
+    //   if (completion) onChange?.({ key: completion });
+    // }, [completion]);
 
     const generateAIKey = useCallback(async () => {
       setKeyError(null);
-      complete(
-        `For the following URL, suggest a relevant short link slug that is at most ${Math.max(25 - (domain?.length || 0), 12)} characters long. 
+      // complete(
+      //   `For the following URL, suggest a relevant short link slug that is at most ${Math.max(25 - (domain?.length || 0), 12)} characters long. 
                   
-            - URL: ${data.url}
-            - Meta title: ${data.title}
-            - Meta description: ${data.description}. 
+      //       - URL: ${data.url}
+      //       - Meta title: ${data.title}
+      //       - Meta description: ${data.description}. 
     
-          Only respond with the short link slug and nothing else. Don't use quotation marks or special characters (dash and slash are allowed).
+      //     Only respond with the short link slug and nothing else. Don't use quotation marks or special characters (dash and slash are allowed).
           
-          Make sure your answer does not exist in this list of generated slugs: ${generatedKeys.join(", ")}`,
-      );
+      //     Make sure your answer does not exist in this list of generated slugs: ${generatedKeys.join(", ")}`,
+      // );
     }, [data.url, data.title, data.description, generatedKeys]);
 
     const shortLink = useMemo(() => {
@@ -230,7 +230,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
                   content: "Generate a random key",
                 }}
                 onClick={generateRandomKey}
-                disabled={generatingRandomKey || generatingAIKey}
+                disabled={generatingRandomKey/* || generatingAIKey*/}
               >
                 {generatingRandomKey ? (
                   <LoadingCircle />
@@ -264,7 +264,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
             </div>
           )}
         </div>
-        <div className="relative mt-1 flex rounded-xl shadow-sm">
+        <div className="relative mt-1 flex rounded shadow-sm">
           <div className="z-[1]">
             <DomainCombobox
               domain={domain}
@@ -293,10 +293,10 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
             autoComplete="off"
             autoCapitalize="none"
             className={cn(
-              "block w-full rounded-r-xl border-2 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
+              "block w-full rounded-r-xl border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
               "z-0 focus:z-[1]",
               {
-                "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500":
+                "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0":
                   error,
                 "border-amber-300 pr-10 text-amber-900 placeholder-amber-300 focus:border-amber-500 focus:ring-amber-500":
                   isLongLink,
@@ -528,7 +528,7 @@ function DomainCombobox({
         className: cn(
           "w-32 sm:w-40 h-full rounded-l-xl rounded-r-none border-r-transparent justify-start px-2.5",
           "data-[state=open]:ring-0 data-[state=open]:ring-neutral-500 data-[state=open]:border-neutral-500",
-          "focus:ring-0 focus:ring-neutral-500 focus:border-neutral-500 transition-none",
+          "focus:ring-0 focus:ring-0 focus:border-neutral-500 transition-none",
         ),
       }}
       optionClassName="sm:max-w-[225px]"

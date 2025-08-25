@@ -34,7 +34,7 @@ export function CreateProgramCard() {
   )?.href;
 
   return (
-    <div className="relative mt-6 overflow-hidden rounded-xl bg-white p-px shadow-xs">
+    <div className="relative mt-6 overflow-hidden rounded bg-white p-px shadow-xs">
       <div
         className={cn(
           "pointer-events-none absolute inset-0 opacity-50 blur-[50px]",
@@ -49,7 +49,7 @@ export function CreateProgramCard() {
         />
       </div>
 
-      <div className="relative flex flex-col gap-3 rounded-xl bg-white/70 p-3">
+      <div className="relative flex flex-col gap-3 rounded bg-white/70 p-3">
         {/* <div className="flex items-center gap-2">
           <ConnectedDots4 className="size-4 text-neutral-900" />
         </div> */}
@@ -67,7 +67,7 @@ export function CreateProgramCard() {
           href={`/${slug}${path}`}
           className={cn(
             buttonVariants({ variant: "primary" }),
-            "flex h-8 items-center justify-center rounded-md border px-3 text-sm",
+            "flex h-8 items-center justify-center rounded border px-3 text-sm",
           )}
         >
           {store?.programOnboarding ? "Finish creating" : "Start your program"}

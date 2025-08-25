@@ -2,7 +2,7 @@ import { resend, sendEmailViaResend } from "./resend";
 import { ResendEmailOptions } from "./resend/types";
 import { sendViaNodeMailer } from "./send-via-nodemailer";
 
-export const sendEmail = async (opts: ResendEmailOptions) => {
+export const sendEmail = async (opts: ResendEmailOptions) => {  
   if (resend) {
     return await sendEmailViaResend(opts);
   }

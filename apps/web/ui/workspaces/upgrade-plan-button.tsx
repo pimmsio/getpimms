@@ -49,8 +49,12 @@ export function UpgradePlanButton({
       loading={clicked}
       disabled={!workspaceSlug || isCurrentPlan}
       onClick={() => {
+        if (selectedPlan.name === "Starter") {
+          window.location.href = `/api/pay?id=5kAeWJ8Q2f0O1e8dQS`;
+          return;
+        }
         if (selectedPlan.name === "Pro") {
-          window.location.href = `/api/pay`;
+          window.location.href = `/api/pay?id=9B66oG2VvcYq3STaGmc7u07`;
           return;
         }
 

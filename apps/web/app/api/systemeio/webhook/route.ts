@@ -42,13 +42,18 @@ export const POST = withAxiom(async (req: Request) => {
   const body = JSON.parse(rawBody);
   let response = "OK";
 
-  switch (eventType) {
-    case "CONTACT_OPT_IN":
-      response = await customerCreated(body);
-      break;
-    case "SALE_NEW":
-      response = await saleCreated(body);
-      break;
+  try {
+    switch (eventType) {
+      case "CONTACT_OPT_IN":
+        response = await customerCreated(body);
+        break;
+      case "SALE_NEW":
+        response = await saleCreated(body);
+        break;
+    }
+  } catch (error: any) {
+    console.error(`SystemeIO webhook ${eventType} processing error:`, error);
+    response = `Error processing ${eventType}: ${error.message || "Unknown error"}`;
   }
 
   return new Response(response, { status: 200 });

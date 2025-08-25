@@ -117,7 +117,7 @@ function ExpirationModal({
               }
               side="right"
             >
-              <kbd className="flex size-6 cursor-default items-center justify-center rounded-xl border-[2px] border-neutral-100 font-sans text-xs text-neutral-950">
+              <kbd className="flex size-6 cursor-default items-center justify-center rounded border border-neutral-100 font-sans text-xs text-neutral-950">
                 E
               </kbd>
             </Tooltip>
@@ -134,7 +134,7 @@ function ExpirationModal({
               Date and Time
             </label>
           </div>
-          <div className="mt-2 flex w-full items-center justify-between rounded-xl border-[2px] border-neutral-300 bg-white shadow-sm transition-all focus-within:border-neutral-800 focus-within:outline-none focus-within:ring-1 focus-within:ring-neutral-500">
+          <div className="mt-2 flex w-full items-center justify-between rounded border border-neutral-300 bg-white shadow-sm transition-all focus-within:border-neutral-800 focus-within:outline-none focus-within:ring-1 focus-within:ring-neutral-500">
             <input
               ref={inputRef}
               id={`${id}-expiresAt`}
@@ -202,7 +202,7 @@ function ExpirationModal({
               }
             /> */}
           </div>
-          <div className="mt-2 rounded-md shadow-sm">
+          <div className="mt-2 rounded shadow-sm">
             <input
               id={`${id}-expiredUrl`}
               type="text"
@@ -210,9 +210,9 @@ function ExpirationModal({
               placeholder="https://example.com"
               className={`${
                 errors.expiredUrl
-                  ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500"
-                  : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-500"
-              } block w-full rounded-md focus:outline-none sm:text-sm`}
+                  ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0"
+                  : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0"
+              } block w-full rounded focus:outline-none sm:text-sm`}
               {...register("expiredUrl")}
             />
           </div>

@@ -71,7 +71,7 @@ export default function UpdateDefaultWorkspace() {
           error: (error) => error,
         });
       }}
-      className="rounded-xl border-[6px] border-neutral-100 bg-white"
+      className="rounded border border-neutral-100 bg-white"
     >
       <div className="flex flex-col space-y-3 p-5 sm:p-10">
         <h2 className="text-xl font-medium">Your Default Workspace</h2>
@@ -88,7 +88,7 @@ export default function UpdateDefaultWorkspace() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between space-x-4 rounded-b-lg border-t-[6px] border-neutral-100 bg-neutral-50 p-3 sm:px-10">
+      <div className="flex items-center justify-between space-x-4 rounded-b border-x border-neutral-100 bg-neutral-50 p-3 sm:px-10">
         {/* <a
           href="https://dub.co/help/article/how-to-change-default-workspace"
           target="_blank"

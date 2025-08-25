@@ -54,7 +54,7 @@ export const navItems = [
 ];
 
 const navItemClassName = cn(
-  "relative group/item flex items-center rounded-md px-4 py-2 text-sm rounded-lg font-medium text-neutral-700 hover:text-neutral-900 transition-colors",
+  "relative group/item flex items-center rounded px-4 py-2 text-sm rounded font-medium text-neutral-700 hover:text-neutral-900 transition-colors",
   "dark:text-white/90 dark:hover:text-white",
   "hover:bg-neutral-900/5 dark:hover:bg-white/10",
   "data-[active=true]:bg-neutral-900/5 dark:data-[active=true]:bg-white/10",
@@ -103,7 +103,7 @@ export function Nav({
             className={cn(
               "absolute inset-0 block border-b border-transparent transition-all",
               scrolled &&
-                "border-neutral-100 bg-white/75 backdrop-blur-lg dark:border-white/10 dark:bg-black/75",
+                "border-neutral-200 bg-white/75 backdrop-blur-lg dark:border-white/10 dark:bg-black/75",
             )}
           />
           <MaxWidthWrapper className={cn("relative", maxWidthWrapperClassName)}>
@@ -173,7 +173,7 @@ export function Nav({
                 <div className="absolute left-1/2 top-full mt-3 -translate-x-1/2">
                   <NavigationMenuPrimitive.Viewport
                     className={cn(
-                      "relative flex origin-[top_center] justify-start overflow-hidden rounded-[20px] border-[6px] border-neutral-100 bg-white shadow-md dark:border-white/[0.15] dark:bg-black",
+                      "relative flex origin-[top_center] justify-start overflow-hidden rounded-[20px] border border-neutral-200 bg-white shadow-md dark:border-white/[0.15] dark:bg-black",
                       "data-[state=closed]:animate-scale-out-content data-[state=open]:animate-scale-in-content",
                       "h-[var(--radix-navigation-menu-viewport-height)] w-[var(--radix-navigation-menu-viewport-width)] transition-[width,height]",
                     )}
@@ -187,7 +187,7 @@ export function Nav({
                     href={APP_DOMAIN}
                     className={cn(
                       buttonVariants({ variant: "primary" }),
-                      "flex h-8 items-center rounded-xl border-[6px] px-4 text-sm",
+                      "flex h-8 items-center rounded border px-4 text-sm",
                       "dark:border-white dark:bg-white dark:text-black dark:hover:bg-neutral-50 dark:hover:ring-white/10",
                     )}
                   >
@@ -199,7 +199,7 @@ export function Nav({
                       href="https://app.pimms.io/login"
                       className={cn(
                         buttonVariants({ variant: "secondary" }),
-                        "flex h-8 items-center rounded-xl border-[6px] px-4 text-sm",
+                        "flex h-8 items-center rounded border px-4 text-sm",
                         "dark:border-white/10 dark:bg-black dark:text-white dark:hover:bg-neutral-900",
                       )}
                     >
@@ -209,7 +209,7 @@ export function Nav({
                       href="https://app.pimms.io/register"
                       className={cn(
                         buttonVariants({ variant: "primary" }),
-                        "flex h-8 items-center rounded-xl border-[6px] px-4 text-sm",
+                        "flex h-8 items-center rounded border px-4 text-sm",
                         "dark:border-white dark:bg-white dark:text-black dark:hover:bg-neutral-50 dark:hover:ring-white/10",
                       )}
                     >

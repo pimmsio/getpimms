@@ -6,7 +6,7 @@ export default function IntegrationPageLoading() {
       <div className="h-4 w-28 rounded-full bg-neutral-100" />
       <div className="flex justify-between gap-2">
         <div className="flex items-center gap-x-3">
-          <div className="h-12 w-12 rounded-md bg-neutral-100" />
+          <div className="h-12 w-12 rounded bg-neutral-100" />
           <div>
             <div className="h-6 w-40 rounded-full bg-neutral-100" />
             <div className="mt-1 h-4 w-60 rounded-full bg-neutral-100" />
@@ -14,15 +14,15 @@ export default function IntegrationPageLoading() {
         </div>
       </div>
 
-      <div className="h-24 w-full rounded-lg bg-neutral-100" />
+      <div className="h-24 w-full rounded bg-neutral-100" />
 
-      <div className="w-full rounded-xl border-[6px] border-neutral-100 bg-white">
-        <div className="flex items-center gap-x-2 border-b-[6px] border-neutral-100 px-6 py-4">
+      <div className="w-full rounded border border-neutral-100 bg-white">
+        <div className="flex items-center gap-x-2 border-b border-neutral-100 px-6 py-4">
           <div className="h-4 w-4 rounded-full bg-neutral-100" />
           <div className="h-5 w-20 rounded-full bg-neutral-100" />
         </div>
         <div className="p-6">
-          <div className="h-64 w-full rounded-md bg-neutral-100" />
+          <div className="h-64 w-full rounded bg-neutral-100" />
         </div>
       </div>
     </MaxWidthWrapper>

@@ -73,7 +73,7 @@ function Wrapper({
   const { slug } = useWorkspace();
 
   const className = cn(
-    "inline-flex m-2 group relative rounded-xl bg-neutral-100 p-2 transition-[filter] h-[120px] w-[120px] flex-col items-center justify-center",
+    "inline-flex m-2 group relative rounded bg-neutral-100 p-2 transition-[filter] h-[120px] w-[120px] flex-col items-center justify-center",
     integration.comingSoon ? "cursor-default" : "hover:drop-shadow-card-hover",
   );
 

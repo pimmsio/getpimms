@@ -96,7 +96,7 @@ export default function DomainCard({ props }: { props: DomainProps }) {
     <>
       <div
         ref={domainRef}
-        className="hover:drop-shadow-card-hover group rounded-xl border-[6px] border-neutral-100 bg-white transition-[filter]"
+        className="hover:drop-shadow-card-hover group rounded border border-neutral-100 bg-white transition-[filter]"
         onPointerEnter={() => setGroupHover(true)}
         onPointerLeave={() => setGroupHover(false)}
       >
@@ -131,7 +131,7 @@ export default function DomainCard({ props }: { props: DomainProps }) {
               <NumberTooltip value={props.link?.clicks || 0}>
                 <Link
                   href={`/${slug}/analytics?domain=${domain}&key=_root`}
-                  className="flex items-center space-x-1 whitespace-nowrap rounded-xl border-[2px] border-neutral-100 bg-neutral-50 px-3 py-1 transition-colors hover:bg-neutral-100"
+                  className="flex items-center space-x-1 whitespace-nowrap rounded border border-neutral-100 bg-neutral-50 px-3 py-1 transition-colors hover:bg-neutral-100"
                 >
                   <CursorRays className="h-4 w-4 text-neutral-700" />
                   <p className="text-xs font-medium text-neutral-900">
@@ -169,7 +169,7 @@ export default function DomainCard({ props }: { props: DomainProps }) {
                         : "Invalid"}
                 </StatusBadge>
               ) : (
-                <div className="h-6 w-16 animate-pulse rounded-md bg-neutral-200" />
+                <div className="h-6 w-16 animate-pulse rounded bg-neutral-200" />
               )}
             </div>
 
@@ -228,7 +228,7 @@ export default function DomainCard({ props }: { props: DomainProps }) {
           >
             {verificationData ? (
               verificationData.status === "Valid Configuration" ? (
-                <div className="mt-6 flex items-center gap-2 text-pretty rounded-lg bg-green-100/80 p-3 text-sm text-green-600">
+                <div className="mt-6 flex items-center gap-2 text-pretty rounded bg-green-100/80 p-3 text-sm text-green-600">
                   <CircleCheck className="h-5 w-5 shrink-0" />
                   <div>
                     Good news! Your DNS records are set up correctly, but it can
@@ -246,7 +246,7 @@ export default function DomainCard({ props }: { props: DomainProps }) {
                 <DomainConfiguration data={verificationData} />
               )
             ) : (
-              <div className="mt-6 h-6 w-32 animate-pulse rounded-md bg-neutral-200" />
+              <div className="mt-6 h-6 w-32 animate-pulse rounded bg-neutral-200" />
             )}
           </motion.div>
         </div>
@@ -345,7 +345,7 @@ function Menu({
           width: groupHover && !isMobile ? "auto" : isMobile ? 79 : 39,
         }}
         initial={false}
-        className="flex items-center justify-end divide-x divide-neutral-200 overflow-hidden rounded-xl border-[2px] border-neutral-100 sm:divide-transparent sm:group-hover:divide-neutral-200"
+        className="flex items-center justify-end divide-x divide-neutral-200 overflow-hidden rounded border border-neutral-100 sm:divide-transparent sm:group-hover:divide-neutral-200"
       >
         <Button
           icon={<PenWriting className={cn("h-4 w-4 shrink-0")} />}
@@ -418,7 +418,7 @@ function Menu({
                   className="h-9 justify-start px-2 font-medium"
                 />
               </div>
-              <div className="border-t-[6px] border-neutral-100" /> */}
+              <div className="border-x border-neutral-100" /> */}
               <div className="grid gap-px p-2">
                 <p className="mb-1.5 mt-1 flex items-center gap-2 px-1 text-xs font-medium text-neutral-500">
                   Domain Settings

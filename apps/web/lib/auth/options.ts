@@ -8,6 +8,7 @@ import { subscribe } from "@dub/email/resend/subscribe";
 import { LoginLink } from "@dub/email/templates/login-link";
 import { prisma } from "@dub/prisma";
 import { PrismaClient } from "@dub/prisma/client";
+import { CBE_DOMAIN } from "@dub/utils";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { waitUntil } from "@vercel/functions";
 import { User, type NextAuthOptions } from "next-auth";
@@ -328,6 +329,20 @@ export const authOptions: NextAuthOptions = {
     error: "/login",
   },
   callbacks: {
+    redirect: async ({ url, baseUrl }) => {
+      console.log('[NextAuth Redirect]', { url, baseUrl });
+      
+      // Check if the request is coming from CBE domain (only check domain, not path)
+      if (baseUrl.includes('cbe.')) {
+        console.log('[NextAuth] CBE domain detected, redirecting to CBE success');
+        return `${CBE_DOMAIN}/success`;
+      }
+      
+      // For all other requests, use default redirect logic
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    },
     signIn: async ({ user, account, profile }) => {
       console.log({ user, account, profile });
 

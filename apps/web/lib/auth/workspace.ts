@@ -42,6 +42,7 @@ export const withWorkspace = (
   {
     requiredPlan = [
       "free",
+      "starter",
       "pro",
       "business",
       "business plus",
