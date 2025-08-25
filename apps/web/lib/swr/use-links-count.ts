@@ -50,7 +50,8 @@ export default function useLinksCount<T = any>({
     fetcher,
     {
       dedupingInterval: 60000,
-      keepPreviousData: true,
+      // keepPreviousData: true,
+      revalidateOnFocus: false,
     },
   );
 

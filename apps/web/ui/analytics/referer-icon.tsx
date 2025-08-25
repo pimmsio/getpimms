@@ -1,6 +1,7 @@
 import { LinkLogo } from "@dub/ui";
 import { cn } from "@dub/utils";
 import { Link2 } from "lucide-react";
+import { getBestDomainForLogo } from "@/lib/analytics/utils";
 
 export default function RefererIcon({
   display,
@@ -13,7 +14,7 @@ export default function RefererIcon({
     <Link2 className={cn("h-4 w-4", className)} />
   ) : (
     <LinkLogo
-      apexDomain={display}
+      apexDomain={getBestDomainForLogo(display)}
       className={cn("h-4 w-4 sm:h-4 sm:w-4", className)}
     />
   );

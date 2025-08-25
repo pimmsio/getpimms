@@ -27,20 +27,23 @@ export function useLinkFilters() {
     folderId = defaultFolderId ?? "";
   }
 
+  const { queryParams, searchParamsObj } = useRouterStuff();
+
   const { tags, tagsAsync } = useTagFilterOptions({
     search: selectedFilter === "tagIds" ? debouncedSearch : "",
     folderId,
+    enabled: selectedFilter === "tagIds" || Boolean(searchParamsObj.tagIds),
   });
 
   const domains = useDomainFilterOptions({
     folderId,
+    enabled: selectedFilter === "domain" || Boolean(searchParamsObj.domain),
   });
 
   const users = useUserFilterOptions({
     folderId,
+    enabled: selectedFilter === "userId" || Boolean(searchParamsObj.userId),
   });
-
-  const { queryParams, searchParamsObj } = useRouterStuff();
 
   const filters = useMemo(() => {
     return [
@@ -182,9 +185,11 @@ export function useLinkFilters() {
 function useTagFilterOptions({
   search,
   folderId,
+  enabled,
 }: {
   search: string;
   folderId: string;
+  enabled: boolean;
 }) {
   const { searchParamsObj } = useRouterStuff();
 
@@ -210,7 +215,7 @@ function useTagFilterOptions({
       tagId: string;
       _count: number;
     }[]
-  >({ query: { groupBy: "tagId", showArchived, folderId } });
+  >({ query: { groupBy: "tagId", showArchived, folderId }, enabled });
 
   const tagsResult = useMemo(() => {
     return loadingTags ||
@@ -243,7 +248,7 @@ function useTagFilterOptions({
   return { tags: tagsResult, tagsAsync };
 }
 
-function useDomainFilterOptions({ folderId }: { folderId: string }) {
+function useDomainFilterOptions({ folderId, enabled }: { folderId: string, enabled: boolean }) {
   const { showArchived } = useContext(LinksDisplayContext);
 
   const { data: domainsCount } = useLinksCount<
@@ -257,6 +262,7 @@ function useDomainFilterOptions({ folderId }: { folderId: string }) {
       showArchived,
       folderId,
     },
+    enabled
   });
 
   return useMemo(() => {
@@ -271,7 +277,7 @@ function useDomainFilterOptions({ folderId }: { folderId: string }) {
   }, [domainsCount]);
 }
 
-function useUserFilterOptions({ folderId }: { folderId: string }) {
+function useUserFilterOptions({ folderId, enabled }: { folderId: string, enabled: boolean }) {
   const { users } = useUsers();
   const { showArchived } = useContext(LinksDisplayContext);
 
@@ -286,6 +292,7 @@ function useUserFilterOptions({ folderId }: { folderId: string }) {
       showArchived,
       folderId,
     },
+    enabled
   });
 
   return useMemo(

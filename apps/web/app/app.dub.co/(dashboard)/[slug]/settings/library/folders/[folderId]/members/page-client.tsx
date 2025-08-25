@@ -60,6 +60,7 @@ export const FolderUsersPageClient = ({ folderId }: { folderId: string }) => {
     {
       revalidateOnFocus: false,
       keepPreviousData: true,
+      dedupingInterval: 60000,
     },
   );
 

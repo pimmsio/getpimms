@@ -182,7 +182,7 @@ export default function PayoutsPageClient() {
   return (
     <div className="mx-auto flex w-full max-w-screen-xl flex-col space-y-6 p-6">
       <SimpleDateRangePicker defaultInterval="mtd" className="w-fit" />
-      <div className="flex flex-col divide-y divide-neutral-200 rounded-lg border border-neutral-200 bg-white">
+      <div className="flex flex-col divide-y divide-neutral-200 rounded border border-neutral-200 bg-white">
         <div className="scrollbar-hide grid w-full grid-cols-2 divide-x overflow-y-hidden">
           {tabs.map(({ id, label, colorClassName }) => {
             return (
@@ -197,7 +197,7 @@ export default function PayoutsPageClient() {
                 className={cn(
                   "border-box relative block h-full w-full flex-none px-4 py-3 sm:px-8 sm:py-6",
                   "transition-colors hover:bg-neutral-50 focus:outline-none active:bg-neutral-100",
-                  "ring-inset ring-neutral-500 focus-visible:ring-1 sm:first:rounded-tl-xl",
+                  "ring-inset ring-neutral-500 focus-visible:ring-0 sm:first:rounded-tl-xl",
                 )}
               >
                 {/* Active tab indicator */}
@@ -210,7 +210,7 @@ export default function PayoutsPageClient() {
                 <div className="flex items-center gap-2.5 text-sm text-neutral-600">
                   <div
                     className={cn(
-                      "h-2 w-2 rounded-sm bg-current shadow-[inset_0_0_0_1px_#00000019]",
+                      "h-2 w-2 rounded bg-current shadow-[inset_0_0_0_1px_#00000019]",
                       colorClassName,
                     )}
                   />
@@ -261,7 +261,7 @@ export default function PayoutsPageClient() {
                           <div className="flex items-center gap-2">
                             <div
                               className={cn(
-                                "h-2 w-2 rounded-sm opacity-50 shadow-[inset_0_0_0_1px_#0003]",
+                                "h-2 w-2 rounded opacity-50 shadow-[inset_0_0_0_1px_#0003]",
                                 tab.colorClassName,
                               )}
                             />

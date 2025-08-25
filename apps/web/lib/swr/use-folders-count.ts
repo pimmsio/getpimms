@@ -26,6 +26,8 @@ export default function useFoldersCount({
     fetcher,
     {
       dedupingInterval: 60000,
+      revalidateOnFocus: false,
+      keepPreviousData: true,
     },
   );
 

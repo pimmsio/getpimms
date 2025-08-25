@@ -8,6 +8,7 @@ import { recordLead } from "@/lib/tinybird";
 import { transformLeadEventData } from "@/lib/webhook/transform";
 import { includeTags } from "@/lib/api/links/include-tags";
 import { getClickEvent } from "@/lib/tinybird";
+import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
 
 export async function customerCreated(body: any) {
   const contact = body.contact;
@@ -58,6 +59,9 @@ export async function customerCreated(body: any) {
   const link = await prisma.link.findUnique({ where: { id: linkId } });
   if (!link || !link.projectId) return "Invalid link or project";
 
+  const { anonymousId, totalClicks, lastEventAt } =
+    await computeAnonymousCustomerFields(clickData);
+
   const customer = await prisma.customer.create({
     data: {
       id: `cus_${nanoid(10)}`,
@@ -71,13 +75,16 @@ export async function customerCreated(body: any) {
       clickId,
       clickedAt: new Date(clickData.timestamp + "Z"),
       country: countryCode,
+      anonymousId,
+      totalClicks,
+      lastEventAt,
     },
   });
 
   const leadData = {
     ...clickData,
     event_id: nanoid(16),
-    event_name: "New customer",
+    event_name: "New lead",
     customer_id: customer.id,
   };
 
@@ -111,11 +118,11 @@ export async function customerCreated(body: any) {
     workspace,
     data: transformLeadEventData({
       ...clickData,
-      eventName: "New customer",
+      eventName: "New lead",
       link: linkUpdated,
       customer,
     }),
   });
 
-  return `Systeme.io customer created: ${customer.id}`;
+  return `Systeme.io lead created: ${customer.id}`;
 }

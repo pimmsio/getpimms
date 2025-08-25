@@ -28,6 +28,8 @@ export default function useTagsCount({
     fetcher,
     {
       dedupingInterval: 60000,
+      revalidateOnFocus: false,
+      keepPreviousData: true,
     },
   );
 

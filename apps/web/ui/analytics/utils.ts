@@ -43,11 +43,15 @@ export function useAnalyticsFilterOption(
           ...(typeof groupByOrParams === "string"
             ? { groupBy: groupByOrParams }
             : groupByOrParams),
+          event: "composite", // Always fetch all metrics for mixed bars
         })}`
       : null,
     fetcher,
     {
       shouldRetryOnError: !requiresUpgrade,
+      dedupingInterval: 60000,
+      revalidateOnFocus: false,
+      keepPreviousData: true,
     },
   );
 
@@ -56,6 +60,9 @@ export function useAnalyticsFilterOption(
       data?.map((d) => ({
         ...d,
         count: d[selectedTab] as number | undefined,
+        clicks: d.clicks as number | undefined,
+        leads: d.leads as number | undefined,
+        sales: d.sales as number | undefined,
         saleAmount: d.saleAmount as number | undefined,
       })) ?? null,
     loading: !data || isLoading,

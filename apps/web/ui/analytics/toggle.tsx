@@ -4,23 +4,12 @@ import {
   INTERVAL_DISPLAYS,
   VALID_ANALYTICS_FILTERS,
 } from "@/lib/analytics/constants";
-import { validDateRangeForPlan } from "@/lib/analytics/utils";
+import { validDateRangeForPlan, getGroupDisplayNameFromDomains } from "@/lib/analytics/utils";
 import { getStartEndDates } from "@/lib/analytics/utils/get-start-end-dates";
-import useCustomer from "@/lib/swr/use-customer";
-import useCustomers from "@/lib/swr/use-customers";
-import useCustomersCount from "@/lib/swr/use-customers-count";
-import useDomains from "@/lib/swr/use-domains";
-import useDomainsCount from "@/lib/swr/use-domains-count";
-import useFolder from "@/lib/swr/use-folder";
-import useFolders from "@/lib/swr/use-folders";
-import useFoldersCount from "@/lib/swr/use-folders-count";
 import useTags from "@/lib/swr/use-tags";
 import useTagsCount from "@/lib/swr/use-tags-count";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { LinkProps } from "@/lib/types";
-import { CUSTOMERS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/customers";
-import { DOMAINS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/domains";
-import { FOLDERS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/folders";
 import { TAGS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/tags";
 import {
   BlurImage,
@@ -36,17 +25,16 @@ import {
   useScroll,
   UTM_PARAMETERS,
 } from "@dub/ui";
+import { useAnalyticsUrl } from "@/lib/hooks/use-analytics-url";
 import {
   Cube,
   FlagWavy,
-  Globe2,
   Hyperlink,
   LinkBroken,
   MobilePhone,
   OfficeBuilding,
-  QRCode,
+  ReferredVia,
   Tag,
-  User,
   Window,
 } from "@dub/ui/icons";
 import {
@@ -61,7 +49,6 @@ import {
   getNextPlan,
   linkConstructor,
   nFormatter,
-  OG_AVATAR_URL,
 } from "@dub/utils";
 import { readStreamableValue } from "ai/rsc";
 import posthog from "posthog-js";
@@ -79,16 +66,19 @@ import { AnalyticsContext } from "./analytics-provider";
 import DeviceIcon from "./device-icon";
 import { ShareButton } from "./share-button";
 import { useAnalyticsFilterOption } from "./utils";
+import RefererIcon from "./referer-icon";
 
 export default function Toggle({
   page = "analytics",
 }: {
-  page?: "analytics" | "events";
+  page?: "analytics" | "events" | "links";
 }) {
-  const { slug, plan, flags, createdAt } = useWorkspace();
+  const { slug, plan, createdAt } = useWorkspace();
 
-  const { router, queryParams, searchParamsObj, getQueryString } =
+  const { router, queryParams, searchParamsObj } =
     useRouterStuff();
+  
+  const buildAnalyticsUrl = useAnalyticsUrl();
 
   const {
     selectedTab,
@@ -107,14 +97,14 @@ export default function Toggle({
 
   // Determine whether filters should be fetched async
   const { data: tagsCount } = useTagsCount();
-  const { data: domainsCount } = useDomainsCount({ ignoreParams: true });
-  const { data: foldersCount } = useFoldersCount();
-  const { data: customersCount } = useCustomersCount();
+  // const { data: domainsCount } = useDomainsCount({ ignoreParams: true });
+  // const { data: foldersCount } = useFoldersCount();
+  // const { data: customersCount } = useCustomersCount();
   const tagsAsync = Boolean(tagsCount && tagsCount > TAGS_MAX_PAGE_SIZE);
-  const domainsAsync = domainsCount && domainsCount > DOMAINS_MAX_PAGE_SIZE;
-  const foldersAsync = foldersCount && foldersCount > FOLDERS_MAX_PAGE_SIZE;
-  const customersAsync =
-    customersCount && customersCount > CUSTOMERS_MAX_PAGE_SIZE;
+  // const domainsAsync = domainsCount && domainsCount > DOMAINS_MAX_PAGE_SIZE;
+  // const foldersAsync = foldersCount && foldersCount > FOLDERS_MAX_PAGE_SIZE;
+  // const customersAsync =
+  //   customersCount && customersCount > CUSTOMERS_MAX_PAGE_SIZE;
 
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -123,34 +113,34 @@ export default function Toggle({
   const { tags, loading: loadingTags } = useTags({
     query: {
       search: tagsAsync && selectedFilter === "tagIds" ? debouncedSearch : "",
-    },
+    }
   });
-  const { folders, loading: loadingFolders } = useFolders({
-    query: {
-      search:
-        foldersAsync && selectedFilter === "folderId" ? debouncedSearch : "",
-    },
-  });
-  const { customers, loading: loadingCustomers } = useCustomers({
-    query: {
-      search:
-        customersAsync && selectedFilter === "customerId"
-          ? debouncedSearch
-          : "",
-    },
-  });
+  // const { folders, loading: loadingFolders } = useFolders({
+  //   query: {
+  //     search:
+  //       foldersAsync && selectedFilter === "folderId" ? debouncedSearch : "",
+  //   },
+  // });
+  // const { customers } = useCustomers({
+  //   query: {
+  //     search:
+  //       customersAsync && selectedFilter === "customerId"
+  //         ? debouncedSearch
+  //         : "",
+  //   },
+  // });
 
-  const {
-    allDomains: domains,
-    primaryDomain,
-    loading: loadingDomains,
-  } = useDomains({
-    ignoreParams: true,
-    opts: {
-      search:
-        domainsAsync && selectedFilter === "domain" ? debouncedSearch : "",
-    },
-  });
+  // const {
+  //   allDomains: domains,
+  //   primaryDomain,
+  //   loading: loadingDomains,
+  // } = useDomains({
+  //   ignoreParams: true,
+  //   opts: {
+  //     search:
+  //       domainsAsync && selectedFilter === "domain" ? debouncedSearch : "",
+  //   },
+  // });
 
   const selectedTagIds = useMemo(
     () => searchParamsObj.tagIds?.split(",")?.filter(Boolean) ?? [],
@@ -162,16 +152,15 @@ export default function Toggle({
     enabled: tagsAsync,
   });
 
-  const selectedFolderId = searchParamsObj.folderId;
 
-  const { folder: selectedFolder } = useFolder({
-    folderId: selectedFolderId,
-  });
+  // const { folder: selectedFolder } = useFolder({
+  //   folderId: selectedFolderId,
+  // });
 
   const selectedCustomerId = searchParamsObj.customerId;
-  const { data: selectedCustomer } = useCustomer({
-    customerId: selectedCustomerId,
-  });
+  // const { data: selectedCustomer } = useCustomer({
+  //   customerId: selectedCustomerId,
+  // });
 
   const [requestedFilters, setRequestedFilters] = useState<string[]>([]);
 
@@ -283,35 +272,35 @@ export default function Toggle({
   };
 
   // Some suggestions will only appear if previously requested (see isRequested above)
-  const aiFilterSuggestions = useMemo(
-    () => [
-      ...(dashboardProps || partnerPage
-        ? []
-        : [
-            {
-              value: `Clicks on ${primaryDomain} domain this year`,
-              icon: Globe2,
-            },
-          ]),
-      {
-        value: "Mobile users, US only",
-        icon: MobilePhone,
-      },
-      {
-        value: "Tokyo, Chrome users",
-        icon: OfficeBuilding,
-      },
-      {
-        value: "Safari, Singapore, last month",
-        icon: FlagWavy,
-      },
-      {
-        value: "QR scans last quarter",
-        icon: QRCode,
-      },
-    ],
-    [primaryDomain, dashboardProps, partnerPage],
-  );
+  // const aiFilterSuggestions = useMemo(
+  //   () => [
+  //     ...(dashboardProps || partnerPage
+  //       ? []
+  //       : [
+  //           {
+  //             value: `Clicks on ${primaryDomain} domain this year`,
+  //             icon: Globe2,
+  //           },
+  //         ]),
+  //     {
+  //       value: "Mobile users, US only",
+  //       icon: MobilePhone,
+  //     },
+  //     {
+  //       value: "Tokyo, Chrome users",
+  //       icon: OfficeBuilding,
+  //     },
+  //     {
+  //       value: "Safari, Singapore, last month",
+  //       icon: FlagWavy,
+  //     },
+  //     {
+  //       value: "QR scans last quarter",
+  //       icon: QRCode,
+  //     },
+  //   ],
+  //   [primaryDomain, dashboardProps, partnerPage],
+  // );
 
   const [streaming, setStreaming] = useState<boolean>(false);
 
@@ -355,30 +344,30 @@ export default function Toggle({
         : partnerPage
           ? [LinkFilterItem]
           : [
-              ...(["leads", "sales"].includes(selectedTab)
-                ? [
-                    {
-                      key: "customerId",
-                      icon: User,
-                      label: "Customer",
-                      shouldFilter: !customersAsync,
-                      options:
-                        customers?.map(({ id, email, name, avatar }) => {
-                          return {
-                            value: id,
-                            label: email ?? name,
-                            icon: (
-                              <img
-                                src={avatar || `${OG_AVATAR_URL}${id}`}
-                                alt={`${email} avatar`}
-                                className="size-4 rounded-full"
-                              />
-                            ),
-                          };
-                        }) ?? null,
-                    },
-                  ]
-                : []),
+              // ...(["leads", "sales"].includes(selectedTab)
+              //   ? [
+              //       {
+              //         key: "customerId",
+              //         icon: User,
+              //         label: "Customer",
+              //         shouldFilter: !customersAsync,
+              //         options:
+              //           customers?.map(({ id, email, name, avatar }) => {
+              //             return {
+              //               value: id,
+              //               label: email ?? name,
+              //               icon: (
+              //                 <img
+              //                   src={avatar || `${OG_AVATAR_URL}${id}`}
+              //                   alt={`${email} avatar`}
+              //                   className="size-4 rounded-full"
+              //                 />
+              //               ),
+              //             };
+              //           }) ?? null,
+              //       },
+              //     ]
+              //   : []),
               // ...(flags?.linkFolders
               //   ? [
               //       {
@@ -637,20 +626,31 @@ export default function Toggle({
       //     })) ?? null,
       //   separatorAfter: true,
       // },
-      // {
-      //   key: "referer",
-      //   icon: ReferredVia,
-      //   label: "Referer",
-      //   getOptionIcon: (value, props) => (
-      //     <RefererIcon display={value} className="h-4 w-4" />
-      //   ),
-      //   options:
-      //     referers?.map(({ referer, count }) => ({
-      //       value: referer,
-      //       label: referer,
-      //       right: nFormatter(count, { full: true }),
-      //     })) ?? null,
-      // },
+      {
+        key: "referer",
+        icon: ReferredVia,
+        label: "Referer",
+        getOptionIcon: (value) => (
+          <RefererIcon display={value} className="h-4 w-4" />
+        ),
+        getOptionLabel: (value) => {
+          // If value is a comma-separated list of domains, check if it maps to a group
+          if (typeof value === 'string' && value.includes(',')) {
+            const domains = value.split(',');
+            const groupName = getGroupDisplayNameFromDomains(domains);
+            if (groupName) {
+              return groupName;
+            }
+          }
+          return value;
+        },
+        options:
+          referers?.map(({ referer, count }) => ({
+            value: referer,
+            label: referer,
+            right: nFormatter(count, { full: true }),
+          })) ?? null,
+      },
       // {
       //   key: "refererUrl",
       //   icon: ReferredVia,
@@ -703,13 +703,10 @@ export default function Toggle({
       selectedTab,
       dashboardProps,
       partnerPage,
-      domains,
       links,
       tags,
-      folders,
       selectedTags,
       selectedTagIds,
-      selectedFolder,
       selectedCustomerId,
       countries,
       cities,
@@ -721,11 +718,7 @@ export default function Toggle({
       urls,
       utmData,
       tagsAsync,
-      domainsAsync,
-      foldersAsync,
       loadingTags,
-      loadingDomains,
-      loadingFolders,
       searchParamsObj.tagIds,
       searchParamsObj.domain,
     ],
@@ -888,7 +881,6 @@ export default function Toggle({
       <div
         className={cn("py-3 md:py-3", {
           "sticky top-14 z-10 bg-neutral-50": dashboardProps,
-          "sticky top-16 z-10 bg-neutral-50": adminPage,
           "shadow-md": scrolled && dashboardProps,
         })}
       >
@@ -963,7 +955,7 @@ export default function Toggle({
                               window.open("https://d.to/events");
                             } else {
                               router.push(
-                                `/${slug}/events${getQueryString({}, { exclude: ["view"] })}`,
+                                `/${slug}/conversions${getQueryString({}, { exclude: ["view"] })}`,
                               );
                             }
                           }}
@@ -981,10 +973,25 @@ export default function Toggle({
                           }
                           text={isMobile ? undefined : "Switch to Analytics"}
                           onClick={() =>
-                            router.push(`/${slug}/analytics${getQueryString()}`)
+                            router.push(buildAnalyticsUrl(`/${slug}/analytics`))
                           }
                         />
                         {/* <EventsOptions /> */}
+                      </>
+                    )}
+                    {page === "links" && !partnerPage && (
+                      <>
+                        <Button
+                          variant="secondary"
+                          className="w-fit"
+                          icon={
+                            <ChartLine className="h-4 w-4 text-neutral-600" />
+                          }
+                          text={isMobile ? undefined : "Switch to Analytics"}
+                          onClick={() =>
+                            router.push(buildAnalyticsUrl(`/${slug}/analytics`))
+                          }
+                        />
                       </>
                     )}
                   </div>

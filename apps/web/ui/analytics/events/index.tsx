@@ -33,7 +33,7 @@ export default function AnalyticsEvents({
 function EventsTableContainer() {
   const { plan, slug } = useWorkspace();
 
-  const requiresUpgrade = plan === "free" || plan === "starter";
+  const requiresUpgrade = plan === "free";
 
   return (
     <EventsTable

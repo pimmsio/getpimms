@@ -1,14 +1,15 @@
 import { SINGULAR_ANALYTICS_ENDPOINTS } from "@/lib/analytics/constants";
+import { groupReferrerAnalytics, getReferrerDisplayName, isGroupedReferrer, getDomainsForReferrerGroup, getBestDomainForLogo } from "@/lib/analytics/utils";
 import { UTM_TAGS_PLURAL, UTM_TAGS_PLURAL_LIST } from "@/lib/zod/schemas/utm";
 import { BlurImage, useRouterStuff, UTM_PARAMETERS } from "@dub/ui";
 import { Note, ReferredVia } from "@dub/ui/icons";
-import { getApexDomain, getGoogleFavicon, GOOGLE_FAVICON_URL } from "@dub/utils";
+import { getGoogleFavicon } from "@dub/utils";
 import { Link2 } from "lucide-react";
 import { useContext, useMemo, useState } from "react";
 import { AnalyticsCard } from "./analytics-card";
 import { AnalyticsLoadingSpinner } from "./analytics-loading-spinner";
 import { AnalyticsContext } from "./analytics-provider";
-import BarList from "./bar-list";
+import MixedBarList from "./mixed-bar-list";
 import { useAnalyticsFilterOption } from "./utils";
 
 export default function Referer() {
@@ -19,16 +20,35 @@ export default function Referer() {
 
   const [tab, setTab] = useState<"referers" | "utms">("referers");
   const [utmTag, setUtmTag] = useState<UTM_TAGS_PLURAL>("utm_sources");
-  const [refererType, setRefererType] = useState<"referers" | "referer_urls">(
-    "referers",
-  );
 
-  const { data } = useAnalyticsFilterOption({
-    groupBy: tab === "utms" ? utmTag : refererType,
+  const { data: rawData } = useAnalyticsFilterOption({
+    groupBy: tab === "utms" ? utmTag : "referers",
   });
 
   const singularTabName =
-    SINGULAR_ANALYTICS_ENDPOINTS[tab === "utms" ? utmTag : refererType];
+    SINGULAR_ANALYTICS_ENDPOINTS[tab === "utms" ? utmTag : "referers"];
+
+  // Group referrer data when displaying referers
+  const data = useMemo(() => {
+    if (!rawData || tab === "utms") return rawData;
+    
+    // Check if we're filtering by a grouped referrer
+    const refererFilter = searchParams.get(singularTabName);
+    if (refererFilter && isGroupedReferrer(refererFilter)) {
+      // Filter raw data to show only items that belong to this group
+      const filteredData = rawData.filter(item => {
+        const referrerValue = item.referer || item.referers || '';
+        const groupName = getReferrerDisplayName(referrerValue);
+        return groupName === refererFilter;
+      });
+      
+      // Then group the filtered data to show the grouped item
+      return groupReferrerAnalytics(filteredData);
+    }
+    
+    // Always show grouped data for referrers
+    return groupReferrerAnalytics(rawData);
+  }, [rawData, tab, searchParams, singularTabName]);
 
   const { icon: UTMTagIcon } = UTM_PARAMETERS.find(
     (p) => p.key === utmTag.slice(0, -1),
@@ -38,24 +58,25 @@ export default function Referer() {
     return (
       {
         utms: {
-          subTabs: UTM_TAGS_PLURAL_LIST.map((u) => ({
-            id: u,
-            label: SINGULAR_ANALYTICS_ENDPOINTS[u].replace("utm_", ""),
-          })),
-          selectedSubTabId: utmTag,
-          onSelectSubTab: setUtmTag,
-        },
-        referers: {
           subTabs: [
-            { id: "referers", label: "Domain" },
-            { id: "referer_urls", label: "URL" },
+            { id: "all", label: "All" },
+            ...UTM_TAGS_PLURAL_LIST.map((u) => ({
+              id: u,
+              label: SINGULAR_ANALYTICS_ENDPOINTS[u].replace("utm_", "").charAt(0).toUpperCase() + SINGULAR_ANALYTICS_ENDPOINTS[u].replace("utm_", "").slice(1),
+            })),
           ],
-          selectedSubTabId: refererType,
-          onSelectSubTab: setRefererType,
+          selectedSubTabId: utmTag === "utm_sources" ? "utm_sources" : utmTag,
+          onSelectSubTab: (value: string) => {
+            if (value === "all") {
+              setUtmTag("utm_sources"); // Default to sources when "All" is selected
+            } else {
+              setUtmTag(value as UTM_TAGS_PLURAL);
+            }
+          },
         },
       }[tab] ?? {}
     );
-  }, [tab, utmTag, refererType]);
+  }, [tab, utmTag]);
 
   return (
     <AnalyticsCard
@@ -73,49 +94,53 @@ export default function Referer() {
         <>
           {data ? (
             data.length > 0 ? (
-              <BarList
-                tab={tab === "referers" ? "Referrer" : "UTM Param"}
+              <MixedBarList
+                tab={tab === "utms" ? "UTM Param" : "Referrer"}
                 data={
                   data
                     ?.map((d) => ({
                       icon:
                         tab === "utms" ? (
-                          <UTMTagIcon />
+                          <UTMTagIcon className="h-4 w-4" />
                         ) : d[singularTabName] === "(direct)" ? (
                           <Link2 className="h-4 w-4" />
                         ) : (
                           <BlurImage
                             src={getGoogleFavicon(
-                              tab === "referers"
-                                ? d[singularTabName]
-                                : getApexDomain(d[singularTabName]),
+                              getBestDomainForLogo(getReferrerDisplayName(d[singularTabName])),
                               false,
                             )}
-                            alt={d[singularTabName]}
+                            alt={getReferrerDisplayName(d[singularTabName])}
                             width={20}
                             height={20}
                             className="h-4 w-4 rounded-full"
                           />
                         ),
-                      title: d[singularTabName],
-                      href: queryParams({
+                        title: tab === "utms" ? d[singularTabName] : getReferrerDisplayName(d[singularTabName]),
+                        href: queryParams({
                         ...(searchParams.has(singularTabName)
                           ? { del: singularTabName }
                           : {
                               set: {
-                                [singularTabName]: d[singularTabName],
+                                [singularTabName]: (() => {
+                                  // If this is a grouped referrer, use all domains from the group
+                                  if (isGroupedReferrer(d[singularTabName])) {
+                                    return getDomainsForReferrerGroup(d[singularTabName]).join(',');
+                                  }
+                                  // Otherwise use the original referrer
+                                  return d[singularTabName];
+                                })(),
                               },
                             }),
                         getNewPath: true,
                       }) as string,
-                      value: d[dataKey] || 0,
+                      clicks: d.clicks || 0,
+                      leads: d.leads || 0,
+                      sales: d.sales || 0,
+                      saleAmount: d.saleAmount || 0,
                     }))
-                    ?.sort((a, b) => b.value - a.value) || []
+                    ?.sort((a, b) => b.clicks - a.clicks) || []
                 }
-                unit={selectedTab}
-                maxValue={Math.max(...data?.map((d) => d[dataKey] ?? 0)) ?? 0}
-                barBackground="bg-[#E7EEFF]"
-                hoverBackground="hover:bg-neutral-100"
                 setShowModal={setShowModal}
                 {...(limit && { limit })}
               />

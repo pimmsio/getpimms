@@ -1,7 +1,6 @@
 "use client";
 
-import { LinkProps } from "@/lib/types";
-import { LinkifyTooltipContent, Tooltip, useMediaQuery } from "@dub/ui";
+import { Tooltip, useMediaQuery } from "@dub/ui";
 import { cn, getPrettyUrl } from "@dub/utils";
 import NumberFlow, { NumberFlowGroup } from "@number-flow/react";
 import { motion } from "framer-motion";
@@ -21,6 +20,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { areEqual, FixedSizeList } from "react-window";
 import { AnalyticsContext } from "./analytics-provider";
 import LinkPreviewTooltip from "./link-preview";
+import { UrlDecompositionTooltip } from "../shared/url-decomposition-tooltip";
 
 export default function BarList({
   tab,
@@ -122,7 +122,7 @@ export default function BarList({
           <input
             type="text"
             autoFocus={!isMobile}
-            className="w-full rounded-xl border-[2px] border-neutral-300 py-2 pl-10 text-black placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-4 focus:ring-neutral-200 sm:text-sm"
+            className="w-full rounded border border-neutral-300 py-2 pl-10 text-black placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 focus:ring-transparent sm:text-sm"
             placeholder={`Search ${tab}...`}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -157,7 +157,7 @@ export function LineItem({
   setShowModal: Dispatch<SetStateAction<boolean>>;
   barBackground: string;
   hoverBackground: string;
-  linkData?: LinkProps;
+  linkData?: any;
   limit?: number;
 }) {
   const lineItem = useMemo(() => {
@@ -173,28 +173,19 @@ export function LineItem({
 
   const { saleUnit } = useContext(AnalyticsContext);
 
-  const As = href ? Link : "div";
-
   // Calculate percentage against total sum and round to 1 decimal
   const percentage = Math.round((value / totalSum) * 1000) / 10;
 
   // Check if we're in modal view - if limit is undefined, we're in the modal view
   const isModalView = !limit;
 
-  return (
-    // @ts-ignore - we know if it's a Link it'll get its href
-    <As
-      {...(href && {
-        href,
-        scroll: false,
-        onClick: () => setShowModal(false),
-      })}
-      className={cn(
-        `block min-w-0 border-l-2 border-transparent px-4 py-1 transition-all`,
-        href && hoverBackground,
-        isModalView ? "group" : "",
-      )}
-    >
+  const commonClassName = cn(
+    `block min-w-0 border-l-2 border-transparent px-4 py-1 transition-all`,
+    href && hoverBackground,
+    isModalView ? "group" : "",
+  );
+
+  const content = (
       <div
         className={cn(
           "relative flex items-center justify-between",
@@ -207,7 +198,7 @@ export function LineItem({
             position: "absolute",
             inset: 0,
           }}
-          className={cn("-z-10 h-full origin-left rounded-md", barBackground)}
+          className={cn("-z-10 h-full origin-left rounded", barBackground)}
           transition={{ ease: "easeOut", duration: 0.3 }}
           initial={{ transform: "scaleX(0)" }}
           animate={{ transform: "scaleX(1)" }}
@@ -217,18 +208,18 @@ export function LineItem({
             <Tooltip content={<LinkPreviewTooltip data={linkData} />}>
               {lineItem}
             </Tooltip>
+          ) : tab === "urls" && linkData ? (
+            <UrlDecompositionTooltip url={linkData.url || title}>
+              <div>
+                {lineItem}
+              </div>
+            </UrlDecompositionTooltip>
           ) : tab === "urls" ? (
-            <Tooltip
-              content={
-                <div className="overflow-auto px-4 py-2">
-                  <LinkifyTooltipContent tooltipClassName="max-w-md">
-                    {title}
-                  </LinkifyTooltipContent>
-                </div>
-              }
-            >
-              {lineItem}
-            </Tooltip>
+            <UrlDecompositionTooltip url={title}>
+              <div>
+                {lineItem}
+              </div>
+            </UrlDecompositionTooltip>
           ) : (
             lineItem
           )}
@@ -277,7 +268,25 @@ export function LineItem({
           </div>
         </div>
       </div>
-    </As>
+  );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        scroll={false}
+        onClick={() => setShowModal(false)}
+        className={commonClassName}
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <div className={commonClassName}>
+      {content}
+    </div>
   );
 }
 

@@ -10,17 +10,11 @@ import { eventsFilterTB } from "../zod/schemas/analytics";
 import {
   clickEventResponseSchema,
   clickEventSchema,
-  clickEventSchemaTBEndpoint,
 } from "../zod/schemas/clicks";
 import { CustomerSchema } from "../zod/schemas/customers";
-import {
-  leadEventResponseSchema,
-  leadEventSchemaTBEndpoint,
-} from "../zod/schemas/leads";
-import {
-  saleEventResponseSchema,
-  saleEventSchemaTBEndpoint,
-} from "../zod/schemas/sales";
+import { leadEventSchemaTBEndpoint } from "../zod/schemas/leads";
+import { saleEventSchemaTBEndpoint } from "../zod/schemas/sales";
+import { unifiedEventResponseSchema } from "../zod/schemas/unified-events";
 import { EventsFilters } from "./types";
 import { getStartEndDates } from "./utils/get-start-end-dates";
 
@@ -67,20 +61,16 @@ export const getEvents = async (params: EventsFilters) => {
     sortOrder = order;
   }
 
+  let response;
+
   const pipe = tb.buildPipe({
     pipe: "v2_events",
     parameters: eventsFilterTB,
-    data:
-      {
-        clicks: clickEventSchemaTBEndpoint,
-        leads: leadEventSchemaTBEndpoint,
-        sales: saleEventSchemaTBEndpoint,
-      }[eventType] ?? clickEventSchemaTBEndpoint,
+    data: z.union([leadEventSchemaTBEndpoint, saleEventSchemaTBEndpoint]),
   });
 
-  const response = await pipe({
+  const pipeParams = {
     ...params,
-    eventType,
     workspaceId,
     qr,
     country,
@@ -89,7 +79,29 @@ export const getEvents = async (params: EventsFilters) => {
     offset: (params.page - 1) * params.limit,
     start: startDate.toISOString().replace("T", " ").replace("Z", ""),
     end: endDate.toISOString().replace("T", " ").replace("Z", ""),
-  } as any);
+  };
+
+  const [leadsResponse, salesResponse] = await Promise.all([
+    pipe({
+      ...pipeParams,
+      eventType: "leads",
+    }),
+    pipe({
+      ...pipeParams,
+      eventType: "sales",
+    }),
+  ]);
+
+  // Merge and sort by timestamp
+  const combinedData = [...leadsResponse.data, ...salesResponse.data].sort(
+    (a, b) => {
+      const aTime = new Date(a.timestamp).getTime();
+      const bTime = new Date(b.timestamp).getTime();
+      return sortOrder === "asc" ? aTime - bTime : bTime - aTime;
+    },
+  );
+
+  response = { data: combinedData };
 
   const [linksMap, customersMap] = await Promise.all([
     getLinksMap(response.data.map((d) => d.link_id)),
@@ -142,13 +154,19 @@ export const getEvents = async (params: EventsFilters) => {
                 externalId: evt.customer_id,
                 createdAt: new Date("1970-01-01"),
               },
+              // Always include sale info for unified schema
+              sale: {
+                amount: evt.event === "sale" ? evt.saleAmount : 0,
+                invoiceId: evt.event === "sale" ? evt.invoice_id : undefined,
+                paymentProcessor:
+                  evt.event === "sale" ? evt.payment_processor : "custom",
+              },
+              saleAmount: evt.event === "sale" ? evt.saleAmount : 0,
+              // Back-compat optional fields
               ...(evt.event === "sale"
                 ? {
-                    sale: {
-                      amount: evt.saleAmount,
-                      invoiceId: evt.invoice_id,
-                      paymentProcessor: evt.payment_processor,
-                    },
+                    invoice_id: evt.invoice_id,
+                    payment_processor: evt.payment_processor,
                   }
                 : {}),
             }
@@ -157,10 +175,8 @@ export const getEvents = async (params: EventsFilters) => {
 
       if (evt.event === "click") {
         return clickEventResponseSchema.parse(eventData);
-      } else if (evt.event === "lead") {
-        return leadEventResponseSchema.parse(eventData);
-      } else if (evt.event === "sale") {
-        return saleEventResponseSchema.parse(eventData);
+      } else if (evt.event === "lead" || evt.event === "sale") {
+        return unifiedEventResponseSchema.parse(eventData);
       }
 
       return eventData;
@@ -210,6 +226,8 @@ const getCustomersMap = async (customerIds: string[]) => {
         email: customer.email || "",
         avatar: customer.avatar || `${OG_AVATAR_URL}${customer.id}`,
         country: customer.country || "",
+        totalClicks: customer.totalClicks ?? 0,
+        lastEventAt: customer.lastEventAt ?? undefined,
         createdAt: customer.createdAt,
       });
       return acc;

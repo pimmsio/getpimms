@@ -24,6 +24,11 @@ export default function useCustomers({
         } as Record<string, any>).toString()}`
       : undefined,
     fetcher,
+    {
+      dedupingInterval: 60000,
+      revalidateOnFocus: false,
+      keepPreviousData: true,
+    },
   );
 
   return {

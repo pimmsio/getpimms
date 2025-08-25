@@ -39,6 +39,8 @@ export default function useDomains({
     fetcher,
     {
       dedupingInterval: 60000,
+      revalidateOnFocus: false,
+      keepPreviousData: true,
     },
   );
   const {

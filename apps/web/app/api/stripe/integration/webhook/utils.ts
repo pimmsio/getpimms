@@ -3,6 +3,7 @@ import { includeTags } from "@/lib/api/links/include-tags";
 import { generateRandomName } from "@/lib/names";
 import { createPartnerCommission } from "@/lib/partners/create-partner-commission";
 import { getClickEvent, recordLead } from "@/lib/tinybird";
+import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
 import { sendWorkspaceWebhook } from "@/lib/webhook/publish";
 import { transformLeadEventData } from "@/lib/webhook/transform";
 import { prisma } from "@dub/prisma";
@@ -42,6 +43,9 @@ export async function createNewCustomer(event: Stripe.Event) {
   }
 
   // Create a new customer
+  const { anonymousId, totalClicks, lastEventAt } =
+    await computeAnonymousCustomerFields(clickData);
+
   const customer = await prisma.customer.create({
     data: {
       id: createId({ prefix: "cus_" }),
@@ -55,6 +59,9 @@ export async function createNewCustomer(event: Stripe.Event) {
       clickId,
       clickedAt: new Date(clickData.timestamp + "Z"),
       country: clickData.country,
+      anonymousId,
+      totalClicks,
+      lastEventAt,
     },
   });
 

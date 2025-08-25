@@ -21,6 +21,7 @@ import { Customer } from "@prisma/client";
 import { waitUntil } from "@vercel/functions";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
 
 type ClickData = z.infer<typeof clickEventSchemaTB>;
 
@@ -28,8 +29,6 @@ type ClickData = z.infer<typeof clickEventSchemaTB>;
 export const POST = withWorkspace(
   async ({ req, workspace }) => {
     const userAgent = req.headers.get("user-agent")?.toLowerCase() || "";
-
-    console.log("userAgent", userAgent);
 
     const body = await parseRequestBody(req);
 
@@ -120,6 +119,10 @@ export const POST = withWorkspace(
 
       const leadEventId = nanoid(16);
 
+      // Prefetch anonymous fields using shared util
+      const { anonymousId, totalClicks: totalHistoricalClicks, lastEventAt } =
+        await computeAnonymousCustomerFields(clickData);
+
       // Create a function to handle customer upsert to avoid duplication
       const upsertCustomer = async () => {
         return prisma.customer.upsert({
@@ -141,6 +144,9 @@ export const POST = withWorkspace(
             linkId: clickData.link_id,
             country: clickData.country,
             clickedAt: new Date(clickData.timestamp + "Z"),
+            anonymousId,
+            totalClicks: totalHistoricalClicks,
+            lastEventAt: lastEventAt || new Date(clickData.timestamp + "Z"),
           },
           update: {}, // no updates needed if the customer exists
         });
@@ -292,6 +298,7 @@ export const POST = withWorkspace(
   {
     requiredPlan: [
       "free",
+      "starter",
       "pro",
       "business",
       "business plus",

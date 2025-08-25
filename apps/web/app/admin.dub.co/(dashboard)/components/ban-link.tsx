@@ -36,7 +36,7 @@ const Form = () => {
   const { pending } = useFormStatus();
 
   return (
-    <div className="relative flex w-full rounded-md shadow-sm">
+    <div className="relative flex w-full rounded shadow-sm">
       <span className="inline-flex items-center rounded-l-md border border-r-0 border-neutral-300 bg-neutral-50 px-5 text-neutral-500 sm:text-sm">
         pim.ms
       </span>
@@ -48,7 +48,7 @@ const Form = () => {
         disabled={pending}
         autoComplete="off"
         className={cn(
-          "block w-full rounded-r-md border-neutral-300 text-sm text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-neutral-500",
+          "block w-full rounded-r-md border-neutral-300 text-sm text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0",
           pending && "bg-neutral-100",
         )}
         placeholder="IG47WZs"

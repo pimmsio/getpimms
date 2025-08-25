@@ -1,6 +1,5 @@
 "use client";
 
-import usePrograms from "@/lib/swr/use-programs";
 import { useRouterStuff } from "@dub/ui";
 import {
   ConnectedDots,
@@ -20,6 +19,7 @@ import {
   Settings,
   Settings2,
   Split,
+  Table,
   Target,
   TargetIcon,
   WalletCards,
@@ -28,24 +28,36 @@ import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useParams, usePathname } from "next/navigation";
 import { ReactNode, useMemo } from "react";
+import { useAnalyticsUrl } from "@/lib/hooks/use-analytics-url";
 import UserSurveyButton from "../user-survey";
+import { HelpButton } from "./help-button";
 import { ReferralButton } from "./referral-button";
 import { SidebarNav, SidebarNavAreas } from "./sidebar-nav";
 import { Usage } from "./usage";
 import { WorkspaceDropdown } from "./workspace-dropdown";
-import { HelpButton } from "./help-button";
 // import { ReferralButton } from "./referral-button";
 
 const NAV_AREAS: SidebarNavAreas<{
   slug: string;
   pathname: string;
   queryString: string;
+  buildAnalyticsUrl: (
+    basePath: string,
+    additionalParams?: Record<string, string>,
+  ) => string;
   programs?: { id: string }[];
   session?: Session | null;
   showNews?: boolean;
 }> = {
   // Top-level
-  default: ({ slug, pathname, queryString, programs, showNews }) => ({
+  default: ({
+    slug,
+    pathname,
+    queryString,
+    buildAnalyticsUrl,
+    programs,
+    showNews,
+  }) => ({
     showSwitcher: true,
     showNews,
     direction: "left",
@@ -61,19 +73,17 @@ const NAV_AREAS: SidebarNavAreas<{
           {
             name: "Analytics",
             icon: BarChart2,
-            href: `/${slug}/analytics${pathname === `/${slug}/analytics` ? "" : queryString}`,
+            href: buildAnalyticsUrl(`/${slug}/analytics`),
           },
           {
             name: "Conversions",
             icon: Target,
-            // href: `/${slug}/events${pathname === `/${slug}/events` ? "" : queryString}`,
-            href: `/${slug}/leads?event=leads`,
+            href: buildAnalyticsUrl(`/${slug}/conversions`, { event: "leads" }),
           },
           {
-            name: "Sales tracking",
-            icon: CoinsIcon,
-            // href: `/${slug}/events${pathname === `/${slug}/events` ? "" : queryString}`,
-            href: `/${slug}/sales?event=sales`,
+            name: "Link Insights",
+            icon: Table,
+            href: buildAnalyticsUrl(`/${slug}/insights`),
           },
           {
             name: "Integrations",
@@ -255,7 +265,7 @@ export function AppSidebarNav({
   const pathname = usePathname();
   const { getQueryString } = useRouterStuff();
   const { data: session } = useSession();
-  const { programs } = usePrograms();
+  // const { programs } = usePrograms();
 
   const currentArea = useMemo(() => {
     return pathname.startsWith("/account/settings")
@@ -264,6 +274,9 @@ export function AppSidebarNav({
         ? "workspaceSettings"
         : "default";
   }, [slug, pathname]);
+
+  // Use centralized analytics URL builder
+  const buildAnalyticsUrl = useAnalyticsUrl();
 
   return (
     <SidebarNav
@@ -275,7 +288,8 @@ export function AppSidebarNav({
         queryString: getQueryString(undefined, {
           include: ["folderId", "tagIds"],
         }),
-        programs,
+        buildAnalyticsUrl,
+        // programs,
         session: session || undefined,
         showNews: pathname.startsWith(`/${slug}/programs/`) ? false : true,
       }}

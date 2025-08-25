@@ -9,18 +9,15 @@ import {
   VALID_ANALYTICS_FILTERS,
 } from "@/lib/analytics/constants";
 import {
-  AnalyticsResponseOptions,
   AnalyticsSaleUnit,
   AnalyticsView,
   EventType,
 } from "@/lib/analytics/types";
-import { editQueryString } from "@/lib/analytics/utils";
 import { combineTagIds } from "@/lib/api/tags/combine-tag-ids";
 import usePartnerProfile from "@/lib/swr/use-partner-profile";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { PlanProps } from "@/lib/types";
 import { useLocalStorage } from "@dub/ui";
-import { fetcher } from "@dub/utils";
 import { endOfDay, startOfDay, subDays } from "date-fns";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import {
@@ -30,10 +27,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import { toast } from "sonner";
-import useSWR from "swr";
-import { defaultConfig } from "swr/_internal";
-import { UpgradeRequiredToast } from "../shared/upgrade-required-toast";
 
 export interface AnalyticsDashboardProps {
   domain: string;
@@ -58,14 +51,12 @@ export const AnalyticsContext = createContext<{
   end?: Date;
   interval?: string;
   tagIds?: string;
-  totalEvents?: {
-    [key in AnalyticsResponseOptions]: number;
-  };
   adminPage?: boolean;
   partnerPage?: boolean;
   showConversions?: boolean;
   requiresUpgrade?: boolean;
   dashboardProps?: AnalyticsDashboardProps;
+  workspace?: any;
 }>({
   basePath: "",
   baseApiPath: "",
@@ -82,6 +73,7 @@ export const AnalyticsContext = createContext<{
   showConversions: false,
   requiresUpgrade: false,
   dashboardProps: undefined,
+  workspace: undefined,
 });
 
 export default function AnalyticsProvider({
@@ -94,7 +86,9 @@ export default function AnalyticsProvider({
 }>) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { id: workspaceId, slug, domains } = useWorkspace();
+  const workspace = useWorkspace();
+  // Don't use workspaceId for admin pages - they should see all data
+  const { id: workspaceId, slug, domains } = adminPage ? { id: undefined, slug: undefined, domains: undefined } : workspace;
 
   const [requiresUpgrade, setRequiresUpgrade] = useState(false);
 
@@ -151,8 +145,11 @@ export default function AnalyticsProvider({
   const selectedTab: EventType = useMemo(() => {
     const event = searchParams.get("event");
 
-    return EVENT_TYPES.find((t) => t === event) ?? "clicks";
-  }, [searchParams.get("event")]);
+    // For admin leads page, default to "leads" instead of "clicks"
+    const defaultTab = adminPage && typeof window !== "undefined" && window.location.pathname === "/leads" ? "leads" : "clicks";
+
+    return EVENT_TYPES.find((t) => t === event) ?? defaultTab;
+  }, [searchParams.get("event"), adminPage]);
 
   const [persistedSaleUnit, setPersistedSaleUnit] =
     useLocalStorage<AnalyticsSaleUnit>(`analytics-sale-unit`, "saleAmount");
@@ -189,6 +186,7 @@ export default function AnalyticsProvider({
       return {
         basePath: "analytics",
         baseApiPath: "/api/admin/analytics",
+        eventsApiPath: "/api/admin/events",
         domain: domainSlug,
       };
     } else if (slug) {
@@ -293,44 +291,6 @@ export default function AnalyticsProvider({
   // Reset requiresUpgrade when query changes
   useEffect(() => setRequiresUpgrade(false), [queryString]);
 
-  const { data: totalEvents } = useSWR<{
-    [key in AnalyticsResponseOptions]: number;
-  }>(
-    `${baseApiPath}?${editQueryString(queryString, {
-      event: "composite",
-    })}`,
-    fetcher,
-    {
-      keepPreviousData: true,
-      onSuccess: () => setRequiresUpgrade(false),
-      onError: (error) => {
-        try {
-          const errorMessage = error.message;
-          if (
-            error.status === 403 &&
-            errorMessage.toLowerCase().includes("upgrade")
-          ) {
-            toast.custom(() => (
-              <UpgradeRequiredToast
-                title="Upgrade for more analytics"
-                message={errorMessage}
-              />
-            ));
-            setRequiresUpgrade(true);
-          } else {
-            toast.error(errorMessage);
-          }
-        } catch (error) {
-          toast.error(error);
-        }
-      },
-      onErrorRetry: (error, ...args) => {
-        if (error.message.includes("Upgrade to Pro")) return;
-        defaultConfig.onErrorRetry(error, ...args);
-      },
-    },
-  );
-
   return (
     <AnalyticsContext.Provider
       value={{
@@ -348,12 +308,12 @@ export default function AnalyticsProvider({
         end, // end of time period
         interval, /// time period interval
         tagIds, // ids of the tags to filter by
-        totalEvents, // totalEvents (clicks, leads, sales)
         adminPage, // whether the user is an admin
         partnerPage, // whether the user is viewing partner analytics
         dashboardProps,
         showConversions, // Whether to show conversions tabs/data
         requiresUpgrade, // whether an upgrade is required to perform the query
+        workspace: adminPage ? undefined : workspace, // workspace data (undefined for admin)
       }}
     >
       {children}

@@ -1,7 +1,7 @@
 import { cn } from "@dub/utils";
-import { LinearGradient } from "@visx/gradient";
 import { Group } from "@visx/group";
 import { Area, AreaClosed, Circle } from "@visx/shape";
+import { curveMonotoneX } from "@visx/curve";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMemo } from "react";
 import { useChartContext, useChartTooltipContext } from "./chart-context";
@@ -77,6 +77,7 @@ export function Areas({
                   x={(d) => xScale(d.date)}
                   y={(d) => yScale(s.valueAccessor(d) ?? 0)}
                   yScale={yScale}
+                  curve={curveMonotoneX}
                 >
                   {({ path }) => {
                     return (
@@ -99,6 +100,7 @@ export function Areas({
                   data={data}
                   x={(d) => xScale(d.date)}
                   y={(d) => yScale(s.valueAccessor(d) ?? 0)}
+                  curve={curveMonotoneX}
                 >
                   {({ path }) => (
                     <motion.path
@@ -110,7 +112,9 @@ export function Areas({
                       )}
                       stroke={seriesStyle?.lineStroke ?? "currentColor"}
                       strokeOpacity={0.8}
-                      strokeWidth={4}
+                      strokeWidth={3}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       fill="transparent"
                     />
                   )}

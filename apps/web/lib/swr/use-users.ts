@@ -12,6 +12,13 @@ export default function useUsers({ invites }: { invites?: boolean } = {}) {
         ? `/api/workspaces/${id}/invites`
         : `/api/workspaces/${id}/users`),
     fetcher,
+    {
+      dedupingInterval: 5 * 60 * 1000,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateIfStale: false,
+      keepPreviousData: true,
+    },
   );
 
   return {

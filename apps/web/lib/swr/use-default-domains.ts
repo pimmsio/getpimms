@@ -15,6 +15,8 @@ export default function useDefaultDomains(opts: { search?: string } = {}) {
     fetcher,
     {
       dedupingInterval: 60000,
+      revalidateOnFocus: false,
+      keepPreviousData: true,
     },
   );
 

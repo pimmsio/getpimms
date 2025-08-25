@@ -1,0 +1,15 @@
+DESCRIPTION >
+	Get clicks by identity hash (anonymous ID)
+
+
+TOKEN "browser_endpoint_read_5885" READ
+
+NODE endpoint
+DESCRIPTION >
+    undefined
+
+SQL >
+
+    % SELECT * FROM dub_click_events WHERE identity_hash = {{ String(identityHash) }} ORDER BY timestamp DESC LIMIT {{ Int32(limit, 100) }}
+
+

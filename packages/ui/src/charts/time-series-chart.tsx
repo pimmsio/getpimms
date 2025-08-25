@@ -79,7 +79,7 @@ function TimeSeriesChartInner<T extends Datum>({
 
   const { minY, maxY } = useMemo(() => {
     const values = series
-      .filter(({ isActive }) => isActive !== false)
+      .filter(({ isActive, excludeFromYScale }) => isActive !== false && !excludeFromYScale)
       .map(({ valueAccessor }) => data.map((d) => valueAccessor(d)))
       .flat()
       .filter((v): v is number => v != null);
@@ -190,7 +190,7 @@ function TimeSeriesChartInner<T extends Datum>({
                   />
 
                   {series
-                    .filter(({ isActive }) => isActive)
+                    .filter(({ isActive, showHoverCircle }) => isActive && showHoverCircle !== false)
                     .map((s) => (
                       <Circle
                         key={s.id}
@@ -233,7 +233,7 @@ function TimeSeriesChartInner<T extends Datum>({
             >
               <div
                 className={cn(
-                  "pointer-events-none rounded-xl border-[6px] border-neutral-100 bg-white px-4 py-2 text-base shadow-sm",
+                  "pointer-events-none rounded border border-neutral-200 bg-white px-4 py-2 text-base shadow-sm",
                   tooltipClassName,
                 )}
               >

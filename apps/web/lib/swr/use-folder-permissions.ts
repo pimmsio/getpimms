@@ -14,6 +14,8 @@ export function useFolderPermissions() {
     fetcher,
     {
       dedupingInterval: 60000,
+      revalidateOnFocus: false,
+      keepPreviousData: true,
     },
   );
 

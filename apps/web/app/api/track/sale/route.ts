@@ -29,8 +29,6 @@ export const POST = withWorkspace(
   async ({ req, workspace }) => {
     const userAgent = req.headers.get("user-agent")?.toLowerCase() || "";
 
-    console.log("userAgent", userAgent);
-
     const body = await parseRequestBody(req);
 
     let {
@@ -197,6 +195,11 @@ export const POST = withWorkspace(
                 increment: amount,
               },
             },
+          }),
+
+          prisma.customer.update({
+            where: { id: customer.id },
+            data: { lastEventAt: new Date() },
           }),
 
           logConversionEvent({

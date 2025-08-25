@@ -35,7 +35,14 @@ function OnboardingButtonInner({
     return null;
   }
 
-  const { totalLinks, totalClicks, salesUsage } = useWorkspace();
+  const { totalLinks, totalClicks, salesUsage } = useWorkspace({
+    swrOpts: {
+      dedupingInterval: 5 * 60 * 1000,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateIfStale: false,
+    },
+  });
 
   const { data: domainsCount, loading: domainsLoading } = useDomainsCount({
     ignoreParams: true,

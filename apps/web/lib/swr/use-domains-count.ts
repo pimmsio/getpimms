@@ -25,7 +25,11 @@ export default function useDomainsCount({
       }`,
     fetcher,
     {
-      dedupingInterval: 60000,
+      dedupingInterval: 5 * 60 * 1000,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateIfStale: false,
+      keepPreviousData: true,
     },
   );
 

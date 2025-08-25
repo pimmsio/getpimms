@@ -29,6 +29,7 @@ export default function useFolder({
     fetcher,
     {
       dedupingInterval: 60000,
+      revalidateOnFocus: false,
       keepPreviousData: true,
     },
   );

@@ -50,9 +50,9 @@ export default function useLinks(
         : null,
     fetcher,
     {
-      dedupingInterval: 20000,
+      dedupingInterval: 60000,
       revalidateOnFocus: false,
-      keepPreviousData: true,
+      // keepPreviousData: true,
       ...swrOpts,
     },
   );

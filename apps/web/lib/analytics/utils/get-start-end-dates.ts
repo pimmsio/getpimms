@@ -24,6 +24,8 @@ export const getStartEndDates = ({
 
     if (daysDifference <= 2) {
       granularity = "hour";
+    } else if (interval === "all") {
+      granularity = "day";
     } else if (daysDifference > 180) {
       granularity = "month";
     }

@@ -1,7 +1,8 @@
-import { getClickEvent } from "@/lib/tinybird";
+import { getClickEvent, tb } from "@/lib/tinybird";
 import { prisma } from "@dub/prisma";
 import { Link } from "@prisma/client";
 import { parseWorkspaceId } from "./utils";
+import z from "../zod";
 
 export function getFirstAvailableField(
   data: Record<string, any>,
@@ -67,4 +68,47 @@ export const isValidPimmsId = async (link: Link, workspaceId: string) => {
   const parsedProjectId = parseWorkspaceId(link.projectId);
 
   return parsedWorkspaceId === parsedProjectId;
+};
+
+export const computeAnonymousCustomerFields = async (clickData: any) => {
+  const anonymousId: string | null = clickData?.identity_hash || null;
+
+  let totalHistoricalClicks = 0;
+  let lastEventAt: Date | null = null;
+
+  try {
+    if (anonymousId) {
+      const pipe = tb.buildPipe({
+        pipe: "get_anonymous_event",
+        parameters: z.object({
+          identityHash: z.string(),
+          limit: z.number().optional().default(1000),
+        }),
+        data: z.any(),
+      });
+
+      const resp = await pipe({ identityHash: anonymousId, limit: 1000 });
+      const events = Array.isArray(resp?.data) ? resp.data : [];
+      totalHistoricalClicks = events.length || 0;
+      if (events.length > 0 && events[0]?.timestamp) {
+        lastEventAt = new Date(events[0].timestamp + "Z");
+      }
+    }
+  } catch (_) {
+    // ignore errors and fallback to clickData timestamp
+  }
+
+  if (!lastEventAt && clickData?.timestamp) {
+    lastEventAt = new Date(clickData.timestamp + "Z");
+  }
+
+  return {
+    anonymousId,
+    totalClicks: totalHistoricalClicks,
+    lastEventAt,
+  } as {
+    anonymousId: string | null;
+    totalClicks: number;
+    lastEventAt: Date | null;
+  };
 };

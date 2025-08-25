@@ -19,6 +19,7 @@ import z from "@/lib/zod";
 import { clickEventSchemaTB } from "@/lib/zod/schemas/clicks";
 import { leadEventSchemaTB } from "@/lib/zod/schemas/leads";
 import { prisma } from "@dub/prisma";
+import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
 import { Customer } from "@dub/prisma/client";
 import { nanoid } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
@@ -120,6 +121,9 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
       },
     });
 
+    const { anonymousId, totalClicks, lastEventAt } =
+      await computeAnonymousCustomerFields(clickEvent);
+
     const payload = {
       name: stripeCustomerName,
       email: stripeCustomerEmail,
@@ -132,6 +136,9 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
       linkId: clickEvent.link_id,
       country: clickEvent.country,
       clickedAt: new Date(clickEvent.timestamp + "Z"),
+      anonymousId,
+      totalClicks,
+      lastEventAt,
     };
 
     if (existingCustomer) {

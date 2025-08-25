@@ -29,6 +29,7 @@ export const clickEventSchemaTB = z.object({
   referer_url: z.string().nullable(),
   ip: z.string().nullable(),
   qr: z.number().nullable(),
+  identity_hash: z.string().nullable(),
 });
 
 export const clickEventSchemaTBEndpoint = z.object({
