@@ -1,14 +1,15 @@
-import { URL } from "url";
-import { prisma } from "@dub/prisma";
-import { generateRandomName } from "@/lib/names";
-import { nanoid } from "@dub/utils";
-import { createPartnerCommission } from "@/lib/partners/create-partner-commission";
-import { sendWorkspaceWebhook } from "@/lib/webhook/publish";
-import { recordLead } from "@/lib/tinybird";
-import { transformLeadEventData } from "@/lib/webhook/transform";
+import { computeCustomerHotScore } from "@/lib/analytics/compute-customer-hot-score";
 import { includeTags } from "@/lib/api/links/include-tags";
-import { getClickEvent } from "@/lib/tinybird";
+import { generateRandomName } from "@/lib/names";
+import { createPartnerCommission } from "@/lib/partners/create-partner-commission";
+import { getClickEvent, recordLead } from "@/lib/tinybird";
 import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
+import { sendWorkspaceWebhook } from "@/lib/webhook/publish";
+import { transformLeadEventData } from "@/lib/webhook/transform";
+import { prisma } from "@dub/prisma";
+import { nanoid } from "@dub/utils";
+import { waitUntil } from "@vercel/functions";
+import { URL } from "url";
 
 export async function customerCreated(body: any) {
   const contact = body.contact;
@@ -59,7 +60,9 @@ export async function customerCreated(body: any) {
   const link = await prisma.link.findUnique({ where: { id: linkId } });
   if (!link || !link.projectId) return "Invalid link or project";
 
-  const { anonymousId, totalClicks, lastEventAt } =
+  const workspaceId = link.projectId;
+
+  const { anonymousId, totalClicks } =
     await computeAnonymousCustomerFields(clickData);
 
   const customer = await prisma.customer.create({
@@ -70,14 +73,14 @@ export async function customerCreated(body: any) {
       stripeCustomerId: null,
       projectConnectId: null,
       externalId: contact.id.toString(),
-      projectId: link.projectId,
+      projectId: workspaceId,
       linkId,
       clickId,
       clickedAt: new Date(clickData.timestamp + "Z"),
       country: countryCode,
       anonymousId,
       totalClicks,
-      lastEventAt,
+      lastEventAt: new Date(),
     },
   });
 
@@ -88,7 +91,7 @@ export async function customerCreated(body: any) {
     customer_id: customer.id,
   };
 
-  const [_lead, linkUpdated, workspace] = await Promise.all([
+  const [, linkUpdated, workspace] = await Promise.all([
     recordLead(leadData),
     prisma.link.update({
       where: { id: linkId },
@@ -96,7 +99,7 @@ export async function customerCreated(body: any) {
       include: includeTags,
     }),
     prisma.project.update({
-      where: { id: link.projectId },
+      where: { id: workspaceId },
       data: { usage: { increment: 1 } },
     }),
   ]);
@@ -113,16 +116,29 @@ export async function customerCreated(body: any) {
     });
   }
 
-  await sendWorkspaceWebhook({
-    trigger: "lead.created",
-    workspace,
-    data: transformLeadEventData({
-      ...clickData,
-      eventName: "New lead",
-      link: linkUpdated,
-      customer,
-    }),
-  });
+  waitUntil(
+    (async () => {
+      // update customer hot score
+      await prisma.customer.update({
+        where: { id: customer.id },
+        data: {
+          hotScore: await computeCustomerHotScore(customer.id, workspaceId),
+          lastHotScoreAt: new Date(),
+        },
+      });
+
+      await sendWorkspaceWebhook({
+        trigger: "lead.created",
+        workspace,
+        data: transformLeadEventData({
+          ...clickData,
+          eventName: "New lead",
+          link: linkUpdated,
+          customer,
+        }),
+      });
+    })(),
+  );
 
   return `Systeme.io lead created: ${customer.id}`;
 }

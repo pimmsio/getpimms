@@ -1,5 +1,5 @@
 export const DEFAULT_REDIRECTS = {
-  "": "https://pimms.io",
+  "": "https://pim.ms/mxdFvMF",
   home: "https://pimms.io",
   pimms: "https://pimms.io",
   signin: "https://app.pimms.io/login",
@@ -14,7 +14,7 @@ export const DEFAULT_REDIRECTS = {
 };
 
 export const DUB_HEADERS = {
-  "x-powered-by": "PIMMS | Link sharing tool that boosts and measures your conversions",
+  "x-powered-by": "PIMMS | Link sharing tool that turns more clicks into sales",
 };
 
 export const REDIRECTION_QUERY_PARAM = "redir_url";

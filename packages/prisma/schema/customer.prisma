@@ -12,6 +12,8 @@ model Customer {
   country        String?
   anonymousId    String?
   totalClicks    Int       @default(0)
+  hotScore       Int       @default(0)
+  lastHotScoreAt DateTime?
   lastEventAt    DateTime?
 
   projectId        String

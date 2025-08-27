@@ -5,6 +5,7 @@ import { createPartnerCommission } from "@/lib/partners/create-partner-commissio
 import { getClickEvent, recordLead } from "@/lib/tinybird";
 import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
 import { sendWorkspaceWebhook } from "@/lib/webhook/publish";
+import { computeCustomerHotScore } from "@/lib/analytics/compute-customer-hot-score";
 import { transformLeadEventData } from "@/lib/webhook/transform";
 import { prisma } from "@dub/prisma";
 import { nanoid } from "@dub/utils";
@@ -42,8 +43,10 @@ export async function createNewCustomer(event: Stripe.Event) {
     return `Link with ID ${linkId} not found or does not have a project, skipping...`;
   }
 
+  const workspaceId = link.projectId;
+
   // Create a new customer
-  const { anonymousId, totalClicks, lastEventAt } =
+  const { anonymousId, totalClicks } =
     await computeAnonymousCustomerFields(clickData);
 
   const customer = await prisma.customer.create({
@@ -54,14 +57,14 @@ export async function createNewCustomer(event: Stripe.Event) {
       stripeCustomerId: stripeCustomer.id,
       projectConnectId: stripeAccountId,
       externalId: pimmsCustomerExternalId,
-      projectId: link.projectId,
+      projectId: workspaceId,
       linkId,
       clickId,
       clickedAt: new Date(clickData.timestamp + "Z"),
       country: clickData.country,
       anonymousId,
       totalClicks,
-      lastEventAt,
+      lastEventAt: new Date(),
     },
   });
 
@@ -94,7 +97,7 @@ export async function createNewCustomer(event: Stripe.Event) {
     // update workspace usage
     prisma.project.update({
       where: {
-        id: customer.projectId,
+        id: workspaceId,
       },
       data: {
         usage: {
@@ -117,16 +120,26 @@ export async function createNewCustomer(event: Stripe.Event) {
   }
 
   waitUntil(
-    sendWorkspaceWebhook({
-      trigger: "lead.created",
-      workspace,
-      data: transformLeadEventData({
-        ...clickData,
-        eventName,
-        link: linkUpdated,
-        customer,
-      }),
-    }),
+    (async () => {
+      await prisma.customer.update({
+        where: { id: customer.id },
+        data: {
+          hotScore: await computeCustomerHotScore(customer.id, workspaceId),
+          lastHotScoreAt: new Date(),
+        },
+      });
+
+      await sendWorkspaceWebhook({
+        trigger: "lead.created",
+        workspace,
+        data: transformLeadEventData({
+          ...clickData,
+          eventName,
+          link: linkUpdated,
+          customer,
+        }),
+      });
+    })(),
   );
 
   return `New PIMMS customer created: ${customer.id}. Lead event recorded: ${leadData.event_id}`;

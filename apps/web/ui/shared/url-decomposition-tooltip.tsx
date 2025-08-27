@@ -2,7 +2,7 @@
 
 import { Tooltip } from "@dub/ui";
 import { cn, getParamsFromURL } from "@dub/utils";
-import { Copy, ExternalLink } from "lucide-react";
+import { Copy } from "lucide-react";
 import { ReactNode, useMemo, useState } from "react";
 
 interface UrlDecompositionTooltipProps {

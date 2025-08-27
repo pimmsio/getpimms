@@ -73,7 +73,7 @@ export function DomainCardTitleColumn({
                         href={url}
                         target="_blank"
                         rel="noreferrer"
-                        className="truncate text-neutral-500 transition-all hover:text-neutral-700 hover:underline hover:underline-offset-2"
+                        className="block w-full truncate max-w-[300px] text-neutral-500 transition-all hover:text-neutral-700 hover:underline hover:underline-offset-2"
                       >
                         {getPrettyUrl(url)}
                       </a>

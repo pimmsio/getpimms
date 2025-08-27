@@ -342,7 +342,7 @@ const Details = memo(
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="truncate text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2"
+                  className="block w-full truncate max-w-[300px] text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2 text-ellipsis"
                 >
                   {getPrettyUrl(url)}
                 </a>

@@ -1,15 +1,15 @@
+import { computeCustomerHotScore } from "@/lib/analytics/compute-customer-hot-score";
 import { createId } from "@/lib/api/create-id";
 import { includeTags } from "@/lib/api/links/include-tags";
 import { getClickEvent, recordLead } from "@/lib/tinybird";
+import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
 import { sendWorkspaceWebhook } from "@/lib/webhook/publish";
 import { transformLeadEventData } from "@/lib/webhook/transform";
 import { prisma } from "@dub/prisma";
-import { nanoid } from "@dub/utils";
+import { log, nanoid } from "@dub/utils";
 import { Customer } from "@prisma/client";
 import { waitUntil } from "@vercel/functions";
-import { log } from "@dub/utils";
 import { NextResponse } from "next/server";
-import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
 
 // POST /api/calendly/webhook — handle Calendly webhooks
 export const POST = async (req: Request) => {
@@ -45,7 +45,7 @@ export const POST = async (req: Request) => {
       startTime,
       eventTypeName,
       createdAt,
-      clickId
+      clickId,
     });
 
     if (!email || !name || !userUri) {
@@ -139,7 +139,7 @@ export const POST = async (req: Request) => {
 
     // Create a function to handle customer upsert to avoid duplication
     const upsertCustomer = async () => {
-      const { anonymousId, totalClicks, lastEventAt } =
+      const { anonymousId, totalClicks } =
         await computeAnonymousCustomerFields(clickData);
       return prisma.customer.upsert({
         where: {
@@ -161,7 +161,7 @@ export const POST = async (req: Request) => {
           clickedAt: new Date(clickData.timestamp + "Z"),
           anonymousId,
           totalClicks,
-          lastEventAt,
+          lastEventAt: new Date(),
         },
         update: {}, // no updates needed if the customer exists
       });
@@ -212,16 +212,27 @@ export const POST = async (req: Request) => {
     ]);
 
     waitUntil(
-      sendWorkspaceWebhook({
-        trigger: "lead.created",
-        workspace,
-        data: transformLeadEventData({
-          ...clickData,
-          eventName,
-          link: linkUpdated,
-          customer,
-        }),
-      }),
+      (async () => {
+        // update customer hot score
+        await prisma.customer.update({
+          where: { id: customer.id },
+          data: {
+            hotScore: await computeCustomerHotScore(customer.id, workspaceId),
+            lastHotScoreAt: new Date(),
+          },
+        });
+
+        sendWorkspaceWebhook({
+          trigger: "lead.created",
+          workspace,
+          data: transformLeadEventData({
+            ...clickData,
+            eventName,
+            link: linkUpdated,
+            customer,
+          }),
+        });
+      })(),
     );
 
     console.log(`✅ Calendly invitee tracked for ${email}`);

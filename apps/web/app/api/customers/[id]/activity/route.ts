@@ -1,3 +1,4 @@
+import { computeCustomerHotScore, computeCustomerTier } from "@/lib/analytics/compute-customer-hot-score";
 import { getCustomerEvents } from "@/lib/analytics/get-customer-events";
 import { getCustomerOrThrow } from "@/lib/api/customers/get-customer-or-throw";
 import { decodeLinkIfCaseSensitive } from "@/lib/api/links/case-sensitivity";
@@ -11,7 +12,7 @@ import { NextResponse } from "next/server";
 export const GET = withWorkspace(async ({ workspace, params, session }) => {
   const { id: customerId } = params;
 
-  const customer = await getCustomerOrThrow({
+  let customer = await getCustomerOrThrow({
     workspaceId: workspace.id,
     id: customerId,
   });
@@ -27,6 +28,21 @@ export const GET = withWorkspace(async ({ workspace, params, session }) => {
         link: null,
       }),
     );
+  }
+
+  // Live recompute hot score when accessing customer details (max once per day)
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  if (
+    !customer.lastHotScoreAt ||
+    new Date(customer.lastHotScoreAt) < oneDayAgo
+  ) {
+    customer = await prisma.customer.update({
+      where: { id: customer.id },
+      data: {
+        hotScore: await computeCustomerHotScore(customer.id, workspace.id),
+        lastHotScoreAt: new Date(),
+      },
+    });
   }
 
   let [events, link] = await Promise.all([
@@ -88,6 +104,18 @@ export const GET = withWorkspace(async ({ workspace, params, session }) => {
       ? new Date(firstSale.timestamp).getTime() - customer.createdAt.getTime()
       : null;
 
+  const currentScore = customer.hotScore;
+  const lastScoreAt = customer.lastHotScoreAt;
+
+  const hot = {
+    score: currentScore,
+    tier: computeCustomerTier(currentScore),
+    isHot: currentScore >= 50,
+    reasons: [], // Will be populated by the scoring function in future iterations
+    hotWindows: [], // Simplified for stored scores
+    lastHotScoreAt: lastScoreAt, // Show when score was last calculated
+  };
+
   return NextResponse.json(
     customerActivityResponseSchema.parse({
       ltv,
@@ -95,6 +123,7 @@ export const GET = withWorkspace(async ({ workspace, params, session }) => {
       timeToSale,
       events,
       link,
+      hot,
     }),
   );
 });

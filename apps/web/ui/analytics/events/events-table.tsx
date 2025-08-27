@@ -1,6 +1,5 @@
 "use client";
 
-import { calculateCustomerHotness } from "@/lib/analytics/calculate-hotness";
 import {
   editQueryString,
   getBestDomainForLogo,
@@ -11,8 +10,10 @@ import useListIntegrations from "@/lib/swr/use-list-integrations";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { ClickEvent, LeadEvent, SaleEvent } from "@/lib/types";
 import EmptyState from "@/ui/shared/empty-state";
+import { UrlDecompositionTooltip } from "@/ui/shared/url-decomposition-tooltip";
 import {
   LinkLogo,
+  ProgressBar,
   Table,
   Tooltip,
   usePagination,
@@ -66,7 +67,6 @@ export default function EventsTable({
   requiresUpgrade?: boolean;
   upgradeOverlay?: ReactNode;
 }) {
-  const { slug, salesUsage } = useWorkspace();
   const { searchParams, queryParams } = useRouterStuff();
   const { setExportQueryString } = useContext(EventsContext);
   const { queryString: originalQueryString, eventsApiPath } =
@@ -80,40 +80,49 @@ export default function EventsTable({
   const columns = useMemo<ColumnDef<EventDatum, any>[]>(
     () =>
       [
-        // Hot level (first column)
+        // Hot Score (first column)
         {
-          id: "hot",
-          header: "Hot",
-          size: 80,
-          minSize: 80,
-          maxSize: 100,
+          id: "hotScore",
+          header: "Score",
+          accessorKey: "customer",
           enableHiding: false,
-          cell: ({ row }) => {
-            const customer = row.original.customer;
-            const totalClicks = customer.totalClicks || 0;
-            const lastEventAt = customer.lastEventAt || row.original.timestamp;
-            const heat = calculateCustomerHotness(totalClicks, lastEventAt); // 0-3
-
-            const label = ["Cold", "Warm", "Hot", "Very hot"][heat] as string;
-            const fillPct = (heat / 3) * 100; // proportional fill
+          minSize: 70,
+          size: 70,
+          maxSize: 120,
+          cell: ({ getValue }) => {
+            const customer = getValue();
+            const hotScore = customer.hotScore ?? 0;
+            const lastUpdated = customer.lastHotScoreAt;
+            const hotTier = Math.max(
+              0,
+              Math.min(6, Math.ceil(hotScore / (100 / 6))),
+            );
 
             return (
-              <div className="flex items-center justify-center" title={label}>
-                <div className="h-2 w-10 overflow-hidden rounded-full bg-neutral-200">
-                  <div
-                    className={cn("h-full", heat === 0 ? "w-0" : "")}
-                    style={{
-                      width: `${fillPct}%`,
-                      // Elegant gradient: emerald → amber → rose
-                      background:
-                        "linear-gradient(to right, #34d399, #f59e0b, #ef4444)",
-                    }}
-                  />
+              <Tooltip
+                content={
+                  <div className="max-w-xs px-4 py-2 text-left text-sm text-neutral-600">
+                    <div className="mt-1">
+                      <div className="text-sm text-neutral-800">
+                        Score: {hotScore}/100
+                      </div>
+                      <div className="text-xs text-neutral-400">
+                        {lastUpdated
+                          ? `Updated ${timeAgo(new Date(lastUpdated))} ago`
+                          : "Not computed yet"}
+                      </div>
+                    </div>
+                  </div>
+                }
+              >
+                <div className="flex w-full">
+                  <ProgressBar value={hotTier} max={6} className="h-2 w-full" />
                 </div>
-              </div>
+              </Tooltip>
             );
           },
         },
+
         // Customer (second column)
         {
           id: "customer",
@@ -226,17 +235,19 @@ export default function EventsTable({
                     </a>
                   </div>
                   {link.url && (
-                    <div className="mt-0.5 flex items-center gap-1">
+                    <div className="mt-0.5 flex items-center gap-1 min-w-0 max-w-full">
                       <ArrowTurnRight2 className="h-3 w-3 shrink-0 text-neutral-400" />
-                      <a
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="truncate text-xs text-neutral-500 hover:text-neutral-700 hover:underline hover:underline-offset-2"
-                        title={link.url}
-                      >
-                        {getPrettyUrl(link.url)}
-                      </a>
+                      <UrlDecompositionTooltip url={link.url} className="min-w-0 flex-1">
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block w-full truncate max-w-[300px] text-xs text-neutral-500 hover:text-neutral-700 hover:underline hover:underline-offset-2"
+                          title={link.url}
+                        >
+                          {getPrettyUrl(link.url)}
+                        </a>
+                      </UrlDecompositionTooltip>
                     </div>
                   )}
                 </div>
@@ -466,7 +477,6 @@ export default function EventsTable({
           cell: ({ row }) => {
             const event = row.original;
             const eventAmount = event.sale?.amount || 0;
-            const totalCustomerSales = 0; // TODO: Get actual total customer sales
 
             return (
               <div className="text-right">
@@ -477,13 +487,6 @@ export default function EventsTable({
                   )}
                 >
                   {currencyFormatter(eventAmount / 100, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </div>
-                <div className="text-xs text-neutral-400">
-                  Total:{" "}
-                  {currencyFormatter(totalCustomerSales / 100, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -612,7 +615,6 @@ export default function EventsTable({
   const { data: customersCount, isLoading: isCustomersLoading } =
     useCustomersCount();
   const hasNoCustomer = !customersCount || customersCount === 0;
-  const hasNoSales = !salesUsage || salesUsage === 0;
 
   const isEmptyData = !data || data.length === 0;
 
@@ -657,7 +659,6 @@ export default function EventsTable({
       cn(
         columnId === "customer" ? "p-0" : "px-4 py-2",
         columnId === "saleAmount" ? "text-right" : "",
-        columnId === "hot" ? "text-center" : "",
       ),
     emptyState: (
       <EmptyState

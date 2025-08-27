@@ -1,5 +1,6 @@
 import { CursorRays, MoneyBill2, UserCheck } from "@dub/ui/icons";
 import { formatDateTimeSmart, getPrettyUrl } from "@dub/utils";
+import { UrlDecompositionTooltip } from "@/ui/shared/url-decomposition-tooltip";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
@@ -163,7 +164,7 @@ export function UnifiedActivityList({
                   key={`click-${index}`}
                   className="flex items-center gap-2.5 rounded-lg px-3 py-1.5 transition-colors hover:bg-neutral-50"
                 >
-                  <CursorRays className="size-3 text-blue-500 flex-shrink-0" />
+                  <CursorRays className="size-5 text-blue-500 flex-shrink-0" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between">
                       <div className="flex min-w-0 items-center gap-2">
@@ -180,6 +181,21 @@ export function UnifiedActivityList({
                         {formatDateTimeSmart(event.timestamp)}
                       </span>
                     </div>
+                    {event.click?.url && (
+                      <div className="mt-0.5 flex items-center gap-1 text-xs text-neutral-500">
+                        <span>→</span>
+                        <UrlDecompositionTooltip url={event.click.url}>
+                          <a
+                            href={event.click.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block w-full truncate max-w-[300px] text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2"
+                          >
+                            {getPrettyUrl(event.click.url)}
+                          </a>
+                        </UrlDecompositionTooltip>
+                      </div>
+                    )}
                   </div>
                 </div>
               );

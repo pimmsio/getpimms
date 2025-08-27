@@ -215,6 +215,19 @@ const getCustomersMap = async (customerIds: string[]) => {
         in: customerIds,
       },
     },
+    select: {
+      id: true,
+      externalId: true,
+      name: true,
+      email: true,
+      avatar: true,
+      country: true,
+      totalClicks: true,
+      lastEventAt: true,
+      createdAt: true,
+      hotScore: true,
+      lastHotScoreAt: true,
+    },
   });
 
   return customers.reduce(
@@ -229,6 +242,8 @@ const getCustomersMap = async (customerIds: string[]) => {
         totalClicks: customer.totalClicks ?? 0,
         lastEventAt: customer.lastEventAt ?? undefined,
         createdAt: customer.createdAt,
+        hotScore: customer.hotScore ?? 0,
+        lastHotScoreAt: customer.lastHotScoreAt ?? undefined,
       });
       return acc;
     },

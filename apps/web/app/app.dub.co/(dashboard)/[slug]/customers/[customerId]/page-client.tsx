@@ -8,11 +8,11 @@ import {
   CustomerEnriched,
   SaleEvent,
 } from "@/lib/types";
-import { ActivityHeatmap } from "@/ui/customers/activity-heatmap";
 import { CustomerDetailsColumn } from "@/ui/customers/customer-details-column";
 import { CustomerPartnerEarningsTable } from "@/ui/customers/customer-partner-earnings-table";
 import { CustomerSalesTable } from "@/ui/customers/customer-sales-table";
 import { UnifiedActivityList } from "@/ui/customers/unified-activity-list";
+import { LeadScoringDetails } from "@/ui/customers/lead-scoring-details";
 import { calculateCustomerHotness } from "@/lib/analytics/calculate-hotness";
 import { BackLink } from "@/ui/shared/back-link";
 import { ArrowUpRight, CopyButton } from "@dub/ui";
@@ -71,30 +71,6 @@ export function CustomerPageClient() {
               alt={customer.name}
               className="size-14 rounded-full border border-neutral-200"
             />
-            {/* Hot indicator (heat bar) */}
-            <div className="absolute -top-1 -right-1 rounded-full bg-white p-1 shadow-lg">
-              {(() => {
-                const totalClicks = customer.totalClicks || 0;
-                const lastEventAt = customer.lastEventAt || customer.createdAt;
-                const heat = calculateCustomerHotness(totalClicks, lastEventAt); // 0-3
-                const label = ["Cold", "Warm", "Hot", "Very hot"][heat] as string;
-                const fillPct = (heat / 3) * 100;
-                return (
-                  <div className="flex items-center justify-center" title={label}>
-                    <div className="h-2 w-10 overflow-hidden rounded-full bg-neutral-200">
-                      <div
-                        className="h-full"
-                        style={{
-                          width: `${fillPct}%`,
-                          // Elegant gradient: emerald → amber → rose
-                          background: "linear-gradient(to right, #34d399, #f59e0b, #ef4444)",
-                        }}
-                      />
-                    </div>
-                  </div>
-                );
-              })()}
-            </div>
           </div>
         ) : (
           <div className="size-16 animate-pulse rounded-full bg-neutral-200" />
@@ -133,13 +109,12 @@ export function CustomerPageClient() {
         {/* Main content */}
         <div className="flex flex-col gap-8">
           <section className="flex flex-col">
-            <div className="rounded-lg border border-neutral-200 bg-white p-4">
-              <ActivityHeatmap 
-                customerId={customerId} 
-                customerActivity={customerActivity}
-                clickHistory={clickHistory}
-              />
-            </div>
+            <LeadScoringDetails
+              customerActivity={customerActivity}
+              clickHistory={clickHistory}
+              customerId={customerId}
+              isLoading={!customer || isCustomerActivityLoading}
+            />
           </section>
 
           <section className="flex flex-col">

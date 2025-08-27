@@ -1,19 +1,33 @@
+import { computeCustomerHotScore } from "@/lib/analytics/compute-customer-hot-score";
 import { includeTags } from "@/lib/api/links/include-tags";
 import { createPartnerCommission } from "@/lib/partners/create-partner-commission";
 import { recordLead } from "@/lib/tinybird";
+import {
+  computeAnonymousCustomerFields,
+  getFirstAvailableField,
+} from "@/lib/webhook/custom";
 import { sendWorkspaceWebhook } from "@/lib/webhook/publish";
 import { transformLeadEventData } from "@/lib/webhook/transform";
+import { clickEventSchemaTB } from "@/lib/zod/schemas/clicks";
 import { prisma } from "@dub/prisma";
 import { nanoid } from "@dub/utils";
-import { computeAnonymousCustomerFields, getFirstAvailableField } from "@/lib/webhook/custom";
 import { Link } from "@prisma/client";
+import { waitUntil } from "@vercel/functions";
+import { z } from "zod";
 
-export async function customerCreated(data: any, pimmsId: string, link: Link, clickData: any) {
+type ClickData = z.infer<typeof clickEventSchemaTB>;
+
+export async function customerCreated(
+  data: any,
+  pimmsId: string,
+  link: Link,
+  clickData: ClickData,
+) {
   const email = getFirstAvailableField(data, ["email"], true);
   const firstName = getFirstAvailableField(data, ["firstname"], true);
   const lastName = getFirstAvailableField(data, ["lastname"], true);
   const fullName = getFirstAvailableField(data, ["fullname", "name"], true);
-  
+
   if (!email || !pimmsId) {
     return "Missing email or pimmsId, skipping...";
   }
@@ -22,12 +36,14 @@ export async function customerCreated(data: any, pimmsId: string, link: Link, cl
     return "Missing projectId, skipping...";
   }
 
+  const workspaceId = link.projectId;
+
   const name =
     fullName ||
     (firstName && lastName && `${firstName} ${lastName}`) ||
     firstName;
 
-  const { anonymousId, totalClicks, lastEventAt } =
+  const { anonymousId, totalClicks } =
     await computeAnonymousCustomerFields(clickData);
 
   const customer = await prisma.customer.create({
@@ -44,7 +60,7 @@ export async function customerCreated(data: any, pimmsId: string, link: Link, cl
       clickedAt: new Date(clickData.timestamp + "Z"),
       anonymousId,
       totalClicks,
-      lastEventAt,
+      lastEventAt: new Date(),
     },
   });
 
@@ -63,7 +79,7 @@ export async function customerCreated(data: any, pimmsId: string, link: Link, cl
       include: includeTags,
     }),
     prisma.project.update({
-      where: { id: link.projectId },
+      where: { id: workspaceId },
       data: { usage: { increment: 1 } },
     }),
   ]);
@@ -90,6 +106,18 @@ export async function customerCreated(data: any, pimmsId: string, link: Link, cl
       customer,
     }),
   });
+
+  waitUntil(
+    (async () => {
+      await prisma.customer.update({
+        where: { id: customer.id },
+        data: {
+          hotScore: await computeCustomerHotScore(customer.id, workspaceId),
+          lastHotScoreAt: new Date(),
+        },
+      });
+    })(),
+  );
 
   return `Webflow customer created: ${customer.id}`;
 }

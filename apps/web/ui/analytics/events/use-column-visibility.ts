@@ -4,7 +4,7 @@ import { VisibilityState } from "@tanstack/react-table";
 // Single unified Conversions view (leads + sales)
 export const conversionColumns = {
   all: [
-    "hot",
+    "hotScore",
     "customer",
     "lastEvent",
     "triggeredLink",
@@ -13,7 +13,7 @@ export const conversionColumns = {
     "menu",
   ],
   defaultVisible: [
-    "hot",
+    "hotScore",
     "customer",
     "lastEvent",
     "triggeredLink",

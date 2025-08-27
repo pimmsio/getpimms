@@ -168,7 +168,7 @@ async function createReferral({
 
   const customerId = createId({ prefix: "cus_" });
 
-  const { anonymousId, totalClicks, lastEventAt } =
+  const { anonymousId, totalClicks } =
     await computeAnonymousCustomerFields(clickEvent);
 
   await Promise.all([
@@ -192,7 +192,7 @@ async function createReferral({
         stripeCustomerId: referral.stripe_customer_id,
         anonymousId,
         totalClicks,
-        lastEventAt,
+        lastEventAt: new Date(),
       },
     }),
 

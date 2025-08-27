@@ -9,6 +9,7 @@ import { prisma } from "@dub/prisma";
 import { nanoid } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
 import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
+import { computeCustomerHotScore } from "@/lib/analytics/compute-customer-hot-score";
 import { orderSchema } from "./schema";
 
 export async function createShopifyLead({
@@ -31,7 +32,7 @@ export async function createShopifyLead({
   const { link_id: linkId, country, timestamp } = clickData;
 
   // create customer
-  const { anonymousId, totalClicks, lastEventAt } =
+  const { anonymousId, totalClicks } =
     await computeAnonymousCustomerFields(clickData);
 
   const customer = await prisma.customer.create({
@@ -48,7 +49,7 @@ export async function createShopifyLead({
       country,
       anonymousId,
       totalClicks,
-      lastEventAt,
+      lastEventAt: new Date(),
     },
   });
 
@@ -92,16 +93,26 @@ export async function createShopifyLead({
   ]);
 
   waitUntil(
-    sendWorkspaceWebhook({
-      trigger: "lead.created",
-      workspace,
-      data: transformLeadEventData({
-        ...clickData,
-        eventName,
-        link,
-        customer,
-      }),
-    }),
+    (async () => {
+      await prisma.customer.update({
+        where: { id: customer.id },
+        data: {
+          hotScore: await computeCustomerHotScore(customer.id, workspaceId),
+          lastHotScoreAt: new Date(),
+        },
+      });
+
+      await sendWorkspaceWebhook({
+        trigger: "lead.created",
+        workspace,
+        data: transformLeadEventData({
+          ...clickData,
+          eventName,
+          link,
+          customer,
+        }),
+      });
+    })(),
   );
 
   return leadData;

@@ -1,3 +1,4 @@
+import { computeCustomerHotScore } from "@/lib/analytics/compute-customer-hot-score";
 import { createId } from "@/lib/api/create-id";
 import { DubApiError } from "@/lib/api/errors";
 import { includeTags } from "@/lib/api/links/include-tags";
@@ -8,6 +9,7 @@ import { createPartnerCommission } from "@/lib/partners/create-partner-commissio
 import { getClickEvent, recordLead, recordLeadSync } from "@/lib/tinybird";
 import { logConversionEvent } from "@/lib/tinybird/log-conversion-events";
 import { redis } from "@/lib/upstash";
+import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
 import { sendWorkspaceWebhook } from "@/lib/webhook/publish";
 import { transformLeadEventData } from "@/lib/webhook/transform";
 import { clickEventSchemaTB } from "@/lib/zod/schemas/clicks";
@@ -21,7 +23,6 @@ import { Customer } from "@prisma/client";
 import { waitUntil } from "@vercel/functions";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
 
 type ClickData = z.infer<typeof clickEventSchemaTB>;
 
@@ -57,9 +58,11 @@ export const POST = withWorkspace(
       });
     }
 
+    const workspaceId = workspace.id;
+
     // deduplicate lead events – only record 1 unique event for the same customer and event name
     const ok = await redis.set(
-      `trackLead:${workspace.id}:${customerExternalId}:${stringifiedEventName}`,
+      `trackLead:${workspaceId}:${customerExternalId}:${stringifiedEventName}`,
       {
         timestamp: Date.now(),
         clickId,
@@ -120,7 +123,7 @@ export const POST = withWorkspace(
       const leadEventId = nanoid(16);
 
       // Prefetch anonymous fields using shared util
-      const { anonymousId, totalClicks: totalHistoricalClicks, lastEventAt } =
+      const { anonymousId, totalClicks } =
         await computeAnonymousCustomerFields(clickData);
 
       // Create a function to handle customer upsert to avoid duplication
@@ -128,7 +131,7 @@ export const POST = withWorkspace(
         return prisma.customer.upsert({
           where: {
             projectId_externalId: {
-              projectId: workspace.id,
+              projectId: workspaceId,
               externalId: customerExternalId,
             },
           },
@@ -138,15 +141,15 @@ export const POST = withWorkspace(
             email: customerEmail,
             avatar: customerAvatar,
             externalId: customerExternalId,
-            projectId: workspace.id,
+            projectId: workspaceId,
             projectConnectId: workspace.stripeConnectId,
             clickId: clickData.click_id,
             linkId: clickData.link_id,
             country: clickData.country,
             clickedAt: new Date(clickData.timestamp + "Z"),
             anonymousId,
-            totalClicks: totalHistoricalClicks,
-            lastEventAt: lastEventAt || new Date(clickData.timestamp + "Z"),
+            totalClicks,
+            lastEventAt: new Date(),
           },
           update: {}, // no updates needed if the customer exists
         });
@@ -214,7 +217,7 @@ export const POST = withWorkspace(
           }
 
           // Always process link/project updates, partner rewards, and webhooks in the background
-          const [link, _project] = await Promise.all([
+          const [link, ] = await Promise.all([
             // update link leads count
             prisma.link.update({
               where: {
@@ -231,7 +234,7 @@ export const POST = withWorkspace(
             // update workspace usage
             prisma.project.update({
               where: {
-                id: workspace.id,
+                id: workspaceId,
               },
               data: {
                 usage: {
@@ -241,7 +244,7 @@ export const POST = withWorkspace(
             }),
 
             logConversionEvent({
-              workspace_id: workspace.id,
+              workspace_id: workspaceId,
               link_id: clickData.link_id,
               path: "/track/lead",
               body: JSON.stringify(body),
@@ -257,6 +260,20 @@ export const POST = withWorkspace(
               eventId: leadEventId,
               customerId: customer?.id,
               quantity: eventQuantity ?? 1,
+            });
+          }
+
+          // update customer hot score
+          if (customer) {
+            await prisma.customer.update({
+              where: { id: customer.id },
+              data: {
+                hotScore: await computeCustomerHotScore(
+                  customer.id,
+                  workspaceId,
+                ),
+                lastHotScoreAt: new Date(),
+              },
             });
           }
 

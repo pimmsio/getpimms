@@ -20,6 +20,7 @@ import { clickEventSchemaTB } from "@/lib/zod/schemas/clicks";
 import { leadEventSchemaTB } from "@/lib/zod/schemas/leads";
 import { prisma } from "@dub/prisma";
 import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
+import { computeCustomerHotScore } from "@/lib/analytics/compute-customer-hot-score";
 import { Customer } from "@dub/prisma/client";
 import { nanoid } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
@@ -121,7 +122,7 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
       },
     });
 
-    const { anonymousId, totalClicks, lastEventAt } =
+    const { anonymousId, totalClicks } =
       await computeAnonymousCustomerFields(clickEvent);
 
     const payload = {
@@ -138,7 +139,7 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
       clickedAt: new Date(clickEvent.timestamp + "Z"),
       anonymousId,
       totalClicks,
-      lastEventAt,
+      lastEventAt: new Date()
     };
 
     if (existingCustomer) {
@@ -315,6 +316,15 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
 
   waitUntil(
     (async () => {
+      // update customer hot score
+      await prisma.customer.update({
+        where: { id: customer.id },
+        data: {
+          hotScore: await computeCustomerHotScore(customer.id, workspace.id),
+          lastHotScoreAt: new Date(),
+        },
+      });
+      
       // if the clickEvent variable exists and there was no existing customer before,
       // we send a lead.created webhook
       if (clickEvent && !existingCustomer) {

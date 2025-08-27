@@ -65,6 +65,40 @@ export function ActivityHeatmap({ customerId, customerActivity, clickHistory, cl
     });
   }
 
+  // Find the longest engagement span (allowing single-day gaps)
+  // Count the span from first to last active day in a flexible streak
+  const activityBinary = days.map((d) => (d.count > 0 ? 1 : 0));
+  let bestStreak = 0;
+  
+  // Find all potential streak windows
+  for (let start = 0; start < activityBinary.length; start++) {
+    if (activityBinary[start] === 1) { // Start from an active day
+      let end = start;
+      let gapCount = 0;
+      let consecutiveGaps = 0;
+      
+      // Extend the window as far as possible
+      for (let i = start + 1; i < activityBinary.length; i++) {
+        if (activityBinary[i] === 1) {
+          end = i;
+          consecutiveGaps = 0; // Reset consecutive gap counter
+        } else {
+          consecutiveGaps++;
+          if (consecutiveGaps >= 2) {
+            break; // Two consecutive gaps break the streak
+          }
+          gapCount++;
+        }
+      }
+      
+      // Calculate the span (days from start to end, inclusive)
+      if (end > start) {
+        const span = end - start + 1;
+        bestStreak = Math.max(bestStreak, span);
+      }
+    }
+  }
+
   const getIntensity = (count: number) => {
     if (count === 0) return 0;
     if (count <= 2) return 1;
@@ -99,7 +133,14 @@ export function ActivityHeatmap({ customerId, customerActivity, clickHistory, cl
             <h3 className="text-sm font-medium text-neutral-900">Last 14 days activity</h3>
             <p className="text-xs text-neutral-500 mt-1">Hover over squares to see daily activity</p>
           </div>
-          <div className="flex items-center gap-2 text-xs text-neutral-500">
+          <div className="flex items-center gap-3 text-xs text-neutral-600">
+            {bestStreak >= 4 && (
+              <div className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-emerald-700 ring-1 ring-emerald-200">
+                <span className="font-medium">Streak</span>
+                <span>·</span>
+                <span>{bestStreak} days</span>
+              </div>
+            )}
             <span>Less</span>
             <div className="flex gap-1">
               {[0, 1, 2, 3].map(intensity => (

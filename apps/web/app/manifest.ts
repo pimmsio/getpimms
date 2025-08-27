@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "PIMMS",
     short_name: "PIMMS",
-    description: "PIMMS | Link sharing tool that boosts and measures your conversions",
+    description: "PIMMS | Link sharing tool that turns more clicks into sales",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

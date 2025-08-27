@@ -24,10 +24,8 @@ import {
   punycode,
   truncate,
 } from "@dub/utils";
-import { useCompletion } from "ai/react";
 import { TriangleAlert } from "lucide-react";
 import { useParams, usePathname } from "next/navigation";
-import posthog from "posthog-js";
 import {
   forwardRef,
   HTMLProps,
@@ -37,10 +35,8 @@ import {
   useMemo,
   useState,
 } from "react";
-import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
 import { AlertCircleFill } from "../shared/icons";
-import { UpgradeRequiredToast } from "../shared/upgrade-required-toast";
 import { useAvailableDomains } from "./use-available-domains";
 
 type ShortLinkInputProps = {
@@ -79,10 +75,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
     const {
       id: workspaceId,
       slug,
-      mutate: mutateWorkspace,
-      exceededAI,
       nextPlan,
-      dotLinkClaimed,
     } = useWorkspace();
 
     const [lockKey, setLockKey] = useState(existingLink);
@@ -174,20 +167,6 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
     //   if (completion) onChange?.({ key: completion });
     // }, [completion]);
 
-    const generateAIKey = useCallback(async () => {
-      setKeyError(null);
-      // complete(
-      //   `For the following URL, suggest a relevant short link slug that is at most ${Math.max(25 - (domain?.length || 0), 12)} characters long. 
-                  
-      //       - URL: ${data.url}
-      //       - Meta title: ${data.title}
-      //       - Meta description: ${data.description}. 
-    
-      //     Only respond with the short link slug and nothing else. Don't use quotation marks or special characters (dash and slash are allowed).
-          
-      //     Make sure your answer does not exist in this list of generated slugs: ${generatedKeys.join(", ")}`,
-      // );
-    }, [data.url, data.title, data.description, generatedKeys]);
 
     const shortLink = useMemo(() => {
       return linkConstructor({

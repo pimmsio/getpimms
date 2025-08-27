@@ -21,4 +21,22 @@ export const customerActivityResponseSchema = z.object({
     key: true,
     shortLink: true,
   }).nullish(),
+  // New hotness fields for surfacing hot periods and reasons
+  hot: z
+    .object({
+      score: z.number().min(0).max(100),
+      tier: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]),
+      isHot: z.boolean(),
+      reasons: z.array(z.string()),
+      hotWindows: z.array(
+        z.object({
+          start: z.string(),
+          end: z.string(),
+          score: z.number().min(0).max(100),
+          reasons: z.array(z.string()),
+        }),
+      ),
+      lastHotScoreAt: z.date().nullish(),
+    })
+    .optional(),
 });

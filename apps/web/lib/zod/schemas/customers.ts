@@ -53,6 +53,15 @@ export const createCustomerBodySchema = z.object({
     .optional()
     .default(0)
     .describe("Total number of clicks for this customer."),
+  hotScore: z
+    .number()
+    .optional()
+    .default(0)
+    .describe("Lead hotness score (0-100) for this customer."),
+  lastHotScoreAt: z
+    .date()
+    .nullish()
+    .describe("When the hot score was last calculated."),
   lastEventAt: z
     .date()
     .nullish()
@@ -76,6 +85,8 @@ export const CustomerSchema = z.object({
   country: z.string().nullish().describe("Country of the customer."),
   anonymousId: z.string().nullish().describe("Anonymous ID for the customer for history tracking."),
   totalClicks: z.number().optional().default(0).describe("Total number of clicks for this customer."),
+  hotScore: z.number().optional().default(0).describe("Lead hotness score (0-100) for this customer."),
+  lastHotScoreAt: z.date().nullish().describe("When the hot score was last calculated."),
   lastEventAt: z.date().nullish().describe("Last event timestamp (click/lead/sale)."),
   createdAt: z.date().describe("The date the customer was created."),
 });

@@ -164,6 +164,8 @@ export function CustomerDetailsColumn({
         )}
       </div>
 
+
+
       {utmParams && Boolean(utmParams.length) && (
         <div className="flex flex-col gap-2">
           <DetailHeading>UTM</DetailHeading>

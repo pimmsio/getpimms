@@ -74,7 +74,7 @@ export const computeAnonymousCustomerFields = async (clickData: any) => {
   const anonymousId: string | null = clickData?.identity_hash || null;
 
   let totalHistoricalClicks = 0;
-  let lastEventAt: Date | null = null;
+  let lastClickAt: Date | null = null;
 
   try {
     if (anonymousId) {
@@ -91,24 +91,24 @@ export const computeAnonymousCustomerFields = async (clickData: any) => {
       const events = Array.isArray(resp?.data) ? resp.data : [];
       totalHistoricalClicks = events.length || 0;
       if (events.length > 0 && events[0]?.timestamp) {
-        lastEventAt = new Date(events[0].timestamp + "Z");
+        lastClickAt = new Date(events[0].timestamp + "Z");
       }
     }
   } catch (_) {
     // ignore errors and fallback to clickData timestamp
   }
 
-  if (!lastEventAt && clickData?.timestamp) {
-    lastEventAt = new Date(clickData.timestamp + "Z");
+  if (!lastClickAt && clickData?.timestamp) {
+    lastClickAt = new Date(clickData.timestamp + "Z");
   }
 
   return {
     anonymousId,
     totalClicks: totalHistoricalClicks,
-    lastEventAt,
+    lastClickAt,
   } as {
     anonymousId: string | null;
     totalClicks: number;
-    lastEventAt: Date | null;
+    lastClickAt: Date | null;
   };
 };

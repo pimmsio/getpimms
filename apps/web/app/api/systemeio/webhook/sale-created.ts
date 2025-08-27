@@ -13,6 +13,7 @@ import {
 import { prisma } from "@dub/prisma";
 import { nanoid } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
+import { computeCustomerHotScore } from "@/lib/analytics/compute-customer-hot-score";
 
 export async function saleCreated(body: any) {
   const externalId = body?.customer?.id?.toString();
@@ -44,8 +45,10 @@ export async function saleCreated(body: any) {
   const link = await prisma.link.findUnique({ where: { id: linkId } });
   if (!link || !link.projectId) return "Link or project not found, skipping...";
 
+  const workspaceId = link.projectId;
+
   const workspace = await prisma.project.findUnique({
-    where: { id: link.projectId },
+    where: { id: workspaceId },
     select: { id: true },
   });
 
@@ -64,7 +67,7 @@ export async function saleCreated(body: any) {
     },
   });
 
-  const { anonymousId, totalClicks, lastEventAt } =
+  const { anonymousId, totalClicks } =
     await computeAnonymousCustomerFields(clickEvent);
 
   const payload = {
@@ -78,7 +81,7 @@ export async function saleCreated(body: any) {
     clickedAt: new Date(clickEvent.timestamp + "Z"),
     anonymousId,
     totalClicks,
-    lastEventAt,
+    lastEventAt: new Date(),
   };
 
   if (existingCustomer) {
@@ -178,6 +181,11 @@ export async function saleCreated(body: any) {
     }
   }
 
+  console.log("DEBUG saleData timestamp fields:", {
+    clickedAt: customer.clickedAt,
+    createdAt: customer.createdAt
+  });
+
   waitUntil(
     (async () => {
       if (!existingCustomer) {
@@ -185,24 +193,38 @@ export async function saleCreated(body: any) {
           trigger: "lead.created",
           workspace: updatedWorkspace,
           data: transformLeadEventData({
-            ...clickData,
+            ...clickData, // does not contain timestamp
+            timestamp: clickEvent.timestamp,
             eventName: "Register",
             link: linkUpdated,
             customer,
           }),
         });
+
+        console.log("lead created webhook sent");
       }
+
+      // update customer hot score
+      await prisma.customer.update({
+        where: { id: customer.id },
+        data: {
+          hotScore: await computeCustomerHotScore(customer.id, workspaceId),
+          lastHotScoreAt: new Date(),
+        },
+      });
 
       await sendWorkspaceWebhook({
         trigger: "sale.created",
         workspace: updatedWorkspace,
         data: transformSaleEventData({
-          ...saleData,
+          ...saleData, // does not contain timestamp but we pass it in clickedAt
           clickedAt: customer.clickedAt || customer.createdAt,
           link: linkUpdated,
           customer,
         }),
       });
+
+      console.log("sale created webhook sent");
     })(),
   );
 
