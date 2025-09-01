@@ -17,7 +17,17 @@ export const POST = withAxiom(async (req: Request) => {
   try {
     const workspaceId = getWorkspaceIdFromUrl(req);
 
-    const data = JSON.parse(rawBody);
+    // Parse URL-encoded form data from POST body
+    const formData = new URLSearchParams(rawBody);
+    const data: Record<string, string> = {};
+    
+    // Convert URLSearchParams to a regular object
+    for (const [key, value] of formData.entries()) {
+      data[key] = value;
+    }
+    
+    console.log("Parsed form data:", data);
+
     const pimmsId = getFirstAvailableField(data, ["pimms_id"]);
 
     const clickData = await getClickData(pimmsId);

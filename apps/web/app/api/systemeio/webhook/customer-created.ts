@@ -1,27 +1,43 @@
-import { computeCustomerHotScore } from "@/lib/analytics/compute-customer-hot-score";
-import { includeTags } from "@/lib/api/links/include-tags";
-import { generateRandomName } from "@/lib/names";
-import { createPartnerCommission } from "@/lib/partners/create-partner-commission";
-import { getClickEvent, recordLead } from "@/lib/tinybird";
-import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
-import { sendWorkspaceWebhook } from "@/lib/webhook/publish";
-import { transformLeadEventData } from "@/lib/webhook/transform";
+import { findLink, getClickData, getWorkspaceIdFromLink } from "@/lib/webhook/custom";
+import { customerCreated, getName } from "@/lib/webhook/customer-created";
+import { WebhookError } from "@/lib/webhook/utils";
 import { prisma } from "@dub/prisma";
-import { nanoid } from "@dub/utils";
-import { waitUntil } from "@vercel/functions";
-import { URL } from "url";
 
-export async function customerCreated(body: any) {
+export async function customCustomerCreated(body: any) {
   const contact = body.contact;
   const email = contact.email;
   const fields = contact.fields || [];
 
-  const getField = (slug: string) =>
-    fields.find((f: any) => f.slug === slug)?.value;
-
-  const countryCode = (getField("country") || "FR").toUpperCase();
-
   // 1. Prioritize pimms_id from sourceURL
+  const clickId = getClickId(contact);
+
+  // 3. Build full name
+  const firstName = getField(fields, "first_name");
+  const lastName = getField(fields, "last_name"); // not 'surname'
+  const countryCode = (getField(fields, "country") || "FR").toUpperCase();
+  const name = getName(firstName, lastName, null);
+
+  const clickData = await getClickData(clickId);
+  const linkId = clickData.link_id;
+
+  const link = await findLink(linkId);
+  const workspaceId = await getWorkspaceIdFromLink(link);
+
+  return await customerCreated({
+    clickData,
+    link,
+    workspaceId,
+    pimmsId: clickId,
+    email,
+    name,
+    countryCode,
+  });
+}
+
+const getField = (fields: any[], slug: string) =>
+  fields.find((f: any) => f.slug === slug)?.value;
+
+const getClickId = (contact: any) => {
   let clickId: string | null = null;
 
   try {
@@ -34,111 +50,14 @@ export async function customerCreated(body: any) {
 
   // 2. Fallback to pimms_id field
   if (!clickId) {
-    clickId = getField("pimms_id");
+    clickId = getField(contact.fields, "pimms_id");
   }
 
-  if (!clickId) return "Missing pimms_id, skipping...";
-
-  // 3. Build full name
-  const firstName = getField("first_name");
-  const lastName = getField("last_name"); // not 'surname'
-
-  const fullName =
-    (firstName && lastName && `${firstName} ${lastName}`) ||
-    firstName ||
-    generateRandomName();
-
-  const clickEvent = await getClickEvent({ clickId });
-
-  if (!clickEvent || clickEvent.data.length === 0) {
-    return `Click event with ID ${clickId} not found, skipping...`;
+  if (!clickId) {
+    throw new WebhookError("Missing pimms_id, skipping...", 200);
   }
 
-  const clickData = clickEvent.data[0];
-  const linkId = clickData.link_id;
+  console.log("clickId", clickId);
 
-  const link = await prisma.link.findUnique({ where: { id: linkId } });
-  if (!link || !link.projectId) return "Invalid link or project";
-
-  const workspaceId = link.projectId;
-
-  const { anonymousId, totalClicks } =
-    await computeAnonymousCustomerFields(clickData);
-
-  const customer = await prisma.customer.create({
-    data: {
-      id: `cus_${nanoid(10)}`,
-      name: fullName,
-      email,
-      stripeCustomerId: null,
-      projectConnectId: null,
-      externalId: contact.id.toString(),
-      projectId: workspaceId,
-      linkId,
-      clickId,
-      clickedAt: new Date(clickData.timestamp + "Z"),
-      country: countryCode,
-      anonymousId,
-      totalClicks,
-      lastEventAt: new Date(),
-    },
-  });
-
-  const leadData = {
-    ...clickData,
-    event_id: nanoid(16),
-    event_name: "New lead",
-    customer_id: customer.id,
-  };
-
-  const [, linkUpdated, workspace] = await Promise.all([
-    recordLead(leadData),
-    prisma.link.update({
-      where: { id: linkId },
-      data: { leads: { increment: 1 } },
-      include: includeTags,
-    }),
-    prisma.project.update({
-      where: { id: workspaceId },
-      data: { usage: { increment: 1 } },
-    }),
-  ]);
-
-  if (link.programId && link.partnerId) {
-    await createPartnerCommission({
-      event: "lead",
-      programId: link.programId,
-      partnerId: link.partnerId,
-      linkId,
-      eventId: leadData.event_id,
-      customerId: customer.id,
-      quantity: 1,
-    });
-  }
-
-  waitUntil(
-    (async () => {
-      // update customer hot score
-      await prisma.customer.update({
-        where: { id: customer.id },
-        data: {
-          hotScore: await computeCustomerHotScore(customer.id, workspaceId),
-          lastHotScoreAt: new Date(),
-        },
-      });
-
-      await sendWorkspaceWebhook({
-        trigger: "lead.created",
-        workspace,
-        data: transformLeadEventData({
-          ...clickData,
-          eventName: "New lead",
-          link: linkUpdated,
-          customer,
-        }),
-      });
-    })(),
-  );
-
-  return `Systeme.io lead created: ${customer.id}`;
+  return clickId;
 }

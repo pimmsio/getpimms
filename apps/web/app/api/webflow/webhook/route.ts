@@ -1,52 +1,43 @@
+import {
+  getClickData,
+  getFirstAvailableField,
+  getLink,
+  isValidPimmsId,
+} from "@/lib/webhook/custom";
+import { customerCreated, getCustomerData } from "@/lib/webhook/customer-created";
+import { getWorkspaceIdFromUrl, handleWebhookError, WebhookError } from "@/lib/webhook/utils";
 import { withAxiom } from "next-axiom";
-import { customerCreated } from "./customer-created";
-import { getClickData, getFirstAvailableField, getLink, isValidPimmsId } from "@/lib/webhook/custom";
-import { parseWorkspaceId } from "@/lib/webhook/utils";
 
 const relevantEvents = new Set(["form_submission"]);
 
 export const POST = withAxiom(async (req: Request) => {
   const rawBody = await req.text();
-
-  const url = new URL(req.url);
-  const workspaceId = parseWorkspaceId(url.searchParams.get("workspace_id"));
-
-  console.log("workspaceId", workspaceId);
   console.log("rawBody", rawBody);
-
-  if (!workspaceId) {
-    return new Response("Missing workspace_id", { status: 400 });
-  }
-
-  const body = JSON.parse(rawBody);
-  const eventType = body.triggerType;
-
-  if (!eventType || !relevantEvents.has(eventType)) {
-    return new Response("Unsupported event, skipping...", { status: 200 });
-  }
 
   let response = "OK";
 
-  switch (eventType) {
-    case "form_submission":
-      try {
+  try {
+    const workspaceId = getWorkspaceIdFromUrl(req);
+
+    const body = JSON.parse(rawBody);
+    const eventType = body.triggerType;
+    console.log("eventType", eventType);
+
+    if (!eventType || !relevantEvents.has(eventType)) {
+      throw new WebhookError("Unsupported event, skipping...", 200);
+    }
+
+    switch (eventType) {
+      case "form_submission":
         const formPayload = body.payload;
         const data = formPayload?.data || {};
 
         const pimmsId = getFirstAvailableField(data, ["pimms_id"]);
 
-        console.log("pimmsId", pimmsId);
-
-        if (!pimmsId) {
-          throw new Error("Missing pimms_id in payload.data, skipping...");
-        }
-
         const clickData = await getClickData(pimmsId);
-
-        console.log("clickData", clickData.click_id);
-
         const link = await getLink(clickData);
 
+        console.log("clickData", clickData.click_id);
         console.log("link found", link.id, link.projectId);
 
         const isValid = await isValidPimmsId(link, workspaceId);
@@ -55,12 +46,12 @@ export const POST = withAxiom(async (req: Request) => {
           throw new Error("Invalid pimms_id, skipping...");
         }
 
-        response = await customerCreated(data, pimmsId, link, clickData);
-      } catch (error: any) {
-        console.error(error);
-        response = error.message || "Unknown error";
-      }
-      break;
+        const customerData = await getCustomerData(data, pimmsId, link, clickData);
+        response = await customerCreated(customerData);
+        break;
+    }
+  } catch (error: any) {
+    return handleWebhookError(error);
   }
 
   return new Response(response, { status: 200 });

@@ -1,84 +1,70 @@
+import { computeCustomerHotScore } from "@/lib/analytics/compute-customer-hot-score";
 import { createId } from "@/lib/api/create-id";
 import { includeTags } from "@/lib/api/links/include-tags";
 import { notifyPartnerSale } from "@/lib/api/partners/notify-partner-sale";
 import { createPartnerCommission } from "@/lib/partners/create-partner-commission";
-import { getClickEvent, recordLead, recordSale } from "@/lib/tinybird";
+import { recordLead, recordSale } from "@/lib/tinybird";
 import { redis } from "@/lib/upstash";
-import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
+import {
+  computeAnonymousCustomerFields,
+  findLink,
+  findWorkspace,
+  getClickData,
+  getWorkspaceIdFromLink,
+} from "@/lib/webhook/custom";
 import { sendWorkspaceWebhook } from "@/lib/webhook/publish";
 import {
   transformLeadEventData,
   transformSaleEventData,
 } from "@/lib/webhook/transform";
+import { WebhookError } from "@/lib/webhook/utils";
 import { prisma } from "@dub/prisma";
 import { nanoid } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
-import { computeCustomerHotScore } from "@/lib/analytics/compute-customer-hot-score";
 
-export async function saleCreated(body: any) {
+export async function customSaleCreated(body: any) {
   const externalId = body?.customer?.id?.toString();
-  const sourceUrl = body?.customer?.sourceUrl;
-  const clickId = sourceUrl ? new URL(sourceUrl).searchParams.get("pimms_id") : null;
+  const clickId = getClickId(body);
   const customerEmail = body?.customer?.email;
-  const customerName =
-    body?.customer?.fields?.full_name?.trim() ||
-    [body?.customer?.fields?.first_name, body?.customer?.fields?.last_name]
-      .filter(Boolean)
-      .join(" ")
-      .trim();
+  const customerName = getCustomerName(body);
 
   console.log("externalId", externalId);
-  console.log("clickId", clickId);
   console.log("customerEmail", customerEmail);
   console.log("customerName", customerName);
 
-  if (!externalId || !clickId) {
-    return "Missing customer.id or pimms_id, skipping...";
+  if (!externalId) {
+    throw new WebhookError("Missing customer.id, skipping...", 200);
   }
 
-  const clickEvent = await getClickEvent({ clickId }).then((res) => res.data[0]);
-  if (!clickEvent) {
-    return `Click event with ID ${clickId} not found, skipping...`;
-  }
+  const clickData = await getClickData(clickId);
 
-  const linkId = clickEvent.link_id;
-  const link = await prisma.link.findUnique({ where: { id: linkId } });
-  if (!link || !link.projectId) return "Link or project not found, skipping...";
+  const linkId = clickData.link_id;
+  const link = await findLink(linkId);
+  const workspaceId = await getWorkspaceIdFromLink(link);
 
-  const workspaceId = link.projectId;
-
-  const workspace = await prisma.project.findUnique({
-    where: { id: workspaceId },
-    select: { id: true },
-  });
-
-  if (!workspace) {
-    return "Workspace not found, skipping...";
-  }
+  // Check if workspace exists
+  await findWorkspace(workspaceId);
 
   let customer;
   let existingCustomer = await prisma.customer.findFirst({
     where: {
-      projectId: workspace.id,
-      OR: [
-        { externalId },
-        { email: customerEmail },
-      ],
+      projectId: workspaceId,
+      OR: [{ externalId }, { email: customerEmail }],
     },
   });
 
   const { anonymousId, totalClicks } =
-    await computeAnonymousCustomerFields(clickEvent);
+    await computeAnonymousCustomerFields(clickData);
 
   const payload = {
     name: customerName,
     email: customerEmail,
     externalId,
-    projectId: workspace.id,
+    projectId: workspaceId,
     clickId,
     linkId,
-    country: clickEvent.country,
-    clickedAt: new Date(clickEvent.timestamp + "Z"),
+    country: clickData.country,
+    clickedAt: new Date(clickData.timestamp + "Z"),
     anonymousId,
     totalClicks,
     lastEventAt: new Date(),
@@ -97,9 +83,9 @@ export async function saleCreated(body: any) {
 
   console.log("customer", customer);
 
-  const { timestamp, ...clickData } = clickEvent;
+  const { timestamp, ...clickDataWithoutTimestamp } = clickData;
   const leadEvent = {
-    ...clickData,
+    ...clickDataWithoutTimestamp,
     event_id: nanoid(16),
     event_name: "Register",
     customer_id: customer.id,
@@ -125,13 +111,13 @@ export async function saleCreated(body: any) {
     return `Invoice with ID ${invoiceId} already processed, skipping...`;
   }
 
-  const amount = body?.order?.totalPrice || 0;
+  const amount = body?.order?.totalPrice || 0;
   const currency = body?.pricePlan?.currency;
   const paymentProcessor = body?.customer?.paymentProcessor || "custom";
   const eventId = nanoid(16);
 
   const saleData = {
-    ...clickData,
+    ...clickDataWithoutTimestamp,
     event_id: eventId,
     event_name: "Purchase",
     payment_processor: paymentProcessor,
@@ -183,7 +169,7 @@ export async function saleCreated(body: any) {
 
   console.log("DEBUG saleData timestamp fields:", {
     clickedAt: customer.clickedAt,
-    createdAt: customer.createdAt
+    createdAt: customer.createdAt,
   });
 
   waitUntil(
@@ -193,8 +179,8 @@ export async function saleCreated(body: any) {
           trigger: "lead.created",
           workspace: updatedWorkspace,
           data: transformLeadEventData({
-            ...clickData, // does not contain timestamp
-            timestamp: clickEvent.timestamp,
+            ...clickDataWithoutTimestamp, // does not contain timestamp
+            timestamp: clickData.timestamp,
             eventName: "Register",
             link: linkUpdated,
             customer,
@@ -230,3 +216,32 @@ export async function saleCreated(body: any) {
 
   return `Systeme.io sale recorded for customer ${customer.id} on invoice ${invoiceId}`;
 }
+
+const getClickId = (body: any) => {
+  const sourceUrl = body?.customer?.sourceUrl;
+
+  let clickId: string | null = null;
+
+  try {
+    const url = new URL(sourceUrl);
+    clickId = url.searchParams.get("pimms_id");
+  } catch (_) {}
+
+  if (!clickId) {
+    throw new WebhookError("Missing pimms_id, skipping...", 200);
+  }
+
+  console.log("clickId", clickId);
+
+  return clickId;
+};
+
+const getCustomerName = (body: any) => {
+  return (
+    body?.customer?.fields?.full_name?.trim() ||
+    [body?.customer?.fields?.first_name, body?.customer?.fields?.last_name]
+      .filter(Boolean)
+      .join(" ")
+      .trim()
+  );
+};

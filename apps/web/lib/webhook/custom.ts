@@ -1,7 +1,7 @@
 import { getClickEvent, tb } from "@/lib/tinybird";
 import { prisma } from "@dub/prisma";
-import { Link } from "@prisma/client";
-import { parseWorkspaceId } from "./utils";
+import { Link, Project } from "@prisma/client";
+import { parseWorkspaceId, WebhookError } from "./utils";
 import z from "../zod";
 
 export function getFirstAvailableField(
@@ -26,7 +26,7 @@ export function getFirstAvailableField(
 
     for (const [fieldKey, value] of normalizedEntries) {
       const isMatch = matchPrefix
-        ? fieldKey.startsWith(normKey)
+        ? fieldKey.includes(normKey) // prefix or suffix
         : fieldKey === normKey;
 
       if (isMatch && value) return value;
@@ -36,7 +36,9 @@ export function getFirstAvailableField(
   return null;
 }
 
-export const getClickData = async (pimmsId: string) => {
+export const getClickData = async (pimmsId: string | null) => {
+  console.log("pimmsId", pimmsId);
+  
   if (!pimmsId) {
     throw new Error("Missing pimms_id, skipping...");
   }
@@ -111,4 +113,35 @@ export const computeAnonymousCustomerFields = async (clickData: any) => {
     totalClicks: number;
     lastClickAt: Date | null;
   };
+};
+
+export const findLink = async (linkId: string) => {
+  const link = await prisma.link.findUnique({ where: { id: linkId } });
+  
+  if (!link || !link.projectId) {
+    throw new WebhookError("Invalid link or project", 200);
+  }
+
+  return link;
+};
+
+export const getWorkspaceIdFromLink = async (link: Link) => {
+  if (!link || !link.projectId) {
+    throw new WebhookError("Invalid link or project", 200);
+  }
+
+  return link.projectId;
+};
+
+export const findWorkspace = async (workspaceId: string) => {
+  const workspace = await prisma.project.findUnique({
+    where: { id: workspaceId },
+    select: { id: true },
+  });
+
+  if (!workspace) {
+    return "Workspace not found, skipping...";
+  }
+
+  return workspace;
 };

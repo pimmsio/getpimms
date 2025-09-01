@@ -71,12 +71,12 @@ function OnboardingButtonInner({
       },
       {
         display: "Track a lead / conversion",
-        cta: `/${slug}/leads?event=leads`,
+        cta: `/${slug}/conversions`,
         checked: customersCount && customersCount > 0,
       },
       {
         display: "Track your first sale $",
-        cta: `/${slug}/sales?event=sales`,
+        cta: `/${slug}/conversions`,
         checked: salesUsage && salesUsage > 0,
       },
       {
