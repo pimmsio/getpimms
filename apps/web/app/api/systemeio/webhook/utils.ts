@@ -1,9 +1,9 @@
-import { getWorkspaceIdFromUrl, WebhookError } from "@/lib/webhook/utils";
+import { getUntrustedWorkspaceIdFromUrlNoFix, WebhookError } from "@/lib/webhook/utils";
 import crypto from "crypto";
 
 export const checkValidSignature = (req: Request, rawBody: string) => {
   // Do not parse the workspace_id to check the signature
-  const workspaceId = getWorkspaceIdFromUrl(req, false);
+  const untrustedWorkspaceId = getUntrustedWorkspaceIdFromUrlNoFix(req);
 
   const signature = req.headers.get("x-webhook-signature");
 
@@ -12,7 +12,7 @@ export const checkValidSignature = (req: Request, rawBody: string) => {
   }
 
   const expectedSignature = crypto
-    .createHmac("sha256", workspaceId)
+    .createHmac("sha256", untrustedWorkspaceId)
     .update(rawBody)
     .digest("hex");
 

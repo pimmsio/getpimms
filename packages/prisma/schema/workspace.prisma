@@ -62,6 +62,7 @@ model Project {
   integrations          Integration[] // Integrations workspace published
   installedIntegrations InstalledIntegration[] // Integrations workspace installed
   webhooks              Webhook[]
+  webhookErrors         WebhookError[]
   folders               Folder[]
   registeredDomains     RegisteredDomain[]
   dashboards            Dashboard[]

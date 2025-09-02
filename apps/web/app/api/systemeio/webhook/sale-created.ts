@@ -17,14 +17,15 @@ import {
   transformLeadEventData,
   transformSaleEventData,
 } from "@/lib/webhook/transform";
-import { WebhookError } from "@/lib/webhook/utils";
+import { getUntrustedWorkspaceIdFromUrl, WebhookError } from "@/lib/webhook/utils";
 import { prisma } from "@dub/prisma";
 import { nanoid } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
 
-export async function customSaleCreated(body: any) {
+export async function customSaleCreated(req: Request, body: any) {
+  const untrustedWorkspaceId = getUntrustedWorkspaceIdFromUrl(req);
   const externalId = body?.customer?.id?.toString();
-  const clickId = getClickId(body);
+  const clickId = await getClickId(body, untrustedWorkspaceId);
   const customerEmail = body?.customer?.email;
   const customerName = getCustomerName(body);
 
@@ -40,6 +41,7 @@ export async function customSaleCreated(body: any) {
 
   const linkId = clickData.link_id;
   const link = await findLink(linkId);
+  // Check that the workspace id is valid
   const workspaceId = await getWorkspaceIdFromLink(link);
 
   // Check if workspace exists
@@ -217,7 +219,7 @@ export async function customSaleCreated(body: any) {
   return `Systeme.io sale recorded for customer ${customer.id} on invoice ${invoiceId}`;
 }
 
-const getClickId = (body: any) => {
+const getClickId = async (body: any, untrustedWorkspaceId: string) => {
   const sourceUrl = body?.customer?.sourceUrl;
 
   let clickId: string | null = null;
@@ -228,6 +230,15 @@ const getClickId = (body: any) => {
   } catch (_) {}
 
   if (!clickId) {
+    await prisma.webhookError.create({
+      data: {
+        projectId: untrustedWorkspaceId,
+        url: sourceUrl,
+        failedReason: "Missing pimms_id",
+        hasPimmsId: false,
+      },
+    });
+    
     throw new WebhookError("Missing pimms_id, skipping...", 200);
   }
 

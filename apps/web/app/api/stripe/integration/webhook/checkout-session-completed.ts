@@ -50,6 +50,8 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
     - the lead event will then be passed to the remaining logic to record a sale
   */
   if (pimmsCustomerId) {
+    console.log("pimmsCustomerId", pimmsCustomerId);
+
     try {
       // Update customer with stripe customerId if exists
       customer = await prisma.customer.update({
@@ -84,6 +86,8 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
     */
   } else if (clientReferenceId?.startsWith("pimms_id_")) {
     const pimmsClickId = clientReferenceId.split("pimms_id_")[1];
+
+    console.log("pimmsClickId", pimmsClickId);
 
     clickEvent = await getClickEvent({ clickId: pimmsClickId }).then(
       (res) => res.data[0],
@@ -240,6 +244,8 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
       charge,
     }),
   };
+
+  console.log("saleData", saleData);
 
   const link = await prisma.link.findUnique({
     where: {

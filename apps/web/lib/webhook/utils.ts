@@ -1,4 +1,4 @@
-import { Webhook, WebhookReceiver } from "@dub/prisma/client";
+import { Link, Webhook, WebhookReceiver } from "@dub/prisma/client";
 import { LINK_LEVEL_WEBHOOK_TRIGGERS } from "./constants";
 
 export const WebhookError = class extends Error {
@@ -37,23 +37,41 @@ export const identifyWebhookReceiver = (url: string): WebhookReceiver => {
   return webhookReceivers[hostname] || "user";
 };
 
-export function parseWorkspaceId(input: string | null): string | null {
+export function fixSomeWorkspaceId(input: string | null): string | null {
   if (!input) return null;
-  return input.startsWith("ws_") ? input.slice(3) : input;
+  return input.startsWith("ws_cm") ? input.slice(3) : input;
 }
 
-export const getWorkspaceIdFromUrl = (req: Request, parse: boolean = true) => {
+export const getUntrustedWorkspaceIdFromUrl = (req: Request) => {
   const url = new URL(req.url);
-  const originalWorkspaceId = url.searchParams.get("workspace_id");
-  const workspaceId = parse ? parseWorkspaceId(url.searchParams.get("workspace_id")) : originalWorkspaceId;
 
-  console.log("workspaceId from url", workspaceId);
+  const workspaceId = fixSomeWorkspaceId(url.searchParams.get("workspace_id"));
 
   if (!workspaceId) {
     throw new WebhookError("Missing workspace_id", 400);
   }
 
   return workspaceId;
+};
+
+export const getUntrustedWorkspaceIdFromUrlNoFix = (req: Request) => {
+  const url = new URL(req.url);
+
+  const workspaceId = url.searchParams.get("workspace_id");
+
+  if (!workspaceId) {
+    throw new WebhookError("Missing workspace_id", 400);
+  }
+
+  return workspaceId;
+};
+
+export const getWorkspaceIdFromLink = (link: Link) => {
+  if (!link.projectId) {
+    throw new WebhookError("Missing projectId in link, skipping...", 200);
+  }
+
+  return link.projectId;
 };
 
 export const handleWebhookError = (error: any, prefix: string = "") => {

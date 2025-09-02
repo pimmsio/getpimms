@@ -5,8 +5,9 @@ import {
   isValidPimmsId,
 } from "@/lib/webhook/custom";
 import { customerCreated, getCustomerData } from "@/lib/webhook/customer-created";
-import { getWorkspaceIdFromUrl, handleWebhookError, WebhookError } from "@/lib/webhook/utils";
+import { getUntrustedWorkspaceIdFromUrl, getWorkspaceIdFromLink, handleWebhookError, WebhookError } from "@/lib/webhook/utils";
 import { withAxiom } from "next-axiom";
+import { prisma } from "@dub/prisma";
 
 const relevantEvents = new Set(["form_submission"]);
 
@@ -17,7 +18,7 @@ export const POST = withAxiom(async (req: Request) => {
   let response = "OK";
 
   try {
-    const workspaceId = getWorkspaceIdFromUrl(req);
+    const untrustedWorkspaceId = getUntrustedWorkspaceIdFromUrl(req);
 
     const body = JSON.parse(rawBody);
     const eventType = body.triggerType;
@@ -34,13 +35,21 @@ export const POST = withAxiom(async (req: Request) => {
 
         const pimmsId = getFirstAvailableField(data, ["pimms_id"]);
 
+        if (!pimmsId) {
+          await prisma.webhookError.create({
+            data: {
+              projectId: untrustedWorkspaceId,
+              failedReason: `Missing pimms_id in Webflow webhook, form id ${formPayload?.formId}`,
+              hasPimmsId: false,
+            },
+          });
+          
+          throw new Error("Missing pimms_id, skipping...");
+        }
+
         const clickData = await getClickData(pimmsId);
         const link = await getLink(clickData);
-
-        console.log("clickData", clickData.click_id);
-        console.log("link found", link.id, link.projectId);
-
-        const isValid = await isValidPimmsId(link, workspaceId);
+        const isValid = await isValidPimmsId(link, untrustedWorkspaceId);
 
         if (!isValid) {
           throw new Error("Invalid pimms_id, skipping...");

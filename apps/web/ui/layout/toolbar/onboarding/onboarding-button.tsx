@@ -2,12 +2,17 @@
 
 import useCustomersCount from "@/lib/swr/use-customers-count";
 import useDomainsCount from "@/lib/swr/use-domains-count";
-import useIntegrations from "@/lib/swr/use-integrations";
 import useUsers from "@/lib/swr/use-users";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { CheckCircleFill, ThreeDots } from "@/ui/shared/icons";
-import { Button, Popover, useLocalStorage, useMediaQuery } from "@dub/ui";
-import { CircleDotted, ExpandingArrow } from "@dub/ui/icons";
+import {
+  Button,
+  Popover,
+  Tooltip,
+  TooltipContent,
+  useLocalStorage,
+} from "@dub/ui";
+import { CircleDotted, CrownSmall, ExpandingArrow } from "@dub/ui/icons";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -29,13 +34,13 @@ function OnboardingButtonInner({
 }: {
   onHideForever: () => void;
 }) {
-  const { slug } = useParams() as { slug: string };  
+  const { slug } = useParams() as { slug: string };
 
   if (!slug) {
     return null;
   }
 
-  const { totalLinks, totalClicks, salesUsage } = useWorkspace({
+  const { totalLinks, totalClicks, salesUsage, plan } = useWorkspace({
     swrOpts: {
       dedupingInterval: 5 * 60 * 1000,
       revalidateOnFocus: false,
@@ -65,19 +70,23 @@ function OnboardingButtonInner({
         checked: totalLinks && totalLinks > 0,
       },
       {
-        display: "Track your first click",
+        display: "Collect a first Click",
         cta: `/${slug}/analytics`,
         checked: totalClicks && totalClicks > 0,
       },
       {
-        display: "Track a lead / conversion",
+        display: "Collect a first Lead",
         cta: `/${slug}/conversions`,
         checked: customersCount && customersCount > 0,
+        premium: "starter",
+        feature: "Conversion tracking",
       },
       {
-        display: "Track your first sale $",
+        display: "Collect a first Sale",
         cta: `/${slug}/conversions`,
         checked: salesUsage && salesUsage > 0,
+        premium: "pro",
+        feature: "Sales tracking",
       },
       {
         display: "Set up your custom domain",
@@ -90,7 +99,16 @@ function OnboardingButtonInner({
         checked: (users && users.length > 1) || (invites && invites.length > 0),
       },
     ];
-  }, [slug, domainsCount, totalLinks, totalClicks, customersCount, salesUsage, users, invites]);
+  }, [
+    slug,
+    domainsCount,
+    totalLinks,
+    totalClicks,
+    customersCount,
+    salesUsage,
+    users,
+    invites,
+  ]);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -127,7 +145,7 @@ function OnboardingButtonInner({
           </div>
           <div className="p-3">
             <div className="grid divide-y divide-neutral-100 rounded border border-neutral-100 bg-white">
-              {tasks.map(({ display, cta, checked }) => {
+              {tasks.map(({ display, cta, checked, premium, feature }) => {
                 return (
                   <Link
                     key={display}
@@ -141,7 +159,24 @@ function OnboardingButtonInner({
                         ) : (
                           <CircleDotted className="size-5 text-neutral-400" />
                         )}
-                        <p className="text-sm text-neutral-800">{display}</p>
+                        <p className="inline-flex items-center gap-2 text-sm text-neutral-800">
+                          {display}{" "}
+                          {plan === "free" && premium && (
+                            <Tooltip
+                              content={
+                                <TooltipContent
+                                  title={`${feature} is only available on ${premium} plans and above.`}
+                                  cta={`Upgrade to ${premium}`}
+                                  href={`/${slug}/upgrade`}
+                                />
+                              }
+                            >
+                              <div className="inline-block">
+                                <CrownSmall className="size-5 text-neutral-600 rounded-full border border-neutral-600" />
+                              </div>
+                            </Tooltip>
+                          )}
+                        </p>
                       </div>
                       <div className="mr-5">
                         <ExpandingArrow className="text-neutral-500" />
@@ -159,7 +194,7 @@ function OnboardingButtonInner({
     >
       <button
         type="button"
-        className="animate-slide-up-fade -mr-2 sm:mr-0 -mt-0.5 flex h-12 flex-col items-center justify-center rounded-full bg-[#3970ff] px-6 text-sm font-medium leading-tight text-white shadow-md transition-all [--offset:10px]"
+        className="animate-slide-up-fade -mr-2 -mt-0.5 flex h-12 flex-col items-center justify-center rounded-full bg-[#3970ff] px-6 text-sm font-medium leading-tight text-white shadow-md transition-all [--offset:10px] sm:mr-0"
       >
         <span>Getting Started</span>
         <span className="text-neutral-200">
@@ -177,7 +212,7 @@ const MiniButton = forwardRef(
         ref={ref}
         type="button"
         {...props}
-        className="rounded px-1 py-1 text-neutral-100 transition-colors bg-white/20 active:text-white"
+        className="rounded bg-white/20 px-1 py-1 text-neutral-100 transition-colors active:text-white"
       />
     );
   },

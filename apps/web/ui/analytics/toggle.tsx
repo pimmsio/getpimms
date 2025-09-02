@@ -67,6 +67,7 @@ import DeviceIcon from "./device-icon";
 import { ShareButton } from "./share-button";
 import { useAnalyticsFilterOption } from "./utils";
 import RefererIcon from "./referer-icon";
+import { WebhookErrorsWarning } from "../layout/sidebar/webhook-errors-warning";
 
 export default function Toggle({
   page = "analytics",
@@ -938,6 +939,7 @@ export default function Toggle({
                 })}
               >
                 {isMobile ? filterSelect : dateRangePicker}
+                <WebhookErrorsWarning />
                 {!dashboardProps && (
                   <div className="flex grow justify-end gap-2">
                     {page === "analytics" && !partnerPage && (

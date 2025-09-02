@@ -1,7 +1,7 @@
 import { getClickEvent, tb } from "@/lib/tinybird";
 import { prisma } from "@dub/prisma";
-import { Link, Project } from "@prisma/client";
-import { parseWorkspaceId, WebhookError } from "./utils";
+import { Link } from "@prisma/client";
+import { fixSomeWorkspaceId, WebhookError } from "./utils";
 import z from "../zod";
 
 export function getFirstAvailableField(
@@ -36,13 +36,7 @@ export function getFirstAvailableField(
   return null;
 }
 
-export const getClickData = async (pimmsId: string | null) => {
-  console.log("pimmsId", pimmsId);
-  
-  if (!pimmsId) {
-    throw new Error("Missing pimms_id, skipping...");
-  }
-
+export const getClickData = async (pimmsId: string) => {
   const clickEvent = await getClickEvent({ clickId: pimmsId });
   if (!clickEvent || clickEvent.data.length === 0) {
     throw new Error(`Click event with ID ${pimmsId} not found, skipping...`);
@@ -66,8 +60,8 @@ export const isValidPimmsId = async (link: Link, workspaceId: string) => {
     throw new Error("Missing link, skipping...");
   }
 
-  const parsedWorkspaceId = parseWorkspaceId(workspaceId);
-  const parsedProjectId = parseWorkspaceId(link.projectId);
+  const parsedWorkspaceId = fixSomeWorkspaceId(workspaceId);
+  const parsedProjectId = link.projectId;
 
   return parsedWorkspaceId === parsedProjectId;
 };

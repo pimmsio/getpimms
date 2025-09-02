@@ -14,7 +14,6 @@ import {
 } from "@dub/ui/icons";
 import {
   BarChart2,
-  CoinsIcon,
   Link,
   Settings,
   Settings2,
@@ -298,7 +297,9 @@ export function AppSidebarNav({
       switcher={<WorkspaceDropdown />}
       bottom={
         <>
-          <UserSurveyButton />
+          <div className="hidden md:block">
+            <UserSurveyButton />
+          </div>
           <HelpButton />
           <ReferralButton />
           <Usage />

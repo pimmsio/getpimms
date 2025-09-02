@@ -96,7 +96,7 @@ function UsageInner() {
             </div>
           </div>
 
-          <div className="mt-4 flex flex-col gap-4">
+          <div className="hidden md:flex mt-4 flex-col gap-4">
             <UsageRow
               icon={CursorRays}
               label="Clicks + leads"

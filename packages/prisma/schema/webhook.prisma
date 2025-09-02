@@ -39,3 +39,17 @@ model LinkWebhook {
   @@unique([linkId, webhookId])
   @@index(webhookId)
 }
+
+model WebhookError {
+  id             String   @id @default(cuid())
+  projectId      String
+  url            String?
+  failedReason   String?  @db.Text
+  hasPimmsId     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([hasPimmsId])
+}

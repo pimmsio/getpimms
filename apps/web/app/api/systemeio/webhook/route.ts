@@ -26,10 +26,10 @@ export const POST = withAxiom(async (req: Request) => {
 
     switch (eventType) {
       case "CONTACT_OPT_IN":
-        response = await customCustomerCreated(body);
+        response = await customCustomerCreated(req, body);
         break;
       case "SALE_NEW":
-        response = await customSaleCreated(body);
+        response = await customSaleCreated(req, body);
         break;
     }
   } catch (error: any) {
