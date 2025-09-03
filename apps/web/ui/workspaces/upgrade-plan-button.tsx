@@ -3,7 +3,7 @@
 import { getStripe } from "@/lib/stripe/client";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { Button, ButtonProps } from "@dub/ui";
-import { APP_DOMAIN, capitalize, SELF_SERVE_PAID_PLANS } from "@dub/utils";
+import { APP_DOMAIN, capitalize, cn, SELF_SERVE_PAID_PLANS } from "@dub/utils";
 import { usePlausible } from "next-plausible";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
@@ -12,6 +12,7 @@ import { useState } from "react";
 export function UpgradePlanButton({
   plan,
   period,
+  className,
   ...rest
 }: {
   plan: string;
@@ -45,7 +46,7 @@ export function UpgradePlanButton({
             ? `Get started with ${selectedPlan.name} ${capitalize(period)}`
             : `Switch to ${selectedPlan.name} ${capitalize(period)}`
       }
-      className="text-sm"
+      className={cn("text-sm rounded-2xl text-white bg-gradient-to-r from-[#2fcdfa] to-[#3970ff] hover:scale-105 transition-all duration-300", className)}
       loading={clicked}
       disabled={!workspaceSlug || isCurrentPlan}
       onClick={() => {

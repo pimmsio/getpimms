@@ -36,6 +36,11 @@ export default function RootLayout({
           })();
         `}
         </Script>
+
+        <Script
+          src="https://assets.calendly.com/assets/external/widget.js"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );

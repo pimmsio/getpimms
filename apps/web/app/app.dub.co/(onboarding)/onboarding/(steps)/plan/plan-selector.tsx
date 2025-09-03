@@ -2,11 +2,12 @@
 
 import { PlanFeatures } from "@/ui/workspaces/plan-features";
 import { UpgradePlanButton } from "@/ui/workspaces/upgrade-plan-button";
-import { Badge, ToggleGroup } from "@dub/ui";
+import { Badge } from "@dub/ui";
 import { cn, PRO_PLAN, STARTER_PLAN } from "@dub/utils";
 import NumberFlow from "@number-flow/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CSSProperties, useState } from "react";
+import { LaterButton } from "../../later-button";
 
 const plans = [STARTER_PLAN, PRO_PLAN /*, ADVANCED_PLAN*/];
 
@@ -15,7 +16,13 @@ export function PlanSelector() {
   const [mobilePlanIndex, setMobilePlanIndex] = useState(0);
 
   return (
-    <div>
+    <div className="flex flex-col gap-y-8">
+      <LaterButton
+        next="support"
+        className="font-bold underline-offset-4 hover:underline"
+      >
+        Skip this step, Start for free
+      </LaterButton>
       {/* <div className="flex justify-center">
         <ToggleGroup
           options={[
@@ -33,7 +40,7 @@ export function PlanSelector() {
           selectAction={(period) => setPeriod(period as "monthly" | "yearly")}
         />
       </div> */}
-      <div className="mt-5 overflow-hidden [container-type:inline-size]">
+      <div className="overflow-hidden [container-type:inline-size]">
         <div
           className={cn(
             "grid grid-cols-3 gap-x-4 lg:grid-cols-2",
@@ -93,7 +100,7 @@ export function PlanSelector() {
                 <UpgradePlanButton
                   plan={plan.name.toLowerCase()}
                   period={period}
-                  text="Get started"
+                  text="Unlock lifetime access"
                   className="h-10 rounded shadow-sm"
                 />
                 <button

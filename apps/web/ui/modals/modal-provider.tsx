@@ -98,18 +98,8 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
   const { setShowImportRebrandlyModal, ImportRebrandlyModal } =
     useImportRebrandlyModal();
   const { setShowImportCsvModal, ImportCsvModal } = useImportCsvModal();
-  const { setShowWelcomeModal, WelcomeModal } = useWelcomeModal();
-  const { setShowProgramWelcomeModal, ProgramWelcomeModal } =
-    useProgramWelcomeModal();
   const { setShowImportRewardfulModal, ImportRewardfulModal } =
     useImportRewardfulModal();
-
-  useEffect(() => {
-    setShowProgramWelcomeModal(searchParams.has("onboarded-program"));
-    setShowWelcomeModal(
-      searchParams.has("onboarded") || searchParams.has("upgraded"),
-    );
-  }, [searchParams]);
 
   const [hashes, setHashes] = useCookies<SimpleLinkProps[]>("hashes__pimms", [], {
     domain: !!process.env.NEXT_PUBLIC_VERCEL_URL ? ".pimms.io" : undefined,
@@ -205,8 +195,6 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
       <ImportRebrandlyModal />
       <ImportCsvModal />
       <ImportRewardfulModal />
-      <WelcomeModal />
-      <ProgramWelcomeModal />
       {children}
     </ModalContext.Provider>
   );

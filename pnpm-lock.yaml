@@ -118,6 +118,9 @@ importers:
       '@boxyhq/saml-jackson':
         specifier: 1.41.0
         version: 1.41.0
+      '@calcom/embed-react':
+        specifier: ^1.5.3
+        version: 1.5.3(react-dom@18.2.0)(react@18.2.0)
       '@chronark/zod-bird':
         specifier: ^0.3.9
         version: 0.3.9
@@ -3436,6 +3439,28 @@ packages:
       '@xmldom/is-dom-node': 1.0.1
       '@xmldom/xmldom': 0.8.10
       xpath: 0.0.33
+    dev: false
+
+  /@calcom/embed-core@1.5.3:
+    resolution: {integrity: sha512-GeId9gaByJ5EWiPmuvelZOvFWPOTWkcWZr5vGTCbIUTX125oE5yn0n8lDF1MJk5Xj1WO+/dk9jKIE08Ad9ytiQ==}
+    dev: false
+
+  /@calcom/embed-react@1.5.3(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-JCgge04pc8fhdvUmPNVLhW8/lCWK+AAziKecKWWPfv1nn2s+qKP2BwsEAnxhxK9yPOBgE1EIEgmYkrrNB1iajA==}
+    peerDependencies:
+      react: ^18.2.0 || ^19.0.0
+      react-dom: ^18.2.0 || ^19.0.0
+    dependencies:
+      '@calcom/embed-core': 1.5.3
+      '@calcom/embed-snippet': 1.3.3
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /@calcom/embed-snippet@1.3.3:
+    resolution: {integrity: sha512-pqqKaeLB8R6BvyegcpI9gAyY6Xyx1bKYfWvIGOvIbTpguWyM1BBBVcT9DCeGe8Zw7Ujp5K56ci7isRUrT2Uadg==}
+    dependencies:
+      '@calcom/embed-core': 1.5.3
     dev: false
 
   /@chronark/zod-bird@0.3.9:

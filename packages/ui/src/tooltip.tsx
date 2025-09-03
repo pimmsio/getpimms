@@ -108,6 +108,7 @@ export function TooltipContent({
             {...(target ? { target } : {})}
             className={cn(
               buttonVariants({ variant: "primary" }),
+              "bg-gradient-to-r from-[#2fcdfa] to-[#3970ff] hover:scale-105 transition-all duration-300",
               "flex h-9 w-full items-center justify-center whitespace-nowrap rounded border px-4 text-sm",
             )}
           >

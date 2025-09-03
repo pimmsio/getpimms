@@ -3,6 +3,7 @@
 import { useWebhookErrors } from "@/lib/swr/use-webhook-errors";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { UrlDecompositionTooltip } from "@/ui/shared/url-decomposition-tooltip";
+import { OnboardingSupportSection } from "@/ui/onboarding";
 import { Button, CrownSmall, Tooltip } from "@dub/ui";
 import { timeAgo } from "@dub/utils";
 import { Info, Settings, X } from "lucide-react";
@@ -140,44 +141,7 @@ export function WebhookErrorsModal({ onClose }: WebhookErrorsModalProps) {
               alt="Alexandre Sarfati"
               className="mt-0.5 h-10 w-10 rounded-full"
             />
-            <div className="flex flex-col space-y-3">
-              <div>
-                <p className="text-sm font-medium text-green-900">
-                  Contact us for onboarding support
-                </p>
-                <p className="text-sm text-green-800">
-                  Need help getting started? Alexandre Sarfati is here to help you make the most of Pimms.
-                </p>
-              </div>
-              <div className="flex gap-3">
-                <Link
-                  href="https://www.linkedin.com/in/alexandre-sarfati/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-fit"
-                >
-                  <Button
-                    variant="secondary"
-                    text="LinkedIn Profile"
-                    className="h-8 w-fit px-4 font-medium"
-                    type="button"
-                  />
-                </Link>
-                <Link
-                  href="https://pim.ms/dAXN6jl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-fit"
-                >
-                  <Button
-                    variant="secondary"
-                    text="Schedule Onboarding Call"
-                    className="h-8 w-fit px-4 font-medium"
-                    type="button"
-                  />
-                </Link>
-              </div>
-            </div>
+            <OnboardingSupportSection />
           </div>
         </div>
 

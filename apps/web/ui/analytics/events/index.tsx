@@ -1,11 +1,13 @@
 "use client";
 
 import useWorkspace from "@/lib/swr/use-workspace";
-import EmptyState from "@/ui/shared/empty-state";
+import { buttonVariants, EmptyState } from "@dub/ui";
+import { cn } from "@dub/utils";
+import { TargetIcon } from "lucide-react";
+import Link from "next/link";
 import AnalyticsProvider from "../analytics-provider";
 import Toggle from "../toggle";
 import EventsTable from "./events-table";
-import { TargetIcon } from "lucide-react";
 
 export default function AnalyticsEvents({
   staticDomain,
@@ -43,11 +45,32 @@ function EventsTableContainer() {
         <EmptyState
           icon={TargetIcon}
           title="Real-time Conversions tracking"
-          description="Want to see your conversions in realtime?"
-          learnMore="https://pimms.io/guides/how-to-track-conversions-on-vibe-coding-ai-no-code-sites"
-          buttonText="Upgrade to Starter"
-          buttonLink={`/${slug}/upgrade`}
-        />
+          description="Your free plan tracks clicks only. Upgrade to Starter to track conversions in realtime."
+        >
+          <div className="flex items-center gap-3">
+            <Link
+              href="https://pim.ms/dAXN6jl"
+              target="_blank"
+              className={cn(
+                buttonVariants({ variant: "secondary" }),
+                "font-bold transition-all duration-300 hover:scale-105",
+                "mt-4 flex h-9 items-center justify-center rounded border px-4 text-sm",
+              )}
+            >
+              Book a demo call
+            </Link>
+            <Link
+              href={`/${slug}/upgrade`}
+              className={cn(
+                buttonVariants(),
+                "bg-gradient-to-r from-[#2fcdfa] to-[#3970ff] transition-all duration-300 hover:scale-105",
+                "mt-4 flex h-9 items-center justify-center rounded border px-4 text-sm",
+              )}
+            >
+              Upgrade to Pro
+            </Link>
+          </div>
+        </EmptyState>
       }
     />
   );

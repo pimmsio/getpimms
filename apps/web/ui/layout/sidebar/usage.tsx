@@ -165,6 +165,7 @@ function UsageInner() {
               href={`/${slug}/upgrade`}
               className={cn(
                 buttonVariants(),
+                "bg-gradient-to-r from-[#2fcdfa] to-[#3970ff] hover:scale-105 transition-all duration-300",
                 "mt-4 flex h-9 items-center justify-center rounded border px-4 text-sm",
               )}
               onMouseEnter={() => {

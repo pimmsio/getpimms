@@ -91,7 +91,8 @@ export function Form() {
   }, [debouncedUrl]);
 
   return (
-    <>
+    <div className="flex flex-col gap-y-8">
+      <LaterButton next="plan" />
       <form
         className="flex w-full flex-col gap-y-6"
         onSubmit={handleSubmit(async (data) => {
@@ -197,7 +198,6 @@ export function Form() {
         />
       </form>
       {/* <LaterButton next="domain" className="mt-4" /> */}
-      <LaterButton next="plan" className="mt-4" />
-    </>
+    </div>
   );
 }

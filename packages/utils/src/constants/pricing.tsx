@@ -19,7 +19,7 @@ export const PLANS = [
     },
     limits: {
       links: 10,
-      clicks: 600,
+      clicks: 400,
       sales: 0,
       domains: 1,
       tags: 5,

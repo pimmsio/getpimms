@@ -155,6 +155,7 @@ function NavItem({ item }: { item: NavItemType | NavSubItemType }) {
 
   const Icon = "icon" in item ? item.icon : undefined;
   const items = "items" in item ? item.items : undefined;
+  const enabled = "enabled" in item ? item.enabled : true;
 
   const [hovered, setHovered] = useState(false);
 
@@ -166,6 +167,10 @@ function NavItem({ item }: { item: NavItemType | NavSubItemType }) {
       ? pathname === hrefWithoutQuery
       : pathname.startsWith(hrefWithoutQuery);
   }, [pathname, href, exact]);
+
+  if (!enabled) {
+    return null;
+  }
 
   return (
     <div>

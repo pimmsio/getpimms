@@ -34,6 +34,7 @@ import { ReferralButton } from "./referral-button";
 import { SidebarNav, SidebarNavAreas } from "./sidebar-nav";
 import { Usage } from "./usage";
 import { WorkspaceDropdown } from "./workspace-dropdown";
+import useWorkspace from "@/lib/swr/use-workspace";
 // import { ReferralButton } from "./referral-button";
 
 const NAV_AREAS: SidebarNavAreas<{
@@ -47,6 +48,7 @@ const NAV_AREAS: SidebarNavAreas<{
   programs?: { id: string }[];
   session?: Session | null;
   showNews?: boolean;
+  plan?: string;
 }> = {
   // Top-level
   default: ({
@@ -56,6 +58,7 @@ const NAV_AREAS: SidebarNavAreas<{
     buildAnalyticsUrl,
     programs,
     showNews,
+    plan,
   }) => ({
     showSwitcher: true,
     showNews,
@@ -88,6 +91,7 @@ const NAV_AREAS: SidebarNavAreas<{
             name: "Integrations",
             icon: ConnectedDots,
             href: `/${slug}/settings/integrations`,
+            enabled: plan !== "free",
           },
           {
             name: "Settings",
@@ -261,6 +265,7 @@ export function AppSidebarNav({
   newsContent?: ReactNode;
 }) {
   const { slug } = useParams() as { slug?: string };
+  const { plan } = useWorkspace();
   const pathname = usePathname();
   const { getQueryString } = useRouterStuff();
   const { data: session } = useSession();
@@ -291,15 +296,13 @@ export function AppSidebarNav({
         // programs,
         session: session || undefined,
         showNews: pathname.startsWith(`/${slug}/programs/`) ? false : true,
+        plan,
       }}
       toolContent={toolContent}
       newsContent={newsContent}
       switcher={<WorkspaceDropdown />}
       bottom={
         <>
-          <div className="hidden md:block">
-            <UserSurveyButton />
-          </div>
           <HelpButton />
           <ReferralButton />
           <Usage />

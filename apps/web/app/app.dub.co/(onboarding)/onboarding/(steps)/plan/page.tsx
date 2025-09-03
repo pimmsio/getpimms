@@ -1,4 +1,3 @@
-import { LaterButton } from "../../later-button";
 import { StepPage } from "../step-page";
 import { FreePlanButton } from "./free-plan-button";
 import { PlanSelector } from "./plan-selector";
@@ -21,28 +20,6 @@ export default function Plan() {
       className="max-w-2xl"
     >
       <PlanSelector />
-      <div className="mt-8 flex flex-col gap-3">
-        {/* <a
-          href="https://dub.co/enterprise"
-          target="_blank"
-          className="flex items-center text-gray-500 underline-offset-4 transition-colors hover:text-gray-800 hover:underline"
-        >
-          Looking for enterprise? ↗
-        </a> */}
-        <LaterButton
-          next="finish"
-          className="underline-offset-4 hover:underline font-bold"
-        >
-          Start for free, pick a plan later
-        </LaterButton>
-        {/* <a
-          href="https://pimms.io/pricing"
-          target="_blank"
-          className="flex items-center text-gray-500 underline-offset-4 transition-colors hover:text-gray-800 hover:underline"
-        >
-          Compare all plans ↗
-        </a> */}
-      </div>
     </StepPage>
   );
 }

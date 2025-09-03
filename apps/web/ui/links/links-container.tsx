@@ -5,8 +5,14 @@ import useLinks from "@/lib/swr/use-links";
 import useLinksCount from "@/lib/swr/use-links-count";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { ExpandedLinkProps, UserProps } from "@/lib/types";
-import { CardList, MaxWidthWrapper, useRouterStuff } from "@dub/ui";
+import {
+  buttonVariants,
+  CardList,
+  MaxWidthWrapper,
+  useRouterStuff,
+} from "@dub/ui";
 import { CursorRays, Hyperlink } from "@dub/ui/icons";
+import { cn } from "@dub/utils";
 import { useSearchParams } from "next/navigation";
 import {
   createContext,
@@ -21,6 +27,7 @@ import LinkCardPlaceholder from "./link-card-placeholder";
 import { LinkSelectionProvider } from "./link-selection-provider";
 import { LinksDisplayContext } from "./links-display-provider";
 import { LinksToolbar } from "./links-toolbar";
+import Link from "next/link";
 
 export type ResponseLink = ExpandedLinkProps & {
   user: UserProps;
@@ -57,7 +64,7 @@ export default function LinksContainer({
   });
 
   return (
-    <MaxWidthWrapper className="grid gap-y-2 px-0 lg:px-0 max-w-full">
+    <MaxWidthWrapper className="grid max-w-full gap-y-2 px-0 lg:px-0">
       <LinksList
         CreateLinkButton={CreateLinkButton}
         links={links}
@@ -141,15 +148,19 @@ function LinksList({
                 </div>
               </>
             }
-            // {...(!isFiltered && {
-            //   addButton: (
-            //     <div>
-            //       <CreateLinkButton />
-            //     </div>
-            //   ),
-            //   learnMoreHref: "https://dub.co/help/article/how-to-create-link",
-            //   learnMoreClassName: "h-10",
-            // })}
+            addButton={
+              <Link
+                href="https://pim.ms/dAXN6jl"
+                target="_blank"
+                className={cn(
+                  buttonVariants({ variant: "secondary" }),
+                  "font-bold transition-all duration-300 hover:scale-105",
+                  "mt-4 flex h-9 items-center justify-center rounded border px-4 text-sm",
+                )}
+              >
+                Book a demo call
+              </Link>
+            }
           />
         )}
 

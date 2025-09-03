@@ -1,7 +1,7 @@
 "use client";
 
 import { OnboardingStep } from "@/lib/onboarding/types";
-import { LoadingSpinner } from "@dub/ui/icons";
+import { ExpandingArrow, LoadingSpinner } from "@dub/ui/icons";
 import { cn } from "@dub/utils";
 import { PropsWithChildren } from "react";
 import { useOnboardingProgress } from "./use-onboarding-progress";
@@ -19,7 +19,7 @@ export function LaterButton({
       type="button"
       onClick={() => (next === "finish" ? finish() : continueTo(next))}
       className={cn(
-        "mx-auto flex w-fit items-center gap-2 text-center text-sm text-neutral-500 transition-colors enabled:hover:text-neutral-700",
+        "mx-auto flex w-fit items-center gap-2 text-center text-sm font-bold transition-colors enabled:hover:text-neutral-700",
         className,
       )}
       disabled={isLoading || isSuccessful}
@@ -30,8 +30,8 @@ export function LaterButton({
           !(isLoading || isSuccessful) && "opacity-0",
         )}
       />
-      {children || "I'll do this later"}
-      <div className="w-3" />
+      {children || "Skip this step, I'll do this later"}
+      <ExpandingArrow className="size-3" />{" "}
     </button>
   );
 }
