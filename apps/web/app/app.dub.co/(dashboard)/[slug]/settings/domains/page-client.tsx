@@ -12,10 +12,13 @@ import { useRegisterDomainModal } from "@/ui/modals/register-domain-modal";
 import { useRegisterDomainSuccessModal } from "@/ui/modals/register-domain-success-modal";
 import { AnimatedEmptyState } from "@/ui/shared/animated-empty-state";
 import EmptyState from "@/ui/shared/empty-state";
+import { SearchBoxPersisted } from "@/ui/shared/search-box";
 import {
+  Button,
   CursorRays,
   Globe,
   PaginationControls,
+  ToggleGroup,
   TooltipContent,
   usePagination,
   useRouterStuff,
@@ -108,8 +111,8 @@ export default function WorkspaceDomainsClient() {
               }
             /> */}
           </div>
-          {/* <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
-            <div className="w-full sm:w-auto">
+          <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
+            {/* <div className="w-full sm:w-auto">
               <SearchBoxPersisted
                 loading={loading}
                 onChangeDebounced={(t) => {
@@ -120,7 +123,7 @@ export default function WorkspaceDomainsClient() {
                   }
                 }}
               />
-            </div>
+            </div> */}
             <ToggleGroup
               options={[
                 { value: "active", label: "Active" },
@@ -134,61 +137,14 @@ export default function WorkspaceDomainsClient() {
               }
             />
 
-            <Popover
-              content={
-                <div className="grid w-screen gap-px p-2 sm:w-fit sm:min-w-[17rem]">
-                  <Button
-                    text="Connect a domain you own"
-                    variant="outline"
-                    icon={<Globe className="h-4 w-4" />}
-                    className="h-9 justify-start px-2 text-neutral-800"
-                    onClick={() => setShowAddEditDomainModal(true)}
-                  />
-                  <Button
-                    text={
-                      <div className="flex items-center gap-3">
-                        Claim free .link domain
-                        {plan === "free" ? (
-                          <Badge
-                            variant="neutral"
-                            className="flex items-center gap-1"
-                          >
-                            <Crown className="size-3" />
-                            <span className="uppercase">Pro</span>
-                          </Badge>
-                        ) : dotLinkClaimed ? (
-                          <span className="rounded border border-green-200 bg-green-500/10 px-1 py-0.5 text-xs text-green-900">
-                            Claimed
-                          </span>
-                        ) : null}
-                      </div>
-                    }
-                    variant="outline"
-                    icon={<LinkBroken className="size-4" />}
-                    className="h-9 justify-start px-2 text-neutral-800 disabled:border-none disabled:bg-transparent disabled:text-neutral-500"
-                    onClick={() => setShowRegisterDomainModal(true)}
-                    disabled={dotLinkClaimed}
-                  />
-                </div>
-              }
-              align="end"
-              openPopover={openPopover}
-              setOpenPopover={setOpenPopover}
-            >
-              <Button
-                variant="primary"
-                className="h-9 w-fit rounded"
-                text={
-                  <div className="flex items-center gap-2">
-                    Add domain{" "}
-                    <ChevronDown className="size-4 transition-transform duration-75 group-data-[state=open]:rotate-180" />
-                  </div>
-                }
-                onClick={() => setOpenPopover(!openPopover)}
-                disabledTooltip={disabledTooltip}
-              />
-            </Popover>
-          </div> */}
+            <Button
+              variant="primary"
+              className="h-9 w-fit rounded"
+              text={<div className="flex items-center gap-2">Add domain</div>}
+              onClick={() => setShowAddEditDomainModal(true)}
+              disabledTooltip={disabledTooltip}
+            />
+          </div>
         </div>
 
         {workspaceId && (
@@ -225,7 +181,7 @@ export default function WorkspaceDomainsClient() {
             ) : (
               <AnimatedEmptyState
                 title="No domains found"
-                description="Use custom domains for better to share branded deeplinks"
+                description="Tips: Use custom domains to increase the deliverability of your links for emailing."
                 cardContent={
                   <>
                     <Globe className="size-4 text-neutral-700" />
