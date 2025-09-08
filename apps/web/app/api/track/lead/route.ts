@@ -46,10 +46,19 @@ export const POST = withWorkspace(
       mode = "async", // Default to async mode if not specified
     } = trackLeadRequestSchema.parse(body);
 
+    console.log("workspace.id", workspace.id);
+    console.log("mode", mode);
+    console.log("body.clickId", clickId);
+
     const stringifiedEventName = eventName.toLowerCase().replace(" ", "-");
     const customerExternalId = externalId || customerId;
     const finalCustomerName =
       customerName || customerEmail || generateRandomName();
+
+    console.log("customerExternalId", customerExternalId);
+    console.log("finalCustomerName", finalCustomerName);
+    console.log("customerEmail", customerEmail);
+    console.log("stringifiedEventName", stringifiedEventName);
 
     if (!customerExternalId) {
       throw new DubApiError({
@@ -77,6 +86,8 @@ export const POST = withWorkspace(
       },
     );
 
+    console.log("deduplicated lead event", ok);
+
     if (ok) {
       // Find click event
       let clickData: ClickData | null = null;
@@ -85,6 +96,8 @@ export const POST = withWorkspace(
       if (clickEvent && clickEvent.data && clickEvent.data.length > 0) {
         clickData = clickEvent.data[0];
       }
+
+      console.log("clickData", clickData);
 
       if (!clickData) {
         const cachedClickData = await redis.get<ClickData>(
@@ -104,7 +117,8 @@ export const POST = withWorkspace(
       }
 
       if (!clickData) {
-        if (userAgent.includes("zapier")) {
+        console.log("clickData not found, checking cache");
+        if (userAgent.includes("zapier") || userAgent.includes("make")) {
           return NextResponse.json(
             {
               success: false,
@@ -125,6 +139,9 @@ export const POST = withWorkspace(
       // Prefetch anonymous fields using shared util
       const { anonymousId, totalClicks } =
         await computeAnonymousCustomerFields(clickData);
+
+      console.log("anonymousId", anonymousId);
+      console.log("totalClicks", totalClicks);
 
       // Create a function to handle customer upsert to avoid duplication
       const upsertCustomer = async () => {
@@ -182,10 +199,14 @@ export const POST = withWorkspace(
         // Execute customer creation synchronously
         customer = await upsertCustomer();
 
+        console.log("customer upserted", customer);
+
         const leadEventPayload = createLeadEventPayload(customer.id);
         const cacheLeadEventPayload = Array.isArray(leadEventPayload)
           ? leadEventPayload[0]
           : leadEventPayload;
+
+        console.log("leadEventPayload", leadEventPayload);
 
         await Promise.all([
           // Use recordLeadSync which waits for the operation to complete
@@ -212,8 +233,13 @@ export const POST = withWorkspace(
           if (mode === "async") {
             customer = await upsertCustomer();
 
+            console.log("customer upserted", customer);
+
+            const leadEventPayload = createLeadEventPayload(customer.id);
+            console.log("leadEventPayload", leadEventPayload);
+
             // Use recordLead which doesn't wait
-            await recordLead(createLeadEventPayload(customer.id));
+            await recordLead(leadEventPayload);
           }
 
           // Always process link/project updates, partner rewards, and webhooks in the background
@@ -265,13 +291,13 @@ export const POST = withWorkspace(
 
           // update customer hot score
           if (customer) {
+            const hotScore = await computeCustomerHotScore(customer.id, workspaceId);
+            console.log("update customer hot score", hotScore);
+
             await prisma.customer.update({
               where: { id: customer.id },
               data: {
-                hotScore: await computeCustomerHotScore(
-                  customer.id,
-                  workspaceId,
-                ),
+                hotScore,
                 lastHotScoreAt: new Date(),
               },
             });
@@ -302,6 +328,8 @@ export const POST = withWorkspace(
         externalId: customerExternalId,
       },
     });
+
+    console.log("new lead", lead);
 
     return NextResponse.json({
       ...lead,

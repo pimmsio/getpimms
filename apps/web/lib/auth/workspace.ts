@@ -85,6 +85,8 @@ export const withWorkspace = (
           apiKey = authorizationHeader.replace("Bearer ", "");
         }
 
+        console.log("apiKey", apiKey);
+
         let session: Session | undefined;
         let workspaceId: string | undefined;
         let workspaceSlug: string | undefined;
@@ -97,6 +99,8 @@ export const withWorkspace = (
           searchParams.workspaceId ||
           params?.slug ||
           searchParams.projectSlug;
+
+        console.log("idOrSlug", idOrSlug);
 
         /*
           if there's no workspace ID or slug and it's not a restricted token:
@@ -143,6 +147,10 @@ export const withWorkspace = (
 
         if (apiKey) {
           const hashedKey = await hashToken(apiKey);
+
+          console.log("hashedKey", hashedKey);
+          console.log("isRestrictedToken", isRestrictedToken);
+
           const prismaArgs = {
             where: {
               hashedKey,

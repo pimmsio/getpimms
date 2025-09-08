@@ -19,6 +19,7 @@ SCHEMA >
     `os` LowCardinality(String),
     `engine` LowCardinality(String),
     `ua` String,
+    `identity_hash` String,
     `referer` String,
     `referer_url` String,
     `qr` UInt8,

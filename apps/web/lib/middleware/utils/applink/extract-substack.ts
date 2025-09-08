@@ -12,6 +12,11 @@ export const getSubstackAndroidPath = (url: string): string | null => {
       return path || null;
     }
 
+    // Exclude /subscribe URLs
+    if (parsed.pathname.includes("/subscribe")) {
+      return null;
+    }
+
     // Case 2: username.substack.com → rewrite
     const subdomainMatch = hostname.match(/^([a-z0-9-]+)\.substack\.com$/i);
     if (subdomainMatch) {
@@ -29,7 +34,7 @@ export const getSubstackAndroidPath = (url: string): string | null => {
 };
 
 export function normalizeSubstack(url: string): string {
-  // 1. 99 % des cas : l’URL ne contient même pas ".substack.com"
+  // 1. 99 % des cas : l'URL ne contient même pas ".substack.com"
   //    → on la renvoie instantanément (0 allocation, 0 try/catch).
   if (url.indexOf(".substack.com") === -1) return url;
 
@@ -40,6 +45,10 @@ export function normalizeSubstack(url: string): string {
     // 2.a Déjà au bon domaine.
     if (u.hostname === "open.substack.com") return url;
 
+    // Exclude /subscribe URLs
+    if (u.pathname.includes("/subscribe")) {
+      return url;
+    }
     console.log("url is a substack", url);
 
     // 2.b username.substack.com

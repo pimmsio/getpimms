@@ -29,7 +29,11 @@ export const POST = withWorkspace(
   async ({ req, workspace }) => {
     const userAgent = req.headers.get("user-agent")?.toLowerCase() || "";
 
+    console.log("workspace.id", workspace.id);
+
     const body = await parseRequestBody(req);
+
+    console.log("body", body);
 
     let {
       externalId,
@@ -61,6 +65,8 @@ export const POST = withWorkspace(
 
     const customerExternalId = customerId || externalId;
 
+    console.log("customerExternalId", customerExternalId);
+
     if (!customerExternalId) {
       throw new DubApiError({
         code: "bad_request",
@@ -77,6 +83,8 @@ export const POST = withWorkspace(
         },
       },
     });
+
+    console.log("customer", customer);
 
     if (!customer) {
       waitUntil(
@@ -95,11 +103,15 @@ export const POST = withWorkspace(
       });
     }
 
+    console.log("leadEventName", leadEventName);
+
     // Find lead event
     const leadEvent = await getLeadEvent({
       customerId: customer.id,
       eventName: leadEventName,
     });
+
+    console.log("leadEvent", leadEvent);
 
     let leadEventData: LeadEvent | null = null;
 
@@ -113,7 +125,8 @@ export const POST = withWorkspace(
       );
 
       if (!cachedLeadEvent) {
-        if (userAgent.includes("zapier")) {
+        console.log("cachedLeadEvent not found, checking cache");
+        if (userAgent.includes("zapier") || userAgent.includes("make")) {
           return NextResponse.json(
             {
               success: false,
@@ -134,9 +147,13 @@ export const POST = withWorkspace(
       leadEventData = leadEvent.data[0];
     }
 
+    console.log("leadEventData", leadEventData);
+
     const clickData = clickEventSchemaTB
       .omit({ timestamp: true })
       .parse(leadEventData);
+
+    console.log("clickData", clickData);
 
     // if currency is not USD, convert it to USD  based on the current FX rate
     // TODO: allow custom "defaultCurrency" on workspace table in the future
@@ -147,6 +164,9 @@ export const POST = withWorkspace(
       currency = convertedCurrency;
       amount = convertedAmount;
     }
+
+    console.log("currency", currency);
+    console.log("amount", amount);
 
     const eventId = nanoid(16);
 
@@ -161,6 +181,8 @@ export const POST = withWorkspace(
       invoice_id: invoiceId || "",
       metadata: metadata ? JSON.stringify(metadata) : "",
     };
+
+    console.log("saleData", saleData);
 
     waitUntil(
       (async () => {
@@ -262,6 +284,8 @@ export const POST = withWorkspace(
         metadata,
       },
     });
+
+    console.log("new sale response", sale);
 
     return NextResponse.json({
       ...sale,

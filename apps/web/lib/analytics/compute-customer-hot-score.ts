@@ -18,6 +18,8 @@ export async function computeCustomerHotScore(
       return 0;
     }
 
+    console.log("[compute hot score] customer found", customer.anonymousId);
+
     // Get events for this customer
     const events = await getCustomerEvents(
       { customerId },
@@ -30,13 +32,19 @@ export async function computeCustomerHotScore(
       },
     );
 
+    console.log("[compute hot score] events found", events.length);
+
     // Get clicks for this customer's anonymousId
     const clicks = customer.anonymousId
       ? await getAnonymousUserClicks(customer.anonymousId, 100, workspaceId)
       : [];
 
+    console.log("[compute hot score] clicks found", clicks.length);
+
     // Compute the lead score
     const score = computeLeadScore({ clicks, events });
+
+    console.log("[compute hot score] score", score);
 
     return Math.round(score);
   } catch (error) {
