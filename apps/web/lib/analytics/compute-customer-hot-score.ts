@@ -1,4 +1,3 @@
-import { getAnonymousUserClicks } from "@/lib/analytics/get-user-clicks";
 import { getCustomerEvents } from "@/lib/analytics/get-customer-events";
 import { computeLeadScore } from "@/lib/analytics/lead-scoring";
 import { prisma } from "@dub/prisma";
@@ -11,18 +10,22 @@ export async function computeCustomerHotScore(
     // Get customer data
     const customer = await prisma.customer.findUnique({
       where: { id: customerId },
-      select: { anonymousId: true },
+      select: { anonymousId: true, clickId: true },
     });
 
     if (!customer) {
       return 0;
     }
 
-    console.log("[compute hot score] customer found", customer.anonymousId);
+    console.log("[compute hot score] customer found", {
+      customerId,
+      anonymousId: customer.anonymousId,
+      clickId: customer.clickId
+    });
 
-    // Get events for this customer
-    const events = await getCustomerEvents(
-      { customerId },
+    // Get all events for this customer (includes clicks, leads, and sales)
+    const allEvents = await getCustomerEvents(
+      { customerId, clickId: customer.clickId },
       {
         sortOrder: "desc",
         start: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000), // Last 90 days
@@ -32,19 +35,39 @@ export async function computeCustomerHotScore(
       },
     );
 
-    console.log("[compute hot score] events found", events.length);
+    console.log("[compute hot score] all events found", allEvents.length);
+    console.log("[compute hot score] event breakdown:", {
+      clicks: allEvents.filter(e => e.event === "click").length,
+      leads: allEvents.filter(e => e.event === "lead").length,
+      sales: allEvents.filter(e => e.event === "sale").length,
+      other: allEvents.filter(e => !["click", "lead", "sale"].includes(e.event)).length
+    });
 
-    // Get clicks for this customer's anonymousId
-    const clicks = customer.anonymousId
-      ? await getAnonymousUserClicks(customer.anonymousId, 100, workspaceId)
-      : [];
+    // Log sample events for debugging
+    if (allEvents.length > 0) {
+      console.log("[compute hot score] sample events:", allEvents.slice(0, 3).map(e => ({
+        event: e.event,
+        timestamp: e.timestamp,
+        clickId: e.click?.id,
+        eventName: e.eventName
+      })));
+    }
 
-    console.log("[compute hot score] clicks found", clicks.length);
+    // Separate clicks from conversion events
+    const clicks = allEvents.filter(event => event.event === "click");
+    const conversionEvents = allEvents.filter(event => event.event === "lead" || event.event === "sale");
 
-    // Compute the lead score
-    const score = computeLeadScore({ clicks, events });
+    console.log("[compute hot score] separated data:", {
+      clicks: clicks.length,
+      conversionEvents: conversionEvents.length,
+      clickTimestamps: clicks.map(c => c.timestamp),
+      conversionTimestamps: conversionEvents.map(e => e.timestamp)
+    });
 
-    console.log("[compute hot score] score", score);
+    // Compute the lead score using separated data
+    const score = computeLeadScore({ clicks, events: conversionEvents });
+
+    console.log("[compute hot score] final score", score);
 
     return Math.round(score);
   } catch (error) {
