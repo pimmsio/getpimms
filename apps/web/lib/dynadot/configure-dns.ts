@@ -15,7 +15,7 @@ export const configureDNS = async ({ domain }: { domain: string }) => {
     domain: domain,
     command: "set_dns2",
     main_record_type0: "a",
-    main_record0: "76.76.21.21",
+    main_record0: "216.150.1.1",
   });
 
   const response = await fetch(

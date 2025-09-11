@@ -73,9 +73,24 @@ const ONE_HOUR_MS = 60 * 60 * 1000;
 
 function getDecayFactor(timestamp: number, config: ScoringConfig): number {
   const ageDays = (Date.now() - timestamp) / MS_PER_DAY;
-  if (ageDays <= config.decayConfig.noDecayDays) return 1;
+  if (ageDays <= config.decayConfig.noDecayDays) {
+    console.log("[lead scoring] decay factor:", {
+      timestamp: new Date(timestamp).toISOString(),
+      ageDays: Math.round(ageDays * 100) / 100,
+      decayFactor: 1,
+      reason: "within no-decay period"
+    });
+    return 1;
+  }
   const decayFactor = 1 + (ageDays - config.decayConfig.noDecayDays) / config.decayConfig.decayRate;
-  return Math.min(decayFactor, config.decayConfig.maxDecayFactor);
+  const finalDecayFactor = Math.min(decayFactor, config.decayConfig.maxDecayFactor);
+  console.log("[lead scoring] decay factor:", {
+    timestamp: new Date(timestamp).toISOString(),
+    ageDays: Math.round(ageDays * 100) / 100,
+    decayFactor: Math.round(finalDecayFactor * 100) / 100,
+    reason: "decay applied"
+  });
+  return finalDecayFactor;
 }
 
 function getTier(score: number): 0 | 1 | 2 | 3 {
@@ -117,6 +132,12 @@ function computeLeadScoreInternal({
     proximityScore: number;
   };
 } {
+  console.log("[lead scoring] starting calculation with:", {
+    clicksCount: clicks.length,
+    eventsCount: events.length,
+    config: config
+  });
+
   // Ultra-fast preprocessing: single pass through all data
   const clickTimestamps: number[] = [];
   const eventData: { timestamp: number; type: "lead" | "sale" }[] = [];
@@ -129,6 +150,11 @@ function computeLeadScoreInternal({
     activeDays.add(getDayKey(timestamp));
   }
   
+  console.log("[lead scoring] processed clicks:", {
+    clickTimestamps: clickTimestamps.map(ts => new Date(ts).toISOString()),
+    activeDaysFromClicks: Array.from(activeDays)
+  });
+  
   // Process events and mark active days in one pass
   for (const event of events) {
     const timestamp = getEventTimestamp(event);
@@ -139,14 +165,31 @@ function computeLeadScoreInternal({
     }
   }
   
+  console.log("[lead scoring] processed events:", {
+    eventData: eventData.map(e => ({ type: e.type, timestamp: new Date(e.timestamp).toISOString() })),
+    activeDaysFromEvents: Array.from(activeDays)
+  });
+  
   // Sort click timestamps once
   clickTimestamps.sort((a, b) => a - b);
+  
+  console.log("[lead scoring] final active days:", Array.from(activeDays));
 
   // 1. CLICK ENGAGEMENT SCORING: 6 points per click
   let clickScore = 0;
   for (const timestamp of clickTimestamps) {
-    clickScore += config.clickWeights.clickPerUnit / getDecayFactor(timestamp, config);
+    const decayFactor = getDecayFactor(timestamp, config);
+    const points = config.clickWeights.clickPerUnit / decayFactor;
+    clickScore += points;
+    console.log("[lead scoring] click engagement:", {
+      timestamp: new Date(timestamp).toISOString(),
+      decayFactor,
+      points,
+      runningTotal: clickScore
+    });
   }
+
+  console.log("[lead scoring] click engagement total:", clickScore);
 
   // 2. VELOCITY BURST SCORING: +2 points per click within 1 hour of another
   let velocityScore = 0;
@@ -157,33 +200,76 @@ function computeLeadScoreInternal({
     for (let j = i + 1; j < clickTimestamps.length; j++) {
       if (clickTimestamps[j] - currentTime > ONE_HOUR_MS) break; // Early exit
       if (clickTimestamps[j] - currentTime <= ONE_HOUR_MS) {
-        velocityScore += config.clickWeights.velocityBonusPerClick / getDecayFactor(currentTime, config);
+        const decayFactor = getDecayFactor(currentTime, config);
+        const points = config.clickWeights.velocityBonusPerClick / decayFactor;
+        velocityScore += points;
+        console.log("[lead scoring] velocity burst:", {
+          currentTime: new Date(currentTime).toISOString(),
+          nextTime: new Date(clickTimestamps[j]).toISOString(),
+          timeDiff: clickTimestamps[j] - currentTime,
+          decayFactor,
+          points,
+          runningTotal: velocityScore
+        });
         break; // Found one, that's enough
       }
     }
   }
 
+  console.log("[lead scoring] velocity burst total:", velocityScore);
+
   // 3. ACTIVITY STREAK SCORING: 5 points per active day
   let streakScore = 0;
   for (const dayKey of activeDays) {
     const dayTimestamp = new Date(`${dayKey}T00:00:00Z`).getTime();
-    streakScore += config.streakWeights.pointsPerActiveDay / getDecayFactor(dayTimestamp, config);
+    const decayFactor = getDecayFactor(dayTimestamp, config);
+    const points = config.streakWeights.pointsPerActiveDay / decayFactor;
+    streakScore += points;
+    console.log("[lead scoring] activity streak:", {
+      dayKey,
+      decayFactor,
+      points,
+      runningTotal: streakScore
+    });
   }
+
+  console.log("[lead scoring] activity streak total:", streakScore);
 
   // 4. CONVERSION EVENT SCORING: 12 points each for leads and sales
   let conversionScore = 0;
   for (const { timestamp, type } of eventData) {
     const decayFactor = getDecayFactor(timestamp, config);
+    let points = 0;
     if (type === "lead") {
-      conversionScore += config.conversionWeights.lead / decayFactor;
+      points = config.conversionWeights.lead / decayFactor;
     } else if (type === "sale") {
-      conversionScore += config.conversionWeights.sale / decayFactor;
+      points = config.conversionWeights.sale / decayFactor;
     }
+    conversionScore += points;
+    console.log("[lead scoring] conversion event:", {
+      type,
+      timestamp: new Date(timestamp).toISOString(),
+      decayFactor,
+      points,
+      runningTotal: conversionScore
+    });
   }
+
+  console.log("[lead scoring] conversion events total:", conversionScore);
 
   // Calculate final score
   const totalScore = clickScore + velocityScore + streakScore + conversionScore;
   const normalizedScore = Math.max(0, Math.min(100, Math.round(totalScore)));
+
+  console.log("[lead scoring] FINAL CALCULATION:", {
+    clickScore: Math.round(clickScore),
+    velocityScore: Math.round(velocityScore),
+    streakScore: Math.round(streakScore),
+    conversionScore: Math.round(conversionScore),
+    totalScore: Math.round(totalScore),
+    normalizedScore,
+    tier: getTier(normalizedScore)
+  });
 
   return {
     score: normalizedScore,

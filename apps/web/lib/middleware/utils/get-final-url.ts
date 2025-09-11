@@ -25,7 +25,11 @@ export const getFinalUrl = (
        - our Stripe integration will then detect `pimms_id_${clickId}` as the dubClickId in the `checkout.session.completed` webhook
        - @see: https://github.com/dubinc/dub/blob/main/apps/web/app/api/stripe/integration/webhook/checkout-session-completed.ts
     */
-    if (urlObj.searchParams.get("pimms_client_reference_id") === "1") {
+    if (
+      urlObj.searchParams.get("pimms_client_reference_id") === "1" ||
+      /^buy\.stripe\.com$/.test(urlObj.hostname)
+    ) {
+      // For Stripe payment links, set client_reference_id automatically
       urlObj.searchParams.set("client_reference_id", `pimms_id_${clickId}`);
       urlObj.searchParams.delete("pimms_client_reference_id");
 

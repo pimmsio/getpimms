@@ -70,7 +70,7 @@ export default function DomainConfiguration({
             {
               type: recordType,
               name: recordType === "A" ? "@" : subdomain ?? "www",
-              value: recordType === "A" ? `76.76.21.21` : `cname.vercel-dns.com.`,
+              value: recordType === "A" ? `216.150.1.1` : `40da8979042d9175.vercel-dns-016.com`,
               ttl: "86400",
             },
           ]}
@@ -113,7 +113,7 @@ export default function DomainConfiguration({
           {
             type: recordType,
             name: recordType === "A" ? "@" : subdomain ?? "www",
-            value: recordType === "A" ? `76.76.21.21` : `cname.vercel-dns.com.`,
+            value: recordType === "A" ? `216.150.1.1` : `40da8979042d9175.vercel-dns-016.com`,
             ttl: "86400",
           },
         ]}
