@@ -103,7 +103,7 @@ export function CombinedAreasAndBars() {
             >
               {/* Line gradient for area fill */}
               <LinearGradient
-                className={cn(s.colorClassName ?? "text-blue-500")}
+                className={cn(s.colorClassName ?? "text-data-clicks")}
                 id={`${s.id}-area-gradient`}
                 fromOffset="0%"
                 from="currentColor"
@@ -145,7 +145,7 @@ export function CombinedAreasAndBars() {
                   <motion.path
                     initial={{ d: path(zeroedData) || "" }}
                     animate={{ d: path(data) || "" }}
-                    className={cn(s.colorClassName ?? "text-blue-500")}
+                    className={cn(s.colorClassName ?? "text-data-clicks")}
                     stroke="currentColor"
                     strokeOpacity={1}
                     strokeWidth={3}
@@ -162,7 +162,7 @@ export function CombinedAreasAndBars() {
                   cx={xScale(data.at(-1)!.date) ?? 0}
                   cy={yScale(s.valueAccessor(data.at(-1)!))}
                   r={4}
-                  className={cn(s.colorClassName ?? "text-blue-500")}
+                  className={cn(s.colorClassName ?? "text-data-clicks")}
                   fill="currentColor"
                 />
               )}

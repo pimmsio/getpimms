@@ -165,7 +165,7 @@ export function MixedLineItem({
     `hover:shadow-[0_2px_8px_rgba(59,130,246,0.08)] hover:translate-x-0.5`,
     `active:translate-x-0 active:transition-none`,
     isModalView ? "group" : "",
-    "rounded-r-xl"
+    "rounded-r-full"
   );
 
   const handleMobileClick = (e: React.MouseEvent) => {
@@ -312,7 +312,7 @@ export function MixedLineItem({
           initial={{ width: 0 }}
           animate={{ width: `${clicksWidth}%` }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className={`h-3/4 ${leads === 0 && saleAmount === 0 ? 'rounded' : 'rounded-l-md'} bg-[#D6E2FF] relative overflow-hidden`}
+          className={`h-3/4 ${leads === 0 && saleAmount === 0 ? 'rounded' : 'rounded-l-full'} bg-brand-primary-light relative overflow-hidden`}
           style={{
             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
           }}
@@ -326,7 +326,7 @@ export function MixedLineItem({
             initial={{ width: 0 }}
             animate={{ width: `${leadsWidth}%` }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-            className={`h-3/4 ${saleAmount === 0 ? 'rounded-r-md' : ''} bg-[#FFD399] relative overflow-hidden`}
+            className={`h-3/4 ${saleAmount === 0 ? 'rounded-r-full' : ''} bg-data-leads relative overflow-hidden`}
             style={{
               boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
             }}
@@ -341,7 +341,7 @@ export function MixedLineItem({
             initial={{ width: 0 }}
             animate={{ width: `${salesWidth}%` }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-            className="h-3/4 rounded-r-md bg-[#00F5B8] relative overflow-hidden"
+            className="h-3/4 rounded-r-full bg-data-sales relative overflow-hidden"
             style={{
               boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
             }}

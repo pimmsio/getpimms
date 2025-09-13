@@ -139,11 +139,11 @@ export function LinkAnalyticsBadge({
     <Link
       href={`/${slug}/analytics?domain=${domain}&key=${key}${url ? `&url=${url}` : ""}&interval=${plan === "free" ? "30d" : plan === "pro" ? "1y" : "all"}`}
       className={cn(
-        "block overflow-hidden rounded border border-neutral-200 bg-neutral-50 p-0.5 text-sm text-neutral-600 transition-colors",
+        "block overflow-hidden rounded-full border border-neutral-200 bg-neutral-50 p-0.5 text-sm text-neutral-600 transition-colors",
         variant === "loose" ? "hover:bg-neutral-100" : "hover:bg-white",
       )}
     >
-      <div className="flex w-full flex-col items-center gap-0.5 sm:px-1">
+      <div className="flex w-full flex-col sm:flex-row items-center gap-0.5 px-1">
         <div className="flex w-full flex-row items-center justify-center gap-1">
           {stats
             .filter(({ id }) => id === "clicks")

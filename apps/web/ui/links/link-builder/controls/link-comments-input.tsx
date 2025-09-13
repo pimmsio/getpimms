@@ -32,7 +32,7 @@ export const LinkCommentsInput = memo(() => {
             id="comments"
             name="comments"
             minRows={1}
-            className="mt-2 block w-full rounded border border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
+            className="mt-2 block w-full rounded-3xl border border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
             placeholder="Add comments"
             value={field.value ?? ""}
             onChange={(e) => field.onChange(e.target.value)}

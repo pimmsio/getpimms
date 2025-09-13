@@ -8,14 +8,14 @@ export const buttonVariants = cva("transition-all", {
   variants: {
     variant: {
       primary:
-        "bg-[#3971ff] border-none text-white font-semibold text-md transition duration-500",
+        "bg-brand-primary border-none text-white font-semibold text-md transition duration-500 hover:bg-brand-primary-hover",
       secondary: cn(
         "border-neutral-200 bg-white text-neutral-900 hover:bg-neutral-50 focus-visible:border-neutral-500 outline-none",
         "data-[state=open]:border-neutral-500 data-[state=open]:ring-0",
       ),
       outline: "border-transparent text-neutral-600 hover:bg-neutral-100",
       success:
-        "border-blue-500 bg-[#3971ff] text-white hover:bg-blue-600 hover:ring-0",
+        "border-brand-primary bg-brand-primary text-white hover:bg-brand-primary-hover hover:ring-0",
       danger:
         "border-red-500 bg-red-500 text-white hover:bg-red-600 hover:ring-0",
       "danger-outline":
@@ -105,7 +105,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         // if onClick is passed, it's a "button" type, otherwise it's being used in a form, hence "submit"
         type={props.onClick ? "button" : "submit"}
         className={cn(
-          "group flex rounded h-10 w-full items-center justify-center gap-2 whitespace-nowrap border border-neutral-200 px-4 text-sm",
+          "group flex rounded-full h-10 w-full items-center justify-center gap-2 whitespace-nowrap border border-neutral-200 px-4 text-sm",
           props.disabled || loading
             ? "cursor-not-allowed border-neutral-200 bg-neutral-100 text-neutral-400 outline-none"
             : buttonVariants({ variant }),
@@ -131,7 +131,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             className={cn(
               "rounded hidden px-2 py-0.5 text-xs font-light transition-all duration-75 md:inline-block",
               {
-                "bg-[#e7eeff] text-black":
+                "bg-brand-primary-light text-black":
                   variant === "primary",
                 "bg-neutral-200 text-neutral-400 group-hover:bg-neutral-100 group-hover:text-neutral-500":
                   variant === "secondary",

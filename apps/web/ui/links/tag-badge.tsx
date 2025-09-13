@@ -63,7 +63,7 @@ export const COLORS_LIST: { color: TagColorProps; css: string }[] = [
   },
   {
     color: "blue",
-    css: "bg-[#3971ff] text-white",
+    css: "bg-brand-primary text-white",
   },
   {
     color: "purple",

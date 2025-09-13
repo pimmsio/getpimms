@@ -91,7 +91,7 @@ export const DestinationUrlInput = forwardRef<
               error
                 ? "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-[#DC2E65] ring-[6px] ring-[#FFEAF1] focus:ring-[6px] focus:ring-[#FFEAF1]"
                 : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 ring-[6px] ring-neutral-100 focus:ring-[6px] focus:ring-transparent"
-            } block w-full rounded border border-neutral-200 text-black outline-none placeholder:text-neutral-400 sm:text-sm transition-all`}
+            } block w-full rounded-full border border-neutral-200 text-black outline-none placeholder:text-neutral-400 sm:text-sm transition-all`}
             aria-invalid="true"
             {...inputProps}
             {...(formContext && {

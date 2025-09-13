@@ -1,4 +1,4 @@
-import { geistMono, inter, satoshi } from "@/styles/fonts";
+import { geistMono, inter, jakarta } from "@/styles/fonts";
 import "@/styles/globals.css";
 import { cn, constructMetadata } from "@dub/utils";
 import Script from "next/script";
@@ -14,9 +14,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn(satoshi.variable, inter.variable, geistMono.variable)}
+      className={cn(inter.variable, jakarta.variable, geistMono.variable)}
     >
-      <body>
+      <body className="font-inter antialiased">
         <RootProviders>{children}</RootProviders>
 
         <Script id="set-theme" strategy="beforeInteractive">

@@ -14,7 +14,7 @@ export default function CbeRegisterPage() {
             <h1 className="text-2xl font-semibold text-gray-900">
               Create Extension Account
             </h1>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm">
               Create your account to use the browser extension
             </p>
           </div>
@@ -24,7 +24,7 @@ export default function CbeRegisterPage() {
             </RegisterProvider>
           </ClientOnly>
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm">
               Already have an account?{" "}
               <Link 
                 href="/login" 

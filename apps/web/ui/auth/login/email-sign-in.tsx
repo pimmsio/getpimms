@@ -1,8 +1,6 @@
 import { checkAccountExistsAction } from "@/lib/actions/check-account-exists";
-import { Button, Input, useMediaQuery } from "@dub/ui";
-import { InputPassword } from "@dub/ui/icons";
+import { CtaButton, Input, useMediaQuery } from "@dub/ui";
 import { cn, CBE_DOMAIN } from "@dub/utils";
-import { Mail } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useAction } from "next-safe-action/hooks";
 import Link from "next/link";
@@ -140,7 +138,7 @@ export const EmailSignIn = ({ next }: { next?: string }) => {
             onChange={(e) => setEmail(e.target.value)}
             size={1}
             className={cn(
-              "block w-full min-w-0 appearance-none rounded border border-neutral-200 text-black placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
+              "block w-full min-w-0 appearance-none rounded-full border border-neutral-200 text-black placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
               {
                 "pr-10": isPending,
               },
@@ -160,17 +158,7 @@ export const EmailSignIn = ({ next }: { next?: string }) => {
           </div>
         )}
 
-        <Button
-          text={`Continue with ${password ? "Password" : "Email"}`}
-          variant="primary"
-          className="my-2"
-          // icon={
-          //   password ? (
-          //     <InputPassword className="size-4 text-neutral-600" />
-          //   ) : (
-          //     <Mail className="size-4 text-neutral-600" />
-          //   )
-          // }
+        <CtaButton
           {...(authMethod !== "email" && {
             type: "button",
             onClick: (e) => {
@@ -181,7 +169,10 @@ export const EmailSignIn = ({ next }: { next?: string }) => {
           })}
           loading={clickedMethod === "email" || isPending}
           disabled={clickedMethod && clickedMethod !== "email"}
-        />
+          className="my-2"
+        >
+          {`Continue with ${password ? "Password" : "Email"}`}
+        </CtaButton>
       </form>
       {showPasswordField && (
         <Link

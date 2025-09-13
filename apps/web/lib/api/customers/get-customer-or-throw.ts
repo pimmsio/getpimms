@@ -60,7 +60,7 @@ export const getCustomerOrThrow = async (
   }
 
   if (!customer.avatar) {
-    customer.avatar = `${OG_AVATAR_URL}${customer.id}`;
+    customer.avatar = `${OG_AVATAR_URL}${customer.id}&name=${encodeURIComponent(customer.name || customer.email || '')}`;
   }
 
   return customer;

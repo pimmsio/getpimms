@@ -54,7 +54,7 @@ const transformWebhookCustomer = (customer: any) => {
     name: customer.name || customer.email || generateRandomName(),
     externalId: customer.externalId || "",
     country: undefined,
-    avatar: customer.avatar || `${OG_AVATAR_URL}${customer.id}`,
+    avatar: customer.avatar || `${OG_AVATAR_URL}${customer.id}&name=${encodeURIComponent(customer.name || customer.email || '')}`,
   };
 };
 

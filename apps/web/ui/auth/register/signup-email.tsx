@@ -3,7 +3,7 @@
 import { sendOtpAction } from "@/lib/actions/send-otp";
 import z from "@/lib/zod";
 import { signUpSchema } from "@/lib/zod/schemas/auth";
-import { Button, Input } from "@dub/ui";
+import { CtaButton, Input } from "@dub/ui";
 import { useAction } from "next-safe-action/hooks";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -61,12 +61,13 @@ export const SignUpEmail = () => {
           error={errors.password?.message}
           minLength={8}
         />
-        <Button
+        <CtaButton
           type="submit"
-          text={isPending ? "Submitting..." : "Create an account"}
-          disabled={isPending}
           loading={isPending}
-        />
+          disabled={isPending}
+        >
+          Create an account
+        </CtaButton>
       </div>
     </form>
   );

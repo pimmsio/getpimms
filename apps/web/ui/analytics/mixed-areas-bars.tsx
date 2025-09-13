@@ -8,6 +8,57 @@ import { Area, AreaClosed, Circle } from "@visx/shape";
 import { AnimatePresence, motion } from "framer-motion";
 import { useId, useMemo } from "react";
 
+// Custom BarRounded component for better visual effects
+interface BarRoundedProps {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  fill: string;
+  radius?: number;
+  roundTop?: boolean;
+  roundBottom?: boolean;
+}
+
+function BarRounded({
+  x,
+  y,
+  width,
+  height,
+  fill,
+  radius = 6,
+  roundTop = false,
+  roundBottom = false,
+}: BarRoundedProps) {
+  const r = Math.min(radius, width / 2, height / 2);
+  
+  let path: string;
+  
+  if (roundTop && !roundBottom) {
+    // Rounded top only (for sales bars)
+    path = `M ${x} ${y + height} L ${x} ${y + r} Q ${x} ${y} ${x + r} ${y} L ${x + width - r} ${y} Q ${x + width} ${y} ${x + width} ${y + r} L ${x + width} ${y + height} Z`;
+  } else if (roundBottom && !roundTop) {
+    // Rounded bottom only (for leads bars)
+    path = `M ${x} ${y} L ${x + width} ${y} L ${x + width} ${y + height - r} Q ${x + width} ${y + height} ${x + width - r} ${y + height} L ${x + r} ${y + height} Q ${x} ${y + height} ${x} ${y + height - r} Z`;
+  } else if (roundTop && roundBottom) {
+    // Fully rounded
+    path = `M ${x} ${y + r} Q ${x} ${y} ${x + r} ${y} L ${x + width - r} ${y} Q ${x + width} ${y} ${x + width} ${y + r} L ${x + width} ${y + height - r} Q ${x + width} ${y + height} ${x + width - r} ${y + height} L ${x + r} ${y + height} Q ${x} ${y + height} ${x} ${y + height - r} Z`;
+  } else {
+    // No rounding
+    path = `M ${x} ${y} L ${x + width} ${y} L ${x + width} ${y + height} L ${x} ${y + height} Z`;
+  }
+  
+  return (
+    <path
+      d={path}
+      fill={fill}
+      style={{
+        filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1))',
+      }}
+    />
+  );
+}
+
 export function MixedAreasAndBars() {
   const clipPathId = useId();
   const {
@@ -27,13 +78,13 @@ export function MixedAreasAndBars() {
   const lineSeries = series.filter((s) => s.type === "line");
   const barSeries = series.filter((s) => s.type === "bar");
 
-  // Calculate bar width with maximum limit - bars should not exceed 70% of total width
-  const maxTotalBarWidth = width * 0.7; // Maximum 70% of chart width for all bars
+  // Calculate bar width with maximum limit - bars should be narrower and more rounded
+  const maxTotalBarWidth = width * 0.5; // Maximum 50% of chart width for all bars (narrower)
   const calculatedBarWidth = Math.min(
     maxTotalBarWidth / data.length,
-    (width / data.length) * 0.6,
+    (width / data.length) * 0.4,
   );
-  const barWidth = Math.min(calculatedBarWidth, 35); // Max individual bar width of 35px
+  const barWidth = Math.min(calculatedBarWidth, 24); // Max individual bar width of 24px (narrower)
 
   // IMPROVED BAR SCALING: Calculate proportional scaling based on actual data relationships
   const maxLeads = Math.max(...data.map((d) => d.values.leads || 0));
@@ -107,21 +158,33 @@ export function MixedAreasAndBars() {
               key={`${s.id}_${startDate.toString()}_${endDate.toString()}`}
               clipPath={`url(#${clipPathId})`}
             >
-              {/* Bar gradient */}
-              <LinearGradient
-                className={cn(s.colorClassName ?? "text-gray-500")}
-                id={`${s.id}-background`}
-                fromOffset="0%"
-                from="currentColor"
-                fromOpacity={1.0}
-                toOffset="100%"
-                to="currentColor"
-                toOpacity={1.0}
-                x1={0}
-                x2={0}
-                y1={1}
-                y2={0}
-              />
+              {/* Bar gradient with hardcoded PIMMS colors */}
+              <defs>
+                <linearGradient
+                  id={`${s.id}-background`}
+                  x1="0"
+                  y1="1"
+                  x2="0"
+                  y2="0"
+                >
+                  {s.id === "leads" ? (
+                    <>
+                      <stop offset="0%" stopColor="#ffc65a" stopOpacity={1.0} />
+                      <stop offset="100%" stopColor="#ffc65a" stopOpacity={1.0} />
+                    </>
+                  ) : s.id === "sales" ? (
+                    <>
+                      <stop offset="0%" stopColor="#1ec198" stopOpacity={1.0} />
+                      <stop offset="100%" stopColor="#1ec198" stopOpacity={1.0} />
+                    </>
+                  ) : (
+                    <>
+                      <stop offset="0%" stopColor="#3970ff" stopOpacity={1.0} />
+                      <stop offset="100%" stopColor="#3970ff" stopOpacity={1.0} />
+                    </>
+                  )}
+                </linearGradient>
+              </defs>
 
               {data.map((d, i) => {
                 const value = s.valueAccessor(d) ?? 0;
@@ -141,28 +204,16 @@ export function MixedAreasAndBars() {
 
                   return value > 0 ? (
                     <motion.g key={i}>
-                      {hasSales ? (
-                        // If sales exist, leads bar is flat rectangle (no rounding)
-                        <rect
-                          x={x}
-                          y={leadsY}
-                          width={barWidth}
-                          height={leadHeight}
-                          fill={`url(#${s.id}-background)`}
-                        />
-                      ) : (
-                        // If no sales, round ONLY the top corners of leads
-                        <path
-                          d={`M ${x} ${leadsY + leadHeight} 
-                              L ${x} ${leadsY + 4} 
-                              Q ${x} ${leadsY} ${x + 4} ${leadsY} 
-                              L ${x + barWidth - 4} ${leadsY} 
-                              Q ${x + barWidth} ${leadsY} ${x + barWidth} ${leadsY + 4} 
-                              L ${x + barWidth} ${leadsY + leadHeight} 
-                              Z`}
-                          fill={`url(#${s.id}-background)`}
-                        />
-                      )}
+                      <BarRounded
+                        x={x}
+                        y={leadsY}
+                        width={barWidth}
+                        height={leadHeight}
+                        fill={`url(#${s.id}-background)`}
+                        radius={100}
+                        roundTop={!hasSales}
+                        roundBottom={true}
+                      />
                     </motion.g>
                   ) : null;
                 } else if (s.id === "sales") {
@@ -180,15 +231,15 @@ export function MixedAreasAndBars() {
 
                   return salesValue > 0 ? (
                     <motion.g key={i}>
-                      <path
-                        d={`M ${x} ${salesY + salesHeight} 
-                            L ${x} ${salesY + 4} 
-                            Q ${x} ${salesY} ${x + 4} ${salesY} 
-                            L ${x + barWidth - 4} ${salesY} 
-                            Q ${x + barWidth} ${salesY} ${x + barWidth} ${salesY + 4} 
-                            L ${x + barWidth} ${salesY + salesHeight} 
-                            Z`}
+                      <BarRounded
+                        x={x}
+                        y={salesY}
+                        width={barWidth}
+                        height={salesHeight}
                         fill={`url(#${s.id}-background)`}
+                        radius={100}
+                        roundTop={true}
+                        roundBottom={false}
                       />
                     </motion.g>
                   ) : null;
@@ -210,23 +261,65 @@ export function MixedAreasAndBars() {
               key={`${s.id}_${startDate.toString()}_${endDate.toString()}`}
               clipPath={`url(#${clipPathId})`}
             >
-              {/* Area gradient */}
-              <LinearGradient
-                className={cn(s.colorClassName ?? "text-blue-500")}
-                id={`${s.id}-area-gradient`}
-                fromOffset="0%"
-                from="currentColor"
-                fromOpacity={0.1}
-                toOffset="40%"
-                to="currentColor"
-                toOpacity={0.05}
-                x1={0}
-                x2={0}
-                y1={0}
-                y2={1}
-              />
+              {/* Area gradient with sophisticated effect */}
+              <defs>
+                <linearGradient
+                  id={`${s.id}-area-gradient`}
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop offset="0%" stopColor="#3970ff" stopOpacity={0.3} />
+                  <stop offset="50%" stopColor="#3970ff" stopOpacity={0.15} />
+                  <stop offset="100%" stopColor="#3970ff" stopOpacity={0.05} />
+                </linearGradient>
+                
+                {/* Mask for line effect */}
+                <mask id={`${s.id}-line-mask`}>
+                  <rect width={width} height={height} fill="black" />
+                  <Area
+                    data={data}
+                    x={(d) => xScale(d.date) ?? 0}
+                    y={(d) => yScale(s.valueAccessor(d) ?? 0)}
+                    curve={curveMonotoneX}
+                  >
+                    {({ path }) => (
+                      <g>
+                        <path
+                          d={path(data) || ""}
+                          stroke="white"
+                          strokeWidth="20"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          opacity="0.2"
+                        />
+                        <path
+                          d={path(data) || ""}
+                          stroke="white"
+                          strokeWidth="12"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          opacity="0.4"
+                        />
+                      </g>
+                    )}
+                  </Area>
+                </mask>
+              </defs>
 
-              {/* Area fill */}
+              {/* Area fill with gradient following the line */}
+              <g mask={`url(#${s.id}-line-mask)`}>
+                <rect
+                  width={width}
+                  height={height}
+                  fill={`url(#${s.id}-area-gradient)`}
+                />
+              </g>
+
+              {/* Regular area fill */}
               <AreaClosed
                 data={data}
                 x={(d) => xScale(d.date) ?? 0}
@@ -239,6 +332,7 @@ export function MixedAreasAndBars() {
                     initial={{ d: path(zeroedData) || "", opacity: 0 }}
                     animate={{ d: path(data) || "", opacity: 1 }}
                     fill={`url(#${s.id}-area-gradient)`}
+                    mask={`url(#${s.id}-line-mask)`}
                   />
                 )}
               </AreaClosed>
@@ -254,13 +348,16 @@ export function MixedAreasAndBars() {
                   <motion.path
                     initial={{ d: path(zeroedData) || "" }}
                     animate={{ d: path(data) || "" }}
-                    className={cn(s.colorClassName ?? "text-blue-500")}
-                    stroke="currentColor"
+                    className={cn(s.colorClassName ?? "text-data-clicks")}
+                    stroke="#3970ff"
                     strokeOpacity={1}
-                    strokeWidth={3}
+                    strokeWidth={2.5}
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     fill="transparent"
+                    style={{
+                      filter: 'drop-shadow(0 2px 4px rgba(57, 112, 255, 0.2))',
+                    }}
                   />
                 )}
               </Area>
@@ -271,8 +368,7 @@ export function MixedAreasAndBars() {
                   cx={xScale(data.at(-1)!.date) ?? 0}
                   cy={yScale(s.valueAccessor(data.at(-1)!))}
                   r={4}
-                  className={cn(s.colorClassName ?? "text-blue-500")}
-                  fill="currentColor"
+                  fill="#3970ff"
                 />
               )}
             </motion.g>

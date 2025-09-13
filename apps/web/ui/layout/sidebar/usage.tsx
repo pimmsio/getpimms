@@ -299,8 +299,8 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
                 >
                   <div
                     className={cn(
-                      "size-full rounded-full bg-gradient-to-r from-transparent to-[#3971ff]",
-                      warning && "to-[#3971ff]",
+                      "size-full rounded-full bg-gradient-to-r from-transparent to-brand-primary",
+                      warning && "to-brand-primary",
                     )}
                     style={{
                       transform: `translateX(-${100 - Math.max(Math.floor((usage / Math.max(0, usage, limit)) * 100), usage === 0 ? 0 : 1)}%)`,

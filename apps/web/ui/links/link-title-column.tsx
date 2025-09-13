@@ -69,7 +69,7 @@ export function LinkTitleColumn({ link }: { link: ResponseLink }) {
   const { domain, key } = link;
 
   const { variant } = useContext(CardList.Context);
-  const { displayProperties } = useContext(LinksDisplayContext);
+  const { displayProperties, switchPosition } = useContext(LinksDisplayContext);
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -106,30 +106,57 @@ export function LinkTitleColumn({ link }: { link: ResponseLink }) {
         <div className="flex items-center gap-2">
           <div className="min-w-0 shrink grow-0 text-neutral-950">
             <div className="flex items-center gap-2">
-              {displayProperties.includes("title") && link.title ? (
-                <span
-                  className={cn(
-                    "min-w-0 truncate font-semibold leading-6 text-neutral-800",
+              {switchPosition ? (
+                // When position is switched, show destination URL as main title
+                displayProperties.includes("url") && link.url ? (
+                  <UrlDecompositionTooltip url={link.url}>
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={cn(
+                        "min-w-0 truncate font-semibold leading-6 text-neutral-800 transition-colors hover:text-black",
+                        link.archived && "text-neutral-600",
+                      )}
+                    >
+                      {getPrettyUrl(link.url)}
+                    </a>
+                  </UrlDecompositionTooltip>
+                ) : (
+                  <span className={cn(
+                    "min-w-0 truncate font-semibold leading-6 text-neutral-400",
                     link.archived && "text-neutral-600",
-                  )}
-                >
-                  {link.title}
-                </span>
+                  )}>
+                    No URL configured
+                  </span>
+                )
               ) : (
-                <UnverifiedTooltip domain={domain} _key={key}>
-                  <a
-                    href={linkConstructor({ domain, key })}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={linkConstructor({ domain, key, pretty: true })}
+                // Default behavior: show title or short link as main title
+                displayProperties.includes("title") && link.title ? (
+                  <span
                     className={cn(
-                      "font-semibold leading-6 text-neutral-800 transition-colors hover:text-black",
+                      "min-w-0 truncate font-semibold leading-6 text-neutral-800",
                       link.archived && "text-neutral-600",
                     )}
                   >
-                    {linkConstructor({ domain, key, pretty: true })}
-                  </a>
-                </UnverifiedTooltip>
+                    {link.title}
+                  </span>
+                ) : (
+                  <UnverifiedTooltip domain={domain} _key={key}>
+                    <a
+                      href={linkConstructor({ domain, key })}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={linkConstructor({ domain, key, pretty: true })}
+                      className={cn(
+                        "font-semibold leading-6 text-neutral-800 transition-colors hover:text-black",
+                        link.archived && "text-neutral-600",
+                      )}
+                    >
+                      {linkConstructor({ domain, key, pretty: true })}
+                    </a>
+                  </UnverifiedTooltip>
+                )
               )}
               <CopyButton
                 value={linkConstructor({
@@ -314,7 +341,7 @@ const Details = memo(
   ({ link, compact }: { link: ResponseLink; compact?: boolean }) => {
     const { url, createdAt } = link;
 
-    const { displayProperties } = useContext(LinksDisplayContext);
+    const { displayProperties, switchPosition } = useContext(LinksDisplayContext);
 
     return (
       <div
@@ -329,13 +356,26 @@ const Details = memo(
         )}
       >
         <div className="flex min-w-0 items-center gap-1">
-          {displayProperties.includes("url") &&
+          {(switchPosition ? true : displayProperties.includes("url")) &&
             (compact ? (
               <ArrowRight className="mr-1 h-3 w-3 shrink-0 text-neutral-400" />
             ) : (
               <ArrowTurnRight2 className="h-3 w-3 shrink-0 text-neutral-400" />
             ))}
-          {displayProperties.includes("url") ? (
+          {switchPosition ? (
+            // When position is switched, show short link in details
+            <UnverifiedTooltip domain={link.domain} _key={link.key}>
+              <a
+                href={linkConstructor({ domain: link.domain, key: link.key })}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={linkConstructor({ domain: link.domain, key: link.key, pretty: true })}
+                className="block w-full truncate max-w-[300px] text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2 text-ellipsis"
+              >
+                {linkConstructor({ domain: link.domain, key: link.key, pretty: true })}
+              </a>
+            </UnverifiedTooltip>
+          ) : displayProperties.includes("url") ? (
             url ? (
               <UrlDecompositionTooltip url={url}>
                 <a

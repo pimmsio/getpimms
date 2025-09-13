@@ -31,7 +31,7 @@ export default function Main() {
         {
           id: "clicks",
           label: "Clicks",
-          colorClassName: "text-[#08272E]/50",
+          colorClassName: "text-text-secondary",
           conversions: false,
         },
         ...(showConversions
@@ -39,13 +39,13 @@ export default function Main() {
               {
                 id: "leads",
                 label: "Conversions",
-                colorClassName: "text-[#08272E]/50",
+                colorClassName: "text-text-secondary",
                 conversions: true,
               },
               {
                 id: "sales",
                 label: "Sales",
-                colorClassName: "text-[#08272E]/50",
+                colorClassName: "text-text-secondary",
                 conversions: true,
               },
             ]

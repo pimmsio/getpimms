@@ -1,6 +1,7 @@
 import { cn } from "@dub/utils";
 import { sha256 } from "js-sha256";
 import { useState } from "react";
+import { DicebearAvatar } from "./dicebear-avatar";
 
 type User = {
   id?: string | null | undefined;
@@ -12,14 +13,8 @@ type User = {
 export function getUserAvatarUrl(user?: User | null) {
   if (user?.image) return user.image;
 
-  if (!user?.id) return "https://app.pimms.io/api/og/avatar";
-
-  const ogAvatar = `https://app.pimms.io/api/og/avatar?seed=${encodeURIComponent(user.id)}`;
-  const encodedOGAvatar = `https://app.pimms.io/api/og/avatar${encodeURIComponent(`?seed=${encodeURIComponent(user.id)}`)}`;
-
-  return user.email
-    ? `https://www.gravatar.com/avatar/${sha256(user.email)}?d=${encodeURIComponent(encodedOGAvatar)}`
-    : ogAvatar;
+  // Return null to indicate we should use DicebearAvatar instead
+  return null;
 }
 
 export function Avatar({
@@ -40,21 +35,32 @@ export function Avatar({
     );
   }
 
-  const [url, setUrl] = useState(getUserAvatarUrl(user));
+  const avatarUrl = getUserAvatarUrl(user);
 
+  if (avatarUrl) {
+    return (
+      <img
+        alt={`Avatar for ${user.name || user.email}`}
+        referrerPolicy="no-referrer"
+        src={avatarUrl}
+        className={cn(
+          "h-10 w-10 rounded-full border border-neutral-300",
+          className,
+        )}
+        draggable={false}
+      />
+    );
+  }
+
+  // Use DicebearAvatar as fallback
   return (
-    <img
-      alt={`Avatar for ${user.name || user.email}`}
-      referrerPolicy="no-referrer"
-      src={url}
+    <DicebearAvatar
+      seed={user.id || user.email || 'anonymous'}
       className={cn(
         "h-10 w-10 rounded-full border border-neutral-300",
         className,
       )}
-      draggable={false}
-      onError={() => {
-        setUrl(`https://app.pimms.io/api/og/avatar?seed=${user.id}`);
-      }}
+      alt={`Avatar for ${user.name || user.email || 'Anonymous'}`}
     />
   );
 }
@@ -67,11 +73,10 @@ export function TokenAvatar({
   className?: string;
 }) {
   return (
-    <img
-      src={`https://api.dicebear.com/9.x/shapes/svg?seed=${id}`}
-      alt="avatar"
+    <DicebearAvatar
+      seed={id}
       className={cn("h-10 w-10 rounded-full", className)}
-      draggable={false}
+      alt="Token avatar"
     />
   );
 }

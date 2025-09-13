@@ -18,7 +18,10 @@ module.exports = {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
-        "dub-blue": "#3971ff",
+        // PIMMS Brand Colors
+        "brand-primary": "#3970ff",
+        "brand-secondary": "#2fcdfa",
+        "dub-blue": "#3970ff", // Keeping for backward compatibility
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",

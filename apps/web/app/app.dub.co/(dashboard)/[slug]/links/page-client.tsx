@@ -96,8 +96,7 @@ function WorkspaceLinks() {
 
               {isLoading ? (
                 <div className="flex grow-0 animate-pulse items-center space-x-2">
-                  <div className="h-10 w-24 rounded bg-neutral-200" />
-                  <div className="h-10 w-10 rounded bg-neutral-200" />
+                  <div className="h-10 w-32 rounded-full bg-neutral-200" />
                 </div>
               ) : canCreateLinks ? (
                 <>

@@ -43,11 +43,11 @@ function SignUp({ program }: { program?: PartialProgram }) {
           <SignUpForm methods={["email", "google"]} />
         </div>
       </div>
-      <p className="mt-4 text-center text-sm text-neutral-500">
+      <p className="mt-4 text-center text-sm">
         Already have an account?&nbsp;
         <Link
           href="/login"
-          className="font-semibold text-neutral-500 underline underline-offset-2 transition-colors hover:text-black"
+          className="font-semibold underline underline-offset-2 transition-colors hover:text-black"
         >
           Sign in
         </Link>
@@ -65,7 +65,7 @@ function Verify() {
         <h1 className="text-lg font-medium text-neutral-800">
           Verify your email address
         </h1>
-        <p className="mt-3 text-sm text-neutral-500">
+        <p className="mt-3 text-sm">
           Enter the six digit verification code sent to{" "}
           <strong className="font-medium text-neutral-600" title={email}>
             {truncate(email, 30)}
@@ -75,11 +75,11 @@ function Verify() {
           <VerifyEmailForm />
         </div>
       </div>
-      <p className="mt-4 text-center text-sm text-neutral-500">
+      <p className="mt-4 text-center text-sm">
         Already have an account?&nbsp;
         <Link
           href="/login"
-          className="font-semibold text-neutral-500 underline underline-offset-2 transition-colors hover:text-black"
+          className="font-semibold underline underline-offset-2 transition-colors hover:text-black"
         >
           Sign in
         </Link>

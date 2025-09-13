@@ -124,6 +124,12 @@ importers:
       '@chronark/zod-bird':
         specifier: ^0.3.9
         version: 0.3.9
+      '@dicebear/avataaars':
+        specifier: ^9.2.4
+        version: 9.2.4(@dicebear/core@9.2.4)
+      '@dicebear/core':
+        specifier: ^9.2.4
+        version: 9.2.4
       '@dub/analytics':
         specifier: ^0.0.27
         version: 0.0.27
@@ -800,6 +806,12 @@ importers:
 
   packages/ui:
     dependencies:
+      '@dicebear/avataaars':
+        specifier: ^9.2.4
+        version: 9.2.4(@dicebear/core@9.2.4)
+      '@dicebear/core':
+        specifier: ^9.2.4
+        version: 9.2.4
       '@floating-ui/react':
         specifier: ^0.26.20
         version: 0.26.20(react-dom@18.2.0)(react@18.2.0)
@@ -3655,6 +3667,22 @@ packages:
     dependencies:
       postcss-selector-parser: 6.1.2
     dev: true
+
+  /@dicebear/avataaars@9.2.4(@dicebear/core@9.2.4):
+    resolution: {integrity: sha512-QKNBtA/1QGEzR+JjS4XQyrFHYGbzdOp0oa6gjhGhUDrMegDFS8uyjdRfDQsFTebVkyLWjgBQKZEiDqKqHptB6A==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@dicebear/core': ^9.0.0
+    dependencies:
+      '@dicebear/core': 9.2.4
+    dev: false
+
+  /@dicebear/core@9.2.4:
+    resolution: {integrity: sha512-hz6zArEcUwkZzGOSJkWICrvqnEZY7BKeiq9rqKzVJIc1tRVv0MkR0FGvIxSvXiK9TTIgKwu656xCWAGAl6oh+w==}
+    engines: {node: '>=18.0.0'}
+    dependencies:
+      '@types/json-schema': 7.0.15
+    dev: false
 
   /@dub/analytics@0.0.27:
     resolution: {integrity: sha512-TbLr+sKWiBsMw1GOLpduZI7skXmrLwZlEoVoHyxq66RvMk/5Fl84QoenlhjdxaX1rlHAkWCcjcbAYcCN7skoKw==}

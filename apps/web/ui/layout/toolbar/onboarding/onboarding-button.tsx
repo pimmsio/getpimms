@@ -120,7 +120,7 @@ function OnboardingButtonInner({
       popoverContentClassName="rounded"
       content={
         <div>
-          <div className="rounded-t-md bg-[#3971ff] p-4 text-white">
+          <div className="rounded-t-md bg-brand-primary p-4 text-white">
             <div className="flex items-start justify-between gap-2">
               <div>
                 <span className="text-lg font-medium">Getting Started</span>

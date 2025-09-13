@@ -12,8 +12,8 @@ import {
 } from "@dub/ui";
 import {
   ArrowsOppositeDirectionY,
-  BoxArchive,
   GridLayoutRows,
+  Shuffle,
   Sliders,
   TableRows2,
 } from "@dub/ui/icons";
@@ -32,6 +32,8 @@ export default function LinkDisplay() {
     setShowArchived,
     displayProperties,
     setDisplayProperties,
+    switchPosition,
+    setSwitchPosition,
     isDirty,
     persist,
     reset,
@@ -90,6 +92,18 @@ export default function LinkDisplay() {
               </div>
             </div>
           )}
+          <div className="flex h-16 items-center justify-between gap-2 px-4">
+            <span className="flex items-center gap-2">
+              <Shuffle className="h-4 w-4 text-neutral-800" />
+              Switch position
+            </span>
+            <div>
+              <Switch
+                checked={switchPosition}
+                fn={(checked) => setSwitchPosition(checked)}
+              />
+            </div>
+          </div>
           {/* {!isMegaFolder && (
             <div className="group flex h-16 items-center justify-between gap-2 px-4">
               <div className="flex items-center gap-2">

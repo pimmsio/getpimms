@@ -2,6 +2,7 @@ import { formatDateTooltip } from "@/lib/analytics/format-date-tooltip";
 import { editQueryString } from "@/lib/analytics/utils";
 
 import { groupTimeseriesData } from "@/lib/analytics/utils/group-timeseries-data";
+import { InfoTooltip } from "@dub/ui";
 import { TimeSeriesChart, XAxis, YAxis } from "@dub/ui/charts";
 import { fetcher, nFormatter } from "@dub/utils";
 import { useContext, useMemo } from "react";
@@ -48,6 +49,23 @@ export default function MixedAnalyticsChart({
       keepPreviousData: true,
     },
   );
+
+  // Fetch hot/cold lead counts
+  // const { data: leadCounts } = useSWR<{
+  //   hotLeadCount: number;
+  //   coldLeadCount: number;
+  //   totalLeadCount: number;
+  // }>(
+  //   !demoFromProps &&
+  //     `${baseApiPath}/leads/counts?${editQueryString(queryString, {})}`,
+  //   fetcher,
+  //   {
+  //     shouldRetryOnError: !requiresUpgrade,
+  //     dedupingInterval: 60000,
+  //     revalidateOnFocus: false,
+  //     keepPreviousData: true,
+  //   },
+  // );
 
   const chartData = useMemo(() => {
     if (!data) return null;
@@ -108,7 +126,7 @@ export default function MixedAnalyticsChart({
       id: "clicks",
       valueAccessor: (d) => d.values.clicks,
       isActive: true,
-      colorClassName: "text-[#3870FF]",
+      colorClassName: "text-data-clicks",
       type: "line" as const,
       showHoverCircle: true, // Show hover circle for line
     },
@@ -116,7 +134,7 @@ export default function MixedAnalyticsChart({
       id: "leads",
       valueAccessor: (d) => d.values.leads,
       isActive: true,
-      colorClassName: "text-[#FFD399]",
+      colorClassName: "text-data-leads",
       type: "bar" as const,
       showHoverCircle: false, // Hide hover circle for bars
       excludeFromYScale: true, // Exclude from Y-scale to not affect line chart scaling
@@ -125,7 +143,7 @@ export default function MixedAnalyticsChart({
       id: "sales",
       valueAccessor: (d) => d.values.saleAmount, // Use revenue amount, not sales count
       isActive: true,
-      colorClassName: "text-[#00F5B8]",
+      colorClassName: "text-data-sales",
       type: "bar" as const,
       showHoverCircle: false, // Hide hover circle for bars
       excludeFromYScale: true, // Exclude from Y-scale to not affect line chart scaling
@@ -192,152 +210,171 @@ export default function MixedAnalyticsChart({
   return (
     <>
       {data ? (
-        <div className="m-2 grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto">
-          <div className="group rounded border border-[#C2D4FF] bg-gradient-to-br from-[#EBF1FF] to-[#EFF1FF] p-1.5 transition-all duration-200 hover:border-[#C2D4FF] sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1 text-xs text-[#00237A]">
-              <div className="h-1.5 w-1.5 rounded-full bg-[#3870FF]"></div>
-              <span>Clicks</span>
+        <div className="mx-4 mt-4 mb-4 grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto">
+          {/* Clicks Card */}
+          <div className="rounded-xl bg-brand-primary-light py-3 px-4 border border-brand-primary/10 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-2 text-sm text-neutral-600 mb-2">
+              <div className="w-2 h-2 bg-brand-primary rounded-full"></div>
+              <span>Clics</span>
             </div>
-            <div className="mt-1 text-sm font-semibold text-[#00237A] sm:text-base lg:text-lg">
+            <div className="text-xl font-bold text-gray-800">
               {additionalMetrics.clicks > 999
                 ? (additionalMetrics.clicks / 1000).toFixed(1) + "k"
-                : additionalMetrics.clicks.toString()}
+                : additionalMetrics.clicks.toLocaleString()}
             </div>
           </div>
 
-          <div className="group rounded border border-[#FFB85C] bg-gradient-to-br from-[#FFF6EB] to-[#FFF3EB] p-1.5 transition-all duration-200 hover:border-[#FFB85C] sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1 text-xs text-[#522E00]">
-              <div className="h-1.5 w-1.5 rounded-full bg-[#FFD399]"></div>
+          {/* Leads Card */}
+          <div className="rounded-xl bg-data-leads/15 py-3 px-4 border border-data-leads/20 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-2 text-sm text-neutral-600 mb-2">
+              <div className="w-2 h-2 bg-data-leads rounded-full"></div>
               <span>Leads</span>
             </div>
-            <div className="mt-1 text-sm font-semibold text-[#522E00] sm:text-base lg:text-lg">
-              {additionalMetrics.leads || "0"}
+            <div className="text-xl font-bold text-gray-800">
+              {additionalMetrics.leads > 999
+                ? (additionalMetrics.leads / 1000).toFixed(1) + "k"
+                : additionalMetrics.leads.toLocaleString()}
             </div>
           </div>
 
-          <div className="group rounded border border-[#47FFD1] bg-gradient-to-br from-[#EBFFFA] to-[#EBFFFA] p-1.5 transition-all duration-200 hover:border-[#47FFD1] sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1 text-xs text-[#002e25]">
-              <div className="h-1.5 w-1.5 rounded-full bg-[#00F5B8]"></div>
-              <span>Sales</span>
+          {/* Hot Leads */}
+          {/* <div className="group rounded border border-[#FF6B6B] bg-gradient-to-br from-[#FFF0F0] to-[#FFEBEB] p-1.5 transition-all duration-200 hover:border-[#FF6B6B] sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-1 text-xs text-text-primary">
+              <div className="h-1.5 w-1.5 rounded-full bg-[#FF6B6B]"></div>
+              <span>🔥 Hot Leads</span>
             </div>
-            <div className="mt-1 text-sm font-semibold text-[#002e25] sm:text-base lg:text-lg">
-              {additionalMetrics.saleAmount > 999
+            <div className="mt-1 text-sm font-semibold text-text-primary sm:text-base lg:text-lg">
+              {leadCounts?.hotLeadCount || "0"}
+            </div>
+          </div>
+
+          <div className="group rounded border border-[#6BB6FF] bg-gradient-to-br from-[#F0F8FF] to-[#EBF4FF] p-1.5 transition-all duration-200 hover:border-[#6BB6FF] sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-1 text-xs text-text-primary">
+              <div className="h-1.5 w-1.5 rounded-full bg-[#6BB6FF]"></div>
+              <span>❄️ Cold Leads</span>
+            </div>
+            <div className="mt-1 text-sm font-semibold text-text-primary sm:text-base lg:text-lg">
+              {leadCounts?.coldLeadCount || "0"}
+            </div>
+          </div> */}
+
+          {/* Sales Card */}
+          <div className="rounded-xl bg-data-sales/15 py-3 px-4 border border-data-sales/20 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-2 text-sm text-neutral-600 mb-2">
+              <div className="w-2 h-2 bg-data-sales rounded-full"></div>
+              <span>Ventes</span>
+            </div>
+            <div className="text-xl font-bold text-gray-800">
+              €{additionalMetrics.saleAmount > 999
                 ? (additionalMetrics.saleAmount / 1000).toFixed(1) + "k"
-                : additionalMetrics.saleAmount.toFixed(0)}
-              €
+                : additionalMetrics.saleAmount.toLocaleString()}
             </div>
           </div>
 
           {/* Only show recent visitors for 24h hourly data */}
           {additionalMetrics.showRecentVisitors && (
-            <div className="group rounded border border-gray-200/50 bg-gradient-to-br from-slate-50/70 to-gray-100/40 p-1.5 transition-all duration-200 hover:border-gray-300/60 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-              <div className="flex items-center gap-1 text-xs text-gray-600">
-                <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-gray-400"></div>
+            <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="flex items-center gap-2 text-sm text-neutral-600 mb-2">
+                <div className="w-2 h-2 animate-pulse rounded-full bg-gray-400"></div>
                 <span>Recent visits</span>
               </div>
-              <div className="mt-1 text-sm font-semibold text-gray-900 sm:text-base lg:text-lg">
+              <div className="text-xl font-bold text-gray-800">
                 {additionalMetrics.recentVisitors}
               </div>
             </div>
           )}
 
-          <div className="group rounded border border-gray-200/50 bg-gradient-to-br from-slate-50/70 to-gray-100/40 p-1.5 transition-all duration-200 hover:border-gray-300/60 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="text-xs text-gray-600">Revenue/click</div>
-            <div className="mt-1 text-sm font-semibold text-gray-900 sm:text-base lg:text-lg">
+          <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-1.5 text-sm text-neutral-600 mb-2">
+              <span>RPC</span>
+              <InfoTooltip content="Revenue Per Click - Average revenue generated per click on your links" />
+            </div>
+            <div className="text-xl font-bold text-gray-800">
               ${(additionalMetrics.revenuePerClick || 0).toFixed(1)}
             </div>
           </div>
 
-          <div className="group rounded border border-gray-200/50 bg-gradient-to-br from-slate-50/70 to-gray-100/40 p-1.5 transition-all duration-200 hover:border-gray-300/60 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="text-xs text-gray-600">Click → Lead</div>
-            <div className="mt-1 text-sm font-semibold text-gray-900 sm:text-base lg:text-lg">
+          <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-1.5 text-sm text-neutral-600 mb-2">
+              <span>CVR</span>
+              <InfoTooltip content="Conversion Rate - Percentage of visitors who become qualified leads" />
+            </div>
+            <div className="text-xl font-bold text-gray-800">
               {Math.round(additionalMetrics.clickToLeadRate || 0)}%
             </div>
           </div>
 
-          <div className="group rounded border border-gray-200/50 bg-gradient-to-br from-slate-50/70 to-gray-100/40 p-1.5 transition-all duration-200 hover:border-gray-300/60 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="text-xs text-gray-600">Lead → Sale</div>
-            <div className="mt-1 text-sm font-semibold text-gray-900 sm:text-base lg:text-lg">
+          <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-1.5 text-sm text-neutral-600 mb-2">
+              <span>Close Rate</span>
+              <InfoTooltip content="Close Rate - Percentage of leads that convert to sales" />
+            </div>
+            <div className="text-xl font-bold text-gray-800">
               {Math.round(additionalMetrics.leadToSaleRate || 0)}%
             </div>
           </div>
 
-          <div className="group rounded border border-gray-200/50 bg-gradient-to-br from-slate-50/70 to-gray-100/40 p-1.5 transition-all duration-200 hover:border-gray-300/60 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="text-xs text-gray-600">Avg order</div>
-            <div className="mt-1 text-sm font-semibold text-gray-900 sm:text-base lg:text-lg">
+          <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-1.5 text-sm text-neutral-600 mb-2">
+              <span>AOV</span>
+              <InfoTooltip content="Average Order Value - Average value of each order generated" />
+            </div>
+            <div className="text-xl font-bold text-gray-800">
               {Math.round(additionalMetrics.avgOrderValue || 0)}€
             </div>
           </div>
+
         </div>
       ) : (
-        <div className="m-2 grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto">
+        <div className="mx-4 mt-4 mb-4 grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto">
           {/* Clicks skeleton */}
-          <div className="group rounded border border-[#C2D4FF]/30 bg-gradient-to-br from-[#EBF1FF] to-[#EFF1FF] p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1 text-xs text-[#00237A]">
-              <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#3870FF]/50"></div>
-              <div className="h-3 w-8 animate-pulse rounded bg-[#3870FF]/50"></div>
+          <div className="rounded-xl bg-brand-primary-light py-3 px-4 border border-brand-primary/10 animate-pulse lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-2 text-sm text-neutral-600 mb-2">
+              <div className="w-2 h-2 bg-brand-primary/50 rounded-full"></div>
+              <div className="h-3 w-8 bg-neutral-300/50 rounded"></div>
             </div>
-            <div className="mt-1 h-5 w-6 animate-pulse rounded bg-[#3870FF]/50 sm:h-6 lg:h-7"></div>
+            <div className="h-6 w-12 bg-neutral-300/50 rounded"></div>
           </div>
 
-          {/* Conversions skeleton */}
-          <div className="group rounded border border-[#FFB85C]/30 bg-gradient-to-br from-[#FFF6EB] to-[#FFF3EB] p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1 text-xs text-[#522E00]">
-              <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#FFD399]/70"></div>
-              <div className="h-3 w-6 animate-pulse rounded bg-[#FFD399]/70"></div>
+          {/* Leads skeleton */}
+          <div className="rounded-xl bg-data-leads/15 py-3 px-4 border border-data-leads/20 animate-pulse lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-2 text-sm text-neutral-600 mb-2">
+              <div className="w-2 h-2 bg-data-leads/50 rounded-full"></div>
+              <div className="h-3 w-8 bg-neutral-300/50 rounded"></div>
             </div>
-            <div className="mt-1 h-5 w-4 animate-pulse rounded bg-[#FFD399]/70 sm:h-6 lg:h-7"></div>
+            <div className="h-6 w-8 bg-neutral-300/50 rounded"></div>
           </div>
 
-          {/* Revenue skeleton */}
-          <div className="group rounded border border-[#47FFD1]/30 bg-gradient-to-br from-[#EBFFFA] to-[#EBFFFA] p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1 text-xs text-[#002e25]">
-              <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#00F5B8]/70"></div>
-              <div className="h-3 w-6 animate-pulse rounded bg-[#00F5B8]/70"></div>
+          {/* Sales skeleton */}
+          <div className="rounded-xl bg-data-sales/15 py-3 px-4 border border-data-sales/20 animate-pulse lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-2 text-sm text-neutral-600 mb-2">
+              <div className="w-2 h-2 bg-data-sales/50 rounded-full"></div>
+              <div className="h-3 w-8 bg-neutral-300/50 rounded"></div>
             </div>
-            <div className="mt-1 h-5 w-6 animate-pulse rounded bg-[#00F5B8]/70 sm:h-6 lg:h-7"></div>
+            <div className="h-6 w-12 bg-neutral-300/50 rounded"></div>
           </div>
 
-          {/* Recent visitors skeleton */}
-          <div className="group rounded border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1 text-xs text-gray-600">
-              <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-gray-300"></div>
-              <div className="h-3 w-8 animate-pulse rounded bg-gray-300"></div>
-            </div>
-            <div className="mt-1 h-5 w-3 animate-pulse rounded bg-gray-400 sm:h-6 lg:h-7"></div>
+          {/* Additional metrics skeletons */}
+          <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 animate-pulse lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="h-3 w-12 bg-neutral-300/50 rounded mb-2"></div>
+            <div className="h-6 w-8 bg-neutral-300/50 rounded"></div>
           </div>
 
-          {/* Revenue/click skeleton */}
-          <div className="group rounded border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="text-xs text-gray-600">
-              <div className="h-3 w-10 animate-pulse rounded bg-gray-300"></div>
-            </div>
-            <div className="mt-1 h-5 w-8 animate-pulse rounded bg-gray-400 sm:h-6 lg:h-7"></div>
+          <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 animate-pulse lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="h-3 w-14 bg-neutral-300/50 rounded mb-2"></div>
+            <div className="h-6 w-6 bg-neutral-300/50 rounded"></div>
           </div>
 
-          {/* Click → Lead rate skeleton */}
-          <div className="group rounded border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="text-xs text-gray-600">
-              <div className="h-3 w-8 animate-pulse rounded bg-gray-300"></div>
-            </div>
-            <div className="mt-1 h-5 w-6 animate-pulse rounded bg-gray-400 sm:h-6 lg:h-7"></div>
+          <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 animate-pulse lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="h-3 w-16 bg-neutral-300/50 rounded mb-2"></div>
+            <div className="h-6 w-6 bg-neutral-300/50 rounded"></div>
           </div>
 
-          {/* Lead → Sale rate skeleton */}
-          <div className="group rounded border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="text-xs text-gray-600">
-              <div className="h-3 w-8 animate-pulse rounded bg-gray-300"></div>
-            </div>
-            <div className="mt-1 h-5 w-6 animate-pulse rounded bg-gray-400 sm:h-6 lg:h-7"></div>
+          <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 animate-pulse lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="h-3 w-10 bg-neutral-300/50 rounded mb-2"></div>
+            <div className="h-6 w-6 bg-neutral-300/50 rounded"></div>
           </div>
 
-          {/* Avg order value skeleton */}
-          <div className="group rounded border border-gray-200/50 bg-gray-50 p-1.5 sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="text-xs text-gray-600">
-              <div className="h-3 w-10 animate-pulse rounded bg-gray-300"></div>
-            </div>
-            <div className="mt-1 h-5 w-8 animate-pulse rounded bg-gray-400 sm:h-6 lg:h-7"></div>
-          </div>
         </div>
       )}
       <div className="relative flex h-64 w-full items-center justify-center sm:h-80 lg:h-96">
@@ -371,7 +408,7 @@ export default function MixedAnalyticsChart({
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="h-2.5 w-2.5 rounded-full bg-[#3870FF]"></div>
+                        <div className="h-2.5 w-2.5 rounded-full bg-brand-primary"></div>
                         <span className="text-xs text-neutral-600">Clicks</span>
                       </div>
                       <span className="text-sm font-semibold text-neutral-900">
@@ -381,7 +418,7 @@ export default function MixedAnalyticsChart({
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="h-2.5 w-2.5 rounded-full bg-orange-300"></div>
+                        <div className="h-2.5 w-2.5 rounded-full bg-data-leads"></div>
                         <span className="text-xs text-neutral-600">Leads</span>
                       </div>
                       <span className="text-sm font-semibold text-neutral-900">
@@ -391,7 +428,7 @@ export default function MixedAnalyticsChart({
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="h-2.5 w-2.5 rounded-full bg-[#00F5B8]"></div>
+                        <div className="h-2.5 w-2.5 rounded-full bg-data-sales"></div>
                         <span className="text-xs text-neutral-600">
                           Revenue
                         </span>

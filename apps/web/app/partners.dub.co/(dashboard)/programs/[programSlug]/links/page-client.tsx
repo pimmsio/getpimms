@@ -9,7 +9,7 @@ import usePartnerLinks from "@/lib/swr/use-partner-links";
 import useProgramEnrollment from "@/lib/swr/use-program-enrollment";
 import { usePartnerLinkModal } from "@/ui/modals/partner-link-modal";
 import SimpleDateRangePicker from "@/ui/shared/simple-date-range-picker";
-import { Button, CardList, useKeyboardShortcut, useRouterStuff } from "@dub/ui";
+import { CardList, CtaButton, useKeyboardShortcut, useRouterStuff } from "@dub/ui";
 import { ChartTooltipSync } from "@dub/ui/charts";
 import { useParams } from "next/navigation";
 import { createContext, useContext, useMemo } from "react";
@@ -71,18 +71,13 @@ export function ProgramLinksPageClient() {
         />
         {/* TODO: Add this to Program table */}
         {["pimms"].includes(programSlug) && (
-          <Button
-            text="Create Link"
-            className="w-fit"
-            shortcut="C"
+          <CtaButton
+            className="w-fit h-10 shadow-none"
             onClick={() => setShowPartnerLinkModal(true)}
             disabled={programEnrollment?.status === "banned"}
-            disabledTooltip={
-              programEnrollment?.status === "banned"
-                ? "You are banned from this program."
-                : undefined
-            }
-          />
+          >
+            Create Link
+          </CtaButton>
         )}
       </div>
       <PartnerLinksContext.Provider

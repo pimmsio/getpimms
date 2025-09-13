@@ -25,7 +25,10 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["var(--font-satoshi)", "system-ui", "sans-serif"],
+        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        jakarta: ["var(--font-jakarta)", "system-ui", "sans-serif"],
+        inter: ["var(--font-inter)", "system-ui", "sans-serif"],
+        display: ["var(--font-inter)", "system-ui", "sans-serif"],
         default: ["var(--font-inter)", "system-ui", "sans-serif"],
         mono: [
           "var(--font-geist-mono, ui-monospace)",
@@ -73,6 +76,8 @@ const config: Config = {
         blink: "blink 1.4s infinite both",
         // Custom pulse animation
         pulse: "pulse 1s linear infinite alternate",
+        // Shimmer animation for lead score bar
+        shimmer: "shimmer 2s infinite",
       },
       keyframes: {
         // Modal
@@ -190,8 +195,119 @@ const config: Config = {
             opacity: "1",
           },
         },
+        // Shimmer animation for lead score bar
+        shimmer: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
       },
       colors: {
+        // === OFFICIAL PIMMS BRAND COLORS ===
+        
+        // Primary Brand Blue
+        "brand-primary": {
+          DEFAULT: "#3970ff",
+          hover: "#2850d0",
+          light: "#f8fbff",
+          50: "#eff6ff",
+          100: "#dbeafe",
+          200: "#bfdbfe",
+          300: "#93c5fd",
+          400: "#60a5fa",
+          500: "#3970ff",
+          600: "#2563eb",
+          700: "#1d4ed8",
+          800: "#1e40af",
+          900: "#1e3a8a",
+        },
+
+        // Secondary Brand Blue
+        "brand-secondary": {
+          DEFAULT: "#2fcdfa",
+          light: "#ebfbfe",
+          dark: "#059dc7",
+        },
+
+        // Semantic Colors
+        green: {
+          DEFAULT: "#1ec198",
+          light: "#e6f4f1",
+          border: "#6bfbce",
+          300: "#6bfbce",
+          600: "#1ec198",
+        },
+
+        red: {
+          DEFAULT: "#f0174a",
+          light: "#ffe6e6",
+          border: "#ffc9c9",
+          300: "#ffb3b3",
+          400: "#ff9b9b",
+          600: "#f25555",
+        },
+
+        orange: {
+          DEFAULT: "#f59f00",
+          border: "#f59f00",
+        },
+
+        yellow: {
+          DEFAULT: "#ffc65a",
+          light: "#fff9e6",
+          border: "#ffe066",
+        },
+
+        // Vibrant Colors
+        "vibrant-blue": "#3970ff",
+        "vibrant-green": "#1ec198",
+        "vibrant-orange": "#f59f00",
+        "vibrant-red": "#f0174a",
+
+        // Data Visualization Colors
+        "data-clicks": "#3970ff",
+        "data-leads": "#ffc65a",
+        "data-sales": "#1ec198",
+
+        // System State Colors
+        success: {
+          DEFAULT: "#1ec198",
+          light: "#e6f4f1",
+          border: "#6bfbce",
+          300: "#6bfbce",
+          600: "#1ec198",
+        },
+
+        warning: {
+          DEFAULT: "#ffc65a",
+          light: "#fff9e6",
+          border: "#ffe066",
+        },
+
+        error: {
+          DEFAULT: "#f0174a",
+          light: "#ffe6e6",
+          border: "#ffc9c9",
+          300: "#ffb3b3",
+          400: "#ff9b9b",
+          600: "#f25555",
+        },
+
+        info: {
+          DEFAULT: "#3970ff",
+          light: "#f8fbff",
+          border: "#3970ff",
+        },
+
+        // Text Colors
+        "text-primary": "#08272e",
+        "text-secondary": "#5c5b61",
+        "text-muted": "#6b7280",
+
+        // Path and Stroke Colors
+        "path-neutral": "#e5e7eb",
+        "stroke-light": "rgba(0, 0, 0, 0.15)",
+        "stroke-medium": "rgba(0, 0, 0, 0.4)",
+
         brown: {
           50: "#fdf8f6",
           100: "#f2e8e5",
@@ -205,8 +321,7 @@ const config: Config = {
           900: "#43302b",
         },
 
-        // Light/dark mode colors
-
+        // Light/dark mode colors (preserved for backward compatibility)
         "bg-emphasis": "rgb(var(--bg-emphasis, 229 229 229) / <alpha-value>)",
         "bg-default": "rgb(var(--bg-default, 255 255 255) / <alpha-value>)",
         "bg-subtle": "rgb(var(--bg-subtle, 245 245 245) / <alpha-value>)",

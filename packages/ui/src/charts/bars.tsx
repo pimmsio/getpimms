@@ -54,7 +54,7 @@ export function Bars({
                 {/* Bar gradient */}
                 <LinearGradient
                   className={cn(
-                    s.colorClassName ?? "text-[#08272E]",
+                    s.colorClassName ?? "text-text-primary",
                     styles?.gradientClassName,
                   )}
                   id={`${s.id}-background`}

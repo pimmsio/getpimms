@@ -29,6 +29,7 @@ import {
   ArrowTurnLeft,
   Button,
   ButtonProps,
+  CtaButton,
   FloatingActionButton,
   Modal,
   TooltipContent,
@@ -319,24 +320,35 @@ export function CreateLinkButton({
     return () => document.removeEventListener("paste", handlePaste);
   }, []);
 
-  const CustomButton = floating ? FloatingActionButton : Button;
+  if (floating) {
+    return (
+      <FloatingActionButton
+        text="Create link"
+        shortcut="C"
+        disabledTooltip={
+          exceededLinks ? (
+            <TooltipContent
+              title="Your workspace has exceeded its monthly links limit. We're still collecting data on your existing links, but you need to upgrade to add more links."
+              cta={`Upgrade to ${nextPlan.name}`}
+              href={`/${slug}/upgrade`}
+            />
+          ) : undefined
+        }
+        onClick={() => setShowLinkBuilder(true)}
+        {...buttonProps}
+      />
+    );
+  }
 
   return (
-    <CustomButton
-      text="Create link"
-      shortcut="C"
-      disabledTooltip={
-        exceededLinks ? (
-          <TooltipContent
-            title="Your workspace has exceeded its monthly links limit. We're still collecting data on your existing links, but you need to upgrade to add more links."
-            cta={`Upgrade to ${nextPlan.name}`}
-            href={`/${slug}/upgrade`}
-          />
-        ) : undefined
-      }
+    <CtaButton
+      className="h-10 shadow-none"
+      disabled={exceededLinks}
       onClick={() => setShowLinkBuilder(true)}
       {...buttonProps}
-    />
+    >
+      Create link
+    </CtaButton>
   );
 }
 

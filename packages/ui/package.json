@@ -54,6 +54,8 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
+    "@dicebear/avataaars": "^9.2.4",
+    "@dicebear/core": "^9.2.4",
     "@floating-ui/react": "^0.26.20",
     "@internationalized/date": "^3.5.3",
     "@radix-ui/react-accordion": "^1.2.2",

@@ -1,20 +1,5 @@
-import { BlurImage, ClientOnly } from "@dub/ui";
+import { ClientOnly } from "@dub/ui";
 import { Suspense } from "react";
-
-const logos = [
-  "vercel",
-  "perplexity",
-  "prisma",
-  "tinybird",
-  "hashnode",
-  "cal",
-  "vercel",
-  "perplexity",
-  "prisma",
-  "tinybird",
-  "hashnode",
-  "cal",
-];
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -22,70 +7,62 @@ interface AuthLayoutProps {
 
 export const AuthLayout = ({ children }: AuthLayoutProps) => {
   return (
-    <div className="grid w-full grid-cols-1 md:grid-cols-5">
-      <div className="col-span-1 flex min-h-screen flex-col items-center justify-between sm:col-span-3 p-3 bg-zinc-100">
-        <div className="flex h-full w-full flex-col items-center justify-center">
-          <ClientOnly className="relative flex w-full flex-col items-center justify-center">
-            <Suspense>{children}</Suspense>
-          </ClientOnly>
+    <div className="w-screen sm:w-full min-h-screen bg-[#fafafa] relative overflow-hidden">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div
+          className="absolute left-0 top-0 aspect-square w-full overflow-hidden sm:aspect-[2/1] opacity-40"
+          style={{
+            maskImage: "radial-gradient(70% 100% at 50% 0%, black 70%, transparent)"
+          }}
+        >
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `conic-gradient(from -45deg at 50% -10%, #3970ff 0deg, #2fcdfa 120deg, #3970ff 240deg, #2fcdfa 360deg)`,
+            }}
+          />
+          <div className="absolute inset-0 backdrop-blur-[120px]" />
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto relative z-10 grid w-full grid-cols-1 lg:grid-cols-2 min-h-screen">
+        <div className="hidden lg:flex flex-col justify-center p-12 relative">
+          <div className="space-y-8">
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <h1 className="text-4xl font-bold text-gray-900 leading-tight font-jakarta">
+                  Turn More Clicks into Sales
+                </h1>
+                <p className="text-lg text-gray-600 leading-relaxed max-w-md">
+                  For creators, growth experts, and marketing teams aiming to collect 1000+ leads weekly, book more meetings, and grow revenue.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="fixed bottom-0 pl-10 left-0 grid gap-1 py-1 bg-white w-full">
-          <p className="text-xs text-neutral-600">
-            © {new Date().getFullYear()} PIMMS. 
-          </p>
-          <div className="flex gap-3 text-center text-xs text-neutral-500">
-            <a
-              href="https://pimms.io/legal/privacy"
-              target="_blank"
-              className="hover:text-neutral-800"
-            >
-              Privacy Policy
-            </a>
-            <a
-              href="https://pimms.io/legal/terms"
-              target="_blank"
-              className="hover:text-neutral-800"
-            >
-              Terms of Service
-            </a>
-            <a
-              href="https://github.com/getpimms/pim-ms"
-              target="_blank"
-              className="hover:text-neutral-800"
-            >
-              GitHub
-            </a>
+        <div className="flex items-center justify-center min-h-screen px-4 py-6 lg:p-6">
+          <div className="w-full lg:max-w-md">
+            <ClientOnly className="relative flex w-full flex-col items-center justify-center">
+              <Suspense>{children}</Suspense>
+            </ClientOnly>
           </div>
         </div>
       </div>
 
-      <div className="hidden h-full flex-col justify-center space-y-12 md:col-span-2 md:flex bg-white shadow-[inset_0_0_10px_0_rgba(0,0,0,0.1)] overflow-hidden">
-        <div className="ml-12 h-1/2 w-[140%] rounded shadow-md">
-          <BlurImage
-            alt="PIMMS Analytics"
-            src="https://assets.pimms.io/dashboard.jpg?v=3"
-            width={2400}
-            height={1260}
-            className="aspect-[2400/1260] h-full rounded object-cover object-left-top"
-          />
+      <div className="hidden lg:block absolute bottom-6 left-12 text-xs text-gray-500">
+        <p className="mb-2">© {new Date().getFullYear()} PIMMS.</p>
+        <div className="flex gap-4 text-gray-400">
+          <a href="https://pimms.io/legal/privacy" target="_blank" className="hover:text-gray-600 transition-colors">
+            Privacy Policy
+          </a>
+          <a href="https://pimms.io/legal/terms" target="_blank" className="hover:text-gray-600 transition-colors">
+            Terms of Service
+          </a>
+          <a href="https://github.com/getpimms/pim-ms" target="_blank" className="hover:text-gray-600 transition-colors">
+            GitHub
+          </a>
         </div>
-        {/* <a
-          href="https://pimms.io/customers"
-          target="_blank"
-          className="animate-infinite-scroll flex items-center space-x-4"
-        >
-          {logos.map((logo, idx) => (
-            <BlurImage
-              alt={`${logo} logo`}
-              key={idx}
-              src={`https://assets.pimms.io/clients/${logo}.svg`}
-              width={520}
-              height={182}
-              className="h-12 grayscale transition-all hover:grayscale-0"
-            />
-          ))}
-        </a> */}
       </div>
     </div>
   );

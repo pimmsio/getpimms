@@ -47,6 +47,8 @@ export const LinksDisplayContext = createContext<{
   setSort: Dispatch<SetStateAction<LinksSortSlug>>;
   showArchived: boolean;
   setShowArchived: Dispatch<SetStateAction<boolean>>;
+  switchPosition: boolean;
+  setSwitchPosition: Dispatch<SetStateAction<boolean>>;
   isDirty: boolean;
   persist: () => void;
   reset: () => void;
@@ -59,6 +61,8 @@ export const LinksDisplayContext = createContext<{
   setSort: () => {},
   showArchived: false,
   setShowArchived: () => {},
+  switchPosition: false,
+  setSwitchPosition: () => {},
   /** Whether the current values differ from the persisted values */
   isDirty: false,
   /** Updates the persisted values to the current values */
@@ -81,6 +85,7 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
     sortBy: linksSortOptions[0].slug,
     showArchived: false,
     displayProperties: defaultLinksDisplayProperties,
+    switchPosition: false,
   });
 
   const [viewMode, setViewMode, resetViewMode] = useLinksDisplayOption(
@@ -104,10 +109,14 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
   const [displayProperties, setDisplayProperties, resetDisplayProperties] =
     useLinksDisplayOption("displayProperties", persisted!);
 
+  const [switchPosition, setSwitchPosition, resetSwitchPosition] =
+    useLinksDisplayOption("switchPosition", persisted!);
+
   const isDirty = useMemo(() => {
     if (viewMode !== persisted?.viewMode) return true;
     if (sortBy !== persisted?.sortBy) return true;
     if (showArchived !== persisted?.showArchived) return true;
+    if (switchPosition !== persisted?.switchPosition) return true;
     if (
       displayProperties.slice().sort().join(",") !==
       persisted?.displayProperties.slice().sort().join(",")
@@ -120,6 +129,7 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
     viewMode,
     sortBy,
     showArchived,
+    switchPosition,
     displayProperties,
   ]);
 
@@ -134,6 +144,8 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
         setSort,
         showArchived,
         setShowArchived,
+        switchPosition: switchPosition ?? false,
+        setSwitchPosition,
         isDirty,
         persist: () =>
           setPersisted({
@@ -141,12 +153,14 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
             sortBy,
             showArchived,
             displayProperties,
+            switchPosition,
           }),
         reset: () => {
           resetViewMode();
           resetDisplayProperties();
           resetSort();
           resetShowArchived();
+          resetSwitchPosition();
         },
       }}
     >
