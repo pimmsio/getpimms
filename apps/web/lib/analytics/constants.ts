@@ -138,6 +138,7 @@ export const INTERVAL_DATA: Record<
 export const VALID_ANALYTICS_ENDPOINTS = [
   "count",
   "timeseries",
+  "link_timeseries", // New pipe for link insights table
   "continents",
   "regions",
   "countries",

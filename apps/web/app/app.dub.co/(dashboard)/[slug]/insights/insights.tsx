@@ -2,11 +2,12 @@
 
 import { useContext } from "react";
 import AnalyticsProvider, { AnalyticsContext } from "@/ui/analytics/analytics-provider";
+import { LinksDisplayProvider } from "@/ui/links/links-display-provider";
 import Toggle from "@/ui/analytics/toggle";
-import InsightsTable from "./insights-table";
 import useWorkspace from "@/lib/swr/use-workspace";
 import EmptyState from "@/ui/shared/empty-state";
 import { CoinsIcon, TargetIcon } from "lucide-react";
+import InsightsTable from "./insights-table";
 
 export default function Insights({
   staticDomain,
@@ -19,12 +20,14 @@ export default function Insights({
 }) {
   return (
     <AnalyticsProvider {...{ staticDomain, staticUrl, adminPage }}>
-      <div className="pb-10">
-        <Toggle page="links" />
-        <div className="mx-auto flex max-w-screen-xl flex-col gap-3 px-3 lg:px-10">
-          <InsightsTableContainer />
+      <LinksDisplayProvider>
+        <div className="pb-10">
+          <Toggle page="links" />
+          <div className="mx-auto flex w-full flex-col gap-3 px-3 lg:px-10">
+            <InsightsTableContainer />
+          </div>
         </div>
-      </div>
+      </LinksDisplayProvider>
     </AnalyticsProvider>
   );
 }

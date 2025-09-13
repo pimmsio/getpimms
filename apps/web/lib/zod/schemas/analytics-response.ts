@@ -60,6 +60,29 @@ export const analyticsResponse = {
     })
     .openapi({ ref: "AnalyticsTimeseries" }),
 
+  link_timeseries: z
+    .object({
+      link_id: z.string().describe("The unique ID of the link"),
+      start: z.string().describe("The starting timestamp of the interval"),
+      clicks: z
+        .number()
+        .describe("The number of clicks in the interval for this link")
+        .default(0),
+      leads: z
+        .number()
+        .describe("The number of leads in the interval for this link")
+        .default(0),
+      sales: z
+        .number()
+        .describe("The number of sales in the interval for this link")
+        .default(0),
+      saleAmount: z
+        .number()
+        .describe("The total amount of sales in the interval for this link, in cents")
+        .default(0),
+    })
+    .openapi({ ref: "AnalyticsLinkTimeseries" }),
+
   continents: z
     .object({
       continent: z

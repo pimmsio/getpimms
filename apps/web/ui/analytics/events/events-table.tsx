@@ -10,7 +10,7 @@ import useListIntegrations from "@/lib/swr/use-list-integrations";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { ClickEvent, LeadEvent, SaleEvent } from "@/lib/types";
 import EmptyState from "@/ui/shared/empty-state";
-import { UrlDecompositionTooltip } from "@/ui/shared/url-decomposition-tooltip";
+import { LinkCell } from "@/ui/shared/link-cell";
 import {
   LinkLogo,
   ProgressBar,
@@ -20,18 +20,16 @@ import {
   useRouterStuff,
   useTable,
 } from "@dub/ui";
-import { ArrowTurnRight2, Globe } from "@dub/ui/icons";
+import { Globe } from "@dub/ui/icons";
 import {
-  CONTINENTS,
-  COUNTRIES,
-  REGIONS,
   capitalize,
   cn,
+  CONTINENTS,
+  COUNTRIES,
   currencyFormatter,
   fetcher,
-  getApexDomain,
-  getPrettyUrl,
   OG_AVATAR_URL,
+  REGIONS,
   timeAgo,
 } from "@dub/utils";
 import { Cell, ColumnDef } from "@tanstack/react-table";
@@ -140,11 +138,14 @@ export default function EventsTable({
             return (
               <Link
                 href={`/${slug}/customers/${customer.id}`}
-                className="flex w-full items-center gap-3 px-4 py-2 transition-colors hover:bg-neutral-50 bg-white"
+                className="flex w-full items-center gap-3 bg-white px-4 py-2 transition-colors hover:bg-neutral-50"
               >
                 <img
                   alt={display}
-                  src={customer.avatar || `${OG_AVATAR_URL}${customer.id}&name=${encodeURIComponent(customer.name || customer.email || '')}`}
+                  src={
+                    customer.avatar ||
+                    `${OG_AVATAR_URL}${customer.id}&name=${encodeURIComponent(customer.name || customer.email || "")}`
+                  }
                   className="size-10 shrink-0 rounded-full"
                 />
                 <div className="min-w-0">
@@ -210,46 +211,17 @@ export default function EventsTable({
           cell: ({ getValue }) => {
             const link = getValue();
             return (
-              <div className="flex items-center gap-3">
-                <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full border border-neutral-100 bg-gradient-to-t from-neutral-100">
-                  <LinkLogo
-                    apexDomain={getApexDomain(link.shortLink)}
-                    className="!size-6 !rounded-full object-cover"
-                    imageProps={{
-                      style: { borderRadius: "50%" },
-                    }}
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <a
-                      href={link.shortLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="truncate text-sm font-semibold text-neutral-800 hover:text-black hover:underline"
-                      title={link.shortLink}
-                    >
-                      {getPrettyUrl(link.shortLink)}
-                    </a>
-                  </div>
-                  {link.url && (
-                    <div className="mt-0.5 flex items-center gap-1 min-w-0 max-w-full">
-                      <ArrowTurnRight2 className="h-3 w-3 shrink-0 text-neutral-400" />
-                      <UrlDecompositionTooltip url={link.url} className="min-w-0 flex-1">
-                        <a
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block w-full truncate max-w-[300px] text-xs text-neutral-500 hover:text-neutral-700 hover:underline hover:underline-offset-2"
-                          title={link.url}
-                        >
-                          {getPrettyUrl(link.url)}
-                        </a>
-                      </UrlDecompositionTooltip>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <LinkCell
+                link={{
+                  domain: link.domain,
+                  key: link.key,
+                  url: link.url,
+                }}
+                variant="table"
+                showCopyButton={false}
+                className="min-w-0 flex-1"
+                maxWidth="280px"
+              />
             );
           },
         },

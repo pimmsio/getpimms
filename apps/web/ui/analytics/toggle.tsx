@@ -68,6 +68,7 @@ import { ShareButton } from "./share-button";
 import { useAnalyticsFilterOption } from "./utils";
 import RefererIcon from "./referer-icon";
 import { WebhookErrorsWarning } from "../layout/sidebar/webhook-errors-warning";
+import AnalyticsOptions from "./analytics-options";
 
 export default function Toggle({
   page = "analytics",
@@ -832,6 +833,18 @@ export default function Toggle({
         // Regular range
         if (!range || !range.from || !range.to) return;
 
+        // For link insights page, validate that custom range doesn't exceed 1 month
+        if (page === "links") {
+          const diffTime = Math.abs(range.to.getTime() - range.from.getTime());
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          
+          if (diffDays > 30) {
+            // TODO: Show error message to user
+            console.warn("Link insights are limited to a maximum of 1 month of data");
+            return;
+          }
+        }
+
         queryParams({
           del: "preset",
           set: {
@@ -841,7 +854,13 @@ export default function Toggle({
           scroll: false,
         });
       }}
-      presets={INTERVAL_DISPLAYS.map(({ display, value, shortcut }) => {
+      presets={INTERVAL_DISPLAYS.filter(({ value }) => {
+        // For link insights page, limit to 1 month maximum
+        if (page === "links") {
+          return !["90d", "6m", "1y", "mtd", "qtd", "ytd", "all"].includes(value);
+        }
+        return true;
+      }).map(({ display, value, shortcut }) => {
         const requiresUpgrade =
           !adminPage &&
           (partnerPage ||

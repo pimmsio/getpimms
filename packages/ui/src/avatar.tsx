@@ -1,7 +1,4 @@
 import { cn } from "@dub/utils";
-import { sha256 } from "js-sha256";
-import { useState } from "react";
-import { DicebearAvatar } from "./dicebear-avatar";
 
 type User = {
   id?: string | null | undefined;
@@ -13,7 +10,7 @@ type User = {
 export function getUserAvatarUrl(user?: User | null) {
   if (user?.image) return user.image;
 
-  // Return null to indicate we should use DicebearAvatar instead
+  // Return null to indicate we should use sober avatar instead
   return null;
 }
 
@@ -35,6 +32,8 @@ export function Avatar({
     );
   }
 
+  console.log('user', user);
+
   const avatarUrl = getUserAvatarUrl(user);
 
   if (avatarUrl) {
@@ -52,15 +51,20 @@ export function Avatar({
     );
   }
 
-  // Use DicebearAvatar as fallback
+  // Use sober avatar for user profiles (more professional look)
+  const seed = user.id || user.email || 'anonymous';
+  const soberAvatarUrl = `https://app.pimms.io/api/og/avatar?sober=true&seed=${encodeURIComponent(seed)}${user.name ? `&name=${encodeURIComponent(user.name)}` : ''}`;
+  
   return (
-    <DicebearAvatar
-      seed={user.id || user.email || 'anonymous'}
+    <img
+      alt={`Avatar for ${user.name || user.email || 'Anonymous'}`}
+      referrerPolicy="no-referrer"
+      src={soberAvatarUrl}
       className={cn(
         "h-10 w-10 rounded-full border border-neutral-300",
         className,
       )}
-      alt={`Avatar for ${user.name || user.email || 'Anonymous'}`}
+      draggable={false}
     />
   );
 }
@@ -72,11 +76,16 @@ export function TokenAvatar({
   id: string;
   className?: string;
 }) {
+  // Use sober avatar for tokens as well
+  const soberAvatarUrl = `https://app.pimms.io/api/og/avatar?sober=true&seed=${encodeURIComponent(id)}`;
+  
   return (
-    <DicebearAvatar
-      seed={id}
-      className={cn("h-10 w-10 rounded-full", className)}
+    <img
       alt="Token avatar"
+      referrerPolicy="no-referrer"
+      src={soberAvatarUrl}
+      className={cn("h-10 w-10 rounded-full border border-neutral-300", className)}
+      draggable={false}
     />
   );
 }

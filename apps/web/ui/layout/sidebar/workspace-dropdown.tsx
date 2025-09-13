@@ -47,7 +47,7 @@ export function WorkspaceDropdown() {
       return {
         ...selectedWorkspace,
         image:
-          selectedWorkspace.logo || `${OG_AVATAR_URL}${selectedWorkspace.name}`,
+          selectedWorkspace.logo || `https://avatar.vercel.sh/${selectedWorkspace.id}`,
       };
 
       // return personal account selector if there's no workspace or error (user doesn't have access to workspace)

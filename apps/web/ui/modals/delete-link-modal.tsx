@@ -11,7 +11,7 @@ import {
   useState,
 } from "react";
 import { toast } from "sonner";
-import { SimpleLinkCard } from "../links/simple-link-card";
+import { LinkCell } from "../shared/link-cell";
 
 type DeleteLinkModalProps = {
   showDeleteLinkModal: boolean;
@@ -67,7 +67,19 @@ function DeleteLinkModalInner({
 
         <div className="scrollbar-hide mt-4 flex max-h-[190px] flex-col gap-2 overflow-y-auto rounded border border-neutral-100 p-2">
           {links.map((link) => (
-            <SimpleLinkCard key={link.id} link={link} />
+            <LinkCell 
+              key={link.id} 
+              link={{
+                domain: link.domain,
+                key: link.key,
+                url: link.url,
+                title: link.title,
+                comments: link.comments,
+                archived: link.archived,
+              }}
+              variant="card"
+              showCopyButton={false}
+            />
           ))}
         </div>
       </div>

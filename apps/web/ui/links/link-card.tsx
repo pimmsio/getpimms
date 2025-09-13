@@ -2,11 +2,9 @@ import useFolder from "@/lib/swr/use-folder";
 import useWorkspace from "@/lib/swr/use-workspace";
 import {
   CardList,
-  ExpandingArrow,
   useIntersectionObserver,
   useMediaQuery,
 } from "@dub/ui";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   createContext,
@@ -19,10 +17,9 @@ import {
   useRef,
   useState,
 } from "react";
-import { FolderIcon } from "../folders/folder-icon";
 import { LinkDetailsColumn } from "./link-details-column";
 import { LinkTests } from "./link-tests";
-import { LinkTitleColumn } from "./link-title-column";
+import { LinkCell } from "../shared/link-cell";
 import { ResponseLink } from "./links-container";
 
 export const LinkCardContext = createContext<{
@@ -119,7 +116,13 @@ const LinkCardInner = memo(({ link }: { link: ResponseLink }) => {
       >
         <div className="flex items-center gap-5 px-4 py-2.5 text-sm sm:gap-8 md:gap-12">
           <div ref={ref} className="min-w-0 grow">
-            <LinkTitleColumn link={link} />
+            <LinkCell 
+              link={link}
+              variant="links-page"
+              showCopyButton={true}
+              showBadges={true}
+              maxWidth="100%"
+            />
           </div>
           <LinkDetailsColumn link={link} />
         </div>

@@ -2,8 +2,8 @@
 
 import { useWebhookErrors } from "@/lib/swr/use-webhook-errors";
 import useWorkspace from "@/lib/swr/use-workspace";
-import { UrlDecompositionTooltip } from "@/ui/shared/url-decomposition-tooltip";
 import { OnboardingSupportSection } from "@/ui/onboarding";
+import { UrlDecompositionTooltip } from "@/ui/shared/url-decomposition-tooltip";
 import { Button, CrownSmall, Tooltip } from "@dub/ui";
 import { timeAgo } from "@dub/utils";
 import { Info, Settings, X } from "lucide-react";
@@ -27,14 +27,16 @@ export function WebhookErrorsModal({ onClose }: WebhookErrorsModalProps) {
         <Tooltip
           content={
             <div className="max-w-xs p-2">
-              <div className="text-sm font-medium text-gray-900 mb-2">
+              <div className="mb-2 text-sm font-medium text-gray-900">
                 Lead missed - Possible reasons:
               </div>
-              <div className="text-xs text-gray-700 space-y-1">
+              <div className="space-y-1 text-xs text-gray-700">
                 <div>• Person accessed form without Pimms link</div>
-                <div>• Person used Pimms link but conversion tracking disabled</div>
+                <div>
+                  • Person used Pimms link but conversion tracking disabled
+                </div>
               </div>
-              <div className="text-xs text-gray-600 mt-2">
+              <div className="mt-2 text-xs text-gray-600">
                 Check your settings and ensure you always share Pimms links.
               </div>
             </div>
@@ -100,7 +102,8 @@ export function WebhookErrorsModal({ onClose }: WebhookErrorsModalProps) {
             <Info className="mt-0.5 h-5 w-5 text-gray-600" />
             <div className="text-sm text-gray-700">
               <strong>Tip:</strong> Always share Pimms links for example on
-              emails and social posts to ensure your conversions are tracked and you don't miss potential leads.
+              emails and social posts to ensure your conversions are tracked and
+              you don't miss potential leads.
             </div>
           </div>
         </div>
@@ -170,10 +173,7 @@ export function WebhookErrorsModal({ onClose }: WebhookErrorsModalProps) {
                   )}
                   <div className="truncate">
                     {error.url ? (
-                      <UrlDecompositionTooltip
-                        url={error.url}
-                        className="max-w-[300px] truncate text-gray-900"
-                      >
+                      <UrlDecompositionTooltip url={error.url}>
                         {error.url}
                       </UrlDecompositionTooltip>
                     ) : (
