@@ -2,19 +2,18 @@ import { SINGULAR_ANALYTICS_ENDPOINTS } from "@/lib/analytics/constants";
 import { useRouterStuff } from "@dub/ui";
 import {
   FlagWavy,
-  LocationPin,
   MapPosition,
   OfficeBuilding,
 } from "@dub/ui/icons";
 import { CONTINENTS, COUNTRIES, REGIONS } from "@dub/utils";
 import { useContext, useState } from "react";
 import { AnalyticsCard } from "./analytics-card";
-import { AnalyticsLoadingSpinner } from "./analytics-loading-spinner";
 import { AnalyticsContext } from "./analytics-provider";
 import MixedBarList from "./mixed-bar-list";
 import ContinentIcon from "./continent-icon";
 import WorldMap from "./world-map";
 import { useAnalyticsFilterOption } from "./utils";
+import { AnalyticsLoadingSpinner } from "./analytics-loading-spinner";
 
 export default function Locations() {
   const { queryParams, searchParams } = useRouterStuff();
@@ -108,7 +107,7 @@ export default function Locations() {
             )
           ) : (
             <div className="flex h-[300px] items-center justify-center">
-              <p className="text-sm text-neutral-600">No data</p>
+              <p className="text-sm text-neutral-600">No data available</p>
             </div>
           )
         ) : (

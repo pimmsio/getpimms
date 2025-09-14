@@ -194,11 +194,11 @@ function createPreviewBlock(
         </div>
         <div class="card-value" style="color:#002e25;">${formatMoney(sales)}</div>
       </div>
-      <!-- Recent visits (neutral) -->
+      <!-- Recent (neutral) -->
       <div class="card" style="border:1px solid #E5E7EB;background:linear-gradient(135deg,#F8FAFC,#F3F4F6);">
         <div class="card-title" style="color:#4b5563;">
           <span class="dot" style="background:#9ca3af"></span>
-          <span>Recent visits</span>
+          <span>Recent</span>
         </div>
         <div class="card-value" style="color:#111827;">${recentVisitors}</div>
       </div>

@@ -2,14 +2,15 @@
 
 import { useMediaQuery } from "@dub/ui";
 import { COUNTRIES } from "@dub/utils";
-import { $ } from "@upstash/redis/zmscore-b6b93f14";
-import { motion } from "framer-motion";
 import { useState } from "react";
+import { 
+  UnifiedAnalyticsTooltip, 
+  createBaseMetrics, 
+  createKeyMetrics} from "./unified-analytics-tooltip";
 import {
   ComposableMap,
   Geographies,
   Geography,
-  ZoomableGroup,
 } from "react-simple-maps";
 
 interface CountryData {
@@ -32,6 +33,8 @@ interface TooltipData {
   revenue: number;
   conversionRate: number;
   revenuePerVisitor: number;
+  leads: number;
+  sales: number;
   x: number;
   y: number;
 }
@@ -237,6 +240,8 @@ export default function WorldMap({ data, maxVisitors }: WorldMapProps) {
       revenue: countryData.saleAmount / 100, // Convert from cents to dollars
       conversionRate,
       revenuePerVisitor,
+      leads: countryData.leads,
+      sales: countryData.sales,
       x,
       y,
     });
@@ -305,55 +310,26 @@ export default function WorldMap({ data, maxVisitors }: WorldMapProps) {
           </Geographies>
       </ComposableMap>
 
-      {/* Tooltip */}
+      {/* Unified Tooltip */}
       {hoveredCountry && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="fixed pointer-events-none z-50 rounded border border-neutral-200 bg-white shadow-sm w-[180px]"
-          style={{
-            left: Math.max(10, Math.min(hoveredCountry.x + 15, window.innerWidth - 195)),
-            top: Math.max(10, hoveredCountry.y - 80),
-          }}
-        >
-          <div className="border-b border-neutral-100 px-3 py-2">
-            <div className="text-sm font-medium text-neutral-900 truncate">
-              {hoveredCountry.country}
-            </div>
-          </div>
-          
-          <div className="px-3 py-2 text-sm space-y-1.5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <div className="h-2 w-2 shrink-0 rounded bg-blue-400 opacity-50"></div>
-                <span className="text-neutral-600 text-xs">Visitors</span>
-              </div>
-              <span className="font-medium text-neutral-900 tabular-nums text-xs">
-                {hoveredCountry.visitors.toLocaleString()}
-              </span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <div className="h-2 w-2 shrink-0 rounded bg-orange-400 opacity-50"></div>
-                <span className="text-neutral-600 text-xs">Revenue</span>
-              </div>
-              <span className="font-medium text-neutral-900 tabular-nums text-xs">
-                ${hoveredCountry.revenue.toFixed(0)}
-              </span>
-            </div>
-            
-            <div className="flex items-center justify-between pt-1.5 border-t border-neutral-100">
-              <span className="text-neutral-600 text-xs">$/visitor</span>
-              <span className="font-medium text-neutral-900 tabular-nums text-xs">${hoveredCountry.revenuePerVisitor.toFixed(2)}</span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-neutral-600 text-xs">Conv. rate</span>
-              <span className="font-medium text-neutral-900 tabular-nums text-xs">{hoveredCountry.conversionRate.toFixed(2)}%</span>
-            </div>
-          </div>
-        </motion.div>
+        <UnifiedAnalyticsTooltip 
+          sections={[
+            { type: "header", title: hoveredCountry.country },
+            createBaseMetrics({
+              clicks: hoveredCountry.visitors,
+              leads: hoveredCountry.leads,
+              sales: hoveredCountry.sales,
+              saleAmount: hoveredCountry.revenue * 100,
+            }),
+            createKeyMetrics({
+              clicks: hoveredCountry.visitors,
+              leads: hoveredCountry.leads,
+              sales: hoveredCountry.sales,
+              saleAmount: hoveredCountry.revenue * 100,
+            }),
+          ]}
+          position={{ x: hoveredCountry.x, y: hoveredCountry.y }}
+        />
       )}
 
     </div>

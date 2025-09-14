@@ -1,21 +1,18 @@
 import { useWorkspacePreferences } from "@/lib/swr/use-workspace-preferences";
 import { LinkLogo, useRouterStuff } from "@dub/ui";
-import { Globe, Hyperlink } from "@dub/ui/icons";
+import { Hyperlink } from "@dub/ui/icons";
 import { getApexDomain } from "@dub/utils";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useState } from "react";
 import { AnalyticsCard } from "./analytics-card";
 import { AnalyticsLoadingSpinner } from "./analytics-loading-spinner";
-import { AnalyticsContext } from "./analytics-provider";
 import MixedBarList from "./mixed-bar-list";
 import { useAnalyticsFilterOption } from "./utils";
 
 export default function TopLinks() {
   const { queryParams, searchParams } = useRouterStuff();
 
-  const { selectedTab, saleUnit } = useContext(AnalyticsContext);
-  const dataKey = selectedTab === "sales" ? saleUnit : "count";
-
   const [tab, setTab] = useState<"links" | "urls">("links");
+
   const { data } = useAnalyticsFilterOption({
     groupBy: `top_${tab}`,
   });
@@ -41,13 +38,10 @@ export default function TopLinks() {
 
   return (
     <AnalyticsCard
-      tabs={[
-        { id: "links", label: "Deeplinks", icon: Hyperlink },
-        { id: "urls", label: "Destination URLs", icon: Globe },
-      ]}
+      tabs={[{ id: "links", label: "Deeplinks", icon: Hyperlink }]}
       expandLimit={8}
       hasMore={(data?.length ?? 0) > 8}
-      selectedTabId={tab}
+      selectedTabId="links"
       onSelectTab={setTab}
     >
       {({ limit, setShowModal }) =>
@@ -96,7 +90,7 @@ export default function TopLinks() {
             />
           ) : (
             <div className="flex h-[300px] items-center justify-center">
-              <p className="text-sm text-neutral-600">No data</p>
+              <p className="text-sm text-neutral-600">No data available</p>
             </div>
           )
         ) : (

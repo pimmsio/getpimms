@@ -15,14 +15,14 @@ export function AnalyticsLoadingSpinner() {
         <Lock className="h-5 w-5 text-neutral-500" />
       </div>
       <p className="mt-2 text-sm text-neutral-500">
-        {nextPlan.name} plan required to view more analytics
+        {nextPlan?.name} plan required to view more analytics
       </p>
       <Link
         href={slug ? `/${slug}/upgrade` : "https://pimms.io/pricing"}
         {...(slug ? {} : { target: "_blank" })}
         className="w-full rounded border border-black bg-black px-3 py-1.5 text-center text-sm text-white transition-all hover:bg-neutral-800 hover:ring-0 hover:ring-transparent"
       >
-        Upgrade to {nextPlan.name}
+        Upgrade to {nextPlan?.name}
       </Link>
     </div>
   ) : (

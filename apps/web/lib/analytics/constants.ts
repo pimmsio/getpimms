@@ -150,6 +150,7 @@ export const VALID_ANALYTICS_ENDPOINTS = [
   "triggers",
   "referers",
   "referer_urls",
+  "channels", // New endpoint for channel analytics
   "top_links",
   "top_urls",
   "utm_sources",
@@ -168,6 +169,7 @@ export const SINGULAR_ANALYTICS_ENDPOINTS = {
   browsers: "browser",
   referers: "referer",
   referer_urls: "refererUrl",
+  channels: "channel",
   os: "os",
   triggers: "trigger",
   utm_sources: "utm_source",
@@ -193,6 +195,7 @@ export const VALID_ANALYTICS_FILTERS = [
   "trigger",
   "referer",
   "refererUrl",
+  "channel",
   "url",
   "tagId",
   "folderId",
@@ -219,6 +222,7 @@ export const DIMENSIONAL_ANALYTICS_FILTERS = [
   "trigger",
   "referer",
   "refererUrl",
+  "channel",
   "url",
   "qr", // deprecated, but keeping for now for backwards compatibility
   "utm_source",

@@ -9,6 +9,12 @@ import { useContext, useMemo } from "react";
 import useSWR from "swr";
 import { AnalyticsLoadingSpinner } from "./analytics-loading-spinner";
 import { AnalyticsContext } from "./analytics-provider";
+import { 
+  UnifiedAnalyticsTooltip, 
+  createBaseMetrics, 
+  createKeyMetrics,
+  type TooltipSection 
+} from "./unified-analytics-tooltip";
 import { MixedAreasAndBars } from "./mixed-areas-bars";
 
 export default function MixedAnalyticsChart({
@@ -210,14 +216,14 @@ export default function MixedAnalyticsChart({
   return (
     <>
       {data ? (
-        <div className="mx-4 mt-4 mb-4 grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto">
+        <div className="mx-4 mt-4 mb-4 grid grid-cols-3 gap-1 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto">
           {/* Clicks Card */}
-          <div className="rounded-xl bg-brand-primary-light py-3 px-4 border border-brand-primary/10 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-2 text-sm text-neutral-600 mb-2">
-              <div className="w-2 h-2 bg-brand-primary rounded-full"></div>
+          <div className="rounded-lg py-2 px-2 sm:rounded-xl sm:py-3 sm:px-4 bg-brand-primary-light border border-brand-primary/10 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
+              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-brand-primary rounded-full"></div>
               <span>Clics</span>
             </div>
-            <div className="text-xl font-bold text-gray-800">
+            <div className="text-sm sm:text-xl font-bold text-gray-800">
               {additionalMetrics.clicks > 999
                 ? (additionalMetrics.clicks / 1000).toFixed(1) + "k"
                 : additionalMetrics.clicks.toLocaleString()}
@@ -225,12 +231,12 @@ export default function MixedAnalyticsChart({
           </div>
 
           {/* Leads Card */}
-          <div className="rounded-xl bg-data-leads/15 py-3 px-4 border border-data-leads/20 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-2 text-sm text-neutral-600 mb-2">
-              <div className="w-2 h-2 bg-data-leads rounded-full"></div>
+          <div className="rounded-lg py-2 px-2 sm:rounded-xl sm:py-3 sm:px-4 bg-data-leads/15 border border-data-leads/20 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
+              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-data-leads rounded-full"></div>
               <span>Leads</span>
             </div>
-            <div className="text-xl font-bold text-gray-800">
+            <div className="text-sm sm:text-xl font-bold text-gray-800">
               {additionalMetrics.leads > 999
                 ? (additionalMetrics.leads / 1000).toFixed(1) + "k"
                 : additionalMetrics.leads.toLocaleString()}
@@ -259,12 +265,12 @@ export default function MixedAnalyticsChart({
           </div> */}
 
           {/* Sales Card */}
-          <div className="rounded-xl bg-data-sales/15 py-3 px-4 border border-data-sales/20 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-2 text-sm text-neutral-600 mb-2">
-              <div className="w-2 h-2 bg-data-sales rounded-full"></div>
+          <div className="rounded-lg py-2 px-2 sm:rounded-xl sm:py-3 sm:px-4 bg-data-sales/15 border border-data-sales/20 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
+              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-data-sales rounded-full"></div>
               <span>Ventes</span>
             </div>
-            <div className="text-xl font-bold text-gray-800">
+            <div className="text-sm sm:text-xl font-bold text-gray-800">
               €{additionalMetrics.saleAmount > 999
                 ? (additionalMetrics.saleAmount / 1000).toFixed(1) + "k"
                 : additionalMetrics.saleAmount.toLocaleString()}
@@ -273,53 +279,54 @@ export default function MixedAnalyticsChart({
 
           {/* Only show recent visitors for 24h hourly data */}
           {additionalMetrics.showRecentVisitors && (
-            <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
-              <div className="flex items-center gap-2 text-sm text-neutral-600 mb-2">
-                <div className="w-2 h-2 animate-pulse rounded-full bg-gray-400"></div>
-                <span>Recent visits</span>
-              </div>
-              <div className="text-xl font-bold text-gray-800">
+            <div className="rounded-lg py-2 px-2 sm:rounded-xl sm:py-3 sm:px-4 bg-gray-50 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
+                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 animate-pulse rounded-full bg-gray-400"></div>
+                <span>Recent</span>
+                <InfoTooltip content="Recent visitors - Number of visitors in the last 2 hours" />
+                </div>
+              <div className="text-sm sm:text-xl font-bold text-gray-800">
                 {additionalMetrics.recentVisitors}
               </div>
             </div>
           )}
 
-          <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1.5 text-sm text-neutral-600 mb-2">
+          <div className="rounded-lg py-2 px-2 sm:rounded-xl sm:py-3 sm:px-4 bg-gray-50 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
               <span>RPC</span>
               <InfoTooltip content="Revenue Per Click - Average revenue generated per click on your links" />
             </div>
-            <div className="text-xl font-bold text-gray-800">
+            <div className="text-sm sm:text-xl font-bold text-gray-800">
               ${(additionalMetrics.revenuePerClick || 0).toFixed(1)}
             </div>
           </div>
 
-          <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1.5 text-sm text-neutral-600 mb-2">
+          <div className="rounded-lg py-2 px-2 sm:rounded-xl sm:py-3 sm:px-4 bg-gray-50 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
               <span>CVR</span>
               <InfoTooltip content="Conversion Rate - Percentage of visitors who become qualified leads" />
             </div>
-            <div className="text-xl font-bold text-gray-800">
+            <div className="text-sm sm:text-xl font-bold text-gray-800">
               {Math.round(additionalMetrics.clickToLeadRate || 0)}%
             </div>
           </div>
 
-          <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1.5 text-sm text-neutral-600 mb-2">
+          <div className="rounded-lg py-2 px-2 sm:rounded-xl sm:py-3 sm:px-4 bg-gray-50 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
               <span>Close Rate</span>
               <InfoTooltip content="Close Rate - Percentage of leads that convert to sales" />
             </div>
-            <div className="text-xl font-bold text-gray-800">
+            <div className="text-sm sm:text-xl font-bold text-gray-800">
               {Math.round(additionalMetrics.leadToSaleRate || 0)}%
             </div>
           </div>
 
-          <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1.5 text-sm text-neutral-600 mb-2">
+          <div className="rounded-lg py-2 px-2 sm:rounded-xl sm:py-3 sm:px-4 bg-gray-50 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
               <span>AOV</span>
               <InfoTooltip content="Average Order Value - Average value of each order generated" />
             </div>
-            <div className="text-xl font-bold text-gray-800">
+            <div className="text-sm sm:text-xl font-bold text-gray-800">
               {Math.round(additionalMetrics.avgOrderValue || 0)}€
             </div>
           </div>
@@ -389,84 +396,38 @@ export default function MixedAnalyticsChart({
               const leads = d.values.leads;
               const salesCount = d.values.sales;
               const revenue = d.values.saleAmount || 0;
-              const conversionRate = clicks > 0 ? (leads / clicks) * 100 : 0;
-              const salesRate = leads > 0 ? (salesCount / leads) * 100 : 0;
+
+              const sections: TooltipSection[] = [
+                { 
+                  type: "header", 
+                  title: formatDateTooltip(d.date, {
+                    interval,
+                    start,
+                    end,
+                    dataAvailableFrom: createdAt,
+                  })
+                },
+                createBaseMetrics({ 
+                  clicks, 
+                  leads, 
+                  sales: salesCount, 
+                  saleAmount: revenue * 100 
+                }),
+                createKeyMetrics({ 
+                  clicks, 
+                  leads, 
+                  sales: salesCount, 
+                  saleAmount: revenue * 100 
+                }),
+              ];
 
               return (
-                <div
-                  className="min-w-[180px] rounded border-0 bg-white px-3 py-2.5 shadow-xl"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <p className="mb-2 text-sm font-medium text-neutral-900">
-                    {formatDateTooltip(d.date, {
-                      interval,
-                      start,
-                      end,
-                      dataAvailableFrom: createdAt,
-                    })}
-                  </p>
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="h-2.5 w-2.5 rounded-full bg-brand-primary"></div>
-                        <span className="text-xs text-neutral-600">Clicks</span>
-                      </div>
-                      <span className="text-sm font-semibold text-neutral-900">
-                        {nFormatter(clicks, { full: true })}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="h-2.5 w-2.5 rounded-full bg-data-leads"></div>
-                        <span className="text-xs text-neutral-600">Leads</span>
-                      </div>
-                      <span className="text-sm font-semibold text-neutral-900">
-                        {leads}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="h-2.5 w-2.5 rounded-full bg-data-sales"></div>
-                        <span className="text-xs text-neutral-600">
-                          Revenue
-                        </span>
-                      </div>
-                      <span className="text-sm font-semibold text-neutral-900">
-                        ${Math.round(revenue)}
-                      </span>
-                    </div>
-
-                    <div className="mt-1.5 border-t border-neutral-100/80 pt-1.5">
-                      <div className="mb-1 flex items-center justify-between">
-                        <span className="text-xs text-neutral-600">
-                          Sales count
-                        </span>
-                        <span className="text-xs font-medium text-neutral-700">
-                          {salesCount}
-                        </span>
-                      </div>
-                      <div className="space-y-0.5">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-neutral-500">
-                            Click → Lead rate
-                          </span>
-                          <span className="font-medium text-neutral-700">
-                            {Math.round(conversionRate)}%
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-neutral-500">
-                            Lead → Sale rate
-                          </span>
-                          <span className="font-medium text-neutral-700">
-                            {Math.round(salesRate)}%
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div className="min-w-[180px]">
+                  <UnifiedAnalyticsTooltip 
+                    sections={sections}
+                    position={{ x: 0, y: 0 }} // Not used when disablePositioning is true
+                    disablePositioning={true} // Let chart library handle positioning
+                  />
                 </div>
               );
             }}

@@ -36,7 +36,6 @@ export function useWorkspaceFilters() {
 
   const activeFilters = useMemo(() => {
     const { plan } = searchParamsObj;
-    console.log("Debug filters:", { plan, selectedPlans, searchParamsObj });
     return [
       ...(plan ? [{ key: "plan", value: selectedPlans }] : []),
     ];
