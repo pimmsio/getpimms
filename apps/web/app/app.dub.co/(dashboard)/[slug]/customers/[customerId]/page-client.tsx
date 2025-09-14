@@ -49,7 +49,7 @@ export function CustomerPageClient() {
     clickHistory: any[];
   }>(
     customer &&
-      `/api/customers/${customer.id}/click-history?workspaceId=${workspaceId}&limit=50`,
+      `/api/customers/${customer.id}/click-history?workspaceId=${workspaceId}&limit=200`,
     fetcher,
     {
       keepPreviousData: true,

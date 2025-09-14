@@ -166,7 +166,11 @@ export const PROVIDERS: Record<string, Provider> = {
   },
   Brevo: {
     displayName: 'Brevo',
-    domains: ['brevo.com'],
+    domains: [
+      'brevo.com',
+      /-brevo\.net$/,
+      /^[a-z0-9]+\.r\.[a-z]+\.d\.sendib[mt][0-9]+\.com$/  // SendinBlue patterns
+    ],
     primaryDomain: 'brevo.com',
     channel: 'email',
     icon: 'brevo'
@@ -259,7 +263,10 @@ export const PROVIDERS: Record<string, Provider> = {
   },
   HubSpot: {
     displayName: 'HubSpot',
-    domains: ['hubspot.com'],
+    domains: [
+      'hubspot.com',
+      /^[0-9]+\.hubspotpreview-[a-z0-9]+\.com$/
+    ],
     primaryDomain: 'hubspot.com',
     channel: 'referral',
     icon: 'hubspot'
@@ -305,7 +312,12 @@ export const PROVIDERS: Record<string, Provider> = {
   },
   Framer: {
     displayName: 'Framer',
-    domains: ['framer.com'],
+    domains: [
+      'framer.com',
+      /\.framer\.website$/,
+      /\.framer\.app$/,
+      /\.framercanvas\.com$/
+    ],
     primaryDomain: 'framer.com',
     channel: 'referral',
     icon: 'framer'
@@ -321,7 +333,10 @@ export const PROVIDERS: Record<string, Provider> = {
   },
   Substack: {
     displayName: 'Substack',
-    domains: ['substack.com'],
+    domains: [
+      'substack.com',
+      /\.substack\.com$/
+    ],
     primaryDomain: 'substack.com',
     channel: 'referral',
     icon: 'substack'
@@ -405,8 +420,11 @@ export const PROVIDERS: Record<string, Provider> = {
 
   // Internal/Own Domains  
   PIMMS: {
-    displayName: 'pimms',
-    domains: ['pim.ms', 'pimms.io'],
+    displayName: 'PIMMS',
+    domains: [
+      'pim.ms', 
+      /^(app\.)?pim(ms)?\.io$/
+    ],
     primaryDomain: 'pim.ms',
     channel: 'referral',
     icon: 'pimms'
@@ -504,7 +522,7 @@ export function getProviderDomain(referrer: string): string {
  */
 export function getProviderIconUrl(referrer: string): string {
   const domain = getProviderDomain(referrer);
-  return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 }
 
 /**
@@ -601,4 +619,27 @@ export function getDomainsForReferrerGroup(groupDisplayName: string): string[] {
 
 export function getBestDomainForLogo(referrer: string): string {
   return getProviderDomain(referrer);
+}
+
+/**
+ * Get group display name from a list of domains
+ * If all domains belong to the same provider, return the provider's display name
+ * Otherwise return null
+ */
+export function getGroupDisplayNameFromDomains(domains: string[]): string | null {
+  if (!domains || domains.length === 0) return null;
+  
+  // Find the provider for the first domain
+  const firstProvider = findProviderByReferrer(domains[0]);
+  if (!firstProvider) return null;
+  
+  // Check if all domains belong to the same provider
+  for (const domain of domains) {
+    const provider = findProviderByReferrer(domain);
+    if (!provider || provider.displayName !== firstProvider.displayName) {
+      return null;
+    }
+  }
+  
+  return firstProvider.displayName;
 }

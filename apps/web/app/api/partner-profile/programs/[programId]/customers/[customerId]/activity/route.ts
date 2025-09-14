@@ -67,6 +67,7 @@ export const GET = withPartnerProfile(async ({ partner, params }) => {
       {
         sortOrder: "desc",
         interval: "1y",
+        limit: 100,
       },
     ),
 

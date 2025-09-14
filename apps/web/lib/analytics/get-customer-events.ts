@@ -17,10 +17,10 @@ export const getCustomerEvents = async (
   { customerId, clickId }: { customerId: string; clickId?: string | null },
   params: Pick<
     EventsFilters,
-    "sortOrder" | "start" | "end" | "dataAvailableFrom" | "interval"
+    "sortOrder" | "start" | "end" | "dataAvailableFrom" | "interval" | "limit"
   >,
 ) => {
-  let { sortOrder, start, end, dataAvailableFrom, interval } = params;
+  let { sortOrder, start, end, dataAvailableFrom, interval, limit } = params;
 
   const { startDate, endDate } = getStartEndDates({
     interval,
@@ -35,19 +35,21 @@ export const getCustomerEvents = async (
     data: z.any(), // TODO
   });
 
-  const response = await pipe({
+  const queryParams = {
     ...params,
     customerId,
     ...(clickId ? { clickId } : {}),
     order: sortOrder,
+    limit: limit || 1000, // Default to 1000 if not specified
     start: startDate.toISOString().replace("T", " ").replace("Z", ""),
     end: endDate.toISOString().replace("T", " ").replace("Z", ""),
-  });
+  };
 
+  const response = await pipe(queryParams);
   const linksMap = await getLinksMap(response.data.map((d) => d.link_id));
 
   const events = response.data
-    .map((evt) => {
+    .map((evt, index) => {
       let link = linksMap[evt.link_id];
       if (!link) {
         return null;

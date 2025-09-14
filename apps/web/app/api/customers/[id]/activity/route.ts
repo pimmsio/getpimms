@@ -1,5 +1,5 @@
 import { computeCustomerHotScore, computeCustomerTier } from "@/lib/analytics/compute-customer-hot-score";
-import { getCustomerEvents } from "@/lib/analytics/get-customer-events";
+import { getCustomerDataForUI } from "@/lib/analytics/utils/customer-data";
 import { getCustomerOrThrow } from "@/lib/api/customers/get-customer-or-throw";
 import { decodeLinkIfCaseSensitive } from "@/lib/api/links/case-sensitivity";
 import { withWorkspace } from "@/lib/auth";
@@ -32,28 +32,22 @@ export const GET = withWorkspace(async ({ workspace, params, session }) => {
 
   // Live recompute hot score when accessing customer details (max once per day)
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  if (
-    !customer.lastHotScoreAt ||
-    new Date(customer.lastHotScoreAt) < oneDayAgo
-  ) {
+  const shouldRecomputeScore = !customer.lastHotScoreAt || new Date(customer.lastHotScoreAt) < oneDayAgo;
+
+  if (shouldRecomputeScore) {
+    const newHotScore = await computeCustomerHotScore(customer.id, workspace.id);
+    
     customer = await prisma.customer.update({
       where: { id: customer.id },
       data: {
-        hotScore: await computeCustomerHotScore(customer.id, workspace.id),
+        hotScore: newHotScore,
         lastHotScoreAt: new Date(),
       },
     });
   }
 
   let [events, link] = await Promise.all([
-    getCustomerEvents(
-      { customerId: customer.id, clickId: customer.clickId },
-      {
-        sortOrder: "desc",
-        interval: "1y",
-      },
-    ),
-
+    getCustomerDataForUI(customer, workspace.id),
     prisma.link.findUniqueOrThrow({
       where: {
         id: customer.linkId!,
