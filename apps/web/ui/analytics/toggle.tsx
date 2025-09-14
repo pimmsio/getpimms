@@ -68,7 +68,7 @@ import { ShareButton } from "./share-button";
 import { useAnalyticsFilterOption } from "./utils";
 import RefererIcon from "./referer-icon";
 import { WebhookErrorsWarning } from "../layout/sidebar/webhook-errors-warning";
-import AnalyticsOptions from "./analytics-options";
+import { ColdScoreIcon, WarmScoreIcon, HotScoreIcon } from "./events/hot-score-icons";
 
 export default function Toggle({
   page = "analytics",
@@ -164,6 +164,11 @@ export default function Toggle({
   //   customerId: selectedCustomerId,
   // });
 
+  const selectedHotScores = useMemo(
+    () => searchParamsObj.hotScore?.split(",")?.filter(Boolean) ?? [],
+    [searchParamsObj.hotScore],
+  );
+
   const [requestedFilters, setRequestedFilters] = useState<string[]>([]);
 
   const activeFilters = useMemo(() => {
@@ -185,6 +190,10 @@ export default function Toggle({
       ...(selectedTagIds.length > 0
         ? [{ key: "tagIds", value: selectedTagIds }]
         : []),
+      // Handle hotScore special case
+      ...(selectedHotScores.length > 0
+        ? [{ key: "hotScore", value: selectedHotScores }]
+        : []),
       // Handle root special case - convert string to boolean
       ...(root ? [{ key: "root", value: root === "true" }] : []),
       // Handle folderId special case
@@ -194,7 +203,7 @@ export default function Toggle({
     // Handle all other filters dynamically
     VALID_ANALYTICS_FILTERS.forEach((filter) => {
       // Skip special cases we handled above
-      if (["domain", "key", "tagId", "tagIds", "root"].includes(filter)) return;
+      if (["domain", "key", "tagId", "tagIds", "hotScore", "root"].includes(filter)) return;
       // also skip date range filters and qr
       if (["interval", "start", "end", "qr"].includes(filter)) return;
 
@@ -205,7 +214,7 @@ export default function Toggle({
     });
 
     return filters;
-  }, [searchParamsObj, selectedTagIds]);
+  }, [searchParamsObj, selectedTagIds, selectedHotScores]);
 
   const isRequested = useCallback(
     (key: string) =>
@@ -445,6 +454,31 @@ export default function Toggle({
                       data: { color },
                     })),
               },
+              ...(page === "events" ? [
+                {
+                  key: "hotScore",
+                  icon: HotScoreIcon,
+                  label: "Hot Score",
+                  multiple: true,
+                  options: [
+                    {
+                      value: "cold",
+                      label: "Cold (0-33)",
+                      icon: <ColdScoreIcon className="w-4 h-4" />,
+                    },
+                    {
+                      value: "warm", 
+                      label: "Warm (34-66)",
+                      icon: <WarmScoreIcon className="w-4 h-4" />,
+                    },
+                    {
+                      value: "hot",
+                      label: "Hot (67-100)", 
+                      icon: <HotScoreIcon className="w-4 h-4" />,
+                    },
+                  ],
+                },
+              ] : []),
               // {
               //   key: "domain",
               //   icon: Globe2,
@@ -771,9 +805,13 @@ export default function Toggle({
                   ? {
                       tagIds: selectedTagIds.concat(value).join(","),
                     }
-                  : {
-                      [key]: value,
-                    },
+                  : key === "hotScore"
+                    ? {
+                        hotScore: selectedHotScores.concat(value).join(","),
+                      }
+                    : {
+                        [key]: value,
+                      },
             del: "page",
             scroll: false,
           });
@@ -1035,24 +1073,34 @@ export default function Toggle({
                 }))
               : []),
           ]}
-          onRemove={(key, value) =>
-            queryParams(
-              key === "tagIds" &&
-                !(selectedTagIds.length === 1 && selectedTagIds[0] === value)
-                ? {
-                    set: {
-                      tagIds: selectedTagIds
-                        .filter((id) => id !== value)
-                        .join(","),
-                    },
-                    scroll: false,
-                  }
-                : {
-                    del: key === "link" ? ["domain", "key", "url"] : key,
-                    scroll: false,
-                  },
-            )
-          }
+      onRemove={(key, value) =>
+        queryParams(
+          key === "tagIds" &&
+            !(selectedTagIds.length === 1 && selectedTagIds[0] === value)
+            ? {
+                set: {
+                  tagIds: selectedTagIds
+                    .filter((id) => id !== value)
+                    .join(","),
+                },
+                scroll: false,
+              }
+            : key === "hotScore" &&
+              !(selectedHotScores.length === 1 && selectedHotScores[0] === value)
+            ? {
+                set: {
+                  hotScore: selectedHotScores
+                    .filter((score) => score !== value)
+                    .join(","),
+                },
+                scroll: false,
+              }
+            : {
+                del: key === "link" ? ["domain", "key", "url"] : key,
+                scroll: false,
+              },
+        )
+      }
           onRemoveAll={() =>
             queryParams({
               // Reset all filters except for date range

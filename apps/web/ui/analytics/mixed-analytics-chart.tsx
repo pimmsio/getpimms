@@ -2,20 +2,22 @@ import { formatDateTooltip } from "@/lib/analytics/format-date-tooltip";
 import { editQueryString } from "@/lib/analytics/utils";
 
 import { groupTimeseriesData } from "@/lib/analytics/utils/group-timeseries-data";
-import { InfoTooltip } from "@dub/ui";
+// import useHotLeads from "@/lib/swr/use-hot-leads";
+import useWorkspace from "@/lib/swr/use-workspace";
+import { InfoTooltip, useRouterStuff } from "@dub/ui";
 import { TimeSeriesChart, XAxis, YAxis } from "@dub/ui/charts";
 import { fetcher, nFormatter } from "@dub/utils";
 import { useContext, useMemo } from "react";
 import useSWR from "swr";
 import { AnalyticsLoadingSpinner } from "./analytics-loading-spinner";
 import { AnalyticsContext } from "./analytics-provider";
-import { 
-  UnifiedAnalyticsTooltip, 
-  createBaseMetrics, 
-  createKeyMetrics,
-  type TooltipSection 
-} from "./unified-analytics-tooltip";
 import { MixedAreasAndBars } from "./mixed-areas-bars";
+import {
+  UnifiedAnalyticsTooltip,
+  createBaseMetrics,
+  createKeyMetrics,
+  type TooltipSection,
+} from "./unified-analytics-tooltip";
 
 export default function MixedAnalyticsChart({
   demo: demoFromProps,
@@ -31,7 +33,18 @@ export default function MixedAnalyticsChart({
     requiresUpgrade,
     workspace,
   } = useContext(AnalyticsContext);
+
+  // const { data: hotLeadsData, loading: hotLeadsLoading } = useHotLeads();
+  const { searchParams } = useRouterStuff();
+  const { slug } = useWorkspace();
   const { createdAt } = workspace || {};
+
+  // Create the hot leads URL without causing re-renders
+  const hotLeadsUrl = useMemo(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('hotScore', 'warm,hot');
+    return `/${slug}/conversions?${params.toString()}`;
+  }, [slug, searchParams]);
 
   const { data } = useSWR<
     {
@@ -216,14 +229,14 @@ export default function MixedAnalyticsChart({
   return (
     <>
       {data ? (
-        <div className="mx-4 mt-4 mb-4 grid grid-cols-3 gap-1 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto">
+        <div className="mx-4 mb-4 mt-4 grid grid-cols-3 gap-1 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto">
           {/* Clicks Card */}
-          <div className="rounded-lg py-2 px-2 sm:rounded-xl sm:py-3 sm:px-4 bg-brand-primary-light border border-brand-primary/10 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
-              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-brand-primary rounded-full"></div>
+          <div className="bg-brand-primary-light border-brand-primary/10 rounded-lg border px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
+              <div className="bg-brand-primary h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2"></div>
               <span>Clics</span>
             </div>
-            <div className="text-sm sm:text-xl font-bold text-gray-800">
+            <div className="text-sm font-bold text-gray-800 sm:text-xl">
               {additionalMetrics.clicks > 999
                 ? (additionalMetrics.clicks / 1000).toFixed(1) + "k"
                 : additionalMetrics.clicks.toLocaleString()}
@@ -231,157 +244,158 @@ export default function MixedAnalyticsChart({
           </div>
 
           {/* Leads Card */}
-          <div className="rounded-lg py-2 px-2 sm:rounded-xl sm:py-3 sm:px-4 bg-data-leads/15 border border-data-leads/20 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
-              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-data-leads rounded-full"></div>
+          <div className="bg-data-leads/15 border-data-leads/20 rounded-lg border px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
+              <div className="bg-data-leads h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2"></div>
               <span>Leads</span>
             </div>
-            <div className="text-sm sm:text-xl font-bold text-gray-800">
+            <div className="text-sm font-bold text-gray-800 sm:text-xl">
               {additionalMetrics.leads > 999
                 ? (additionalMetrics.leads / 1000).toFixed(1) + "k"
                 : additionalMetrics.leads.toLocaleString()}
             </div>
           </div>
 
-          {/* Hot Leads */}
-          {/* <div className="group rounded border border-[#FF6B6B] bg-gradient-to-br from-[#FFF0F0] to-[#FFEBEB] p-1.5 transition-all duration-200 hover:border-[#FF6B6B] sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1 text-xs text-text-primary">
-              <div className="h-1.5 w-1.5 rounded-full bg-[#FF6B6B]"></div>
-              <span>🔥 Hot Leads</span>
-            </div>
-            <div className="mt-1 text-sm font-semibold text-text-primary sm:text-base lg:text-lg">
-              {leadCounts?.hotLeadCount || "0"}
-            </div>
-          </div>
-
-          <div className="group rounded border border-[#6BB6FF] bg-gradient-to-br from-[#F0F8FF] to-[#EBF4FF] p-1.5 transition-all duration-200 hover:border-[#6BB6FF] sm:p-2 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1 text-xs text-text-primary">
-              <div className="h-1.5 w-1.5 rounded-full bg-[#6BB6FF]"></div>
-              <span>❄️ Cold Leads</span>
-            </div>
-            <div className="mt-1 text-sm font-semibold text-text-primary sm:text-base lg:text-lg">
-              {leadCounts?.coldLeadCount || "0"}
-            </div>
-          </div> */}
-
           {/* Sales Card */}
-          <div className="rounded-lg py-2 px-2 sm:rounded-xl sm:py-3 sm:px-4 bg-data-sales/15 border border-data-sales/20 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
-              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-data-sales rounded-full"></div>
+          <div className="bg-data-sales/15 border-data-sales/20 rounded-lg border px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
+              <div className="bg-data-sales h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2"></div>
               <span>Ventes</span>
             </div>
-            <div className="text-sm sm:text-xl font-bold text-gray-800">
-              €{additionalMetrics.saleAmount > 999
+            <div className="text-sm font-bold text-gray-800 sm:text-xl">
+              €
+              {additionalMetrics.saleAmount > 999
                 ? (additionalMetrics.saleAmount / 1000).toFixed(1) + "k"
                 : additionalMetrics.saleAmount.toLocaleString()}
             </div>
           </div>
 
+          {/* Hot Leads - Combined Metric (Warm + Hot only) */}
+          {/* {hotLeadsData && (hotLeadsData.warm > 0 || hotLeadsData.hot > 0) && (
+             <Link
+               href={hotLeadsUrl}
+              className="cursor-pointer rounded-lg border border-orange-200/50 bg-gradient-to-r from-orange-50 to-red-50 px-2 py-2 transition-all hover:border-orange-300/50 hover:bg-gradient-to-r hover:from-orange-100 hover:to-red-100 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[120px] lg:flex-shrink-0"
+            >
+              <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
+                <span>Hot Leads</span>
+                <InfoTooltip content="Leads with high engagement scores (warm 34-66, hot 67-100). Click to view detailed conversions." />
+              </div>
+              <div className="flex items-center gap-1 text-xs font-bold text-gray-800 sm:gap-2 sm:text-sm">
+                <div className="flex items-center gap-0.5">
+                  <span>{hotLeadsData.warm}</span>
+                  <WarmScoreIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                </div>
+                <div className="flex items-center gap-0.5">
+                  <span>{hotLeadsData.hot}</span>
+                  <HotScoreIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                </div>
+              </div>
+            </Link>
+          )} */}
+
           {/* Only show recent visitors for 24h hourly data */}
           {additionalMetrics.showRecentVisitors && (
-            <div className="rounded-lg py-2 px-2 sm:rounded-xl sm:py-3 sm:px-4 bg-gray-50 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
-              <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
-                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 animate-pulse rounded-full bg-gray-400"></div>
+            <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
+                <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-gray-400 sm:h-2 sm:w-2"></div>
                 <span>Recent</span>
                 <InfoTooltip content="Recent visitors - Number of visitors in the last 2 hours" />
-                </div>
-              <div className="text-sm sm:text-xl font-bold text-gray-800">
+              </div>
+              <div className="text-sm font-bold text-gray-800 sm:text-xl">
                 {additionalMetrics.recentVisitors}
               </div>
             </div>
           )}
 
-          <div className="rounded-lg py-2 px-2 sm:rounded-xl sm:py-3 sm:px-4 bg-gray-50 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
+          <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
               <span>RPC</span>
               <InfoTooltip content="Revenue Per Click - Average revenue generated per click on your links" />
             </div>
-            <div className="text-sm sm:text-xl font-bold text-gray-800">
+            <div className="text-sm font-bold text-gray-800 sm:text-xl">
               ${(additionalMetrics.revenuePerClick || 0).toFixed(1)}
             </div>
           </div>
 
-          <div className="rounded-lg py-2 px-2 sm:rounded-xl sm:py-3 sm:px-4 bg-gray-50 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
+          <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
               <span>CVR</span>
               <InfoTooltip content="Conversion Rate - Percentage of visitors who become qualified leads" />
             </div>
-            <div className="text-sm sm:text-xl font-bold text-gray-800">
+            <div className="text-sm font-bold text-gray-800 sm:text-xl">
               {Math.round(additionalMetrics.clickToLeadRate || 0)}%
             </div>
           </div>
 
-          <div className="rounded-lg py-2 px-2 sm:rounded-xl sm:py-3 sm:px-4 bg-gray-50 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
+          <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
               <span>Close Rate</span>
               <InfoTooltip content="Close Rate - Percentage of leads that convert to sales" />
             </div>
-            <div className="text-sm sm:text-xl font-bold text-gray-800">
+            <div className="text-sm font-bold text-gray-800 sm:text-xl">
               {Math.round(additionalMetrics.leadToSaleRate || 0)}%
             </div>
           </div>
 
-          <div className="rounded-lg py-2 px-2 sm:rounded-xl sm:py-3 sm:px-4 bg-gray-50 border border-gray-200/50 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
+          <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
               <span>AOV</span>
               <InfoTooltip content="Average Order Value - Average value of each order generated" />
             </div>
-            <div className="text-sm sm:text-xl font-bold text-gray-800">
+            <div className="text-sm font-bold text-gray-800 sm:text-xl">
               {Math.round(additionalMetrics.avgOrderValue || 0)}€
             </div>
           </div>
-
         </div>
       ) : (
-        <div className="mx-4 mt-4 mb-4 grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto">
+        <div className="mx-4 mb-4 mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto">
           {/* Clicks skeleton */}
-          <div className="rounded-xl bg-brand-primary-light py-3 px-4 border border-brand-primary/10 animate-pulse lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-2 text-sm text-neutral-600 mb-2">
-              <div className="w-2 h-2 bg-brand-primary/50 rounded-full"></div>
-              <div className="h-3 w-8 bg-neutral-300/50 rounded"></div>
+          <div className="bg-brand-primary-light border-brand-primary/10 animate-pulse rounded-xl border px-4 py-3 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="mb-2 flex items-center gap-2 text-sm text-neutral-600">
+              <div className="bg-brand-primary/50 h-2 w-2 rounded-full"></div>
+              <div className="h-3 w-8 rounded bg-neutral-300/50"></div>
             </div>
-            <div className="h-6 w-12 bg-neutral-300/50 rounded"></div>
+            <div className="h-6 w-12 rounded bg-neutral-300/50"></div>
           </div>
 
           {/* Leads skeleton */}
-          <div className="rounded-xl bg-data-leads/15 py-3 px-4 border border-data-leads/20 animate-pulse lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-2 text-sm text-neutral-600 mb-2">
-              <div className="w-2 h-2 bg-data-leads/50 rounded-full"></div>
-              <div className="h-3 w-8 bg-neutral-300/50 rounded"></div>
+          <div className="bg-data-leads/15 border-data-leads/20 animate-pulse rounded-xl border px-4 py-3 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="mb-2 flex items-center gap-2 text-sm text-neutral-600">
+              <div className="bg-data-leads/50 h-2 w-2 rounded-full"></div>
+              <div className="h-3 w-8 rounded bg-neutral-300/50"></div>
             </div>
-            <div className="h-6 w-8 bg-neutral-300/50 rounded"></div>
+            <div className="h-6 w-8 rounded bg-neutral-300/50"></div>
           </div>
 
           {/* Sales skeleton */}
-          <div className="rounded-xl bg-data-sales/15 py-3 px-4 border border-data-sales/20 animate-pulse lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="flex items-center gap-2 text-sm text-neutral-600 mb-2">
-              <div className="w-2 h-2 bg-data-sales/50 rounded-full"></div>
-              <div className="h-3 w-8 bg-neutral-300/50 rounded"></div>
+          <div className="bg-data-sales/15 border-data-sales/20 animate-pulse rounded-xl border px-4 py-3 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="mb-2 flex items-center gap-2 text-sm text-neutral-600">
+              <div className="bg-data-sales/50 h-2 w-2 rounded-full"></div>
+              <div className="h-3 w-8 rounded bg-neutral-300/50"></div>
             </div>
-            <div className="h-6 w-12 bg-neutral-300/50 rounded"></div>
+            <div className="h-6 w-12 rounded bg-neutral-300/50"></div>
           </div>
 
           {/* Additional metrics skeletons */}
-          <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 animate-pulse lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="h-3 w-12 bg-neutral-300/50 rounded mb-2"></div>
-            <div className="h-6 w-8 bg-neutral-300/50 rounded"></div>
+          <div className="animate-pulse rounded-xl border border-gray-200/50 bg-gray-50 px-4 py-3 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="mb-2 h-3 w-12 rounded bg-neutral-300/50"></div>
+            <div className="h-6 w-8 rounded bg-neutral-300/50"></div>
           </div>
 
-          <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 animate-pulse lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="h-3 w-14 bg-neutral-300/50 rounded mb-2"></div>
-            <div className="h-6 w-6 bg-neutral-300/50 rounded"></div>
+          <div className="animate-pulse rounded-xl border border-gray-200/50 bg-gray-50 px-4 py-3 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="mb-2 h-3 w-14 rounded bg-neutral-300/50"></div>
+            <div className="h-6 w-6 rounded bg-neutral-300/50"></div>
           </div>
 
-          <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 animate-pulse lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="h-3 w-16 bg-neutral-300/50 rounded mb-2"></div>
-            <div className="h-6 w-6 bg-neutral-300/50 rounded"></div>
+          <div className="animate-pulse rounded-xl border border-gray-200/50 bg-gray-50 px-4 py-3 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="mb-2 h-3 w-16 rounded bg-neutral-300/50"></div>
+            <div className="h-6 w-6 rounded bg-neutral-300/50"></div>
           </div>
 
-          <div className="rounded-xl bg-gray-50 py-3 px-4 border border-gray-200/50 animate-pulse lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="h-3 w-10 bg-neutral-300/50 rounded mb-2"></div>
-            <div className="h-6 w-6 bg-neutral-300/50 rounded"></div>
+          <div className="animate-pulse rounded-xl border border-gray-200/50 bg-gray-50 px-4 py-3 lg:min-w-[90px] lg:flex-shrink-0">
+            <div className="mb-2 h-3 w-10 rounded bg-neutral-300/50"></div>
+            <div className="h-6 w-6 rounded bg-neutral-300/50"></div>
           </div>
-
         </div>
       )}
       <div className="relative flex h-64 w-full items-center justify-center sm:h-80 lg:h-96">
@@ -398,32 +412,32 @@ export default function MixedAnalyticsChart({
               const revenue = d.values.saleAmount || 0;
 
               const sections: TooltipSection[] = [
-                { 
-                  type: "header", 
+                {
+                  type: "header",
                   title: formatDateTooltip(d.date, {
                     interval,
                     start,
                     end,
                     dataAvailableFrom: createdAt,
-                  })
+                  }),
                 },
-                createBaseMetrics({ 
-                  clicks, 
-                  leads, 
-                  sales: salesCount, 
-                  saleAmount: revenue * 100 
+                createBaseMetrics({
+                  clicks,
+                  leads,
+                  sales: salesCount,
+                  saleAmount: revenue * 100,
                 }),
-                createKeyMetrics({ 
-                  clicks, 
-                  leads, 
-                  sales: salesCount, 
-                  saleAmount: revenue * 100 
+                createKeyMetrics({
+                  clicks,
+                  leads,
+                  sales: salesCount,
+                  saleAmount: revenue * 100,
                 }),
               ];
 
               return (
                 <div className="min-w-[180px]">
-                  <UnifiedAnalyticsTooltip 
+                  <UnifiedAnalyticsTooltip
                     sections={sections}
                     position={{ x: 0, y: 0 }} // Not used when disablePositioning is true
                     disablePositioning={true} // Let chart library handle positioning

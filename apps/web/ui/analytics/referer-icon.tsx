@@ -1,5 +1,5 @@
-import { LinkLogo } from "@dub/ui";
-import { cn } from "@dub/utils";
+import { BlurImage } from "@dub/ui";
+import { cn, getGoogleFavicon } from "@dub/utils";
 import { Link2 } from "lucide-react";
 import { getBestDomainForLogo } from "@/lib/analytics/utils";
 
@@ -13,9 +13,12 @@ export default function RefererIcon({
   return display === "(direct)" ? (
     <Link2 className={cn("h-4 w-4", className)} />
   ) : (
-    <LinkLogo
-      apexDomain={getBestDomainForLogo(display)}
-      className={cn("h-4 w-4 sm:h-4 sm:w-4", className)}
+    <BlurImage
+      src={getGoogleFavicon(getBestDomainForLogo(display), false)}
+      alt={display}
+      width={20}
+      height={20}
+      className={cn("h-4 w-4 rounded-full", className)}
     />
   );
 }

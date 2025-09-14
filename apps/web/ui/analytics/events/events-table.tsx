@@ -13,7 +13,6 @@ import EmptyState from "@/ui/shared/empty-state";
 import { LinkCell } from "@/ui/shared/link-cell";
 import {
   LinkLogo,
-  ProgressBar,
   Table,
   Tooltip,
   usePagination,
@@ -45,6 +44,7 @@ import EditColumnsButton from "./edit-columns-button";
 import { EventsContext } from "./events-provider";
 import { EXAMPLE_EVENTS_DATA } from "./example-data";
 import FilterButton from "./filter-button";
+import { getHotScoreIcon, getHotScoreLabel } from "./hot-score-icons";
 import { RowMenuButton } from "./row-menu-button";
 import {
   conversionColumns,
@@ -71,6 +71,9 @@ export default function EventsTable({
   const { queryString: originalQueryString, eventsApiPath } =
     useContext(AnalyticsContext);
 
+  // Get hotScore filter from URL params
+  const hotScoreFilter = searchParams.get("hotScore")?.split(",").filter(Boolean) ?? [];
+
   const { columnVisibility, setColumnVisibility } = useColumnVisibility();
 
   const sortBy = searchParams.get("sortBy") || "timestamp";
@@ -92,10 +95,42 @@ export default function EventsTable({
             const customer = getValue();
             const hotScore = customer.hotScore ?? 0;
             const lastUpdated = customer.lastHotScoreAt;
-            const hotTier = Math.max(
-              0,
-              Math.min(6, Math.ceil(hotScore / (100 / 6))),
-            );
+            const HotScoreIcon = getHotScoreIcon(hotScore);
+            const scoreLabel = getHotScoreLabel(hotScore);
+            const scoreLabelLower = scoreLabel.toLowerCase();
+
+            // Get absolutely fresh filter state on each render - use hook directly
+            const { searchParams: freshSearchParams } = useRouterStuff();
+            const currentHotScoreFilter = freshSearchParams.get("hotScore")?.split(",").filter(Boolean) ?? [];
+
+            const handleScoreClick = (e: React.MouseEvent) => {
+              e.preventDefault();
+              e.stopPropagation();
+              
+              const isSelected = currentHotScoreFilter.includes(scoreLabelLower);
+              
+              if (isSelected) {
+                // Remove the filter if it's already selected
+                const newFilters = currentHotScoreFilter.filter(f => f !== scoreLabelLower);
+                if (newFilters.length > 0) {
+                  queryParams({
+                    set: { hotScore: newFilters.join(",") },
+                  });
+                } else {
+                  queryParams({
+                    del: ["hotScore"],
+                  });
+                }
+              } else {
+                // Add the filter
+                const newFilters = [...currentHotScoreFilter, scoreLabelLower];
+                queryParams({
+                  set: { hotScore: newFilters.join(",") },
+                });
+              }
+            };
+
+            const isSelected = currentHotScoreFilter.includes(scoreLabelLower);
 
             return (
               <Tooltip
@@ -103,19 +138,29 @@ export default function EventsTable({
                   <div className="max-w-xs px-4 py-2 text-left text-sm text-neutral-600">
                     <div className="mt-1">
                       <div className="text-sm text-neutral-800">
-                        Score: {hotScore}/100
+                        {scoreLabel} ({hotScore}/100)
                       </div>
                       <div className="text-xs text-neutral-400">
                         {lastUpdated
                           ? `Updated ${timeAgo(new Date(lastUpdated))} ago`
                           : "Not computed yet"}
                       </div>
+                      <div className="text-xs text-neutral-500 mt-1">
+                        Click to {isSelected ? "remove" : "add"} filter
+                      </div>
                     </div>
                   </div>
                 }
               >
-                <div className="flex w-full">
-                  <ProgressBar value={hotTier} max={6} className="h-2 w-full" />
+                <div 
+                  className={cn(
+                    "flex w-full justify-center cursor-pointer rounded-md p-1 transition-colors",
+                    "hover:bg-neutral-100",
+                    isSelected && "bg-blue-50 ring-1 ring-blue-200"
+                  )}
+                  onClick={handleScoreClick}
+                >
+                  <HotScoreIcon className="w-6 h-6" />
                 </div>
               </Tooltip>
             );
@@ -593,19 +638,38 @@ export default function EventsTable({
   const showEmptyState = isEmptyData && !isLoading && !integrationsLoading;
   const showDemo = demo && !isLoading && !integrationsLoading;
 
+  // Filter data based on hot score
+  const filteredData = useMemo(() => {
+    if (!data || hotScoreFilter.length === 0) {
+      return data;
+    }
+
+    return data.filter((event) => {
+      // ClickEvent doesn't have customer property, only LeadEvent and SaleEvent do
+      if (event.event === "click") {
+        return true; // Don't filter click events since they don't have customer data
+      }
+      
+      const customer = (event as any).customer;
+      const hotScore = customer?.hotScore ?? 0;
+      const scoreLabel = getHotScoreLabel(hotScore).toLowerCase();
+      return hotScoreFilter.includes(scoreLabel);
+    });
+  }, [data, hotScoreFilter]);
+
   const { table, ...tableProps } = useTable({
     data: (showDemo
       ? EXAMPLE_EVENTS_DATA["leads"]
-      : showEmptyState || !data
+      : showEmptyState || !filteredData
         ? []
-        : data) as EventDatum[],
+        : filteredData) as EventDatum[],
     loading: isLoading,
     error: error && !requiresUpgrade ? "Failed to fetch events." : undefined,
     columns,
     enableColumnResizing: true,
     pagination,
     onPaginationChange: setPagination,
-    rowCount: requiresUpgrade ? 0 : data?.length ?? 0,
+    rowCount: requiresUpgrade ? 0 : filteredData?.length ?? 0,
     columnVisibility: columnVisibility,
     onColumnVisibilityChange: (args) => setColumnVisibility(args),
     sortableColumns: ["timestamp"],

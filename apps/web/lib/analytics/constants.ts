@@ -208,6 +208,7 @@ export const VALID_ANALYTICS_FILTERS = [
   "utm_campaign",
   "utm_term",
   "utm_content",
+  "hotScore",
 ];
 
 // possible analytics filters for a given linkId

@@ -152,8 +152,8 @@ export const PROVIDERS: Record<string, Provider> = {
   // Email & Marketing
   Gmail: {
     displayName: 'Gmail',
-    domains: ['gmail.com', 'com.google.android.gm'],
-    primaryDomain: 'gmail.com',
+    domains: ['gmail.com', 'mail.google.com', 'm.gmail.com', 'com.google.android.gm'],
+    primaryDomain: 'mail.google.com',
     channel: 'email',
     icon: 'gmail'
   },
@@ -171,7 +171,7 @@ export const PROVIDERS: Record<string, Provider> = {
       /-brevo\.net$/,
       /^[a-z0-9]+\.r\.[a-z]+\.d\.sendib[mt][0-9]+\.com$/  // SendinBlue patterns
     ],
-    primaryDomain: 'brevo.com',
+    primaryDomain: 'www.brevo.com',
     channel: 'email',
     icon: 'brevo'
   },

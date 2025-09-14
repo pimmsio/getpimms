@@ -151,16 +151,6 @@ export function UnifiedAnalyticsTooltip({
   // Final bounds checking
   left = Math.max(padding, Math.min(left, window.innerWidth - tooltipWidth - padding));
   top = Math.max(padding, Math.min(top, window.innerHeight - tooltipHeight - padding));
-  
-  // Debug logging (remove in production) - only log when position is valid
-  if (position.x > 0 || position.y > 0) {
-    console.log('Tooltip position:', { 
-      inputPosition: position, 
-      calculatedPosition: { left, top },
-      viewport: { width: window.innerWidth, height: window.innerHeight },
-      windowScrolls: { scrollX: window.scrollX, scrollY: window.scrollY }
-    });
-  }
 
   const tooltipContent = (
     <div

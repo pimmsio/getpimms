@@ -137,30 +137,3 @@ export function formatSegmentDisplay(
   
   return `${value.toLocaleString()} (${percentage})`;
 }
-
-/**
- * Get responsive configuration based on screen width
- * @param width - Screen width in pixels
- * @returns Configuration object for responsive behavior
- */
-export function getResponsiveConfig(width: number) {
-  const isVerySmall = width < 400;
-  const isSmallScreen = width < 600;
-  const isMediumScreen = width < 900;
-
-  return {
-    isVerySmall,
-    isSmallScreen,
-    isMediumScreen,
-    fontSize: {
-      label: isVerySmall ? 11 : isSmallScreen ? 13 : 14,
-      percentage: isVerySmall ? 10 : isSmallScreen ? 11 : 12,
-    },
-    margins: {
-      horizontal: isVerySmall ? 100 : isSmallScreen ? 130 : isMediumScreen ? 150 : 160,
-      vertical: isVerySmall ? 80 : isSmallScreen ? 100 : isMediumScreen ? 130 : 160,
-    },
-    labelDistance: isVerySmall ? 30 : isSmallScreen ? 35 : isMediumScreen ? 45 : 50,
-    maxChannelNameLength: isVerySmall ? 10 : isSmallScreen ? 16 : Infinity,
-  };
-}
