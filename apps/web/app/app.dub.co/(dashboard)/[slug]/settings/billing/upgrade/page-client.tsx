@@ -32,9 +32,12 @@ const COMPARE_FEATURE_ICONS: Record<
   API: Plug2,
 };
 
-const plans = ["Starter", "Pro", "Business"].map(
-  (p) => PLANS.find(({ name }) => name === p)!,
-);
+// Get Free, first Pro plan (5k events), and Business for display
+const plans = [
+  PLANS.find(({ name }) => name === "Free")!,
+  PLANS.find(({ name }) => name === "Pro")!, // This will get the first Pro plan (5k events)
+  PLANS.find(({ name }) => name === "Business")!,
+].filter(Boolean);
 
 export function WorkspaceBillingUpgradePageClient() {
   const { slug, plan: currentPlan, stripeId } = useWorkspace();
@@ -115,15 +118,14 @@ export function WorkspaceBillingUpgradePageClient() {
                                 <span className="text-sm font-medium text-neutral-400">
                                   On-demand pricing
                                 </span>
+                              ) : plan.name === "Free" ? (
+                                <span className="text-sm font-medium text-neutral-900">
+                                  Free
+                                </span>
                               ) : (
                                 <>
                                   <NumberFlow
-                                    value={
-                                      plan.name === "Starter" ||
-                                      plan.name === "Pro"
-                                        ? plan.price["lifetime"]!
-                                        : plan.price[period]!
-                                    }
+                                    value={plan.price[period]!}
                                     className="text-sm font-medium tabular-nums text-neutral-700"
                                     format={{
                                       style: "currency",
@@ -132,31 +134,28 @@ export function WorkspaceBillingUpgradePageClient() {
                                     }}
                                     continuous
                                   />
-                                  {plan.name === "Starter" ||
-                                  plan.name === "Pro" ? (
-                                    <span className="text-sm font-medium text-neutral-400">
-                                      Excl. VAT
-                                    </span>
-                                  ) : (
-                                    <span className="text-sm font-medium text-neutral-400">
-                                      {period === "yearly"
-                                        ? "billed yearly"
-                                        : "per month"}
-                                    </span>
-                                  )}
+                                  <span className="text-sm font-medium text-neutral-400">
+                                    {period === "yearly"
+                                      ? "billed yearly"
+                                      : "per month"}
+                                  </span>
                                 </>
                               )}
                             </>
                           )}
                         </div>
                       </div>
-                      {(plan.name === "Starter" || plan.name === "Pro") ? (
+                      {plan.name === "Pro" ? (
                         <p className="text-xs text-neutral-500">
-                          One-time payment
+                          {period === "yearly" ? "2 months free" : "Monthly billing"}
+                        </p>
+                      ) : plan.name === "Business" ? (
+                        <p className="text-xs text-neutral-500">
+                          Contact Sales
                         </p>
                       ) : (
                         <p className="text-xs text-neutral-500">
-                          Contact Sales
+                          Free forever
                         </p>
                       )}
                     </div>
@@ -180,9 +179,9 @@ export function WorkspaceBillingUpgradePageClient() {
                         >
                           Book a demo
                         </Link>
-                      ) : (
+                      ) : plan.name === "Pro" ? (
                         <UpgradePlanButton
-                          plan={plan.name.toLowerCase()}
+                          eventsLimit={plan.eventsLimit || 5000}
                           period={period}
                           disabled={disableCurrentPlan}
                           text={
@@ -190,13 +189,18 @@ export function WorkspaceBillingUpgradePageClient() {
                               ? "Current plan"
                               : isDowngrade
                                 ? "Downgrade"
-                                : plan.name === "Starter" || plan.name === "Pro"
-                                  ? "Unlock lifetime access"
-                                  : "Upgrade"
+                                : "Get started"
                           }
                           variant={isDowngrade ? "secondary" : "primary"}
                           className="h-8 shadow-sm"
                         />
+                      ) : (
+                        <button
+                          disabled
+                          className="flex h-8 w-full items-center justify-center rounded text-center text-sm bg-neutral-100 text-neutral-500"
+                        >
+                          Current plan
+                        </button>
                       )}
                       <button
                         type="button"
