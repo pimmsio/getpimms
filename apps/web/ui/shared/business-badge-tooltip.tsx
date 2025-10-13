@@ -5,8 +5,8 @@ import { Crown } from "lucide-react";
 /**
  * A dynamic badge/icon w/ tooltip based on the workspace plan:
  *
- * For a free or Pro workspace: a "Business" badge
- * For a Business workspace: an info icon (question mark circle)
+ * For a free or Pro workspace: an "Enterprise" badge
+ * For an Enterprise workspace: an info icon (question mark circle)
  */
 export function BusinessBadgeTooltip(props: Omit<TooltipProps, "children">) {
   const { plan } = useWorkspace();
@@ -15,7 +15,7 @@ export function BusinessBadgeTooltip(props: Omit<TooltipProps, "children">) {
     <BadgeTooltip {...props}>
       <div className="flex items-center space-x-1">
         <Crown size={12} />
-        <p className="uppercase">Business</p>
+        <p className="uppercase">Enterprise</p>
       </div>
     </BadgeTooltip>
   ) : (

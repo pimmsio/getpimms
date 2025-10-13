@@ -66,7 +66,7 @@ export const PLANS = [
       links: 10,
       clicks: 400,
       events: 400,
-      sales: 0,
+      sales: INFINITY_NUMBER, // Free plan now includes sales tracking
       domains: 1,
       tags: 5,
       folders: 0,
@@ -75,6 +75,14 @@ export const PLANS = [
       api: 60,
       retention: "30-day",
     },
+    features: [
+      { id: "links", text: "10 smart links /month" },
+      { id: "events", text: "400 tracking events /month" },
+      { id: "tracking", text: "Event tracking (clicks, leads, sales)" },
+      { id: "mobile", text: "Mobile app redirects" },
+      { id: "qr", text: "Custom QR codes" },
+      { id: "domains", text: "1 custom domain" },
+    ] as PlanFeature[],
   },
   // Pro plans for each event tier
   createProPlan(5000),
@@ -83,7 +91,7 @@ export const PLANS = [
   createProPlan(100000),
   createProPlan(200000),
   {
-    name: "Business",
+    name: "Enterprise",
     price: {
       monthly: null,
       yearly: null,
@@ -117,7 +125,7 @@ export const PLANS = [
 
 export const FREE_PLAN = PLANS.find((plan) => plan.name === "Free")!;
 export const PRO_PLANS = PLANS.filter((plan) => plan.name === "Pro");
-export const BUSINESS_PLAN = PLANS.find((plan) => plan.name === "Business")!;
+export const ENTERPRISE_PLAN = PLANS.find((plan) => plan.name === "Enterprise")!;
 
 export const SELF_SERVE_PAID_PLANS = PRO_PLANS;
 

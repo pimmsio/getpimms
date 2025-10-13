@@ -12,11 +12,13 @@ import { useState } from "react";
 export function UpgradePlanButton({
   eventsLimit,
   period,
+  variant = "default",
   className,
   ...rest
 }: {
   eventsLimit: EventsLimit;
   period: "monthly" | "yearly" | "lifetime";
+  variant?: "default" | "white";
 } & Partial<ButtonProps>) {
   const router = useRouter();
   const pathname = usePathname();
@@ -37,11 +39,17 @@ export function UpgradePlanButton({
       text={
         isCurrentPlan
           ? "Your current plan"
-          : currentPlan === "free"
+          : rest.text || (currentPlan === "free"
             ? `Get started with Pro ${capitalize(period)}`
-            : `Switch to Pro ${capitalize(period)}`
+            : `Switch to Pro ${capitalize(period)}`)
       }
-      className={cn("text-sm rounded-2xl text-white bg-gradient-to-r from-[#2fcdfa] to-[#3970ff] hover:scale-105 transition-all duration-300", className)}
+      className={cn(
+        "text-sm rounded-2xl transition-all duration-300",
+        variant === "white" 
+          ? "bg-white text-gray-900 hover:bg-gray-100" 
+          : "text-white bg-gradient-to-r from-[#2fcdfa] to-[#3970ff] hover:scale-105",
+        className
+      )}
       loading={clicked}
       disabled={!workspaceSlug || isCurrentPlan}
       onClick={() => {
