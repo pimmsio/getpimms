@@ -53,14 +53,22 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
   // in the database for easy identification in future webhook events
   // also update the billingCycleStart to today's date
 
+  // Get eventsLimit from session metadata
+  const eventsLimit = checkoutSession.metadata?.eventsLimit 
+    ? parseInt(checkoutSession.metadata.eventsLimit) 
+    : plan.limits.events || 5000;
+  
+  const isLifetime = checkoutSession.metadata?.period === "lifetime";
+
   const workspace = await prisma.project.update({
     where: {
       id: workspaceId,
     },
     data: {
-      stripeId,
-      billingCycleStart: new Date().getDate(),
+      stripeId: isLifetime ? null : stripeId, // No stripeId for lifetime
+      billingCycleStart: isLifetime ? null : new Date().getDate(),
       plan: planName,
+      eventsLimit: eventsLimit,
       usageLimit: plan.limits.clicks!,
       linksLimit: plan.limits.links!,
       domainsLimit: plan.limits.domains!,

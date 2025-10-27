@@ -67,3 +67,62 @@ export function getRetentionForEvents(events: EventsLimit): string {
   
   return retentionMap[events];
 }
+
+/**
+ * Get lookup key for Stripe pricing
+ */
+export function getLookupKey(eventsLimit: EventsLimit, period: 'monthly' | 'yearly' | 'lifetime'): string {
+  const tierName = eventsLimit === 5000 ? '5k' : 
+                   eventsLimit === 20000 ? '20k' :
+                   eventsLimit === 40000 ? '40k' :
+                   eventsLimit === 100000 ? '100k' : '200k';
+  
+  return `pro_${tierName}_${period}`;
+}
+
+/**
+ * Get fake Stripe price IDs (to be replaced with real ones)
+ */
+export function getFakePriceId(eventsLimit: EventsLimit, period: 'monthly' | 'yearly' | 'lifetime'): string {
+  const priceIds = {
+    5000: {
+      monthly: 'price_fake_pro_5k_monthly_123',
+      yearly: 'price_fake_pro_5k_yearly_456', 
+      lifetime: 'price_fake_pro_5k_lifetime_789',
+    },
+    20000: {
+      monthly: 'price_fake_pro_20k_monthly_abc',
+      yearly: 'price_fake_pro_20k_yearly_def',
+      lifetime: 'price_fake_pro_20k_lifetime_ghi',
+    },
+    40000: {
+      monthly: 'price_fake_pro_40k_monthly_jkl',
+      yearly: 'price_fake_pro_40k_yearly_mno',
+      lifetime: 'price_fake_pro_40k_lifetime_pqr',
+    },
+    100000: {
+      monthly: 'price_fake_pro_100k_monthly_stu',
+      yearly: 'price_fake_pro_100k_yearly_vwx',
+      lifetime: 'price_fake_pro_100k_lifetime_yz1',
+    },
+    200000: {
+      monthly: 'price_fake_pro_200k_monthly_234',
+      yearly: 'price_fake_pro_200k_yearly_567',
+      lifetime: 'price_fake_pro_200k_lifetime_890',
+    },
+  };
+  
+  return priceIds[eventsLimit][period];
+}
+
+/**
+ * Get events limit from lookup key (for current plan detection)
+ */
+export function getEventsLimitFromLookupKey(lookupKey: string): EventsLimit | null {
+  if (lookupKey.includes('5k')) return 5000;
+  if (lookupKey.includes('20k')) return 20000;
+  if (lookupKey.includes('40k')) return 40000;
+  if (lookupKey.includes('100k')) return 100000;
+  if (lookupKey.includes('200k')) return 200000;
+  return null;
+}

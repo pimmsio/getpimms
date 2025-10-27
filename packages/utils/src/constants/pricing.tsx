@@ -165,5 +165,14 @@ export const isDowngradePlan = (currentPlan: string, newPlan: string) => {
 };
 
 // Export event-based utilities
-export { calculateEvents, getPricingForEvents, getLinksForEvents, getDomainsForEvents, getRetentionForEvents } from "../functions/pricing-tiers";
+export { 
+  calculateEvents, 
+  getPricingForEvents, 
+  getLinksForEvents, 
+  getDomainsForEvents, 
+  getRetentionForEvents,
+  getLookupKey,
+  getFakePriceId,
+  getEventsLimitFromLookupKey
+} from "../functions/pricing-tiers";
 export type { EventsLimit } from "../functions/pricing-tiers";

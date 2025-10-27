@@ -8,13 +8,14 @@ import {
   Badge,
   Tooltip,
 } from "@dub/ui";
-import { cn, getPricingForEvents, getLinksForEvents, getDomainsForEvents, type EventsLimit } from "@dub/utils";
+import { cn, getPricingForEvents, getLinksForEvents, getDomainsForEvents, type EventsLimit, detectCurrentTier } from "@dub/utils";
 import { ChevronLeft, CreditCard } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function WorkspaceBillingUpgradePageClient() {
-  const { slug, plan: currentPlan, stripeId } = useWorkspace();
+  const workspace = useWorkspace();
+  const { slug, plan: currentPlan, stripeId, eventsLimit = 5000 } = workspace;
   const router = useRouter();
 
   const [period, setPeriod] = useState<"monthly" | "yearly" | "lifetime">("monthly");
@@ -22,6 +23,10 @@ export function WorkspaceBillingUpgradePageClient() {
   
   const availableTiers = [5000, 20000, 40000, 100000, 200000] as const;
   const selectedEventsLimit = availableTiers[selectedTierIndex];
+  
+  // Detect current tier for "Current plan" display
+  const { isCurrentTier } = detectCurrentTier(eventsLimit);
+  const isCurrentlySelectedTier = isCurrentTier(selectedEventsLimit);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -122,7 +127,7 @@ export function WorkspaceBillingUpgradePageClient() {
                 <p className="text-gray-600 mt-1">
                   {period === "yearly" 
                     ? `€${getPricingForEvents(selectedEventsLimit as EventsLimit, "yearly")} billed yearly`
-                    : "pay every month"}
+                    : "Choose what you pay"}
                 </p>
               </div>
 
