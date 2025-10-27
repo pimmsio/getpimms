@@ -13,6 +13,7 @@ import {
 import { LinkAnalyticsBadge } from "./link-analytics-badge";
 import { LinkControls } from "./link-controls";
 import { useLinkSelection } from "./link-selection-provider";
+import { LinkUtmColumns } from "./link-utm-columns";
 import { LinksListContext, ResponseLink } from "./links-container";
 import { LinksDisplayContext } from "./links-display-provider";
 import TagBadge from "./tag-badge";
@@ -52,14 +53,19 @@ export function LinkDetailsColumn({ link }: { link: ResponseLink }) {
   const { primaryTag, additionalTags } = useOrganizedTags(tags);
 
   return (
-    <div ref={ref} className="flex items-center justify-end gap-2 sm:gap-5">
+    <div ref={ref} className="flex items-center justify-end gap-2 sm:gap-3">
       {displayProperties.includes("tags") && primaryTag && (
         <TagsTooltip additionalTags={additionalTags}>
           <TagButton tag={primaryTag} plus={additionalTags.length} />
         </TagsTooltip>
       )}
+      {displayProperties.includes("utm_columns") && (
+        <LinkUtmColumns link={link} />
+      )}
       {displayProperties.includes("analytics") && (
-        <LinkAnalyticsBadge link={link} />
+        <div className="flex lg:justify-end lg:min-w-36">
+          <LinkAnalyticsBadge link={link} />
+        </div>
       )}
       <Controls link={link} />
     </div>

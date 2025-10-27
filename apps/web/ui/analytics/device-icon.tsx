@@ -53,8 +53,8 @@ export default function DeviceIcon({
       default:
         return (
           <BlurImage
-            src={`https://faisalman.github.io/ua-parser-js/images/browsers/${display.toLowerCase()}.png`}
-            alt={display}
+            src={`https://faisalman.github.io/ua-parser-js/images/browsers/${display?.toLowerCase() ?? 'unknown'}.png`}
+            alt={display ?? 'Unknown'}
             width={20}
             height={20}
             className={className}
@@ -80,8 +80,8 @@ export default function DeviceIcon({
       default:
         return (
           <BlurImage
-            src={`https://faisalman.github.io/ua-parser-js/images/os/${display.toLowerCase()}.png`}
-            alt={display}
+            src={`https://faisalman.github.io/ua-parser-js/images/os/${display?.toLowerCase() ?? 'unknown'}.png`}
+            alt={display ?? 'Unknown'}
             width={30}
             height={20}
             className="h-4 w-5"

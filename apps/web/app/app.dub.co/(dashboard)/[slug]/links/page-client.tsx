@@ -86,36 +86,8 @@ function WorkspaceLinks() {
       <div className="flex w-full items-center pt-2">
         <MaxWidthWrapper className="flex flex-col gap-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2 lg:flex-nowrap">
-            <div className="flex grow gap-x-4 max-md:w-full">
-              <div className="w-full md:w-56 lg:w-64">
-                <SearchBoxPersisted
-                  loading={isValidating}
-                  inputClassName="h-10"
-                />
-              </div>
-
-              {isLoading ? (
-                <div className="flex grow-0 animate-pulse items-center space-x-2">
-                  <div className="h-10 w-32 rounded-full bg-neutral-200" />
-                </div>
-              ) : canCreateLinks ? (
-                <>
-                  <div className="hidden grow-0 sm:block">
-                    <CreateLinkButton />
-                  </div>
-                  {/* <MoreLinkOptions /> */}
-                </>
-              ) : (
-                <div className="w-fit">
-                  <RequestFolderEditAccessButton
-                    folderId={folderId!}
-                    workspaceId={workspaceId!}
-                    variant="primary"
-                  />
-                </div>
-              )}
-            </div>
-            <div className="flex w-full gap-2 md:w-auto">
+            {/* Left side: Filter, Period, Create Link */}
+            <div className="flex grow gap-x-2 max-md:w-full">
               {!isMegaFolder && (
                 <div className="grow basis-0 md:grow-0">
                   <Filter.Select
@@ -173,6 +145,34 @@ function WorkspaceLinks() {
                   />
                 </div>
               )}
+              
+              {isLoading ? (
+                <div className="flex grow-0 animate-pulse items-center space-x-2">
+                  <div className="h-10 w-32 rounded-full bg-neutral-200" />
+                </div>
+              ) : canCreateLinks ? (
+                <div className="hidden grow-0 sm:block">
+                  <CreateLinkButton />
+                </div>
+              ) : (
+                <div className="w-fit">
+                  <RequestFolderEditAccessButton
+                    folderId={folderId!}
+                    workspaceId={workspaceId!}
+                    variant="primary"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Right side: Search, Display */}
+            <div className="flex w-full gap-2 md:w-auto">
+              <div className="w-full md:w-56 lg:w-64">
+                <SearchBoxPersisted
+                  loading={isValidating}
+                  inputClassName="h-10"
+                />
+              </div>
               <div className="grow basis-0 md:grow-0">
                 <LinkDisplay />
               </div>

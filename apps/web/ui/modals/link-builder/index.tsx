@@ -8,7 +8,8 @@ import { LinkBuilderFolderSelector } from "@/ui/links/link-builder/controls/link
 import { LinkBuilderShortLinkInput } from "@/ui/links/link-builder/controls/link-builder-short-link-input";
 import { LinkCommentsInput } from "@/ui/links/link-builder/controls/link-comments-input";
 import { ConversionTrackingToggle } from "@/ui/links/link-builder/conversion-tracking-toggle";
-import { DraftControlsHandle } from "@/ui/links/link-builder/draft-controls";
+import { DisableDeeplinkToggle } from "@/ui/links/link-builder/disable-deeplink-toggle";
+import { DraftControls, DraftControlsHandle } from "@/ui/links/link-builder/draft-controls";
 import { LinkBuilderHeader } from "@/ui/links/link-builder/link-builder-header";
 import {
   LinkBuilderProps,
@@ -187,11 +188,11 @@ function LinkBuilderInner({
             }}
             foldersEnabled={false}
           >
-            {/* <DraftControls
+            <DraftControls
               ref={draftControlsRef}
               props={props}
               workspaceId={workspaceId!}
-            /> */}
+            />
           </LinkBuilderHeader>
 
           <div
@@ -212,6 +213,8 @@ function LinkBuilderInner({
                 <LinkCommentsInput />
 
                 <ConversionTrackingToggle />
+
+                <DisableDeeplinkToggle />
 
                 {!customersCount || customersCount === 0 ? (
                   <Alert>

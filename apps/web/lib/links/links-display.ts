@@ -19,6 +19,18 @@ export const linksSortOptions = [
     display: "Total sales",
     slug: "saleAmount",
   },
+  {
+    display: "UTM Source",
+    slug: "utm_source",
+  },
+  {
+    display: "UTM Medium",
+    slug: "utm_medium",
+  },
+  {
+    display: "UTM Campaign",
+    slug: "utm_campaign",
+  },
 ] as const;
 
 export type LinksSortSlug = (typeof linksSortOptions)[number]["slug"];
@@ -34,6 +46,7 @@ export const linksDisplayPropertyIds = [
   "user",
   "tags",
   "analytics",
+  "utm_columns",
 ] as const;
 
 export const linksDisplayProperties: {
@@ -50,6 +63,7 @@ export const linksDisplayProperties: {
   { id: "user", label: "Creator", mobile: false },
   { id: "tags", label: "Tags" },
   { id: "analytics", label: "Analytics" },
+  { id: "utm_columns", label: "UTM Columns", mobile: false },
 ];
 
 export type LinksDisplayProperty = (typeof linksDisplayPropertyIds)[number];
@@ -62,4 +76,5 @@ export const defaultLinksDisplayProperties: LinksDisplayProperty[] = [
   "user",
   "tags",
   "analytics",
+  "utm_columns",
 ];

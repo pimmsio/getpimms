@@ -2,12 +2,11 @@
 
 import { Markdown } from "@/ui/shared/markdown";
 import { Page2 } from "@dub/ui/icons";
-import { cn } from "@dub/utils";
 import * as HoverCard from "@radix-ui/react-hover-card";
 
 export function CommentsBadge({ comments, maxWidth = "300px" }: { comments: string, maxWidth?: string }) {
   return (
-    <div className="hidden sm:block">
+    <div className="hidden lg:block">
       <HoverCard.Root openDelay={100}>
         <HoverCard.Portal>
           <HoverCard.Content
@@ -27,7 +26,7 @@ export function CommentsBadge({ comments, maxWidth = "300px" }: { comments: stri
           </HoverCard.Content>
         </HoverCard.Portal>
         <HoverCard.Trigger asChild>
-          <div className="rounded-full leading-tight py-1 px-2 hover:bg-neutral-100 text-neutral-600 text-ellipsis line-clamp-1 max-w-sm" style={{ maxWidth }}>
+          <div className="rounded-full leading-5 py-1 px-2 hover:bg-neutral-100 text-neutral-600 text-ellipsis line-clamp-1 max-w-sm" style={{ maxWidth }}>
             {comments}
           </div>
         </HoverCard.Trigger>

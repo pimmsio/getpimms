@@ -1,3 +1,4 @@
+import { INTERVAL_DATA } from "@/lib/analytics/constants";
 import z from "@/lib/zod";
 import { getLinksQuerySchemaExtended } from "@/lib/zod/schemas/links";
 import { prisma } from "@dub/prisma";
@@ -29,6 +30,15 @@ export async function getLinksForWorkspace({
   includeDashboard,
   tenantId,
   partnerId,
+  utm_source,
+  utm_medium,
+  utm_campaign,
+  utm_term,
+  utm_content,
+  url,
+  start,
+  end,
+  interval,
 }: z.infer<typeof getLinksQuerySchemaExtended> & {
   workspaceId: string;
   folderIds?: string[];
@@ -55,6 +65,18 @@ export async function getLinksForWorkspace({
         search = search.replace(key, encodedKey);
       }
     } catch (e) {}
+  }
+
+  // Calculate date range from interval or use explicit start/end dates
+  let startDate: Date | undefined;
+  let endDate: Date | undefined;
+
+  if (interval && INTERVAL_DATA[interval]) {
+    startDate = INTERVAL_DATA[interval].startDate;
+    endDate = new Date();
+  } else if (start || end) {
+    startDate = start;
+    endDate = end;
   }
 
   const links = await prisma.link.findMany({
@@ -129,6 +151,19 @@ export async function getLinksForWorkspace({
       ...(partnerId && { partnerId }),
       ...(userId && { userId }),
       ...(linkIds && { id: { in: linkIds } }),
+      ...(utm_source && { utm_source }),
+      ...(utm_medium && { utm_medium }),
+      ...(utm_campaign && { utm_campaign }),
+      ...(utm_term && { utm_term }),
+      ...(utm_content && { utm_content }),
+      ...(url && { url: { contains: url } }),
+      ...(startDate &&
+        endDate && {
+          lastClicked: {
+            gte: startDate,
+            lte: endDate,
+          },
+        }),
     },
     include: {
       tags: {

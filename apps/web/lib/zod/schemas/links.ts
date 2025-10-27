@@ -116,6 +116,12 @@ const LinksQuerySchema = z.object({
     .describe(
       "The ID of the tenant that created the link inside your system. If set, will only return links for the specified tenant.",
     ),
+  utm_source: z.string().optional().describe("Filter by UTM source."),
+  utm_medium: z.string().optional().describe("Filter by UTM medium."),
+  utm_campaign: z.string().optional().describe("Filter by UTM campaign."),
+  utm_term: z.string().optional().describe("Filter by UTM term."),
+  utm_content: z.string().optional().describe("Filter by UTM content."),
+  url: z.string().optional().describe("Filter by destination URL."),
   showArchived: booleanQuerySchema
     .optional()
     .default("false")
@@ -129,10 +135,20 @@ const LinksQuerySchema = z.object({
       "DEPRECATED. Filter for links that have at least one tag assigned to them.",
     )
     .openapi({ deprecated: true }),
+  start: parseDateSchema
+    .optional()
+    .describe("The start date to filter links by last clicked date."),
+  end: parseDateSchema
+    .optional()
+    .describe("The end date to filter links by last clicked date."),
+  interval: z
+    .string()
+    .optional()
+    .describe("The interval for filtering links by last clicked date."),
 });
 
 const sortBy = z
-  .enum(["createdAt", "clicks", "saleAmount", "lastClicked"])
+  .enum(["createdAt", "clicks", "saleAmount", "lastClicked", "utm_source", "utm_medium", "utm_campaign"])
   .optional()
   .default("createdAt")
   .describe("The field to sort the links by. The default is `createdAt`.");
@@ -159,6 +175,12 @@ export const getLinksCountQuerySchema = LinksQuerySchema.merge(
         z.literal("tagId"),
         z.literal("userId"),
         z.literal("folderId"),
+        z.literal("utm_source"),
+        z.literal("utm_medium"),
+        z.literal("utm_campaign"),
+        z.literal("utm_term"),
+        z.literal("utm_content"),
+        z.literal("url"),
       ])
       .optional()
       .describe("The field to group the links by."),

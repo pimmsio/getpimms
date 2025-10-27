@@ -9,6 +9,7 @@ import {
   shouldShowSegmentLabel,
   type ChannelType,
 } from "@/lib/analytics/utils";
+import { useRouterStuff } from "@dub/ui";
 import { Group } from "@visx/group";
 import { Pie } from "@visx/shape";
 import { Text } from "@visx/text";
@@ -51,6 +52,7 @@ export default function ChannelPieChart({
   const [tooltipData, setTooltipData] = useState<any>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
+  const { queryParams, searchParams } = useRouterStuff();
 
   // ResizeObserver pour mesurer précisément les dimensions
   useEffect(() => {
@@ -105,6 +107,20 @@ export default function ChannelPieChart({
   }, [data, groupedReferrerData, destinationUrlsData, selectedTab, saleUnit]);
 
   const total = chartData.reduce((sum, d) => sum + d.value, 0);
+
+  // Handle channel click for filtering
+  const handleChannelClick = (channelType: ChannelType) => {
+    // Check if we're already filtering by this channel
+    const currentChannel = searchParams.get("channel");
+    
+    if (currentChannel === channelType) {
+      // Remove filter if clicking on the already-filtered channel
+      queryParams({ del: "channel" });
+    } else {
+      // Set filter to this channel
+      queryParams({ set: { channel: channelType }, del: "page", scroll: false });
+    }
+  };
 
   // Calculs basés sur les dimensions observées
   const { width, height } = dimensions;
@@ -279,6 +295,9 @@ export default function ChannelPieChart({
                             position: { x: e.clientX, y: e.clientY },
                           });
                         }
+                      }}
+                      onClick={() => {
+                        handleChannelClick(arc.data.channelType);
                       }}
                     />
 

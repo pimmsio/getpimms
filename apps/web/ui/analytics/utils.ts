@@ -11,6 +11,42 @@ type AnalyticsFilterResult = {
 };
 
 /**
+ * Get filters to exclude based on groupBy to avoid conflicting filter + groupBy combinations
+ */
+function getFiltersToExclude(groupBy: AnalyticsGroupByOptions): string[] {
+  const excludeMap: Record<string, string[]> = {
+    'referers': ['referer', 'refererUrl', 'channel'],
+    'referer_urls': ['referer', 'refererUrl', 'channel'],
+    'channels': ['referer', 'refererUrl', 'channel'],
+    'countries': ['country', 'continent', 'region', 'city'],
+    'cities': ['city'],
+    'regions': ['region'],
+    'continents': ['continent'],
+    'devices': ['device'],
+    'browsers': ['browser'],
+    'os': ['os'],
+    'triggers': ['trigger', 'qr'],
+    'top_urls': ['url'],
+    'utm_sources': ['utm_source'],
+    'utm_mediums': ['utm_medium'],
+    'utm_campaigns': ['utm_campaign'],
+    'utm_terms': ['utm_term'],
+    'utm_contents': ['utm_content'],
+  };
+  
+  return excludeMap[groupBy] || [];
+}
+
+/**
+ * Remove specified filters from query string
+ */
+function removeFiltersFromQueryString(queryString: string, filtersToRemove: string[]): string {
+  const params = new URLSearchParams(queryString);
+  filtersToRemove.forEach(filter => params.delete(filter));
+  return params.toString();
+}
+
+/**
  * Fetches event counts grouped by the specified filter
  *
  * @param groupByOrParams Either a groupBy option or a query parameter object including groupBy
@@ -27,10 +63,20 @@ export function useAnalyticsFilterOption(
   const { baseApiPath, queryString, selectedTab, requiresUpgrade } =
     useContext(AnalyticsContext);
 
+  const groupBy = typeof groupByOrParams === "string" 
+    ? groupByOrParams 
+    : groupByOrParams.groupBy;
+
+  // Determine which filters to exclude based on groupBy to avoid conflicts
+  const filtersToExclude = getFiltersToExclude(groupBy);
+  
+  // Build query string without conflicting filters
+  const cleanedQueryString = removeFiltersFromQueryString(queryString, filtersToExclude);
+
   const enabled =
     !options?.cacheOnly ||
     [...cache.keys()].includes(
-      `${baseApiPath}?${editQueryString(queryString, {
+      `${baseApiPath}?${editQueryString(cleanedQueryString, {
         ...(typeof groupByOrParams === "string"
           ? { groupBy: groupByOrParams }
           : groupByOrParams),
@@ -39,7 +85,7 @@ export function useAnalyticsFilterOption(
 
   const { data, isLoading } = useSWR<Record<string, any>[]>(
     enabled
-      ? `${baseApiPath}?${editQueryString(queryString, {
+      ? `${baseApiPath}?${editQueryString(cleanedQueryString, {
           ...(typeof groupByOrParams === "string"
             ? { groupBy: groupByOrParams }
             : groupByOrParams),

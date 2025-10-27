@@ -35,12 +35,12 @@ export default function TagBadge({
     >
       {withIcon && <Tag className="h-3 w-3 shrink-0" />}
       {name && (
-        <p {...(withIcon && { className: "hidden sm:inline-block" })}>
+        <p {...(withIcon && { className: "hidden lg:inline-block" })}>
           {truncate(name || "", !isDesktop ? 20 : 24)}
         </p>
       )}
       {!!plus && (
-        <span className="hidden sm:block">
+        <span className="hidden lg:block">
           <span className="pr-1.5 opacity-30 md:pl-1 md:pr-2.5">|</span>+{plus}
         </span>
       )}

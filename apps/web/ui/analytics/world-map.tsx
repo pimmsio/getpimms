@@ -1,6 +1,6 @@
 "use client";
 
-import { useMediaQuery } from "@dub/ui";
+import { useMediaQuery, useRouterStuff } from "@dub/ui";
 import { COUNTRIES } from "@dub/utils";
 import { useState } from "react";
 import { 
@@ -186,6 +186,8 @@ const getISOCode = (numericCode: string): string | undefined => {
 
 export default function WorldMap({ data, maxVisitors }: WorldMapProps) {
   const [hoveredCountry, setHoveredCountry] = useState<TooltipData | null>(null);
+  const { queryParams, searchParams } = useRouterStuff();
+  const { isMobile } = useMediaQuery();
 
   // Create a map of country codes to data for quick lookup
   const countryDataMap = new Map(
@@ -251,7 +253,27 @@ export default function WorldMap({ data, maxVisitors }: WorldMapProps) {
     setHoveredCountry(null);
   };
 
-  const { isMobile } = useMediaQuery();
+  const handleCountryClick = (countryCode: string | undefined) => {
+    if (!countryCode) return;
+    
+    // Convert numeric code to ISO 2-letter code
+    const isoCode = getISOCode(countryCode);
+    if (!isoCode) return;
+    
+    const countryData = countryDataMap.get(isoCode.toLowerCase());
+    if (!countryData) return;
+
+    // Check if we're already filtering by this country
+    const currentCountry = searchParams.get("country");
+    
+    if (currentCountry === isoCode) {
+      // Remove filter if clicking on the already-filtered country
+      queryParams({ del: "country" });
+    } else {
+      // Set filter to this country
+      queryParams({ set: { country: isoCode }, del: "page", scroll: false });
+    }
+  };
 
   return (
     <div className="relative w-full h-[400px] overflow-hidden">
@@ -303,6 +325,11 @@ export default function WorldMap({ data, maxVisitors }: WorldMapProps) {
                       }
                     }}
                     onMouseLeave={handleCountryLeave}
+                    onClick={() => {
+                      if (countryData && countryCode) {
+                        handleCountryClick(countryCode);
+                      }
+                    }}
                   />
                 );
               })

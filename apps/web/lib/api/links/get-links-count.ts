@@ -1,4 +1,5 @@
 import { combineTagIds } from "@/lib/api/tags/combine-tag-ids";
+import { INTERVAL_DATA } from "@/lib/analytics/constants";
 import z from "@/lib/zod";
 import { getLinksCountQuerySchema } from "@/lib/zod/schemas/links";
 import { prisma } from "@dub/prisma";
@@ -24,9 +25,30 @@ export async function getLinksCount({
     withTags,
     folderId,
     tenantId,
+    utm_source,
+    utm_medium,
+    utm_campaign,
+    utm_term,
+    utm_content,
+    url,
+    start,
+    end,
+    interval,
   } = searchParams;
 
   const combinedTagIds = combineTagIds({ tagId, tagIds });
+
+  // Calculate date range from interval or use explicit start/end dates
+  let startDate: Date | undefined;
+  let endDate: Date | undefined;
+
+  if (interval && INTERVAL_DATA[interval]) {
+    startDate = INTERVAL_DATA[interval].startDate;
+    endDate = new Date();
+  } else if (start || end) {
+    startDate = start;
+    endDate = end;
+  }
 
   const linksWhere = {
     projectId: workspaceId,
@@ -72,6 +94,37 @@ export async function getLinksCount({
         userId,
       }),
     ...(tenantId && { tenantId }),
+    ...(utm_source &&
+      groupBy !== "utm_source" && {
+        utm_source,
+      }),
+    ...(utm_medium &&
+      groupBy !== "utm_medium" && {
+        utm_medium,
+      }),
+    ...(utm_campaign &&
+      groupBy !== "utm_campaign" && {
+        utm_campaign,
+      }),
+    ...(utm_term &&
+      groupBy !== "utm_term" && {
+        utm_term,
+      }),
+    ...(utm_content &&
+      groupBy !== "utm_content" && {
+        utm_content,
+      }),
+    ...(url &&
+      groupBy !== "url" && {
+        url: { contains: url },
+      }),
+    ...(startDate &&
+      endDate && {
+        lastClicked: {
+          gte: startDate,
+          lte: endDate,
+        },
+      }),
   };
 
   if (groupBy === "tagId") {
@@ -117,7 +170,13 @@ export async function getLinksCount({
     if (
       groupBy === "domain" ||
       groupBy === "userId" ||
-      groupBy === "folderId"
+      groupBy === "folderId" ||
+      groupBy === "utm_source" ||
+      groupBy === "utm_medium" ||
+      groupBy === "utm_campaign" ||
+      groupBy === "utm_term" ||
+      groupBy === "utm_content" ||
+      groupBy === "url"
     ) {
       return await prisma.link.groupBy({
         by: [groupBy],

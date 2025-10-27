@@ -106,9 +106,15 @@ function LinksList({
     "folderId",
     "tagIds",
     "domain",
-    "userId",
+    //"userId",
+    "url",
     "search",
     "showArchived",
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "utm_term",
+    "utm_content",
   ].some((param) => searchParams.has(param));
 
   return (
@@ -117,19 +123,19 @@ function LinksList({
         {!links || links.length ? (
           // Cards
           <CardList variant={compact ? "compact" : "loose"} loading={loading}>
-            {links?.length
-              ? // Link cards
-                links.map((link) => <LinkCard key={link.id} link={link} />)
-              : // Loading placeholder cards
-                Array.from({ length: 12 }).map((_, idx) => (
-                  <CardList.Card
-                    key={idx}
-                    outerClassName="pointer-events-none"
-                    innerClassName="flex items-center gap-4"
-                  >
-                    <LinkCardPlaceholder />
-                  </CardList.Card>
-                ))}
+              {links?.length
+                ? // Link cards
+                  links.map((link) => <LinkCard key={link.id} link={link} />)
+                : // Loading placeholder cards
+                  Array.from({ length: 12 }).map((_, idx) => (
+                    <CardList.Card
+                      key={idx}
+                      outerClassName="pointer-events-none"
+                      innerClassName="flex items-center gap-4"
+                    >
+                      <LinkCardPlaceholder />
+                    </CardList.Card>
+                  ))}
           </CardList>
         ) : (
           <AnimatedEmptyState

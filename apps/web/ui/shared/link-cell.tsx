@@ -88,8 +88,10 @@ export function LinkCell({
   // Selection functionality (optional - only available within LinkSelectionProvider)
   let isSelectMode = false;
   let isSelected = false;
-  let handleLinkSelection: ((linkId: string, e: React.MouseEvent) => void) | undefined;
-  
+  let handleLinkSelection:
+    | ((linkId: string, e: React.MouseEvent) => void)
+    | undefined;
+
   try {
     const selection = useLinkSelection();
     isSelectMode = selection.isSelectMode;
@@ -120,14 +122,16 @@ export function LinkCell({
       >
         {/* Link logo background circle */}
         <div className="absolute inset-0 shrink-0 rounded-full border border-neutral-100 bg-gradient-to-t from-neutral-100 opacity-100" />
-        <div className={cn(
-          "relative transition-[padding,transform] sm:p-1.5",
-          isSelectMode ? "scale-90" : "group-hover:scale-90",
-        )}>
+        <div
+          className={cn(
+            "relative transition-[padding,transform] sm:p-1.5",
+            isSelectMode ? "scale-90" : "group-hover:scale-90",
+          )}
+        >
           <LinkLogo
             apexDomain={getApexDomain(url)}
             className={cn(
-              "size-4 shrink-0 sm:size-5 transition-opacity",
+              "size-4 shrink-0 transition-opacity sm:size-5",
               isSelectMode && "opacity-0",
             )}
           />
@@ -138,8 +142,8 @@ export function LinkCell({
             "pointer-events-none absolute inset-0 flex items-center justify-center rounded-full border border-neutral-400 bg-white ring-0 ring-black/5",
             isSelectMode
               ? "opacity-100 ring"
-              : "opacity-100 max-sm:ring sm:opacity-0 transition-all duration-150 group-hover:opacity-100 group-hover:ring group-focus-visible:opacity-100 group-focus-visible:ring",
-            "group-data-[checked=true]:opacity-100",
+              : "opacity-0 transition-all duration-150 group-hover:opacity-100 group-hover:ring group-focus-visible:opacity-100 group-focus-visible:ring",
+            "group-data-[checked=true]:opacity-100 group-data-[checked=true]:ring",
           )}
         >
           <div
@@ -160,7 +164,7 @@ export function LinkCell({
       >
         {/* Main title line */}
         <div className="flex items-center gap-2">
-          <div className="flex min-w-0 items-center gap-2">
+          <div className="flex min-w-0 md:min-w-36 items-center gap-2">
             {switchPosition ? (
               // When position is switched, show destination URL as main title
               displayProperties.includes("url") && url ? (
@@ -243,7 +247,7 @@ export function LinkCell({
             )}
           </div>
 
-          {/* Comments badge */}
+          {/* Comments badge - hidden on mobile */}
           {(showBadges || showComments) && comments && (
             <CommentsBadge
               comments={comments}
@@ -260,20 +264,22 @@ export function LinkCell({
               </div>
             )} */}
 
-          {/* Tests badge */}
+          {/* Tests badge - hidden on mobile */}
           {showBadges &&
             link.testVariants &&
             link.testCompletedAt &&
             new Date(link.testCompletedAt) > new Date() && (
-              <TestsBadge
-                link={{
-                  testVariants: link.testVariants,
-                  testCompletedAt:
-                    link.testCompletedAt instanceof Date
-                      ? link.testCompletedAt
-                      : new Date(link.testCompletedAt),
-                }}
-              />
+              <div className="hidden lg:block">
+                <TestsBadge
+                  link={{
+                    testVariants: link.testVariants,
+                    testCompletedAt:
+                      link.testCompletedAt instanceof Date
+                        ? link.testCompletedAt
+                        : new Date(link.testCompletedAt),
+                  }}
+                />
+              </div>
             )}
         </div>
 
@@ -287,7 +293,7 @@ export function LinkCell({
               target="_blank"
               rel="noopener noreferrer"
               title={shortLink}
-              className="truncate max-w-lg text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2"
+              className="max-w-lg truncate text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2"
             >
               {shortLink}
             </a>
@@ -302,7 +308,7 @@ export function LinkCell({
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="truncate max-w-lg text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2"
+                  className="max-w-lg truncate text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2"
                   title={url}
                 >
                   {getPrettyUrl(url)}

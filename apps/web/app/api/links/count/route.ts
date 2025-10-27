@@ -20,6 +20,12 @@ export const GET = withWorkspace(
       tagIds,
       tagNames,
       tenantId,
+      utm_source,
+      utm_medium,
+      utm_campaign,
+      utm_term,
+      utm_content,
+      url,
     } = params;
 
     if (domain) {
@@ -45,11 +51,11 @@ export const GET = withWorkspace(
     /* we only need to get the folder ids if we are:
       - not filtering by folder
       - there's a groupBy
-      - filtering by search, domain, tags, or tenantId
+      - filtering by search, domain, tags, tenantId, or UTM parameters
     */
     let folderIds =
       !folderId &&
-      (groupBy || search || domain || tagId || tagIds || tagNames || tenantId)
+      (groupBy || search || domain || tagId || tagIds || tagNames || tenantId || utm_source || utm_medium || utm_campaign || utm_term || utm_content || url)
         ? await getFolderIdsToFilter({
             workspace,
             userId: session.user.id,

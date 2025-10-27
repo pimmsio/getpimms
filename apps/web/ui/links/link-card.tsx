@@ -117,7 +117,7 @@ const LinkCardInner = memo(({ link }: { link: ResponseLink }) => {
             ),
           })}
       >
-        <div className="flex items-center gap-5 px-4 py-2.5 text-sm sm:gap-8 md:gap-12">
+        <div className="flex items-center gap-3 px-4 py-2.5 text-sm">
           <div ref={ref} className="min-w-0 grow">
             <LinkCell 
               link={link}
