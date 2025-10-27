@@ -276,7 +276,7 @@ export function LinkControls({
             </div>
             <div className="border-t border-neutral-200" />
             <div className="grid gap-px p-2">
-              {/* {options.includes("move") &&
+              {options.includes("move") &&
                 Boolean(flags?.linkFolders && foldersCount) && (
                   <Button
                     text="Move"
@@ -296,7 +296,7 @@ export function LinkControls({
                         : undefined
                     }
                   />
-                )} */}
+                )}
               {options.includes("archive") && (
                 <Button
                   text={link.archived ? "Unarchive" : "Archive"}

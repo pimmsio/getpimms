@@ -119,24 +119,24 @@ export const LinksToolbar = memo(
           action: () => setShowTagLinkModal(true),
           keyboardShortcut: "t",
         },
-        // ...(flags?.linkFolders
-        //   ? [
-        //       {
-        //         label: "Folder",
-        //         icon: Folder,
-        //         action: () => setShowMoveLinkToFolderModal(true),
-        //         disabledTooltip:
-        //           plan === "free" ? (
-        //             <TooltipContent
-        //               title="You can only use Link Folders on a Pro plan and above. Upgrade to Pro to continue."
-        //               cta="Upgrade to Pro"
-        //               href={`/${slug}/upgrade`}
-        //             />
-        //           ) : undefined,
-        //         keyboardShortcut: "m",
-        //       },
-        //     ]
-        //   : []),
+        ...(flags?.linkFolders
+          ? [
+              {
+                label: "Folder",
+                icon: Folder,
+                action: () => setShowMoveLinkToFolderModal(true),
+                disabledTooltip:
+                  plan === "free" ? (
+                    <TooltipContent
+                      title="You can only use Link Folders on a Pro plan and above. Upgrade to Pro to continue."
+                      cta="Upgrade to Pro"
+                      href={`/${slug}/upgrade`}
+                    />
+                  ) : undefined,
+                keyboardShortcut: "m",
+              },
+            ]
+          : []),
         {
           label: "Conversion",
           icon: CircleDollar,
@@ -151,16 +151,16 @@ export const LinksToolbar = memo(
           // ),
           // keyboardShortcut: "c",
         },
-        // {
-        //   label:
-        //     selectedLinks.length &&
-        //     selectedLinks.every(({ archived }) => archived)
-        //       ? "Unarchive"
-        //       : "Archive",
-        //   icon: BoxArchive,
-        //   action: () => setShowArchiveLinkModal(true),
-        //   keyboardShortcut: "a",
-        // },
+        {
+          label:
+            selectedLinks.length &&
+            selectedLinks.every(({ archived }) => archived)
+              ? "Unarchive"
+              : "Archive",
+          icon: BoxArchive,
+          action: () => setShowArchiveLinkModal(true),
+          keyboardShortcut: "a",
+        },
         // {
         //   label: "Delete",
         //   icon: Trash,
@@ -203,10 +203,10 @@ export const LinksToolbar = memo(
     return (
       <>
         <TagLinkModal />
-        {/* <MoveLinkToFolderModal /> */}
+        <MoveLinkToFolderModal />
         <LinkConversionTrackingModal />
-        {/* <ArchiveLinkModal /> */}
-        {/* <DeleteLinkModal /> */}
+        <ArchiveLinkModal />
+        <DeleteLinkModal />
         <LinkBuilder />
 
         {/* Leave room at bottom of list */}
@@ -244,18 +244,27 @@ export const LinksToolbar = memo(
                             <ArchivedLinksHint />
                           </div>
                         )}
+                        <div className="hidden sm:block">
+                          <Button
+                            variant="secondary"
+                            className="h-8 w-fit px-3.5"
+                            icon={<CircleCheck className="size-4" />}
+                            text="Select"
+                            onClick={() => setIsSelectMode(true)}
+                          />
+                        </div>
                       </>
                     )}
                   </PaginationControls>
-                  <div className="flex items-center sm:hidden">
+                  <div className="flex items-center gap-2 sm:hidden">
                     <CreateLinkButton />
-                    {/* <Button
+                    <Button
                       variant="secondary"
                       className="h-8 w-fit px-3.5"
                       icon={<CircleCheck className="size-4" />}
                       text="Select"
                       onClick={() => setIsSelectMode(true)}
-                    /> */}
+                    />
                   </div>
                 </div>
 
@@ -284,6 +293,22 @@ export const LinksToolbar = memo(
                         </strong>{" "}
                         selected
                       </span>
+                      <span className="text-neutral-300">•</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (selectedLinkIds.length === links.length) {
+                            setSelectedLinkIds([]);
+                          } else {
+                            setSelectedLinkIds(links.map((l) => l.id));
+                          }
+                        }}
+                        className="whitespace-nowrap text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors"
+                      >
+                        {selectedLinkIds.length === links.length
+                          ? "Clear all"
+                          : "Select all"}
+                      </button>
                     </div>
 
                     {/* Large screen controls */}

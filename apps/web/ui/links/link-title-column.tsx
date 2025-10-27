@@ -104,79 +104,77 @@ export function LinkTitleColumn({ link }: { link: ResponseLink }) {
       <LinkIcon link={link} />
       <div className="h-[32px] min-w-0 overflow-hidden transition-[height] group-data-[variant=loose]/card-list:h-[46px]">
         <div className="flex items-center gap-2">
-          <div className="min-w-0 shrink grow-0 text-neutral-950">
-            <div className="flex items-center gap-2">
-              {switchPosition ? (
-                // When position is switched, show destination URL as main title
-                displayProperties.includes("url") && link.url ? (
-                  <UrlDecompositionTooltip url={link.url}>
-                    <a
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={cn(
-                        "min-w-0 truncate font-semibold leading-6 text-neutral-800 transition-colors hover:text-black",
-                        link.archived && "text-neutral-600",
-                      )}
-                    >
-                      {getPrettyUrl(link.url)}
-                    </a>
-                  </UrlDecompositionTooltip>
-                ) : (
-                  <span className={cn(
-                    "min-w-0 truncate font-semibold leading-6 text-neutral-400",
-                    link.archived && "text-neutral-600",
-                  )}>
-                    No URL configured
-                  </span>
-                )
-              ) : (
-                // Default behavior: show title or short link as main title
-                displayProperties.includes("title") && link.title ? (
-                  <span
+          <div className="flex min-w-0 items-center gap-2">
+            {switchPosition ? (
+              // When position is switched, show destination URL as main title
+              displayProperties.includes("url") && link.url ? (
+                <UrlDecompositionTooltip url={link.url}>
+                  <a
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={cn(
-                      "min-w-0 truncate font-semibold leading-6 text-neutral-800",
+                      "truncate font-semibold leading-6 text-neutral-800 transition-colors hover:text-black",
                       link.archived && "text-neutral-600",
                     )}
                   >
-                    {link.title}
-                  </span>
-                ) : (
-                  <UnverifiedTooltip domain={domain} _key={key}>
-                    <a
-                      href={linkConstructor({ domain, key })}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={linkConstructor({ domain, key, pretty: true })}
-                      className={cn(
-                        "font-semibold leading-6 text-neutral-800 transition-colors hover:text-black",
-                        link.archived && "text-neutral-600",
-                      )}
-                    >
-                      {linkConstructor({ domain, key, pretty: true })}
-                    </a>
-                  </UnverifiedTooltip>
-                )
-              )}
-              <CopyButton
-                value={linkConstructor({
-                  domain,
-                  key,
-                  pretty: false,
-                })}
-                variant="neutral"
-                className="p-1.5"
-                withText
-              />
-              {link.comments && <CommentsBadge comments={link.comments} />}
-              {hasQuickViewSettings && <SettingsBadge link={link} />}
-              {link.testVariants &&
-                link.testCompletedAt &&
-                new Date(link.testCompletedAt) > new Date() && (
-                  <TestsBadge link={link} />
-                )}
-            </div>
+                    {getPrettyUrl(link.url)}
+                  </a>
+                </UrlDecompositionTooltip>
+              ) : (
+                <span className={cn(
+                  "truncate font-semibold leading-6 text-neutral-400",
+                  link.archived && "text-neutral-600",
+                )}>
+                  No URL configured
+                </span>
+              )
+            ) : (
+              // Default behavior: show title or short link as main title
+              displayProperties.includes("title") && link.title ? (
+                <span
+                  className={cn(
+                    "truncate font-semibold leading-6 text-neutral-800",
+                    link.archived && "text-neutral-600",
+                  )}
+                >
+                  {link.title}
+                </span>
+              ) : (
+                <UnverifiedTooltip domain={domain} _key={key}>
+                  <a
+                    href={linkConstructor({ domain, key })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={linkConstructor({ domain, key, pretty: true })}
+                    className={cn(
+                      "truncate font-semibold leading-6 text-neutral-800 transition-colors hover:text-black",
+                      link.archived && "text-neutral-600",
+                    )}
+                  >
+                    {linkConstructor({ domain, key, pretty: true })}
+                  </a>
+                </UnverifiedTooltip>
+              )
+            )}
+            <CopyButton
+              value={linkConstructor({
+                domain,
+                key,
+                pretty: false,
+              })}
+              variant="neutral"
+              className="p-1.5"
+              withText
+            />
           </div>
+          {link.comments && <CommentsBadge comments={link.comments} />}
+          {hasQuickViewSettings && <SettingsBadge link={link} />}
+          {link.testVariants &&
+            link.testCompletedAt &&
+            new Date(link.testCompletedAt) > new Date() && (
+              <TestsBadge link={link} />
+            )}
           <Details link={link} compact />
         </div>
 
@@ -280,7 +278,6 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
     <button
       type="button"
       role="checkbox"
-      disabled={true}
       aria-checked={isSelected}
       data-checked={isSelected}
       onClick={(e) => handleLinkSelection(link.id, e)}
@@ -316,7 +313,7 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
         <div className="size-5 group-data-[variant=loose]/card-list:size-6 sm:hidden" />
       </div>
       {/* Checkbox */}
-      {/* <div
+      <div
         className={cn(
           "pointer-events-none absolute inset-0 flex items-center justify-center rounded-full border border-neutral-400 bg-white ring-0 ring-black/5",
           "opacity-100 max-sm:ring sm:opacity-0",
@@ -332,7 +329,7 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
         >
           <Check2 className="size-3 text-white" />
         </div>
-      </div> */}
+      </div>
     </button>
   );
 });
@@ -355,7 +352,7 @@ const Details = memo(
             : "hidden gap-1.5 opacity-0 group-data-[variant=loose]/card-list:flex group-data-[variant=loose]/card-list:opacity-100 md:gap-3",
         )}
       >
-        <div className="flex min-w-0 items-center gap-1">
+        <div className="flex min-w-0 items-center gap-1.5">
           {(switchPosition ? true : displayProperties.includes("url")) &&
             (compact ? (
               <ArrowRight className="mr-1 h-3 w-3 shrink-0 text-neutral-400" />
@@ -370,7 +367,7 @@ const Details = memo(
                 target="_blank"
                 rel="noopener noreferrer"
                 title={linkConstructor({ domain: link.domain, key: link.key, pretty: true })}
-                className="block w-full truncate max-w-[300px] text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2 text-ellipsis"
+                className="truncate text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2"
               >
                 {linkConstructor({ domain: link.domain, key: link.key, pretty: true })}
               </a>
@@ -382,7 +379,7 @@ const Details = memo(
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block w-full truncate max-w-[300px] text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2 text-ellipsis"
+                  className="truncate text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2"
                 >
                   {getPrettyUrl(url)}
                 </a>
@@ -397,24 +394,22 @@ const Details = memo(
               {link.description}
             </span>
           )}
-        </div>
-        {/* <div
-          className={cn(
-            "hidden shrink-0",
-            displayProperties.includes("user") && "sm:block",
+          {/* <div
+            className={cn(
+              "hidden shrink-0",
+              displayProperties.includes("user") && "sm:block",
+            )}
+          >
+            <UserAvatar link={link} />
+          </div> */}
+          {displayProperties.includes("createdAt") && (
+            <>
+              <span className="hidden shrink-0 text-neutral-300 sm:inline">•</span>
+              <Tooltip content={formatDateTime(createdAt)} delayDuration={150}>
+                <span className="hidden shrink-0 text-neutral-400 sm:inline whitespace-nowrap">{timeAgo(createdAt)}</span>
+              </Tooltip>
+            </>
           )}
-        >
-          <UserAvatar link={link} />
-        </div> */}
-        <div
-          className={cn(
-            "hidden shrink-0",
-            displayProperties.includes("createdAt") && "sm:block",
-          )}
-        >
-          <Tooltip content={formatDateTime(createdAt)} delayDuration={150}>
-            <span className="text-neutral-400">{timeAgo(createdAt)}</span>
-          </Tooltip>
         </div>
       </div>
     );

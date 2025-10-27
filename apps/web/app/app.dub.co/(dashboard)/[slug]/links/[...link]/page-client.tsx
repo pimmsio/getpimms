@@ -6,10 +6,11 @@ import useWorkspace from "@/lib/swr/use-workspace";
 import { ExpandedLinkProps } from "@/lib/types";
 import { LinkAnalyticsBadge } from "@/ui/links/link-analytics-badge";
 import { LinkBuilderDestinationUrlInput } from "@/ui/links/link-builder/controls/link-builder-destination-url-input";
+import { LinkBuilderFolderSelector } from "@/ui/links/link-builder/controls/link-builder-folder-selector";
 import { LinkBuilderShortLinkInput } from "@/ui/links/link-builder/controls/link-builder-short-link-input";
 import { LinkCommentsInput } from "@/ui/links/link-builder/controls/link-comments-input";
 import { ConversionTrackingToggle } from "@/ui/links/link-builder/conversion-tracking-toggle";
-import { DraftControlsHandle } from "@/ui/links/link-builder/draft-controls";
+import { DraftControls, DraftControlsHandle } from "@/ui/links/link-builder/draft-controls";
 import { LinkActionBar } from "@/ui/links/link-builder/link-action-bar";
 import { LinkBuilderHeader } from "@/ui/links/link-builder/link-builder-header";
 import {
@@ -18,8 +19,10 @@ import {
 } from "@/ui/links/link-builder/link-builder-provider";
 import { LinkFeatureButtons } from "@/ui/links/link-builder/link-feature-buttons";
 import { LinkPreview } from "@/ui/links/link-builder/link-preview";
+import { OptionsList } from "@/ui/links/link-builder/options-list";
 import { QRCodePreview } from "@/ui/links/link-builder/qr-code-preview";
 import { SearchEngineIndexingToggle } from "@/ui/links/link-builder/search-engine-indexing-toggle";
+import { DisableDeeplinkToggle } from "@/ui/links/link-builder/disable-deeplink-toggle";
 import { TagSelect } from "@/ui/links/link-builder/tag-select";
 import { useLinkBuilderSubmit } from "@/ui/links/link-builder/use-link-builder-submit";
 import { LinkControls } from "@/ui/links/link-controls";
@@ -157,11 +160,11 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
               isChangingLink && "opacity-50",
             )}
           >
-            {/* <DraftControls
+            <DraftControls
               ref={draftControlsRef}
               props={link}
               workspaceId={workspace.id!}
-            /> */}
+            />
             <Button
               icon={
                 <div className="relative size-4">
@@ -240,11 +243,13 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
 
             <SearchEngineIndexingToggle />
 
+            <DisableDeeplinkToggle />
+
             {isDesktop && (
               <LinkFeatureButtons className="mt-1 flex-wrap" variant="page" />
             )}
 
-            {/* <OptionsList /> */}
+            <OptionsList />
           </div>
 
           {isDesktop && (
@@ -256,9 +261,9 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
         </div>
         <div className="px-4 md:px-6 lg:bg-neutral-50 lg:px-0">
           <div className="mx-auto max-w-xl divide-neutral-200 lg:divide-y">
-            {/* <div className="py-4 lg:px-4 lg:py-6">
+            <div className="py-4 lg:px-4 lg:py-6">
               <LinkBuilderFolderSelector />
-            </div> */}
+            </div>
             <div className="py-4 lg:px-4 lg:py-6">
               <LinkPreview />
             </div>

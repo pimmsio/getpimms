@@ -194,7 +194,7 @@ function OnboardingButtonInner({
     >
       <button
         type="button"
-        className="animate-slide-up-fade -mr-2 -mt-0.5 flex h-12 flex-col items-center justify-center rounded-full bg-[#3970ff] px-6 text-sm font-medium leading-tight text-white shadow-md transition-all [--offset:10px] sm:mr-0"
+        className="animate-slide-up-fade -mr-2 mt-1 flex h-12 flex-col items-center justify-center rounded-full bg-[#3970ff] px-6 text-sm font-medium leading-tight text-white shadow-md transition-all [--offset:10px] sm:mr-0"
       >
         <span>Getting Started</span>
         <span className="text-neutral-200">

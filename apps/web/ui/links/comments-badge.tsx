@@ -27,7 +27,7 @@ export function CommentsBadge({ comments, maxWidth = "300px" }: { comments: stri
           </HoverCard.Content>
         </HoverCard.Portal>
         <HoverCard.Trigger asChild>
-          <div className="rounded-full py-1 px-2 hover:bg-neutral-100 text-neutral-600 text-ellipsis line-clamp-1 max-w-sm" style={{ maxWidth }}>
+          <div className="rounded-full leading-tight py-1 px-2 hover:bg-neutral-100 text-neutral-600 text-ellipsis line-clamp-1 max-w-sm" style={{ maxWidth }}>
             {comments}
           </div>
         </HoverCard.Trigger>

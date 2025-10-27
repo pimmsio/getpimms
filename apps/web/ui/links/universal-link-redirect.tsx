@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect } from "react";
 
 export default function UniversalLinkRedirect({
@@ -19,7 +20,7 @@ export default function UniversalLinkRedirect({
     }, 500);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [directLink, url]);
 
   // Redirect to the redirect URL (which may be the same as the original URL,
   // or a cleaned-up version with properly encoded parameters)
@@ -29,3 +30,4 @@ export default function UniversalLinkRedirect({
     return <meta httpEquiv="refresh" content={`0;url=${url}`} />;
   }
 }
+

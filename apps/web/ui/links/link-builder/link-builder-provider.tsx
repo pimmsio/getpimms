@@ -25,7 +25,7 @@ export type LinkBuilderProps = {
   modal: boolean;
 };
 
-const LinkBuilderContext = createContext<
+export const LinkBuilderContext = createContext<
   | (LinkBuilderProps & {
       generatingMetatags: boolean;
       setGeneratingMetatags: Dispatch<SetStateAction<boolean>>;

@@ -12,6 +12,7 @@ import {
 } from "@dub/ui";
 import {
   ArrowsOppositeDirectionY,
+  BoxArchive,
   GridLayoutRows,
   Shuffle,
   Sliders,
@@ -104,7 +105,7 @@ export default function LinkDisplay() {
               />
             </div>
           </div>
-          {/* {!isMegaFolder && (
+          {!isMegaFolder && (
             <div className="group flex h-16 items-center justify-between gap-2 px-4">
               <div className="flex items-center gap-2">
                 <div className="flex w-6 items-center justify-center">
@@ -130,7 +131,7 @@ export default function LinkDisplay() {
                 />
               </div>
             </div>
-          )} */}
+          )}
           <div className="p-4">
             <span className="text-xs uppercase text-neutral-500">
               Display Properties

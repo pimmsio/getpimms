@@ -35,6 +35,9 @@ export const config = {
 };
 
 export default async function middleware(req: NextRequest, ev: NextFetchEvent) {
+  // Verify runtime (Edge vs Node)
+  console.log('Middleware Runtime:', (globalThis as any).EdgeRuntime ? 'edge' : 'node');
+  
   const { domain, path, key, fullKey } = parse(req);
 
   AxiomMiddleware(req, ev);

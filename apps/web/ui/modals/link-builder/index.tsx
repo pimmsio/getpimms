@@ -4,6 +4,7 @@ import useCustomersCount from "@/lib/swr/use-customers-count";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { ExpandedLinkProps } from "@/lib/types";
 import { LinkBuilderDestinationUrlInput } from "@/ui/links/link-builder/controls/link-builder-destination-url-input";
+import { LinkBuilderFolderSelector } from "@/ui/links/link-builder/controls/link-builder-folder-selector";
 import { LinkBuilderShortLinkInput } from "@/ui/links/link-builder/controls/link-builder-short-link-input";
 import { LinkCommentsInput } from "@/ui/links/link-builder/controls/link-comments-input";
 import { ConversionTrackingToggle } from "@/ui/links/link-builder/conversion-tracking-toggle";
@@ -240,7 +241,7 @@ function LinkBuilderInner({
               <div className="relative">
                 <div className="absolute inset-0 rounded-3xl border-neutral-200 bg-neutral-50"></div>
                 <div className="relative flex flex-col gap-6 px-4 py-3">
-                  {/* <LinkBuilderFolderSelector /> */}
+                  <LinkBuilderFolderSelector />
                   <LinkPreview />
                   <QRCodePreview />
                 </div>
