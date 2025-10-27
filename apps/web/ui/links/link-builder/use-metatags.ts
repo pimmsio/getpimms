@@ -24,7 +24,7 @@ export function useMetatags({ enabled = true }: { enabled?: boolean } = {}) {
   });
   const [debouncedUrl] = useDebounce(getUrlWithoutUTMParams(url), 500);
 
-  const { generatingMetatags, setGeneratingMetatags, props } =
+  const { generatingMetatags, setGeneratingMetatags, props, duplicateProps } =
     useLinkBuilderContext();
 
   // Flag to skip auto-fetch after discard
@@ -129,7 +129,7 @@ export function useMetatags({ enabled = true }: { enabled?: boolean } = {}) {
 
     // Check what actually changed (only URL for this useEffect)
     const urlChanged = prevValuesRef.current.url !== debouncedUrl;
-    const isNewLink = !props;
+    const isNewLink = !props && !duplicateProps;
 
     // Determine if we should auto-fetch (only for URL changes)
     let shouldAutoFetch = false;

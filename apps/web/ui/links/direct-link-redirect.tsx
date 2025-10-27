@@ -14,13 +14,13 @@ export default function DirectLinkRedirect({
       return;
     }
 
-    // After a short delay, force navigation to the YouTube web URL.
+    // After a short delay, force navigation to the web URL.
     const timer = setTimeout(() => {
       window.location.href = url;
     }, 500);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [directLink, url]);
 
   // Redirect to the redirect URL (which may be the same as the original URL,
   // or a cleaned-up version with properly encoded parameters)
@@ -30,3 +30,4 @@ export default function DirectLinkRedirect({
     return <meta httpEquiv="refresh" content={`0;url=${url}`} />;
   }
 }
+
