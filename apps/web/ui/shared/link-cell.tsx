@@ -9,7 +9,7 @@ import {
   TooltipContent,
   useInViewport,
 } from "@dub/ui";
-import { ArrowTurnRight2, Bolt } from "@dub/ui/icons";
+import { ArrowTurnRight2, Check2 } from "@dub/ui/icons";
 import {
   cn,
   formatDateTime,
@@ -21,6 +21,7 @@ import {
 } from "@dub/utils";
 import { useContext, useRef } from "react";
 import { CommentsBadge } from "../links/comments-badge";
+import { useLinkSelection } from "../links/link-selection-provider";
 import { LinksDisplayContext } from "../links/links-display-provider";
 import { TestsBadge } from "../links/tests-badge";
 import { UrlDecompositionTooltip } from "./url-decomposition-tooltip";
@@ -84,6 +85,20 @@ export function LinkCell({
   const shortLink = linkConstructor({ domain, key, pretty: true });
   const fullShortLink = linkConstructor({ domain, key, pretty: false });
 
+  // Selection functionality (optional - only available within LinkSelectionProvider)
+  let isSelectMode = false;
+  let isSelected = false;
+  let handleLinkSelection: ((linkId: string, e: React.MouseEvent) => void) | undefined;
+  
+  try {
+    const selection = useLinkSelection();
+    isSelectMode = selection.isSelectMode;
+    isSelected = selection.selectedLinkIds.includes(link.id);
+    handleLinkSelection = selection.handleLinkSelection;
+  } catch (e) {
+    // LinkSelectionProvider not available - selection features disabled
+  }
+
   const containerClassName =
     variant === "card"
       ? "flex items-center gap-3 rounded border border-neutral-100 bg-white px-4 py-3.5"
@@ -91,13 +106,52 @@ export function LinkCell({
 
   return (
     <div className={cn(containerClassName, className)}>
-      {/* Logo with consistent styling */}
-      <div className="relative flex-none rounded-full border border-neutral-100 bg-gradient-to-t from-neutral-100 sm:p-1.5">
-        <LinkLogo
-          apexDomain={getApexDomain(url)}
-          className="size-4 shrink-0 sm:size-5"
-        />
-      </div>
+      {/* Logo with checkbox selection */}
+      <button
+        type="button"
+        role="checkbox"
+        aria-checked={isSelected}
+        data-checked={isSelected}
+        onClick={(e) => handleLinkSelection?.(link.id, e)}
+        className={cn(
+          "group relative flex shrink-0 items-center justify-center outline-none",
+          isSelectMode && "flex",
+        )}
+      >
+        {/* Link logo background circle */}
+        <div className="absolute inset-0 shrink-0 rounded-full border border-neutral-100 bg-gradient-to-t from-neutral-100 opacity-100" />
+        <div className={cn(
+          "relative transition-[padding,transform] sm:p-1.5",
+          isSelectMode ? "scale-90" : "group-hover:scale-90",
+        )}>
+          <LinkLogo
+            apexDomain={getApexDomain(url)}
+            className={cn(
+              "size-4 shrink-0 sm:size-5 transition-opacity",
+              isSelectMode && "opacity-0",
+            )}
+          />
+        </div>
+        {/* Checkbox overlay */}
+        <div
+          className={cn(
+            "pointer-events-none absolute inset-0 flex items-center justify-center rounded-full border border-neutral-400 bg-white ring-0 ring-black/5",
+            isSelectMode
+              ? "opacity-100 ring"
+              : "opacity-100 max-sm:ring sm:opacity-0 transition-all duration-150 group-hover:opacity-100 group-hover:ring group-focus-visible:opacity-100 group-focus-visible:ring",
+            "group-data-[checked=true]:opacity-100",
+          )}
+        >
+          <div
+            className={cn(
+              "rounded-full bg-neutral-800 p-0.5",
+              "scale-90 opacity-0 transition-[transform,opacity] duration-100 group-data-[checked=true]:scale-100 group-data-[checked=true]:opacity-100",
+            )}
+          >
+            <Check2 className="size-3 text-white" />
+          </div>
+        </div>
+      </button>
 
       {/* Link info - same structure as LinkTitleColumn */}
       <div

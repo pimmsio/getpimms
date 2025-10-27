@@ -161,15 +161,15 @@ export const LinksToolbar = memo(
           action: () => setShowArchiveLinkModal(true),
           keyboardShortcut: "a",
         },
-        {
-          label: "Delete",
-          icon: Trash,
-          action: () => setShowDeleteLinkModal(true),
-          disabledTooltip: selectedLinks.some(({ programId }) => programId)
-            ? "You can't delete a link that's part of a program."
-            : undefined,
-          keyboardShortcut: "x",
-        },
+        // {
+        //   label: "Delete",
+        //   icon: Trash,
+        //   action: () => setShowDeleteLinkModal(true),
+        //   disabledTooltip: selectedLinks.some(({ programId }) => programId)
+        //     ? "You can't delete a link that's part of a program."
+        //     : undefined,
+        //   keyboardShortcut: "x",
+        // },
       ],
       [plan, selectedLinks],
     );
@@ -293,6 +293,22 @@ export const LinksToolbar = memo(
                         </strong>{" "}
                         selected
                       </span>
+                      <span className="text-neutral-300">•</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (selectedLinkIds.length === links.length) {
+                            setSelectedLinkIds([]);
+                          } else {
+                            setSelectedLinkIds(links.map((l) => l.id));
+                          }
+                        }}
+                        className="whitespace-nowrap text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors"
+                      >
+                        {selectedLinkIds.length === links.length
+                          ? "Clear all"
+                          : "Select all"}
+                      </button>
                     </div>
 
                     {/* Large screen controls */}
