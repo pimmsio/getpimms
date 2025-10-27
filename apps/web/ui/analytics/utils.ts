@@ -1,5 +1,9 @@
 import { AnalyticsGroupByOptions } from "@/lib/analytics/types";
-import { editQueryString } from "@/lib/analytics/utils";
+import { 
+  editQueryString, 
+  getFiltersToExclude, 
+  removeFiltersFromQueryString 
+} from "@/lib/analytics/utils";
 import { fetcher } from "@dub/utils";
 import { useContext } from "react";
 import useSWR, { useSWRConfig } from "swr";
@@ -9,42 +13,6 @@ type AnalyticsFilterResult = {
   data: ({ count?: number } & Record<string, any>)[] | null;
   loading: boolean;
 };
-
-/**
- * Get filters to exclude based on groupBy to avoid conflicting filter + groupBy combinations
- */
-function getFiltersToExclude(groupBy: AnalyticsGroupByOptions): string[] {
-  const excludeMap: Record<string, string[]> = {
-    'referers': ['referer', 'refererUrl', 'channel'],
-    'referer_urls': ['referer', 'refererUrl', 'channel'],
-    'channels': ['referer', 'refererUrl', 'channel'],
-    'countries': ['country', 'continent', 'region', 'city'],
-    'cities': ['city'],
-    'regions': ['region'],
-    'continents': ['continent'],
-    'devices': ['device'],
-    'browsers': ['browser'],
-    'os': ['os'],
-    'triggers': ['trigger', 'qr'],
-    'top_urls': ['url'],
-    'utm_sources': ['utm_source'],
-    'utm_mediums': ['utm_medium'],
-    'utm_campaigns': ['utm_campaign'],
-    'utm_terms': ['utm_term'],
-    'utm_contents': ['utm_content'],
-  };
-  
-  return excludeMap[groupBy] || [];
-}
-
-/**
- * Remove specified filters from query string
- */
-function removeFiltersFromQueryString(queryString: string, filtersToRemove: string[]): string {
-  const params = new URLSearchParams(queryString);
-  filtersToRemove.forEach(filter => params.delete(filter));
-  return params.toString();
-}
 
 /**
  * Fetches event counts grouped by the specified filter

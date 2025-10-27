@@ -1,6 +1,7 @@
 import { BlurImage, useRouterStuff } from "@dub/ui";
 import { ExternalLink } from "lucide-react";
 import { getGoogleFavicon, getApexDomain } from "@dub/utils";
+import { useMemo } from "react";
 import { AnalyticsCard } from "./analytics-card";
 import { AnalyticsLoadingSpinner } from "./analytics-loading-spinner";
 import MixedBarList from "./mixed-bar-list";
@@ -12,6 +13,55 @@ export default function DestinationUrls() {
   const { data: rawData } = useAnalyticsFilterOption({
     groupBy: "top_urls",
   });
+
+  // Group URLs by base path (without query params)
+  const groupedData = useMemo(() => {
+    if (!rawData) return null;
+    
+    const urlMap = new Map<string, {
+      url: string;
+      displayUrl: string;
+      clicks: number;
+      leads: number;
+      sales: number;
+      saleAmount: number;
+    }>();
+    
+    rawData.forEach((item) => {
+      const fullUrl = item.url || '';
+      
+      // Normalize URL for grouping: strip query params, hash, trailing slash
+      let normalizedKey = fullUrl
+        .split('?')[0]    // Remove query params
+        .split('#')[0]    // Remove hash
+        .replace(/\/$/, '');  // Remove trailing slash
+      
+      const existing = urlMap.get(normalizedKey);
+      if (existing) {
+        // Aggregate metrics for same base URL
+        urlMap.set(normalizedKey, {
+          url: existing.url, // Keep first full URL for filter value
+          displayUrl: existing.displayUrl,
+          clicks: existing.clicks + (item.clicks || 0),
+          leads: existing.leads + (item.leads || 0),
+          sales: existing.sales + (item.sales || 0),
+          saleAmount: existing.saleAmount + (item.saleAmount || 0),
+        });
+      } else {
+        urlMap.set(normalizedKey, {
+          url: normalizedKey, // Use clean URL for filter value
+          displayUrl: normalizedKey.replace(/^https?:\/\//, ''), // For display without protocol
+          clicks: item.clicks || 0,
+          leads: item.leads || 0,
+          sales: item.sales || 0,
+          saleAmount: item.saleAmount || 0,
+        });
+      }
+    });
+    
+    // Convert back to array and sort by clicks (keep click sorting for analytics)
+    return Array.from(urlMap.values()).sort((a, b) => b.clicks - a.clicks);
+  }, [rawData]);
 
   const singularTabName = "url";
 
@@ -26,20 +76,19 @@ export default function DestinationUrls() {
       ]}
       selectedTabId="urls"
       onSelectTab={() => {}} // No tab switching
-      expandLimit={8}
-      hasMore={(rawData?.length ?? 0) > 8}
+      expandLimit={5}
+      hasMore={(groupedData?.length ?? 0) > 8}
     >
       {({ limit, setShowModal }) => (
         <>
-          {rawData ? (
-            rawData.length > 0 ? (
+          {groupedData ? (
+            groupedData.length > 0 ? (
               <MixedBarList
                 tab="Destination URL"
                 data={
-                  rawData
+                  groupedData
                     ?.map((d) => {
-                      const url = d.url || '';
-                      const domain = getApexDomain(url);
+                      const domain = getApexDomain(d.displayUrl);
                       
                       return {
                         icon: (
@@ -51,10 +100,10 @@ export default function DestinationUrls() {
                             className="h-4 w-4 rounded-full"
                           />
                         ),
-                        title: url.replace(/^https?:\/\//, "").replace(/\/$/, ""),
+                        title: d.displayUrl, // Display without protocol
                         href: queryParams({
                           set: {
-                            [singularTabName]: url,
+                            [singularTabName]: d.url, // Use full URL for filter
                           },
                           getNewPath: true,
                         }) as string,

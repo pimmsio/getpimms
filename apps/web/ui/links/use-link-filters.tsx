@@ -475,7 +475,7 @@ function useTagFilterOptions({
             count:
               tagLinksCount?.find(({ tagId }) => tagId === tag.id)?._count || 0,
           }))
-          .sort((a, b) => b.count - a.count) ?? null;
+          .sort((a, b) => a.name.localeCompare(b.name)) ?? null; // Sort alphabetically by name
   }, [loadingTags, tags, selectedTags, tagLinksCount, tagIds]);
 
   return { tags: tagsResult, tagsAsync };
@@ -506,7 +506,7 @@ function useDomainFilterOptions({ folderId, enabled }: { folderId: string, enabl
         slug: domain,
         count: _count,
       }))
-      .sort((a, b) => b.count - a.count);
+      .sort((a, b) => a.slug.localeCompare(b.slug)); // Sort alphabetically
   }, [domainsCount]);
 }
 
@@ -538,7 +538,7 @@ function useUserFilterOptions({ folderId, enabled }: { folderId: string, enabled
                 usersCount?.find(({ userId }) => userId === user.id)?._count ||
                 0,
             }))
-            .sort((a, b) => b.count - a.count)
+            .sort((a, b) => (a.name || '').localeCompare(b.name || '')) // Sort alphabetically by name
         : usersCount
           ? usersCount.map(({ userId, _count }) => ({
               id: userId,
@@ -562,6 +562,6 @@ function useFolderFilterOptions({ enabled }: { enabled: boolean }) {
         label: folder.name,
         right: folder.linkCount || 0,
       }))
-      .sort((a, b) => b.right - a.right);
+      .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by name
   }, [folders, enabled]);
 }

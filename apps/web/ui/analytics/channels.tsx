@@ -61,7 +61,7 @@ export default function Channels() {
       ]}
       selectedTabId="channels"
       onSelectTab={() => {}} // No tab switching
-      expandLimit={8}
+      expandLimit={5}
       hasMore={(data?.length ?? 0) > 8}
     >
       {({ limit, setShowModal }) => (

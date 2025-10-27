@@ -52,7 +52,7 @@ export default function useUtmValues({
         count: item._count,
       }))
       .filter((item) => item.value !== "") // Filter out empty values
-      .sort((a, b) => b.count - a.count); // Sort by count descending
+      .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically
   }, [data, utmField]);
 
   return {

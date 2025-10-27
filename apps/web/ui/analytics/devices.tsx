@@ -33,7 +33,7 @@ export default function Devices() {
       ]}
       selectedTabId={tab}
       onSelectTab={setTab}
-      expandLimit={8}
+      expandLimit={5}
       hasMore={(data?.length ?? 0) > 8}
     >
       {({ limit, setShowModal }) =>

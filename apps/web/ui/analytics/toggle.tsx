@@ -4,12 +4,23 @@ import {
   INTERVAL_DISPLAYS,
   VALID_ANALYTICS_FILTERS,
 } from "@/lib/analytics/constants";
-import { validDateRangeForPlan, getGroupDisplayNameFromDomains } from "@/lib/analytics/utils";
+import {
+  getGroupDisplayNameFromDomains,
+  validDateRangeForPlan,
+} from "@/lib/analytics/utils";
 import { getStartEndDates } from "@/lib/analytics/utils/get-start-end-dates";
+import { useAnalyticsUrl } from "@/lib/hooks/use-analytics-url";
+import useDomains from "@/lib/swr/use-domains";
+import useDomainsCount from "@/lib/swr/use-domains-count";
+import useFolder from "@/lib/swr/use-folder";
+import useFolders from "@/lib/swr/use-folders";
+import useFoldersCount from "@/lib/swr/use-folders-count";
 import useTags from "@/lib/swr/use-tags";
 import useTagsCount from "@/lib/swr/use-tags-count";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { LinkProps } from "@/lib/types";
+import { DOMAINS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/domains";
+import { FOLDERS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/folders";
 import { TAGS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/tags";
 import {
   BlurImage,
@@ -25,7 +36,6 @@ import {
   useScroll,
   UTM_PARAMETERS,
 } from "@dub/ui";
-import { useAnalyticsUrl } from "@/lib/hooks/use-analytics-url";
 import {
   Cube,
   FlagWavy,
@@ -52,6 +62,7 @@ import {
   nFormatter,
 } from "@dub/utils";
 import { readStreamableValue } from "ai/rsc";
+import { Globe2 } from "lucide-react";
 import posthog from "posthog-js";
 import {
   ComponentProps,
@@ -61,20 +72,20 @@ import {
   useState,
 } from "react";
 import { useDebounce } from "use-debounce";
+import { FolderIcon } from "../folders/folder-icon";
+import { WebhookErrorsWarning } from "../layout/sidebar/webhook-errors-warning";
 import { LinkIcon } from "../links/link-icon";
 import TagBadge from "../links/tag-badge";
 import { AnalyticsContext } from "./analytics-provider";
 import DeviceIcon from "./device-icon";
+import {
+  ColdScoreIcon,
+  HotScoreIcon,
+  WarmScoreIcon,
+} from "./events/hot-score-icons";
+import RefererIcon from "./referer-icon";
 import { ShareButton } from "./share-button";
 import { useAnalyticsFilterOption } from "./utils";
-import RefererIcon from "./referer-icon";
-import { WebhookErrorsWarning } from "../layout/sidebar/webhook-errors-warning";
-import { ColdScoreIcon, WarmScoreIcon, HotScoreIcon } from "./events/hot-score-icons";
-import useFoldersCount from "@/lib/swr/use-folders-count";
-import { FOLDERS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/folders";
-import useFolder from "@/lib/swr/use-folder";
-import useFolders from "@/lib/swr/use-folders";
-import { FolderIcon } from "../folders/folder-icon";
 
 export default function Toggle({
   page = "analytics",
@@ -83,9 +94,8 @@ export default function Toggle({
 }) {
   const { slug, plan, createdAt, flags } = useWorkspace();
 
-  const { router, queryParams, searchParamsObj } =
-    useRouterStuff();
-  
+  const { router, queryParams, searchParamsObj } = useRouterStuff();
+
   const buildAnalyticsUrl = useAnalyticsUrl();
 
   const {
@@ -105,11 +115,11 @@ export default function Toggle({
 
   // Determine whether filters should be fetched async
   const { data: tagsCount } = useTagsCount();
-  // const { data: domainsCount } = useDomainsCount({ ignoreParams: true });
+  const { data: domainsCount } = useDomainsCount({ ignoreParams: true });
   const { data: foldersCount } = useFoldersCount();
   // const { data: customersCount } = useCustomersCount();
   const tagsAsync = Boolean(tagsCount && tagsCount > TAGS_MAX_PAGE_SIZE);
-  // const domainsAsync = domainsCount && domainsCount > DOMAINS_MAX_PAGE_SIZE;
+  const domainsAsync = domainsCount && domainsCount > DOMAINS_MAX_PAGE_SIZE;
   const foldersAsync = foldersCount && foldersCount > FOLDERS_MAX_PAGE_SIZE;
   // const customersAsync =
   //   customersCount && customersCount > CUSTOMERS_MAX_PAGE_SIZE;
@@ -121,7 +131,7 @@ export default function Toggle({
   const { tags, loading: loadingTags } = useTags({
     query: {
       search: tagsAsync && selectedFilter === "tagIds" ? debouncedSearch : "",
-    }
+    },
   });
   const { folders, loading: loadingFolders } = useFolders({
     query: {
@@ -138,17 +148,17 @@ export default function Toggle({
   //   },
   // });
 
-  // const {
-  //   allDomains: domains,
-  //   primaryDomain,
-  //   loading: loadingDomains,
-  // } = useDomains({
-  //   ignoreParams: true,
-  //   opts: {
-  //     search:
-  //       domainsAsync && selectedFilter === "domain" ? debouncedSearch : "",
-  //   },
-  // });
+  const {
+    allDomains: domains,
+    primaryDomain,
+    loading: loadingDomains,
+  } = useDomains({
+    ignoreParams: true,
+    opts: {
+      search:
+        domainsAsync && selectedFilter === "domain" ? debouncedSearch : "",
+    },
+  });
 
   const selectedTagIds = useMemo(
     () => searchParamsObj.tagIds?.split(",")?.filter(Boolean) ?? [],
@@ -209,7 +219,12 @@ export default function Toggle({
     // Handle all other filters dynamically
     VALID_ANALYTICS_FILTERS.forEach((filter) => {
       // Skip special cases we handled above
-      if (["domain", "key", "tagId", "tagIds", "hotScore", "root"].includes(filter)) return;
+      if (
+        ["domain", "key", "tagId", "tagIds", "hotScore", "root"].includes(
+          filter,
+        )
+      )
+        return;
       // also skip date range filters and qr
       if (["interval", "start", "end", "qr"].includes(filter)) return;
 
@@ -332,14 +347,16 @@ export default function Toggle({
       return <LinkIcon url={url} domain={domain} linkKey={key} />;
     },
     options:
-      links?.map(
-        ({ domain, key, url, count }: LinkProps & { count?: number }) => ({
-          value: linkConstructor({ domain, key, pretty: true }),
-          label: linkConstructor({ domain, key, pretty: true }),
-          right: nFormatter(count, { full: true }),
-          data: { url },
-        }),
-      ) ?? null,
+      links
+        ?.map(
+          ({ domain, key, url, count }: LinkProps & { count?: number }) => ({
+            value: linkConstructor({ domain, key, pretty: true }),
+            label: linkConstructor({ domain, key, pretty: true }),
+            right: nFormatter(count, { full: true }),
+            data: { url },
+          }),
+        )
+        .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
   };
 
   const filters: ComponentProps<typeof Filter.Select>["filters"] = useMemo(
@@ -415,17 +432,19 @@ export default function Toggle({
                             !folders?.find((f) => f.id === selectedFolder.id)
                               ? [selectedFolder]
                               : []),
-                          ].map((folder) => ({
-                            value: folder.id,
-                            icon: (
-                              <FolderIcon
-                                folder={folder}
-                                shape="square"
-                                iconClassName="size-3"
-                              />
-                            ),
-                            label: folder.name,
-                          })),
+                          ]
+                            .map((folder) => ({
+                              value: folder.id,
+                              icon: (
+                                <FolderIcon
+                                  folder={folder}
+                                  shape="square"
+                                  iconClassName="size-3"
+                                />
+                              ),
+                              label: folder.name,
+                            }))
+                            .sort((a, b) => a.label.localeCompare(b.label)),
                     },
                   ]
                 : []),
@@ -451,74 +470,78 @@ export default function Toggle({
                       ...(selectedTags || []).filter(
                         ({ id }) => !tags?.some((t) => t.id === id),
                       ),
-                    ].map(({ id, name, color }) => ({
-                      value: id,
-                      icon: (
-                        <TagBadge color={color} withIcon className="sm:p-1" />
-                      ),
-                      label: name,
-                      data: { color },
-                    })),
+                    ]
+                      .map(({ id, name, color }) => ({
+                        value: id,
+                        icon: (
+                          <TagBadge color={color} withIcon className="sm:p-1" />
+                        ),
+                        label: name,
+                        data: { color },
+                      }))
+                      .sort((a, b) => a.label.localeCompare(b.label)),
               },
-              ...(page === "events" ? [
-                {
-                  key: "hotScore",
-                  icon: HotScoreIcon,
-                  label: "Hot Score",
-                  multiple: true,
-                  options: [
+              ...(page === "events"
+                ? [
                     {
-                      value: "cold",
-                      label: "Cold (0-33)",
-                      icon: <ColdScoreIcon className="w-4 h-4" />,
+                      key: "hotScore",
+                      icon: HotScoreIcon,
+                      label: "Hot Score",
+                      multiple: true,
+                      options: [
+                        {
+                          value: "cold",
+                          label: "Cold (0-33)",
+                          icon: <ColdScoreIcon className="h-4 w-4" />,
+                        },
+                        {
+                          value: "warm",
+                          label: "Warm (34-66)",
+                          icon: <WarmScoreIcon className="h-4 w-4" />,
+                        },
+                        {
+                          value: "hot",
+                          label: "Hot (67-100)",
+                          icon: <HotScoreIcon className="h-4 w-4" />,
+                        },
+                      ],
                     },
-                    {
-                      value: "warm", 
-                      label: "Warm (34-66)",
-                      icon: <WarmScoreIcon className="w-4 h-4" />,
-                    },
-                    {
-                      value: "hot",
-                      label: "Hot (67-100)", 
-                      icon: <HotScoreIcon className="w-4 h-4" />,
-                    },
-                  ],
-                },
-              ] : []),
-              // {
-              //   key: "domain",
-              //   icon: Globe2,
-              //   label: "Domain",
-              //   shouldFilter: !domainsAsync,
-              //   getOptionIcon: (value) => (
-              //     <BlurImage
-              //       src={getGoogleFavicon(value, false)}
-              //       alt={value}
-              //       className="h-4 w-4 rounded-full"
-              //       width={16}
-              //       height={16}
-              //     />
-              //   ),
-              //   options: loadingDomains
-              //     ? null
-              //     : [
-              //         ...domains.map((domain) => ({
-              //           value: domain.slug,
-              //           label: domain.slug,
-              //         })),
-              //         // Add currently filtered domain if not already in the list
-              //         ...(!searchParamsObj.domain ||
-              //         domains.some((d) => d.slug === searchParamsObj.domain)
-              //           ? []
-              //           : [
-              //               {
-              //                 value: searchParamsObj.domain,
-              //                 label: searchParamsObj.domain,
-              //                 hideDuringSearch: true,
-              //               },
-              //             ]),
-              //       ],
-              // },
+                  ]
+                : []),
+              {
+                key: "domain",
+                icon: Globe2,
+                label: "Domain",
+                shouldFilter: !domainsAsync,
+                getOptionIcon: (value) => (
+                  <BlurImage
+                    src={getGoogleFavicon(value, false)}
+                    alt={value}
+                    className="h-4 w-4 rounded-full"
+                    width={16}
+                    height={16}
+                  />
+                ),
+                options: loadingDomains
+                  ? null
+                  : [
+                      ...domains.map((domain) => ({
+                        value: domain.slug,
+                        label: domain.slug,
+                      })),
+                      // Add currently filtered domain if not already in the list
+                      ...(!searchParamsObj.domain ||
+                      domains.some((d) => d.slug === searchParamsObj.domain)
+                        ? []
+                        : [
+                            {
+                              value: searchParamsObj.domain,
+                              label: searchParamsObj.domain,
+                              hideDuringSearch: true,
+                            },
+                          ]),
+                    ],
+              },
               LinkFilterItem,
               // {
               //   key: "root",
@@ -540,6 +563,90 @@ export default function Toggle({
               // },
             ]),
       {
+        key: "referer",
+        icon: ReferredVia,
+        label: "Referer",
+        getOptionIcon: (value) => (
+          <RefererIcon display={value} className="h-4 w-4" />
+        ),
+        getOptionLabel: (value) => {
+          // If value is a comma-separated list of domains, check if it maps to a group
+          if (typeof value === "string" && value.includes(",")) {
+            const domains = value.split(",");
+            const groupName = getGroupDisplayNameFromDomains(domains);
+            if (groupName) {
+              return groupName;
+            }
+          }
+          return value;
+        },
+        options:
+          referers
+            ?.map(({ referer, count }) => ({
+              value: referer,
+              label: referer,
+              right: nFormatter(count, { full: true }),
+            }))
+            .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
+      },
+      // {
+      //   key: "refererUrl",
+      //   icon: ReferredVia,
+      //   label: "Referrer URL",
+      //   getOptionIcon: (value, props) => (
+      //     <RefererIcon display={value} className="h-4 w-4" />
+      //   ),
+      //   options:
+      //     refererUrls?.map(({ refererUrl, count }) => ({
+      //       value: refererUrl,
+      //       label: refererUrl,
+      //       right: nFormatter(count, { full: true }),
+      //     })) ?? null,
+      // },
+      {
+        key: "url",
+        icon: LinkBroken,
+        label: "Destination URL",
+        getOptionIcon: (_, props) => (
+          <LinkLogo
+            apexDomain={getApexDomain(props.option?.value)}
+            className="size-4 sm:size-4"
+          />
+        ),
+        options:
+          urls
+            ?.map(({ url, count }) => {
+              // Normalize URL for display and filtering consistency
+              const normalizedUrl = url
+                .replace(/^https?:\/\//, '')  // Remove protocol
+                .replace(/\/$/, '');  // Remove trailing slash
+              return {
+                value: normalizedUrl,
+                label: normalizedUrl,
+                right: nFormatter(count, { full: true }),
+              };
+            })
+            .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
+      },
+      ...UTM_PARAMETERS.filter(({ key }) => key !== "ref").map(
+        ({ key, label, icon: Icon }) => ({
+          key,
+          icon: Icon,
+          label: `UTM ${label}`,
+          getOptionIcon: (value) => (
+            <Icon display={value} className="h-4 w-4" />
+          ),
+          options:
+            utmData[key]
+              ?.map((dt) => ({
+                value: dt[key],
+                label: dt[key],
+                right: nFormatter(dt.count, { full: true }),
+              }))
+              .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
+        }),
+      ),
+      {
         key: "country",
         icon: FlagWavy,
         label: "Country",
@@ -552,29 +659,33 @@ export default function Toggle({
         ),
         getOptionLabel: (value) => COUNTRIES[value],
         options:
-          countries?.map(({ country, count }) => ({
-            value: country,
-            label: COUNTRIES[country],
-            right: nFormatter(count, { full: true }),
-          })) ?? null,
+          countries
+            ?.map(({ country, count }) => ({
+              value: country,
+              label: COUNTRIES[country],
+              right: nFormatter(count, { full: true }),
+            }))
+            .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
       },
       {
         key: "city",
         icon: OfficeBuilding,
         label: "City",
         options:
-          cities?.map(({ city, country, count }) => ({
-            value: city,
-            label: city,
-            icon: (
-              <img
-                alt={country}
-                src={`https://flag.vercel.app/m/${country}.svg`}
-                className="h-2.5 w-4"
-              />
-            ),
-            right: nFormatter(count, { full: true }),
-          })) ?? null,
+          cities
+            ?.map(({ city, country, count }) => ({
+              value: city,
+              label: city,
+              icon: (
+                <img
+                  alt={country}
+                  src={`https://flag.vercel.app/m/${country}.svg`}
+                  className="h-2.5 w-4"
+                />
+              ),
+              right: nFormatter(count, { full: true }),
+            }))
+            .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
       },
       // {
       //   key: "region",
@@ -621,11 +732,13 @@ export default function Toggle({
           />
         ),
         options:
-          devices?.map(({ device, count }) => ({
-            value: device,
-            label: device,
-            right: nFormatter(count, { full: true }),
-          })) ?? null,
+          devices
+            ?.map(({ device, count }) => ({
+              value: device,
+              label: device,
+              right: nFormatter(count, { full: true }),
+            }))
+            .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
       },
       {
         key: "browser",
@@ -635,11 +748,13 @@ export default function Toggle({
           <DeviceIcon display={value} tab="browsers" className="h-4 w-4" />
         ),
         options:
-          browsers?.map(({ browser, count }) => ({
-            value: browser,
-            label: browser,
-            right: nFormatter(count, { full: true }),
-          })) ?? null,
+          browsers
+            ?.map(({ browser, count }) => ({
+              value: browser,
+              label: browser,
+              right: nFormatter(count, { full: true }),
+            }))
+            .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
       },
       {
         key: "os",
@@ -649,11 +764,13 @@ export default function Toggle({
           <DeviceIcon display={value} tab="os" className="h-4 w-4" />
         ),
         options:
-          os?.map(({ os, count }) => ({
-            value: os,
-            label: os,
-            right: nFormatter(count, { full: true }),
-          })) ?? null,
+          os
+            ?.map(({ os, count }) => ({
+              value: os,
+              label: os,
+              right: nFormatter(count, { full: true }),
+            }))
+            .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
       },
       // {
       //   key: "trigger",
@@ -668,78 +785,6 @@ export default function Toggle({
       //     })) ?? null,
       //   separatorAfter: true,
       // },
-      {
-        key: "referer",
-        icon: ReferredVia,
-        label: "Referer",
-        getOptionIcon: (value) => (
-          <RefererIcon display={value} className="h-4 w-4" />
-        ),
-        getOptionLabel: (value) => {
-          // If value is a comma-separated list of domains, check if it maps to a group
-          if (typeof value === 'string' && value.includes(',')) {
-            const domains = value.split(',');
-            const groupName = getGroupDisplayNameFromDomains(domains);
-            if (groupName) {
-              return groupName;
-            }
-          }
-          return value;
-        },
-        options:
-          referers?.map(({ referer, count }) => ({
-            value: referer,
-            label: referer,
-            right: nFormatter(count, { full: true }),
-          })) ?? null,
-      },
-      // {
-      //   key: "refererUrl",
-      //   icon: ReferredVia,
-      //   label: "Referrer URL",
-      //   getOptionIcon: (value, props) => (
-      //     <RefererIcon display={value} className="h-4 w-4" />
-      //   ),
-      //   options:
-      //     refererUrls?.map(({ refererUrl, count }) => ({
-      //       value: refererUrl,
-      //       label: refererUrl,
-      //       right: nFormatter(count, { full: true }),
-      //     })) ?? null,
-      // },
-      {
-        key: "url",
-        icon: LinkBroken,
-        label: "Destination URL",
-        getOptionIcon: (_, props) => (
-          <LinkLogo
-            apexDomain={getApexDomain(props.option?.value)}
-            className="size-4 sm:size-4"
-          />
-        ),
-        options:
-          urls?.map(({ url, count }) => ({
-            value: url,
-            label: url.replace(/^https?:\/\//, "").replace(/\/$/, ""),
-            right: nFormatter(count, { full: true }),
-          })) ?? null,
-      },
-      ...UTM_PARAMETERS.filter(({ key }) => key !== "ref").map(
-        ({ key, label, icon: Icon }) => ({
-          key,
-          icon: Icon,
-          label: `UTM ${label}`,
-          getOptionIcon: (value) => (
-            <Icon display={value} className="h-4 w-4" />
-          ),
-          options:
-            utmData[key]?.map((dt) => ({
-              value: dt[key],
-              label: dt[key],
-              right: nFormatter(dt.count, { full: true }),
-            })) ?? null,
-        }),
-      ),
     ],
     [
       selectedTab,
@@ -881,10 +926,12 @@ export default function Toggle({
         if (page === "links") {
           const diffTime = Math.abs(range.to.getTime() - range.from.getTime());
           const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-          
+
           if (diffDays > 30) {
             // TODO: Show error message to user
-            console.warn("Link insights are limited to a maximum of 1 month of data");
+            console.warn(
+              "Link insights are limited to a maximum of 1 month of data",
+            );
             return;
           }
         }
@@ -901,7 +948,9 @@ export default function Toggle({
       presets={INTERVAL_DISPLAYS.filter(({ value }) => {
         // For link insights page, limit to 1 month maximum
         if (page === "links") {
-          return !["90d", "6m", "1y", "mtd", "qtd", "ytd", "all"].includes(value);
+          return !["90d", "6m", "1y", "mtd", "qtd", "ytd", "all"].includes(
+            value,
+          );
         }
         return true;
       }).map(({ display, value, shortcut }) => {
@@ -1079,34 +1128,37 @@ export default function Toggle({
                 }))
               : []),
           ]}
-      onRemove={(key, value) =>
-        queryParams(
-          key === "tagIds" &&
-            !(selectedTagIds.length === 1 && selectedTagIds[0] === value)
-            ? {
-                set: {
-                  tagIds: selectedTagIds
-                    .filter((id) => id !== value)
-                    .join(","),
-                },
-                scroll: false,
-              }
-            : key === "hotScore" &&
-              !(selectedHotScores.length === 1 && selectedHotScores[0] === value)
-            ? {
-                set: {
-                  hotScore: selectedHotScores
-                    .filter((score) => score !== value)
-                    .join(","),
-                },
-                scroll: false,
-              }
-            : {
-                del: key === "link" ? ["domain", "key", "url"] : key,
-                scroll: false,
-              },
-        )
-      }
+          onRemove={(key, value) =>
+            queryParams(
+              key === "tagIds" &&
+                !(selectedTagIds.length === 1 && selectedTagIds[0] === value)
+                ? {
+                    set: {
+                      tagIds: selectedTagIds
+                        .filter((id) => id !== value)
+                        .join(","),
+                    },
+                    scroll: false,
+                  }
+                : key === "hotScore" &&
+                    !(
+                      selectedHotScores.length === 1 &&
+                      selectedHotScores[0] === value
+                    )
+                  ? {
+                      set: {
+                        hotScore: selectedHotScores
+                          .filter((score) => score !== value)
+                          .join(","),
+                      },
+                      scroll: false,
+                    }
+                  : {
+                      del: key === "link" ? ["domain", "key", "url"] : key,
+                      scroll: false,
+                    },
+            )
+          }
           onRemoveAll={() =>
             queryParams({
               // Reset all filters except for date range

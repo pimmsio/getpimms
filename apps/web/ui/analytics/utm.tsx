@@ -55,7 +55,7 @@ export default function UTM() {
       selectedTabId="utms"
       onSelectTab={() => {}} // No tab switching
       {...subTabProps}
-      expandLimit={8}
+      expandLimit={5}
       hasMore={(rawData?.length ?? 0) > 8}
     >
       {({ limit, setShowModal }) => (

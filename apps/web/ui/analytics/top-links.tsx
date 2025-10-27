@@ -39,7 +39,7 @@ export default function TopLinks() {
   return (
     <AnalyticsCard
       tabs={[{ id: "links", label: "Deeplinks", icon: Hyperlink }]}
-      expandLimit={8}
+      expandLimit={5}
       hasMore={(data?.length ?? 0) > 8}
       selectedTabId="links"
       onSelectTab={setTab}

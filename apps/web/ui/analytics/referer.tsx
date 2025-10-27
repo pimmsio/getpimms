@@ -87,7 +87,7 @@ export default function Referer() {
       selectedTabId={tab}
       onSelectTab={setTab}
       {...subTabProps}
-      expandLimit={8}
+      expandLimit={5}
       hasMore={(data?.length ?? 0) > 8}
     >
       {({ limit, setShowModal }) => (

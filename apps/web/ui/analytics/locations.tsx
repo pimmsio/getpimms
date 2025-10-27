@@ -39,7 +39,7 @@ export default function Locations() {
       ]}
       selectedTabId={tab}
       onSelectTab={setTab}
-      expandLimit={8}
+      expandLimit={5}
       hasMore={(data?.length ?? 0) > 8}
     >
       {({ limit, setShowModal }) =>
