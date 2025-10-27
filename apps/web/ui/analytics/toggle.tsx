@@ -29,6 +29,7 @@ import { useAnalyticsUrl } from "@/lib/hooks/use-analytics-url";
 import {
   Cube,
   FlagWavy,
+  Folder,
   Hyperlink,
   LinkBroken,
   MobilePhone,
@@ -69,13 +70,18 @@ import { useAnalyticsFilterOption } from "./utils";
 import RefererIcon from "./referer-icon";
 import { WebhookErrorsWarning } from "../layout/sidebar/webhook-errors-warning";
 import { ColdScoreIcon, WarmScoreIcon, HotScoreIcon } from "./events/hot-score-icons";
+import useFoldersCount from "@/lib/swr/use-folders-count";
+import { FOLDERS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/folders";
+import useFolder from "@/lib/swr/use-folder";
+import useFolders from "@/lib/swr/use-folders";
+import { FolderIcon } from "../folders/folder-icon";
 
 export default function Toggle({
   page = "analytics",
 }: {
   page?: "analytics" | "events" | "links";
 }) {
-  const { slug, plan, createdAt } = useWorkspace();
+  const { slug, plan, createdAt, flags } = useWorkspace();
 
   const { router, queryParams, searchParamsObj } =
     useRouterStuff();
@@ -100,11 +106,11 @@ export default function Toggle({
   // Determine whether filters should be fetched async
   const { data: tagsCount } = useTagsCount();
   // const { data: domainsCount } = useDomainsCount({ ignoreParams: true });
-  // const { data: foldersCount } = useFoldersCount();
+  const { data: foldersCount } = useFoldersCount();
   // const { data: customersCount } = useCustomersCount();
   const tagsAsync = Boolean(tagsCount && tagsCount > TAGS_MAX_PAGE_SIZE);
   // const domainsAsync = domainsCount && domainsCount > DOMAINS_MAX_PAGE_SIZE;
-  // const foldersAsync = foldersCount && foldersCount > FOLDERS_MAX_PAGE_SIZE;
+  const foldersAsync = foldersCount && foldersCount > FOLDERS_MAX_PAGE_SIZE;
   // const customersAsync =
   //   customersCount && customersCount > CUSTOMERS_MAX_PAGE_SIZE;
 
@@ -117,12 +123,12 @@ export default function Toggle({
       search: tagsAsync && selectedFilter === "tagIds" ? debouncedSearch : "",
     }
   });
-  // const { folders, loading: loadingFolders } = useFolders({
-  //   query: {
-  //     search:
-  //       foldersAsync && selectedFilter === "folderId" ? debouncedSearch : "",
-  //   },
-  // });
+  const { folders, loading: loadingFolders } = useFolders({
+    query: {
+      search:
+        foldersAsync && selectedFilter === "folderId" ? debouncedSearch : "",
+    },
+  });
   // const { customers } = useCustomers({
   //   query: {
   //     search:
@@ -154,10 +160,10 @@ export default function Toggle({
     enabled: tagsAsync,
   });
 
-
-  // const { folder: selectedFolder } = useFolder({
-  //   folderId: selectedFolderId,
-  // });
+  const selectedFolderId = searchParamsObj.folderId;
+  const { folder: selectedFolder } = useFolder({
+    folderId: selectedFolderId,
+  });
 
   const selectedCustomerId = searchParamsObj.customerId;
   // const { data: selectedCustomer } = useCustomer({
@@ -379,50 +385,50 @@ export default function Toggle({
               //       },
               //     ]
               //   : []),
-              // ...(flags?.linkFolders
-              //   ? [
-              //       {
-              //         key: "folderId",
-              //         icon: Folder,
-              //         label: "Folder",
-              //         shouldFilter: !foldersAsync,
-              //         getOptionIcon: (value, props) => {
-              //           const folderName = props.option?.label;
-              //           const folder = folders?.find(
-              //             ({ name }) => name === folderName,
-              //           );
+              ...(flags?.linkFolders
+                ? [
+                    {
+                      key: "folderId",
+                      icon: Folder,
+                      label: "Folder",
+                      shouldFilter: !foldersAsync,
+                      getOptionIcon: (value, props) => {
+                        const folderName = props.option?.label;
+                        const folder = folders?.find(
+                          ({ name }) => name === folderName,
+                        );
 
-              //           return folder ? (
-              //             <FolderIcon
-              //               folder={folder}
-              //               shape="square"
-              //               iconClassName="size-3"
-              //             />
-              //           ) : null;
-              //         },
-              //         options: loadingFolders
-              //           ? null
-              //           : [
-              //               ...(folders || []),
-              //               // Add currently filtered folder if not already in the list
-              //               ...(selectedFolder &&
-              //               !folders?.find((f) => f.id === selectedFolder.id)
-              //                 ? [selectedFolder]
-              //                 : []),
-              //             ].map((folder) => ({
-              //               value: folder.id,
-              //               icon: (
-              //                 <FolderIcon
-              //                   folder={folder}
-              //                   shape="square"
-              //                   iconClassName="size-3"
-              //                 />
-              //               ),
-              //               label: folder.name,
-              //             })),
-              //       },
-              //     ]
-              //   : []),
+                        return folder ? (
+                          <FolderIcon
+                            folder={folder}
+                            shape="square"
+                            iconClassName="size-3"
+                          />
+                        ) : null;
+                      },
+                      options: loadingFolders
+                        ? null
+                        : [
+                            ...(folders || []),
+                            // Add currently filtered folder if not already in the list
+                            ...(selectedFolder &&
+                            !folders?.find((f) => f.id === selectedFolder.id)
+                              ? [selectedFolder]
+                              : []),
+                          ].map((folder) => ({
+                            value: folder.id,
+                            icon: (
+                              <FolderIcon
+                                folder={folder}
+                                shape="square"
+                                iconClassName="size-3"
+                              />
+                            ),
+                            label: folder.name,
+                          })),
+                    },
+                  ]
+                : []),
               {
                 key: "tagIds",
                 icon: Tag,

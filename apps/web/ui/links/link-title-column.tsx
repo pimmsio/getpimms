@@ -278,7 +278,6 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
     <button
       type="button"
       role="checkbox"
-      disabled={true}
       aria-checked={isSelected}
       data-checked={isSelected}
       onClick={(e) => handleLinkSelection(link.id, e)}
@@ -314,7 +313,7 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
         <div className="size-5 group-data-[variant=loose]/card-list:size-6 sm:hidden" />
       </div>
       {/* Checkbox */}
-      {/* <div
+      <div
         className={cn(
           "pointer-events-none absolute inset-0 flex items-center justify-center rounded-full border border-neutral-400 bg-white ring-0 ring-black/5",
           "opacity-100 max-sm:ring sm:opacity-0",
@@ -330,7 +329,7 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
         >
           <Check2 className="size-3 text-white" />
         </div>
-      </div> */}
+      </div>
     </button>
   );
 });
