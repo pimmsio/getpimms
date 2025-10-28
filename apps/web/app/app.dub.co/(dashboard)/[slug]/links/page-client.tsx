@@ -83,101 +83,109 @@ function WorkspaceLinks() {
     <>
       <LinkBuilder />
       <AddEditTagModal />
-      <div className="flex w-full items-center pt-2">
-        <MaxWidthWrapper className="flex flex-col gap-y-3">
-          <div className="flex flex-wrap items-center justify-between gap-2 lg:flex-nowrap">
-            {/* Left side: Filter, Period, Create Link */}
-            <div className="flex grow gap-x-2 max-md:w-full">
-              {!isMegaFolder && (
-                <div className="grow basis-0 md:grow-0">
-                  <Filter.Select
-                    filters={filters}
-                    activeFilters={activeFilters}
-                    onSelect={onSelect}
-                    onRemove={onRemove}
-                    onSearchChange={setSearch}
-                    onSelectedFilterChange={setSelectedFilter}
-                    className="w-full"
-                    emptyState={{
-                      tagIds: (
-                        <div className="flex flex-col items-center gap-2 p-2 text-center text-sm">
-                          <div className="flex items-center justify-center rounded border border-neutral-200 bg-neutral-50 p-3">
-                            <Tag className="size-6 text-neutral-700" />
+      {/* Subtle background gradient for depth */}
+      <div className="fixed inset-0 -z-10 bg-gradient-to-b from-neutral-50/40 via-white to-white pointer-events-none" />
+      <div className="flex w-full items-center pt-3 pb-1">
+        <MaxWidthWrapper className="flex flex-col gap-y-4">
+          {/* Enhanced Controls Bar with unified styling */}
+          <div className="rounded-xl border border-neutral-200/80 bg-gradient-to-b from-neutral-50/50 to-white/80 p-3 shadow-sm backdrop-blur-sm">
+            <div className="flex flex-wrap items-center justify-between gap-3 lg:flex-nowrap">
+              {/* Left side: Filter, Period, Create Link */}
+              <div className="flex grow gap-x-3 max-md:w-full">
+                {!isMegaFolder && (
+                  <div className="grow basis-0 md:grow-0">
+                    <Filter.Select
+                      filters={filters}
+                      activeFilters={activeFilters}
+                      onSelect={onSelect}
+                      onRemove={onRemove}
+                      onSearchChange={setSearch}
+                      onSelectedFilterChange={setSelectedFilter}
+                      className="w-full h-11"
+                      emptyState={{
+                        tagIds: (
+                          <div className="flex flex-col items-center gap-2 p-2 text-center text-sm">
+                            <div className="flex items-center justify-center rounded border border-neutral-200 bg-neutral-50 p-3">
+                              <Tag className="size-6 text-neutral-700" />
+                            </div>
+                            <p className="mt-2 font-medium text-neutral-950">
+                              No tags found
+                            </p>
+                            <p className="mx-auto mt-1 w-full max-w-[180px] text-neutral-700">
+                              Add tags to organize your links
+                            </p>
+                            <div>
+                              <Button
+                                className="mt-1 h-8"
+                                onClick={() => setShowAddEditTagModal(true)}
+                                text="Add tag"
+                              />
+                            </div>
                           </div>
-                          <p className="mt-2 font-medium text-neutral-950">
-                            No tags found
-                          </p>
-                          <p className="mx-auto mt-1 w-full max-w-[180px] text-neutral-700">
-                            Add tags to organize your links
-                          </p>
-                          <div>
-                            <Button
-                              className="mt-1 h-8"
-                              onClick={() => setShowAddEditTagModal(true)}
-                              text="Add tag"
-                            />
+                        ),
+                        domain: (
+                          <div className="flex flex-col items-center gap-2 p-2 text-center text-sm">
+                            <div className="flex items-center justify-center rounded border border-neutral-200 bg-neutral-50 p-3">
+                              <Globe className="size-6 text-neutral-700" />
+                            </div>
+                            <p className="mt-2 font-medium text-neutral-950">
+                              No domains found
+                            </p>
+                            <p className="mx-auto mt-1 w-full max-w-[180px] text-neutral-700">
+                              Add a custom domain to match your brand
+                            </p>
+                            <div>
+                              <Button
+                                className="mt-1 h-8"
+                                onClick={() =>
+                                  router.push(`/${slug}/settings/domains`)
+                                }
+                                text="Add domain"
+                              />
+                            </div>
                           </div>
-                        </div>
-                      ),
-                      domain: (
-                        <div className="flex flex-col items-center gap-2 p-2 text-center text-sm">
-                          <div className="flex items-center justify-center rounded border border-neutral-200 bg-neutral-50 p-3">
-                            <Globe className="size-6 text-neutral-700" />
-                          </div>
-                          <p className="mt-2 font-medium text-neutral-950">
-                            No domains found
-                          </p>
-                          <p className="mx-auto mt-1 w-full max-w-[180px] text-neutral-700">
-                            Add a custom domain to match your brand
-                          </p>
-                          <div>
-                            <Button
-                              className="mt-1 h-8"
-                              onClick={() =>
-                                router.push(`/${slug}/settings/domains`)
-                              }
-                              text="Add domain"
-                            />
-                          </div>
-                        </div>
-                      ),
-                    }}
-                  />
-                </div>
-              )}
-              
-              {isLoading ? (
-                <div className="flex grow-0 animate-pulse items-center space-x-2">
-                  <div className="h-10 w-32 rounded-full bg-neutral-200" />
-                </div>
-              ) : canCreateLinks ? (
-                <div className="hidden grow-0 sm:block">
-                  <CreateLinkButton />
-                </div>
-              ) : (
-                <div className="w-fit">
-                  <RequestFolderEditAccessButton
-                    folderId={folderId!}
-                    workspaceId={workspaceId!}
-                    variant="primary"
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Right side: Search, Display */}
-            <div className="flex w-full gap-2 md:w-auto">
-              <div className="w-full md:w-56 lg:w-64">
-                <SearchBoxPersisted
-                  loading={isValidating}
-                  inputClassName="h-10"
-                />
+                        ),
+                      }}
+                    />
+                  </div>
+                )}
+                
+                {isLoading ? (
+                  <div className="flex grow-0 animate-pulse items-center space-x-2">
+                    <div className="h-11 w-32 rounded-full bg-neutral-200" />
+                  </div>
+                ) : canCreateLinks ? (
+                  <div className="hidden grow-0 sm:block">
+                    <CreateLinkButton />
+                  </div>
+                ) : (
+                  <div className="w-fit">
+                    <RequestFolderEditAccessButton
+                      folderId={folderId!}
+                      workspaceId={workspaceId!}
+                      variant="primary"
+                    />
+                  </div>
+                )}
               </div>
-              <div className="grow basis-0 md:grow-0">
-                <LinkDisplay />
+
+              {/* Right side: Search, Display */}
+              <div className="flex w-full gap-3 md:w-auto">
+                <div className="w-full md:w-64 lg:w-72">
+                  <SearchBoxPersisted
+                    loading={isValidating}
+                    inputClassName="h-11"
+                    placeholder="Search links by name, URL, or key..."
+                  />
+                </div>
+                <div className="grow basis-0 md:grow-0">
+                  <LinkDisplay />
+                </div>
               </div>
             </div>
           </div>
+          
+          {/* Active Filters */}
           <Filter.List
             filters={filters}
             activeFilters={activeFilters}

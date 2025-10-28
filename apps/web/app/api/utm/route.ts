@@ -2,6 +2,7 @@ import { createId } from "@/lib/api/create-id";
 import { DubApiError } from "@/lib/api/errors";
 import { withWorkspace } from "@/lib/auth";
 import { createUTMTemplateBodySchema } from "@/lib/zod/schemas/utm";
+import { randomBadgeColor } from "@/ui/links/tag-badge";
 import { prisma } from "@dub/prisma";
 import { NextResponse } from "next/server";
 
@@ -52,6 +53,7 @@ export const POST = withWorkspace(
         id: createId({ prefix: "utm_" }),
         projectId: workspace.id,
         userId: session?.user.id,
+        color: randomBadgeColor(),
         ...props,
       },
     });

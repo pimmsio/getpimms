@@ -1,9 +1,5 @@
-import useWorkspace from "@/lib/swr/use-workspace";
 import { LinkFormData } from "@/ui/links/link-builder/link-builder-provider";
-import { useABTestingModal } from "@/ui/modals/link-builder/ab-testing-modal";
-import { useTargetingModal } from "@/ui/modals/link-builder/targeting-modal";
-import { useUTMModal } from "@/ui/modals/link-builder/utm-modal";
-import { constructURLFromUTMParams } from "@dub/utils";
+import { UtmDetectionBanner } from "@/ui/links/link-builder/utm-detection-banner";
 import { forwardRef, memo } from "react";
 import {
   Controller,
@@ -33,25 +29,9 @@ export const LinkBuilderDestinationUrlInput = memo(
       currentDomain: domain,
     });
 
-    const { UTMModal, UTMButton } = useUTMModal({
-      onLoad: (params) => {
-        setValue("url", constructURLFromUTMParams(url, params), {
-          shouldDirty: true,
-        });
-      },
-    });
-    const { TargetingButton, TargetingModal } = useTargetingModal();
-    const { ABTestingModal, ABTestingButton } = useABTestingModal();
-
-    const { flags } = useWorkspace();
-
     return (
       <>
-        <UTMModal />
-        <TargetingModal />
-        {flags?.abTesting && <ABTestingModal />}
-
-        <div className="flex w-full flex-col gap-2">
+        <div className="flex w-full flex-col gap-6">
           <Controller
             name="url"
             control={control}
@@ -71,11 +51,7 @@ export const LinkBuilderDestinationUrlInput = memo(
               />
             )}
           />
-          <div className="flex w-fit flex-row gap-2 mt-1">
-            <UTMButton />
-            <TargetingButton />
-            {flags?.abTesting && <ABTestingButton />}
-          </div>
+          <UtmDetectionBanner />
         </div>
       </>
     );

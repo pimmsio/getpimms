@@ -69,20 +69,22 @@ export const SearchBox = forwardRef(
     }, [onKeyDown]);
 
     return (
-      <div className="relative">
+      <div className="relative group">
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
           {loading && value.length > 0 ? (
-            <LoadingSpinner className="h-4 w-4" />
+            <LoadingSpinner className="h-5 w-5" />
           ) : (
-            <Magnifier className="h-4 w-4 text-neutral-400" />
+            <Magnifier className="h-5 w-5 text-neutral-400 transition-colors group-focus-within:text-neutral-600" />
           )}
         </div>
         <input
           ref={inputRef}
           type="text"
           className={cn(
-            "peer w-full rounded-full border border-neutral-100 px-10 text-black outline-none placeholder:text-neutral-400 sm:text-sm",
-            "transition-all focus:border-neutral-500 focus:ring-0 focus:ring-transparent",
+            "peer w-full rounded-full border border-neutral-200 bg-white pl-11 pr-4 text-black outline-none placeholder:text-neutral-400 sm:text-sm",
+            "transition-all duration-200",
+            "focus:border-neutral-400 focus:ring-2 focus:ring-blue-500/10 focus:shadow-sm",
+            "hover:border-neutral-300",
             inputClassName,
           )}
           placeholder={placeholder || "Search..."}
@@ -99,10 +101,17 @@ export const SearchBox = forwardRef(
               onChange("");
               onChangeDebounced?.("");
             }}
-            className="pointer-events-auto absolute inset-y-0 right-0 flex items-center pr-4"
+            className="pointer-events-auto absolute inset-y-0 right-0 flex items-center pr-4 transition-opacity hover:opacity-70"
           >
-            <CircleXmark className="h-4 w-4 text-neutral-600" />
+            <CircleXmark className="h-4 w-4 text-neutral-500 hover:text-neutral-700" />
           </button>
+        )}
+        {!value && (
+          <div className="pointer-events-none absolute inset-y-0 right-0 hidden items-center pr-4 sm:flex">
+            <kbd className="rounded border border-neutral-200 bg-neutral-50 px-1.5 py-0.5 text-xs text-neutral-400 font-sans">
+              /
+            </kbd>
+          </div>
         )}
       </div>
     );

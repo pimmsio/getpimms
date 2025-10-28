@@ -160,7 +160,7 @@ export function InputSelect({
         <BlurImage
           src={selectedItem.image}
           alt={selectedItem.value}
-          className="size-4 rounded-full"
+          className="size-4 rounded-lg"
           width={16}
           height={16}
         />
@@ -422,7 +422,7 @@ function SelectorList({ items }: { items: InputSelectItemProps[] }) {
             <BlurImage
               src={item.image}
               alt={item.value}
-              className="size-4 rounded-full"
+              className="size-4 rounded-lg"
               width={16}
               height={16}
             />

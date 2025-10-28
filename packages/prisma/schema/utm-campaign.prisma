@@ -1,0 +1,12 @@
+model UtmCampaign {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  project   Project  @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  projectId String
+
+  @@unique([name, projectId])
+  @@index(projectId)
+}
+

@@ -9,6 +9,7 @@ import { encodeKeyIfCaseSensitive } from "./case-sensitivity";
 import { includeTags } from "./include-tags";
 import { propagateBulkLinkChanges } from "./propagate-bulk-link-changes";
 import { updateLinksUsage } from "./update-links-usage";
+import { upsertUtmParameters } from "./upsert-utm-parameters";
 import {
   checkIfLinksHaveTags,
   checkIfLinksHaveWebhooks,
@@ -48,8 +49,8 @@ export async function bulkCreateLinks({
   // Create all links first using createMany
   await prisma.link.createMany({
     data: links.map(({ tagId, tagIds, tagNames, webhookIds, ...link }) => {
-      const { utm_source, utm_medium, utm_campaign, utm_term, utm_content } =
-        getParamsFromURL(link.url);
+      // Use UTM values from form fields (not from URL)
+      const { utm_source, utm_medium, utm_campaign, utm_term, utm_content } = link;
 
       link.key = encodeKeyIfCaseSensitive({
         domain: link.domain,
@@ -212,6 +213,25 @@ export async function bulkCreateLinks({
     });
   }
 
+  // Collect all unique UTM parameters from links
+  const allUtmParams = links.reduce(
+    (acc, link) => {
+      if (link.utm_source) acc.sources.add(link.utm_source);
+      if (link.utm_medium) acc.mediums.add(link.utm_medium);
+      if (link.utm_campaign) acc.campaigns.add(link.utm_campaign);
+      if (link.utm_term) acc.terms.add(link.utm_term);
+      if (link.utm_content) acc.contents.add(link.utm_content);
+      return acc;
+    },
+    {
+      sources: new Set<string>(),
+      mediums: new Set<string>(),
+      campaigns: new Set<string>(),
+      terms: new Set<string>(),
+      contents: new Set<string>(),
+    },
+  );
+
   waitUntil(
     Promise.all([
       propagateBulkLinkChanges({
@@ -222,6 +242,57 @@ export async function bulkCreateLinks({
         workspaceId: links[0].projectId!, // this will always be present
         increment: links.length,
       }),
+      // Upsert unique UTM parameters to the library
+      ...Array.from(allUtmParams.sources).map((utm_source) =>
+        upsertUtmParameters({
+          projectId: links[0].projectId!,
+          utm_source,
+          utm_medium: null,
+          utm_campaign: null,
+          utm_term: null,
+          utm_content: null,
+        }),
+      ),
+      ...Array.from(allUtmParams.mediums).map((utm_medium) =>
+        upsertUtmParameters({
+          projectId: links[0].projectId!,
+          utm_source: null,
+          utm_medium,
+          utm_campaign: null,
+          utm_term: null,
+          utm_content: null,
+        }),
+      ),
+      ...Array.from(allUtmParams.campaigns).map((utm_campaign) =>
+        upsertUtmParameters({
+          projectId: links[0].projectId!,
+          utm_source: null,
+          utm_medium: null,
+          utm_campaign,
+          utm_term: null,
+          utm_content: null,
+        }),
+      ),
+      ...Array.from(allUtmParams.terms).map((utm_term) =>
+        upsertUtmParameters({
+          projectId: links[0].projectId!,
+          utm_source: null,
+          utm_medium: null,
+          utm_campaign: null,
+          utm_term,
+          utm_content: null,
+        }),
+      ),
+      ...Array.from(allUtmParams.contents).map((utm_content) =>
+        upsertUtmParameters({
+          projectId: links[0].projectId!,
+          utm_source: null,
+          utm_medium: null,
+          utm_campaign: null,
+          utm_term: null,
+          utm_content,
+        }),
+      ),
     ]),
   );
 

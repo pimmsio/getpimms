@@ -18,6 +18,7 @@ import { scheduleABTestCompletion } from "./ab-test-scheduler";
 import { linkCache } from "./cache";
 import { encodeKeyIfCaseSensitive } from "./case-sensitivity";
 import { includeTags } from "./include-tags";
+import { upsertUtmParameters } from "./upsert-utm-parameters";
 import { transformLink } from "./utils";
 
 export async function updateLink({
@@ -49,8 +50,9 @@ export async function updateLink({
   const changedKey = key.toLowerCase() !== oldLink.key.toLowerCase();
   const changedDomain = domain !== oldLink.domain;
 
+  // Use UTM values from form fields (not from URL)
   const { utm_source, utm_medium, utm_campaign, utm_term, utm_content } =
-    getParamsFromURL(url);
+    updatedLink;
 
   // exclude fields that should not be updated
   const {
@@ -200,6 +202,17 @@ export async function updateLink({
         testVariants &&
         testCompletedAt &&
         scheduleABTestCompletion(response),
+
+      // Upsert UTM parameters to the library
+      updatedLink.projectId &&
+        upsertUtmParameters({
+          projectId: updatedLink.projectId,
+          utm_source,
+          utm_medium,
+          utm_campaign,
+          utm_term,
+          utm_content,
+        }),
     ]),
   );
 

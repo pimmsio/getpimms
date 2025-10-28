@@ -1,6 +1,7 @@
 model UtmTemplate {
-  id   String @id @default(cuid())
-  name String
+  id    String @id @default(cuid())
+  name  String
+  color String @default("blue")
 
   // Parameters
   utm_source   String?

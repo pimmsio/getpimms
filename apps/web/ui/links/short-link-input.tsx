@@ -187,7 +187,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
             htmlFor={inputId}
             className="block text-sm font-medium text-neutral-700"
           >
-            Deep link
+            Short link
           </label>
           {lockKey ? (
             <button
@@ -272,7 +272,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
             autoComplete="off"
             autoCapitalize="none"
             className={cn(
-              "block w-full rounded-r-full border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
+              "block w-full rounded-r-lg border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
               "z-0 focus:z-[1]",
               {
                 "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0":
@@ -499,13 +499,13 @@ function DomainCombobox({
       options={options}
       caret={true}
       placeholder={
-        <div className="h-4 w-3/4 animate-pulse rounded bg-neutral-200" />
+        <div className="h-4 w-3/4 animate-pulse rounded-lg bg-neutral-200" />
       }
       searchPlaceholder="Search domains..."
       shortcutHint="D"
       buttonProps={{
         className: cn(
-          "w-32 sm:w-40 h-full rounded-l-full rounded-r-none border-r-transparent justify-start px-2.5",
+          "w-32 sm:w-40 h-full rounded-l-lg rounded-r-none border-r-transparent justify-start px-2.5",
           "data-[state=open]:ring-0 data-[state=open]:ring-neutral-500 data-[state=open]:border-neutral-500",
           "focus:ring-0 focus:ring-0 focus:border-neutral-500 transition-none",
         ),

@@ -20,6 +20,7 @@ import { linkCache } from "./cache";
 import { encodeKeyIfCaseSensitive } from "./case-sensitivity";
 import { includeTags } from "./include-tags";
 import { updateLinksUsage } from "./update-links-usage";
+import { upsertUtmParameters } from "./upsert-utm-parameters";
 import { transformLink } from "./utils";
 
 export async function createLink(link: ProcessedLinkProps) {
@@ -40,8 +41,8 @@ export async function createLink(link: ProcessedLinkProps) {
 
   const combinedTagIds = combineTagIds(link);
 
-  const { utm_source, utm_medium, utm_campaign, utm_term, utm_content } =
-    getParamsFromURL(url);
+  // Use UTM values from form fields (not from URL)
+  const { utm_source, utm_medium, utm_campaign, utm_term, utm_content } = link;
 
   const { tagId, tagIds, tagNames, webhookIds, ...rest } = link;
 
@@ -183,6 +184,17 @@ export async function createLink(link: ProcessedLinkProps) {
         }),
 
       testVariants && testCompletedAt && scheduleABTestCompletion(response),
+
+      // Upsert UTM parameters to the library
+      link.projectId &&
+        upsertUtmParameters({
+          projectId: link.projectId,
+          utm_source,
+          utm_medium,
+          utm_campaign,
+          utm_term,
+          utm_content,
+        }),
     ]),
   );
 

@@ -227,16 +227,17 @@ function LinksList({
               <>
                 {/* Group controls */}
                 {groupedData.length >= 1 && (
-                  <div className="mx-2 mb-3 flex flex-col gap-2 rounded-lg border border-neutral-200 bg-neutral-50/50 px-3 py-2.5 sm:mx-0 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-                    <div className="flex items-center justify-between gap-2 sm:justify-start">
-                      <div className="text-xs text-neutral-600 sm:text-sm">
-                        <span className="font-medium text-neutral-900">
+                  <div className="mx-2 mb-4 flex flex-col gap-2 rounded-xl border border-neutral-200 bg-gradient-to-b from-white to-neutral-50/50 px-4 py-3 shadow-sm sm:mx-0 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center justify-between gap-3 sm:justify-start">
+                      <div className="text-sm text-neutral-600">
+                        <span className="font-semibold text-neutral-900">
                           {groupedData.length}
                         </span>{" "}
                         <span>
                           {groupedData.length === 1 ? "group" : "groups"}
-                        </span>{" "}
-                        <span className="font-medium text-neutral-900">
+                        </span>
+                        <span className="mx-1.5 text-neutral-300">•</span>
+                        <span className="font-semibold text-neutral-900">
                           {flatLinks?.length || 0}
                         </span>{" "}
                         <span>
@@ -250,35 +251,35 @@ function LinksList({
                             del: ["groupBy"],
                           });
                         }}
-                        className="flex items-center gap-1 rounded-md bg-neutral-200 px-2 py-1 text-xs font-medium text-neutral-700 transition-colors hover:bg-neutral-300 hover:text-neutral-900"
+                        className="flex items-center gap-1.5 rounded-lg border border-neutral-200 bg-white px-2.5 py-1.5 text-xs font-medium text-neutral-700 shadow-sm transition-all hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900"
                       >
-                        <span>Clear</span>
-                        <span className="text-[10px]">✕</span>
+                        <span>Clear grouping</span>
+                        <span className="text-xs">✕</span>
                       </button>
                     </div>
                     {groupedData.length > 1 && (
-                      <div className="flex items-center gap-2 text-xs sm:text-xs">
+                      <div className="flex items-center gap-3 text-xs sm:text-sm">
                         <button
                           onClick={expandAll}
                           disabled={allExpanded}
                           className={cn(
-                            "font-medium transition-colors",
+                            "font-medium transition-all rounded px-2 py-1",
                             allExpanded
                               ? "cursor-not-allowed text-neutral-400"
-                              : "text-neutral-600 hover:text-neutral-900",
+                              : "text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900",
                           )}
                         >
                           Expand all
                         </button>
-                        <span className="text-neutral-300">•</span>
+                        <span className="text-neutral-300">|</span>
                         <button
                           onClick={collapseAll}
                           disabled={allCollapsed}
                           className={cn(
-                            "font-medium transition-colors",
+                            "font-medium transition-all rounded px-2 py-1",
                             allCollapsed
                               ? "cursor-not-allowed text-neutral-400"
-                              : "text-neutral-600 hover:text-neutral-900",
+                              : "text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900",
                           )}
                         >
                           Collapse all

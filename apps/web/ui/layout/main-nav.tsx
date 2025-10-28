@@ -57,10 +57,10 @@ export function MainNav({
       {/* Side nav backdrop */}
       <div
         className={cn(
-          "fixed left-0 top-0 z-50 h-dvh w-screen md:sticky md:z-auto md:w-full md:bg-zinc-100",
+          "fixed left-0 top-0 z-50 h-dvh w-screen transition-all duration-300 md:sticky md:z-auto md:w-full md:bg-zinc-100",
           isOpen
-            ? ""
-            : "bg-transparent max-md:pointer-events-none",
+            ? "bg-black/40 backdrop-blur-sm"
+            : "bg-transparent backdrop-blur-0 max-md:pointer-events-none",
         )}
         onClick={(e) => {
           if (e.target === e.currentTarget) {
@@ -72,8 +72,8 @@ export function MainNav({
         {/* Side nav */}
         <div
           className={cn(
-            "relative h-[calc(100%-20px)] sm:h-[calc(100vh-20px)] top-[10px] left-[10px] w-[220px] border border-zinc-300 bg-white shadow-sm md:border-0 md:shadow-none md:bg-transparent rounded-3xl max-w-full transition-transform md:translate-x-0",
-            !isOpen && "-translate-x-[calc(100%+20px)]",
+            "relative h-[calc(100dvh-16px)] sm:h-[calc(100vh-20px)] top-[8px] left-[8px] w-[280px] sm:w-[220px] border border-neutral-200/80 bg-white shadow-xl rounded-2xl max-w-[calc(100vw-32px)] transition-all duration-300 ease-out md:translate-x-0 md:border-0 md:shadow-none md:bg-transparent md:rounded-3xl md:h-[calc(100vh-20px)] md:top-[10px] md:left-[10px]",
+            !isOpen && "-translate-x-[calc(100%+24px)]",
           )}
         >
           {/* <div className="absolute inset-0 overflow-hidden">

@@ -9,9 +9,9 @@ import {
   Popover,
   useScrollProgress,
 } from "@dub/ui";
-import { Book2, Check2, Plus } from "@dub/ui/icons";
+import { Book2, Check2, ConnectedDots, Plus } from "@dub/ui/icons";
 import { cn, OG_AVATAR_URL } from "@dub/utils";
-import { ChevronsUpDown, HelpCircle } from "lucide-react";
+import { ChevronsUpDown, HelpCircle, Settings2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
@@ -75,7 +75,7 @@ export function WorkspaceDropdown() {
 
   return (
     <div>
-      {/* <Popover
+      <Popover
         content={
           <WorkspaceList
             selected={selected}
@@ -86,22 +86,25 @@ export function WorkspaceDropdown() {
         align="start"
         openPopover={openPopover}
         setOpenPopover={setOpenPopover}
-      > */}
+      >
         <button
           onClick={() => setOpenPopover(!openPopover)}
           className={cn(
-            "flex w-full items-center justify-between rounded p-1.5 text-left text-sm transition-all duration-75 hover:bg-neutral-200/50 active:bg-neutral-200/80 data-[state=open]:bg-neutral-200/80",
-            "outline-none focus-visible:ring-0 focus-visible:ring-black/50",
+            "group flex w-full items-center justify-between rounded-xl p-2.5 text-left text-sm transition-all duration-100",
+            "hover:bg-neutral-50",
+            "active:scale-[0.98]",
+            "data-[state=open]:bg-neutral-50",
+            "outline-none focus-visible:ring-2 focus-visible:ring-neutral-300",
           )}
         >
           <div className="flex min-w-0 items-center gap-x-2.5 pr-2">
             <BlurImage
               src={selected.image}
               referrerPolicy="no-referrer"
-              width={28}
-              height={28}
+              width={32}
+              height={32}
               alt={selected.id || selected.name}
-              className="h-7 w-7 flex-none shrink-0 overflow-hidden rounded-full"
+              className="size-8 flex-none shrink-0 overflow-hidden rounded-full"
             />
             <div className={cn(key ? "hidden" : "block", "min-w-0 sm:block")}>
               <div className="truncate text-sm font-medium leading-5 text-neutral-900">
@@ -119,12 +122,12 @@ export function WorkspaceDropdown() {
               )}
             </div>
           </div>
-          {/* <ChevronsUpDown
+          <ChevronsUpDown
             className="size-4 shrink-0 text-neutral-400"
             aria-hidden="true"
-          /> */}
+          />
         </button>
-      {/* </Popover> */}
+      </Popover>
     </div>
   );
 }
@@ -141,17 +144,30 @@ function WorkspaceDropdownPlaceholder() {
 
 const LINKS = [
   {
-    name: "Help Center",
-    icon: HelpCircle,
-    href: "https://dub.co/help",
-    target: "_blank",
+    name: "Settings",
+    icon: Settings2,
+    href: "/{slug}/settings",
+    isWorkspaceLink: true,
   },
   {
-    name: "Documentation",
-    icon: Book2,
-    href: "https://dub.co/docs",
+    name: "Integrations",
+    icon: ConnectedDots,
+    href: "/{slug}/settings/integrations",
+    isWorkspaceLink: true,
+    planRequired: true,
+  },
+  {
+    name: "Guides & Tutorials",
+    icon: HelpCircle,
+    href: "https://pimms.io/guides",
     target: "_blank",
   },
+  // {
+  //   name: "Documentation",
+  //   icon: Book2,
+  //   href: "https://dub.co/docs",
+  //   target: "_blank",
+  // },
 ];
 
 function WorkspaceList({
@@ -194,6 +210,14 @@ function WorkspaceList({
     [link, programId, pathname, selected.slug],
   );
 
+  // Filter links based on workspace settings
+  const filteredLinks = LINKS.filter((link) => {
+    if (link.planRequired && selected.plan === "free") {
+      return false;
+    }
+    return true;
+  });
+
   return (
     <div className="relative w-full">
       <div
@@ -202,21 +226,29 @@ function WorkspaceList({
         className="relative max-h-80 w-full space-y-0.5 overflow-auto rounded bg-white text-base sm:w-64 sm:text-sm"
       >
         <div className="flex flex-col gap-0.5 border-b border-neutral-100 p-2">
-          {LINKS.map(({ name, icon: Icon, href, target }) => (
-            <Link
-              key={name}
-              href={href}
-              target={target}
-              className={cn(
-                "flex items-center gap-x-4 rounded px-2.5 py-2 transition-all duration-75 hover:bg-neutral-200/50 active:bg-neutral-200/80",
-                "outline-none focus-visible:ring-0 focus-visible:ring-black/50",
-              )}
-              onClick={() => setOpenPopover(false)}
-            >
-              <Icon className="size-4 text-neutral-500" />
-              <span className="block truncate text-neutral-600">{name}</span>
-            </Link>
-          ))}
+          {filteredLinks.map(({ name, icon: Icon, href: linkHref, target, isWorkspaceLink }) => {
+            const finalHref = isWorkspaceLink 
+              ? linkHref.replace("{slug}", selected.slug)
+              : linkHref;
+            
+            return (
+              <Link
+                key={name}
+                href={finalHref}
+                target={target}
+                className={cn(
+                  "flex items-center gap-x-3 rounded-lg px-3 py-2.5 transition-all duration-75",
+                  "text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900",
+                  "active:scale-[0.98]",
+                  "outline-none focus-visible:ring-2 focus-visible:ring-neutral-300",
+                )}
+                onClick={() => setOpenPopover(false)}
+              >
+                <Icon className="size-4 shrink-0 text-neutral-600" />
+                <span className="block truncate">{name}</span>
+              </Link>
+            );
+          })}
         </div>
         <div className="p-2">
           <div className="flex items-center justify-between pb-1">

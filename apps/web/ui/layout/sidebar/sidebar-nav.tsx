@@ -95,11 +95,11 @@ export function SidebarNav<T extends Record<any, any>>({
                   <div className="pt-2">{switcher}</div>
                 )}
 
-                <div className="flex flex-col gap-1 pt-4 sm:gap-2">
+                <div className="flex flex-col gap-1.5 pt-4 sm:gap-2">
                   {content.map(({ name, items }, idx) => (
-                    <div key={idx} className="flex flex-col gap-1 sm:gap-2">
+                    <div key={idx} className="flex flex-col gap-1.5 sm:gap-2">
                       {name && (
-                        <div className="mb-2 pl-1 text-sm text-neutral-500">
+                        <div className="mb-1 pl-1 text-sm font-medium text-neutral-500">
                           {name}
                         </div>
                       )}
@@ -134,7 +134,7 @@ export function SidebarNav<T extends Record<any, any>>({
         </div>
       </nav>
       {bottom && currentArea === "default" && (
-        <div className="relative flex flex-col justify-end gap-2">{bottom}</div>
+        <div className="relative mt-auto flex flex-col justify-end">{bottom}</div>
       )}
       <div className="relative mx-auto flex items-center justify-between gap-1 pb-2 pt-1">
         <NavWordmark className="h-2.5" isInApp />
@@ -180,22 +180,23 @@ function NavItem({ item }: { item: NavItemType | NavSubItemType }) {
         onPointerEnter={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}
         className={cn(
-          "group flex items-center gap-2.5 rounded-full p-0.5 text-sm leading-none text-neutral-600 transition-[background-color,color,font-weight] duration-75 hover:bg-neutral-200/50 active:bg-neutral-200/80 sm:p-2",
-          "outline-none focus-visible:ring-0 focus-visible:ring-black/50",
+          "group relative flex items-center gap-2.5 rounded-full p-1.5 text-sm font-medium leading-none text-neutral-700 transition-all duration-100 hover:bg-neutral-50 active:bg-neutral-100 sm:p-2",
+          "outline-none focus-visible:ring-2 focus-visible:ring-neutral-300",
           isActive &&
             !items &&
-            "bg-zinc-600 font-medium text-white hover:bg-zinc-700 active:bg-zinc-800",
+            "bg-zinc-700 font-semibold text-white shadow-sm hover:bg-zinc-600 active:bg-zinc-800",
         )}
       >
         {Icon && (
           <Icon
             className={cn(
-              "size-8 overflow-visible rounded-full bg-white p-1.5 text-[#08272E] transition-colors duration-75",
+              "size-8 shrink-0 overflow-visible rounded-full bg-white p-1.5 text-[#08272E] transition-all duration-100",
+              hovered && !isActive && "shadow-sm",
             )}
             data-hovered={hovered}
           />
         )}
-        {name}
+        <span className={cn(isActive && "tracking-tight")}>{name}</span>
         {items && (
           <div className="flex grow justify-end">
             {items ? (

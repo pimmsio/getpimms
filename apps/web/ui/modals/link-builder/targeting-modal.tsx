@@ -391,7 +391,7 @@ function TargetingModal({
               <Button
                 type="submit"
                 variant="primary"
-                text={parentEnabled ? "Save" : "Add Apps targeting"}
+                text={parentEnabled ? "Save" : "Add App Stores targeting"}
                 className="h-9 w-fit"
                 disabled={!isDirty}
               />
@@ -408,7 +408,7 @@ export function getTargetingLabel({
   android,
   geo,
 }: Pick<LinkFormData, "ios" | "android" | "geo">) {
-  return "Apps"
+  return "App Stores"
   // const geoEnabled = Object.keys(geo || {}).length > 0;
 
   // const targets = [Boolean(ios), Boolean(android), geoEnabled];

@@ -3,6 +3,9 @@
 import useCustomersCount from "@/lib/swr/use-customers-count";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { ExpandedLinkProps } from "@/lib/types";
+import { BulkDestinationUrlInput } from "@/ui/links/link-builder/bulk-destination-url-input";
+import { BulkDomainSelector } from "@/ui/links/link-builder/bulk-domain-selector";
+import { BulkUTMParametersSection } from "@/ui/links/link-builder/bulk-utm-parameters-section";
 import { LinkBuilderDestinationUrlInput } from "@/ui/links/link-builder/controls/link-builder-destination-url-input";
 import { LinkBuilderFolderSelector } from "@/ui/links/link-builder/controls/link-builder-folder-selector";
 import { LinkBuilderShortLinkInput } from "@/ui/links/link-builder/controls/link-builder-short-link-input";
@@ -10,6 +13,7 @@ import { LinkCommentsInput } from "@/ui/links/link-builder/controls/link-comment
 import { ConversionTrackingToggle } from "@/ui/links/link-builder/conversion-tracking-toggle";
 import { DraftControls, DraftControlsHandle } from "@/ui/links/link-builder/draft-controls";
 import { LinkBuilderHeader } from "@/ui/links/link-builder/link-builder-header";
+import { UrlModeToggle } from "@/ui/links/link-builder/url-mode-toggle";
 import {
   LinkBuilderProps,
   LinkBuilderProvider,
@@ -18,9 +22,12 @@ import {
 } from "@/ui/links/link-builder/link-builder-provider";
 import { LinkFeatureButtons } from "@/ui/links/link-builder/link-feature-buttons";
 import { LinkPreview } from "@/ui/links/link-builder/link-preview";
+import { MoreOptionsSection } from "@/ui/links/link-builder/more-options-section";
 import { QRCodePreview } from "@/ui/links/link-builder/qr-code-preview";
 import { TagSelect } from "@/ui/links/link-builder/tag-select";
+import { UTMParametersSection } from "@/ui/links/link-builder/utm-parameters-section";
 import { useLinkBuilderSubmit } from "@/ui/links/link-builder/use-link-builder-submit";
+import { bulkCreateLinks } from "@/ui/links/link-builder/use-bulk-create-links";
 import { useMetatags } from "@/ui/links/link-builder/use-metatags";
 import { useAvailableDomains } from "@/ui/links/use-available-domains";
 import {
@@ -96,6 +103,14 @@ function LinkBuilderInner({
     formState: { isDirty, isSubmitting, isSubmitSuccessful },
   } = useFormContext<LinkFormData>();
 
+  // Bulk mode state
+  const [urlMode, setUrlMode] = useState<"single" | "bulk">("single");
+  const [bulkUrls, setBulkUrls] = useState<string[]>([]);
+
+  console.log("[LinkBuilder] Render - urlMode:", urlMode, "bulkUrls:", bulkUrls.length);
+
+  // Removed bulk keys functionality - no longer needed
+
   const [domain, key] = useWatch({
     control,
     name: ["domain", "key"],
@@ -120,7 +135,7 @@ function LinkBuilderInner({
     );
   }, [showLinkBuilder, isSubmitting, isSubmitSuccessful, props, isDirty]);
 
-  const { loading, primaryDomain } = useAvailableDomains({
+  const { loading, primaryDomain, domains } = useAvailableDomains({
     currentDomain: domain,
   });
 
@@ -158,6 +173,25 @@ function LinkBuilderInner({
     onSuccess: onSubmitSuccess,
   });
 
+  const handleFormSubmit = async (data: LinkFormData) => {
+    if (urlMode === "bulk") {
+      // Handle bulk creation
+      await bulkCreateLinks({
+        urls: bulkUrls,
+        formData: data,
+        workspaceId: workspaceId!,
+        onSuccess: () => {
+          setShowLinkBuilder(false);
+          // Reset bulk state
+          setBulkUrls([]);
+        },
+      });
+    } else {
+      // Handle single link creation
+      await onSubmit(data);
+    }
+  };
+
   const { data: customersCount } = useCustomersCount();
 
   return (
@@ -174,7 +208,7 @@ function LinkBuilderInner({
           draftControlsRef.current?.onClose();
         }}
       >
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="flex flex-col overflow-auto">
           <LinkBuilderHeader
             onClose={() => {
               setShowLinkBuilder(false);
@@ -186,12 +220,17 @@ function LinkBuilderInner({
               draftControlsRef.current?.onClose();
             }}
             foldersEnabled={false}
+            urlMode={urlMode}
+            onUrlModeChange={setUrlMode}
+            showUrlModeToggle={!props}
           >
-            <DraftControls
-              ref={draftControlsRef}
-              props={props}
-              workspaceId={workspaceId!}
-            />
+            {urlMode === "single" && (
+              <DraftControls
+                ref={draftControlsRef}
+                props={props}
+                workspaceId={workspaceId!}
+              />
+            )}
           </LinkBuilderHeader>
 
           <div
@@ -202,41 +241,64 @@ function LinkBuilderInner({
             )}
           >
             <div className="scrollbar-hide px-6 md:overflow-auto">
-              <div className="flex min-h-full flex-col gap-3 py-4 sm:gap-6">
-                <LinkBuilderDestinationUrlInput />
+              <div className="flex flex-col gap-3 py-4 sm:gap-6">
+                {urlMode === "single" ? (
+                  <>
+                    <LinkBuilderDestinationUrlInput />
 
-                <LinkBuilderShortLinkInput />
+                    <UTMParametersSection />
 
-                <TagSelect />
+                    <LinkBuilderShortLinkInput />
 
-                <LinkCommentsInput />
+                    <TagSelect />
 
-                <ConversionTrackingToggle />
+                    <LinkCommentsInput />
 
-                {/* <DisableDeeplinkToggle /> */}
+                    <ConversionTrackingToggle />
 
-                {!customersCount || customersCount === 0 ? (
-                  <Alert>
-                    <Info className="mt-2 mr-3 h-5 w-5 text-green-500" />
-                    <AlertTitle className="text-sm text-neutral-600 mt-0 mb-1">
-                      Get started with advanced tracking
-                    </AlertTitle>
-                    <AlertDescription className="text-neutral-500">
-                      Use our guides: {" "}
-                      <a
-                        href={`/${slug}/settings/integrations`}
-                        target="_blank"
-                        className="font-medium underline underline-offset-4 hover:text-black"
-                      >
-                        Read more
-                      </a>
-                    </AlertDescription>
-                  </Alert>
-                ) : null}
+                    {!customersCount || customersCount === 0 ? (
+                      <Alert>
+                        <Info className="mt-2 mr-3 h-5 w-5 text-green-500" />
+                        <AlertTitle className="text-sm text-neutral-600 mt-0 mb-1">
+                          Get started with advanced tracking
+                        </AlertTitle>
+                        <AlertDescription className="text-neutral-500">
+                          Use our guides: {" "}
+                          <a
+                            href={`/${slug}/settings/integrations`}
+                            target="_blank"
+                            className="font-medium underline underline-offset-4 hover:text-black"
+                          >
+                            Read more
+                          </a>
+                        </AlertDescription>
+                      </Alert>
+                    ) : null}
 
-                {/* <div className="flex grow flex-col justify-end">
-                  <OptionsList />
-                </div> */}
+                    <MoreOptionsSection />
+                  </>
+                ) : (
+                  <>
+                    <BulkDestinationUrlInput
+                      urls={bulkUrls}
+                      onChange={setBulkUrls}
+                    />
+
+                    <BulkUTMParametersSection />
+
+                    <BulkDomainSelector
+                      domains={domains}
+                      selectedDomain={domain}
+                      onChange={(newDomain) => setValue("domain", newDomain)}
+                    />
+
+                    <TagSelect />
+
+                    <LinkCommentsInput />
+
+                    <ConversionTrackingToggle />
+                  </>
+                )}
               </div>
             </div>
             <div className="scrollbar-hide px-2 md:overflow-auto md:px-6 md:pl-0 md:pr-4">
@@ -250,7 +312,7 @@ function LinkBuilderInner({
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-6 border-t border-neutral-100 bg-neutral-50 p-4">
+          <div className="sticky bottom-0 z-10 flex items-center gap-6 border-t border-neutral-100 bg-neutral-50 p-4">
             <LinkFeatureButtons />
             {homepageDemo ? (
               <Button
@@ -261,11 +323,17 @@ function LinkBuilderInner({
             ) : (
               <Button
                 type="submit"
-                disabled={saveDisabled}
+                disabled={
+                  saveDisabled || (urlMode === "bulk" && bulkUrls.length === 0)
+                }
                 loading={isSubmitting || isSubmitSuccessful}
                 text={
                   <span className="flex items-center gap-2">
-                    {props ? "Save changes" : "Create link"}
+                    {props
+                      ? "Save changes"
+                      : urlMode === "bulk"
+                        ? `Bulk create (${bulkUrls.length})`
+                        : "Create link"}
                     <div className="rounded border border-white/20 p-1">
                       <ArrowTurnLeft className="size-3.5" />
                     </div>

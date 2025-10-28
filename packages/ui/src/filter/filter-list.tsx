@@ -129,12 +129,14 @@ export function FilterList({
               return (
                 <motion.div
                   key={`${key}-${value}`}
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center rounded border border-neutral-200 bg-white text-sm text-black"
+                  initial={{ opacity: 0, y: 4, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -4, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center rounded-lg border border-neutral-200 bg-gradient-to-b from-white to-neutral-50/50 text-sm text-black shadow-sm hover:shadow transition-shadow"
                 >
                   {/* Filter */}
-                  <div className="flex items-center gap-2.5 px-2 py-2 max-w-[140px] truncate text-xs sm:text-sm">
+                  <div className="flex items-center gap-2.5 px-3 py-2 max-w-[140px] truncate text-xs sm:text-sm font-medium text-neutral-700">
                     {/* <span className="shrink-0 text-neutral-600">
                       {isReactNode(filter.icon) ? (
                         filter.icon
@@ -146,10 +148,10 @@ export function FilterList({
                   </div>
 
                   {/* is */}
-                  <div className="px-0.5 py-2 text-neutral-500">=</div>
+                  <div className="px-1 py-2 text-neutral-400 font-medium">=</div>
 
                   {/* Option (single line, truncate) */}
-                  <div className="flex min-w-0 items-center gap-2.5 px-1 py-2">
+                  <div className="flex min-w-0 items-center gap-2 px-2 py-2">
                     {filter.options ? (
                       <>
                         <span className="shrink-0 text-neutral-600">
@@ -159,23 +161,23 @@ export function FilterList({
                             <OptionIcon className="h-4 w-4" />
                           )}
                         </span>
-                        <div className="flex min-w-0 items-center gap-1">
+                        <div className="flex min-w-0 items-center gap-1.5">
                           {linkPageHref ? (
                             <Link
                               href={linkPageHref}
                               target="_blank"
-                              className="cursor-alias decoration-dotted underline-offset-2 hover:underline max-w-[140px] truncate text-xs sm:text-sm"
+                              className="cursor-alias decoration-dotted underline-offset-2 hover:underline max-w-[140px] truncate text-xs sm:text-sm font-medium text-neutral-900"
                               title={String(optionLabel)}
                             >
                               {truncate(optionLabel, 30)}
                             </Link>
                           ) : (
-                            <span className="max-w-[140px] truncate" title={String(optionLabel)}>
+                            <span className="max-w-[140px] truncate font-medium text-neutral-900" title={String(optionLabel)}>
                               {truncate(optionLabel, 30)}
                             </span>
                           )}
                           {extraCount > 0 && (
-                            <span className="shrink-0 rounded-full bg-neutral-100 px-1.5 py-0.5 text-[10px] text-neutral-600">
+                            <span className="shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
                               +{extraCount}
                             </span>
                           )}
@@ -189,7 +191,7 @@ export function FilterList({
                   {/* Remove (clears all values for this filter) */}
                   <button
                     type="button"
-                    className="h-full rounded-r-md p-2 text-neutral-500 ring-inset ring-neutral-500 hover:bg-neutral-100 hover:text-neutral-800 focus:outline-none focus-visible:ring-0"
+                    className="h-full rounded-r-lg px-2.5 py-2 text-neutral-400 transition-all hover:bg-red-50 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500/20"
                     onClick={() => {
                       values.forEach((v) => onRemove(key, v as any));
                     }}
@@ -204,10 +206,10 @@ export function FilterList({
         {activeFilters?.length !== 0 && (
           <button
             type="button"
-            className="group mt-px flex items-center gap-2 whitespace-nowrap rounded border border-transparent px-1 py-2 text-sm ring-inset transition-colors hover:text-black focus:outline-none"
+            className="group mt-px flex items-center gap-2 whitespace-nowrap rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm font-medium text-neutral-600 ring-inset transition-all hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/20 shadow-sm"
             onClick={onRemoveAll}
           >
-            Clear
+            Clear all
           </button>
         )}
       </div>

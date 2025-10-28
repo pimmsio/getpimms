@@ -77,7 +77,7 @@ const LinkCardInner = memo(({ link }: { link: ResponseLink }) => {
       <CardList.Card
         key={link.id}
         onClick={!isMobile ? () => router.push(editUrl) : undefined}
-        outerClassName="overflow-hidden"
+        outerClassName="overflow-hidden transition-all duration-200"
         innerClassName="p-0"
         {...(variant === "loose" &&
           link.folderId &&
@@ -87,7 +87,7 @@ const LinkCardInner = memo(({ link }: { link: ResponseLink }) => {
             banner: (
               <Link
                 href={`/${slug}/links?folderId=${folder?.id}`}
-                className="group flex items-center justify-between gap-2 rounded-t-xl border-b border-neutral-100 bg-neutral-50 px-5 py-2 text-xs"
+                className="group flex items-center justify-between gap-2 rounded-t-xl border-b border-neutral-100 bg-neutral-50 px-5 py-2 text-xs transition-colors hover:bg-neutral-100"
               >
                 <div className="flex items-center gap-1.5">
                   {folder ? (
@@ -117,7 +117,7 @@ const LinkCardInner = memo(({ link }: { link: ResponseLink }) => {
             ),
           })}
       >
-        <div className="flex min-w-0 items-center gap-3 px-4 py-2.5 text-sm overflow-hidden">
+        <div className="flex min-w-0 items-center gap-3 px-5 py-3 text-sm overflow-hidden">
           <div ref={ref} className="min-w-0 flex-1 overflow-hidden">
             <LinkCell 
               link={link}

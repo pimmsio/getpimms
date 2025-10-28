@@ -300,23 +300,25 @@ export function FilterSelect({
       <button
         type="button"
         className={cn(
-          "group flex h-10 cursor-pointer appearance-none items-center gap-x-2 truncate rounded-full border px-3 text-sm outline-none transition-all",
+          "group flex h-11 cursor-pointer appearance-none items-center gap-x-2.5 truncate rounded-full border px-4 text-sm font-medium outline-none transition-all duration-200",
           "border-neutral-200 bg-white text-neutral-900 placeholder-neutral-400",
-          "focus-visible:border-neutral-500 data-[state=open]:border-neutral-500 data-[state=open]:ring-4 data-[state=open]:ring-transparent",
+          "hover:border-neutral-300 hover:shadow-sm",
+          "focus-visible:border-neutral-400 focus-visible:ring-2 focus-visible:ring-blue-500/10",
+          "data-[state=open]:border-neutral-400 data-[state=open]:ring-2 data-[state=open]:ring-blue-500/10",
           className,
         )}
       >
-        <ListFilter className="size-4 shrink-0" />
+        <ListFilter className="size-4 shrink-0 text-neutral-600" />
         <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-left text-neutral-900">
           {children ?? "Filter"}
         </span>
         {activeFilters?.length ? (
-          <div className="flex size-4 shrink-0 items-center justify-center rounded-full bg-black text-[0.625rem] text-white">
+          <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[0.625rem] font-bold text-white shadow-sm">
             {activeFilters.length}
           </div>
         ) : (
           <ChevronDown
-            className={`size-4 shrink-0 text-neutral-400 transition-transform duration-75 group-data-[state=open]:rotate-180`}
+            className={`size-4 shrink-0 text-neutral-400 transition-all duration-200 group-data-[state=open]:rotate-180`}
           />
         )}
       </button>

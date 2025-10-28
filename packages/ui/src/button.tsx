@@ -105,7 +105,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         // if onClick is passed, it's a "button" type, otherwise it's being used in a form, hence "submit"
         type={props.onClick ? "button" : "submit"}
         className={cn(
-          "group flex rounded-full h-10 w-full items-center justify-center gap-2 whitespace-nowrap border border-neutral-200 px-4 text-sm",
+          "group flex rounded-lg h-10 w-full items-center justify-center gap-2 whitespace-nowrap border border-neutral-200 px-4 text-sm",
           props.disabled || loading
             ? "cursor-not-allowed border-neutral-200 bg-neutral-100 text-neutral-400 outline-none"
             : buttonVariants({ variant }),

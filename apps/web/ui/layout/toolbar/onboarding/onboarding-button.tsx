@@ -4,6 +4,7 @@ import useCustomersCount from "@/lib/swr/use-customers-count";
 import useDomainsCount from "@/lib/swr/use-domains-count";
 import useUsers from "@/lib/swr/use-users";
 import useWorkspace from "@/lib/swr/use-workspace";
+import { UtmTemplateWithUserProps } from "@/lib/types";
 import { CheckCircleFill, ThreeDots } from "@/ui/shared/icons";
 import {
   Button,
@@ -13,10 +14,12 @@ import {
   useLocalStorage,
 } from "@dub/ui";
 import { CircleDotted, CrownSmall, ExpandingArrow } from "@dub/ui/icons";
+import { fetcher } from "@dub/utils";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { forwardRef, HTMLAttributes, Ref, useMemo, useState } from "react";
+import useSWR from "swr";
 
 export function OnboardingButton() {
   const [hideForever, setHideForever] = useLocalStorage(
@@ -60,6 +63,17 @@ function OnboardingButtonInner({
     invites: true,
   });
 
+  const { data: utmTemplates } = useSWR<UtmTemplateWithUserProps[]>(
+    slug ? `/api/utm?workspaceId=${slug}` : null,
+    fetcher,
+    {
+      dedupingInterval: 5 * 60 * 1000,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateIfStale: false,
+    },
+  );
+
   const loading = domainsLoading || usersLoading || invitesLoading;
 
   const tasks = useMemo(() => {
@@ -68,6 +82,11 @@ function OnboardingButtonInner({
         display: "Create a new link",
         cta: `/${slug}`,
         checked: totalLinks && totalLinks > 0,
+      },
+      {
+        display: "Create one UTM template",
+        cta: `/${slug}/settings/library/utm`,
+        checked: utmTemplates && utmTemplates.length > 0,
       },
       {
         display: "Collect a first Click",
@@ -81,13 +100,13 @@ function OnboardingButtonInner({
         premium: "starter",
         feature: "Conversion tracking",
       },
-      {
-        display: "Collect a first Sale",
-        cta: `/${slug}/conversions`,
-        checked: salesUsage && salesUsage > 0,
-        premium: "pro",
-        feature: "Sales tracking",
-      },
+      // {
+      //   display: "Collect a first Sale",
+      //   cta: `/${slug}/conversions`,
+      //   checked: salesUsage && salesUsage > 0,
+      //   premium: "pro",
+      //   feature: "Sales tracking",
+      // },
       {
         display: "Set up your custom domain",
         cta: `/${slug}/settings/domains`,
@@ -108,6 +127,7 @@ function OnboardingButtonInner({
     salesUsage,
     users,
     invites,
+    utmTemplates,
   ]);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -124,11 +144,6 @@ function OnboardingButtonInner({
             <div className="flex items-start justify-between gap-2">
               <div>
                 <span className="text-lg font-medium">Getting Started</span>
-                <p className="mt-1 text-sm text-neutral-100">
-                  Get familiar with PiMMs by completing the{" "}
-                  <br className="hidden sm:block" />
-                  following tasks
-                </p>
               </div>
               <div className="flex items-center gap-1">
                 <OnboardingMenu

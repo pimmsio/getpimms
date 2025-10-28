@@ -67,6 +67,11 @@ model Project {
   registeredDomains     RegisteredDomain[]
   dashboards            Dashboard[]
   utmTemplates          UtmTemplate[]
+  utmSources            UtmSource[]
+  utmMediums            UtmMedium[]
+  utmCampaigns          UtmCampaign[]
+  utmTerms              UtmTerm[]
+  utmContents           UtmContent[]
   yearInReviews         YearInReview[]
 
   @@index(usageLastChecked(sort: Asc))

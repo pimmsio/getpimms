@@ -148,7 +148,7 @@ export const DraftControls = forwardRef<
         type="button"
         variant="outline"
         className={cn(
-          "animate-fade-in group h-7 w-fit text-sm transition-colors data-[state=open]:bg-neutral-100",
+          "hidden sm:block animate-fade-in group h-7 w-fit text-sm transition-colors data-[state=open]:bg-neutral-100",
           isDirty && hasSaved
             ? "pl-3 pr-4 text-neutral-400 hover:text-neutral-600"
             : "pl-4 pr-3 text-neutral-500 hover:text-neutral-700",
@@ -221,8 +221,7 @@ function DraftOption({
         type="button"
         onClick={(e) => {
           e.stopPropagation();
-          window.confirm("Are you sure you want to delete this draft?") &&
-            onDelete();
+          onDelete();
         }}
         className="p-1 text-neutral-400 transition-colors hover:text-neutral-500"
         title="Delete draft"

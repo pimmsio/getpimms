@@ -1,7 +1,10 @@
 "use client";
 
+import { useAnalyticsUrl } from "@/lib/hooks/use-analytics-url";
+import useWorkspace from "@/lib/swr/use-workspace";
 import { useRouterStuff } from "@dub/ui";
 import {
+  ChartLine,
   ConnectedDots,
   ConnectedDots4,
   Gear2,
@@ -9,32 +12,21 @@ import {
   Globe,
   Key,
   ShieldCheck,
+  Tags,
   Users6,
   Webhook,
 } from "@dub/ui/icons";
-import {
-  BarChart2,
-  Link,
-  Settings,
-  Settings2,
-  Split,
-  Table,
-  Target,
-  TargetIcon,
-  WalletCards,
-} from "lucide-react";
+import { IdCard, Link, Settings, Table, WalletCards } from "lucide-react";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useParams, usePathname } from "next/navigation";
 import { ReactNode, useMemo } from "react";
-import { useAnalyticsUrl } from "@/lib/hooks/use-analytics-url";
-import UserSurveyButton from "../user-survey";
 import { HelpButton } from "./help-button";
 import { ReferralButton } from "./referral-button";
+import { SettingsLink } from "./settings-link";
 import { SidebarNav, SidebarNavAreas } from "./sidebar-nav";
 import { Usage } from "./usage";
 import { WorkspaceDropdown } from "./workspace-dropdown";
-import useWorkspace from "@/lib/swr/use-workspace";
 // import { ReferralButton } from "./referral-button";
 
 const NAV_AREAS: SidebarNavAreas<{
@@ -67,19 +59,19 @@ const NAV_AREAS: SidebarNavAreas<{
       {
         items: [
           {
-            name: "Deep links",
+            name: "Links",
             icon: Link,
             href: `/${slug}/links${pathname === `/${slug}/links` ? "" : queryString}`,
             exact: true,
           },
           {
             name: "Analytics",
-            icon: BarChart2,
+            icon: ChartLine,
             href: buildAnalyticsUrl(`/${slug}/analytics`),
           },
           {
-            name: "Conversions",
-            icon: Target,
+            name: "Leads",
+            icon: IdCard,
             href: buildAnalyticsUrl(`/${slug}/conversions`, { event: "leads" }),
           },
           {
@@ -88,15 +80,10 @@ const NAV_AREAS: SidebarNavAreas<{
             href: buildAnalyticsUrl(`/${slug}/insights`),
           },
           {
-            name: "Integrations",
-            icon: ConnectedDots,
-            href: `/${slug}/settings/integrations`,
+            name: "Templates",
+            icon: Tags,
+            href: `/${slug}/settings/library`,
             enabled: plan !== "free",
-          },
-          {
-            name: "Settings",
-            icon: Settings2,
-            href: `/${slug}/settings`,
           },
         ],
       },
@@ -163,13 +150,13 @@ const NAV_AREAS: SidebarNavAreas<{
             href: `/${slug}/settings/domains`,
           },
           {
-            name: "UTM Templates",
-            icon: Split,
+            name: "Library",
+            icon: Tags,
             href: `/${slug}/settings/library`,
           },
           {
-            name: "Conversions",
-            icon: TargetIcon,
+            name: "Tracking",
+            icon: ChartLine,
             href: `/${slug}/settings/analytics`,
           },
           {
@@ -291,7 +278,7 @@ export function AppSidebarNav({
         pathname,
         queryString: getQueryString(undefined, {
           include: [
-            "folderId", 
+            "folderId",
             "tagIds",
             "domain",
             "key",
@@ -326,9 +313,16 @@ export function AppSidebarNav({
       switcher={<WorkspaceDropdown />}
       bottom={
         <>
-          <HelpButton />
-          <ReferralButton />
-          <Usage />
+          <div className="relative border-t border-neutral-200/80 pt-3">
+            <div className="flex flex-col gap-2 px-3 pb-3 sm:gap-2.5">
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-2">
+                <SettingsLink />
+                <HelpButton />
+                <ReferralButton className="sm:col-span-2" />
+              </div>
+            </div>
+            <Usage />
+          </div>
         </>
       }
     />

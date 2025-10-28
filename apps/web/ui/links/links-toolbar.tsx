@@ -219,58 +219,66 @@ export const LinksToolbar = memo(
               // "max-[1330px]:left-0 max-[1330px]:translate-x-0",
             )}
           >
-            <div className="ring-t-[6px] rounded-t-xl border border-b-0 border-neutral-100 bg-zinc-50 p-0 ring-neutral-100">
+            <div className="rounded-t-xl border border-b-0 border-neutral-200 bg-white p-0 shadow-lg">
               <AnimatedSizeContainer height>
                 <div
                   className={cn(
-                    "relative px-4 py-3.5 transition-[opacity,transform] duration-100",
+                    "relative px-2 sm:px-5 py-2.5 sm:py-4 transition-[opacity,transform] duration-100",
                     isSelecting &&
                       "pointer-events-none absolute inset-0 translate-y-1/2 opacity-0",
                   )}
                 >
-                  <PaginationControls
-                    pagination={pagination}
-                    setPagination={setPagination}
-                    totalCount={linksCount}
-                    unit={(plural) => `${plural ? "links" : "link"}`}
-                    showTotalCount={!isMegaFolder}
-                  >
-                    {!isMegaFolder && (
-                      <>
-                        {loading ? (
-                          <LoadingSpinner className="size-3.5" />
-                        ) : (
-                          <div className="hidden sm:block">
-                            <ArchivedLinksHint />
+                  <div className="flex w-full items-center justify-between gap-2">
+                    {/* Mobile: Select button on the left */}
+                    <div className="flex items-center gap-2 md:hidden shrink-0">
+                      <Button
+                        variant="secondary"
+                        className="h-8 w-fit px-2"
+                        icon={<CircleCheck className="size-4" />}
+                        onClick={() => setIsSelectMode(true)}
+                      />
+                    </div>
+                    
+                    <PaginationControls
+                      pagination={pagination}
+                      setPagination={setPagination}
+                      totalCount={linksCount}
+                      unit={(plural) => `${plural ? "links" : "link"}`}
+                      showTotalCount={!isMegaFolder}
+                      className="flex-1 min-w-0"
+                    >
+                      {!isMegaFolder && (
+                        <>
+                          {loading ? (
+                            <LoadingSpinner className="size-4" />
+                          ) : (
+                            <div className="hidden sm:block">
+                              <ArchivedLinksHint />
+                            </div>
+                          )}
+                          <div className="hidden md:block">
+                            <Button
+                              variant="secondary"
+                              className="h-9 w-fit px-3 sm:px-4 font-medium border-neutral-200 hover:border-neutral-300 hover:shadow-sm transition-all"
+                              icon={<CircleCheck className="size-4" />}
+                              text="Select"
+                              onClick={() => setIsSelectMode(true)}
+                            />
                           </div>
-                        )}
-                        <div className="hidden sm:block">
-                          <Button
-                            variant="secondary"
-                            className="h-8 w-fit px-3.5"
-                            icon={<CircleCheck className="size-4" />}
-                            text="Select"
-                            onClick={() => setIsSelectMode(true)}
-                          />
-                        </div>
-                      </>
-                    )}
-                  </PaginationControls>
-                  <div className="flex items-center gap-2 sm:hidden">
-                    <CreateLinkButton />
-                    <Button
-                      variant="secondary"
-                      className="h-8 w-fit px-3.5"
-                      icon={<CircleCheck className="size-4" />}
-                      text="Select"
-                      onClick={() => setIsSelectMode(true)}
-                    />
+                        </>
+                      )}
+                    </PaginationControls>
+                    
+                    {/* Mobile: New Link button on the right */}
+                    <div className="flex items-center gap-2 md:hidden shrink-0">
+                      <CreateLinkButton />
+                    </div>
                   </div>
                 </div>
 
                 <div
                   className={cn(
-                    "relative px-4 py-3.5 transition-[opacity,transform] duration-100",
+                    "relative px-2 sm:px-5 py-2.5 sm:py-4 transition-[opacity,transform] duration-100",
                     !isSelecting &&
                       "pointer-events-none absolute inset-0 translate-y-1/2 opacity-0",
                   )}
@@ -314,7 +322,7 @@ export const LinksToolbar = memo(
                     {/* Large screen controls */}
                     <div
                       className={cn(
-                        "xs:gap-2 flex items-center gap-1.5 transition-[transform,opacity] duration-150",
+                        "hidden md:flex xs:gap-2 items-center gap-1.5 transition-[transform,opacity] duration-150",
                         selectedLinkIds.length > 0
                           ? "translate-y-0 opacity-100"
                           : "pointer-events-none translate-y-1/2 opacity-0",

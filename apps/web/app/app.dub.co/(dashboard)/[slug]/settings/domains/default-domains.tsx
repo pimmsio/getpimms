@@ -20,27 +20,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-function DubDomainsIcon(domain: string) {
-  switch (domain) {
-    case "chatg.pt":
-      return ChatGPT;
-    case "git.new":
-      return GitHubEnhanced;
-    case "spti.fi":
-      return Spotify;
-    case "cal.link":
-      return CalendarDays;
-    case "amzn.id":
-      return Amazon;
-    case "ggl.link":
-      return GoogleEnhanced;
-    case "fig.page":
-      return Figma;
-    default:
-      return Logo;
-  }
-}
-
 export function DefaultDomains() {
   const { id, plan, role, flags } = useWorkspace();
   const permissionsError = clientAccessCheck({
@@ -84,7 +63,7 @@ export function DefaultDomains() {
             >
               <DomainCardTitleColumn
                 domain={slug}
-                icon={DubDomainsIcon(slug)}
+                icon={Logo}
                 description={description}
                 defaultDomain
               />

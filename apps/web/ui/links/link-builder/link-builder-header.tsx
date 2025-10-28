@@ -19,6 +19,7 @@ import { PropsWithChildren, useMemo, useState } from "react";
 import { useFormState, useWatch } from "react-hook-form";
 import { useDebounce } from "use-debounce";
 import { useLinkBuilderContext } from "./link-builder-provider";
+import { UrlModeToggle } from "./url-mode-toggle";
 
 export function LinkBuilderHeader({
   onClose,
@@ -27,12 +28,18 @@ export function LinkBuilderHeader({
   className,
   foldersEnabled,
   linkToFolder,
+  urlMode,
+  onUrlModeChange,
+  showUrlModeToggle,
 }: PropsWithChildren<{
   onClose?: () => void;
   onSelectLink?: (link: LinkProps) => void;
   className?: string;
   foldersEnabled?: boolean;
   linkToFolder?: boolean;
+  urlMode?: "single" | "bulk";
+  onUrlModeChange?: (mode: "single" | "bulk") => void;
+  showUrlModeToggle?: boolean;
 }>) {
   const { props, workspace } = useLinkBuilderContext();
   const { isDirty } = useFormState();
@@ -89,7 +96,7 @@ export function LinkBuilderHeader({
   return (
     <div
       className={cn(
-        "flex flex-col items-start gap-2 px-4 sm:px-6 sm:py-3 md:flex-row md:items-center md:justify-between",
+        "flex flex-col items-start gap-2 px-4 sm:px-6 sm:py-3 sm:flex-row sm:items-center sm:justify-between",
         className,
       )}
     >
@@ -133,14 +140,19 @@ export function LinkBuilderHeader({
             />
           </div>
         ) : (
-          <div className="flex min-w-0 items-center gap-2 px-1">
-            <LinkLogo
-              apexDomain={getApexDomain(debouncedUrl)}
-              className="size-5 shrink-0 sm:size-5 [&>*]:size-3 sm:[&>*]:size-4"
-            />
-            <h3 className="!mt-0 max-w-sm truncate text-sm font-medium">
-              {props ? `Edit ${shortLink}` : "New link"}
-            </h3>
+          <div className="flex min-w-0 items-center gap-3 px-1">
+            <div className="flex min-w-0 items-center gap-2">
+              <LinkLogo
+                apexDomain={getApexDomain(debouncedUrl)}
+                className="size-5 shrink-0 sm:size-5 [&>*]:size-3 sm:[&>*]:size-4"
+              />
+              <h3 className="!mt-0 max-w-sm truncate text-sm font-medium">
+                {props ? `Edit ${shortLink}` : "New link"}
+              </h3>
+            </div>
+            {/* {showUrlModeToggle && urlMode && onUrlModeChange && (
+              <UrlModeToggle mode={urlMode} onChange={onUrlModeChange} />
+            )} */}
           </div>
         )}
       </div>

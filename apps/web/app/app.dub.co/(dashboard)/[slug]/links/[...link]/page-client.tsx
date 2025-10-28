@@ -19,11 +19,13 @@ import {
 } from "@/ui/links/link-builder/link-builder-provider";
 import { LinkFeatureButtons } from "@/ui/links/link-builder/link-feature-buttons";
 import { LinkPreview } from "@/ui/links/link-builder/link-preview";
+import { MoreOptionsSection } from "@/ui/links/link-builder/more-options-section";
 import { OptionsList } from "@/ui/links/link-builder/options-list";
 import { QRCodePreview } from "@/ui/links/link-builder/qr-code-preview";
 import { SearchEngineIndexingToggle } from "@/ui/links/link-builder/search-engine-indexing-toggle";
 import { DisableDeeplinkToggle } from "@/ui/links/link-builder/disable-deeplink-toggle";
 import { TagSelect } from "@/ui/links/link-builder/tag-select";
+import { UTMParametersSection } from "@/ui/links/link-builder/utm-parameters-section";
 import { useLinkBuilderSubmit } from "@/ui/links/link-builder/use-link-builder-submit";
 import { LinkControls } from "@/ui/links/link-controls";
 import {
@@ -214,6 +216,8 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
           <div className="relative mx-auto flex w-full max-w-xl flex-col gap-7 pb-4 pt-10 lg:pb-10">
             <LinkBuilderDestinationUrlInput />
 
+            <UTMParametersSection />
+
             <LinkBuilderShortLinkInput />
 
             <TagSelect />
@@ -240,6 +244,8 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
                 </AlertDescription>
               </Alert>
             ) : null}
+
+            <MoreOptionsSection />
 
             <SearchEngineIndexingToggle />
 

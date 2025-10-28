@@ -171,7 +171,7 @@ export default function LinkDisplay() {
                     }}
                     className={cn(
                       "rounded border px-2 py-0.5 text-sm",
-                      property.mobile === false && "hidden sm:block",
+                      property.mobile === false && "hidden md:block",
                       active
                         ? "border-neutral-300 bg-neutral-100 text-neutral-950"
                         : "border-transparent text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950",
@@ -216,21 +216,21 @@ export default function LinkDisplay() {
     >
       <Button
         variant="secondary"
-        className="hover:bg-white [&>div]:w-full border-neutral-100"
+        className="h-11 hover:bg-white hover:border-neutral-300 [&>div]:w-full rounded-full border-neutral-200 transition-all duration-200 hover:shadow-sm"
         textWrapperClassName="!overflow-visible"
         text={
-          <div className="flex w-full items-center gap-2">
+          <div className="flex w-full items-center gap-2.5">
             <div className="relative shrink-0">
-              <Sliders className="h-4 w-4" />
+              <Sliders className="h-4 w-4 text-neutral-600" />
               {isDirty && (
                 <div className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-[#3971ff]">
                   <div className="h-full w-full animate-pulse rounded-full ring-2 ring-blue-500/40" />
                 </div>
               )}
             </div>
-            <span className="grow text-left">Display</span>
+            <span className="grow text-left font-medium">Display</span>
             <ChevronDown
-              className={cn("h-4 w-4 text-neutral-400 transition-transform", {
+              className={cn("h-4 w-4 text-neutral-400 transition-all duration-200", {
                 "rotate-180": openPopover,
               })}
             />

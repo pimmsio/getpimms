@@ -25,6 +25,7 @@ import {
 } from "@dub/ui";
 import { capitalize, pluralize } from "@dub/utils";
 import { useEffect, useState } from "react";
+import { DefaultDomains } from "./default-domains";
 
 export default function WorkspaceDomainsClient() {
   const {
@@ -215,7 +216,7 @@ export default function WorkspaceDomainsClient() {
         </div>
       </div>
 
-      {/* <DefaultDomains /> */}
+      <DefaultDomains />
     </>
   );
 }

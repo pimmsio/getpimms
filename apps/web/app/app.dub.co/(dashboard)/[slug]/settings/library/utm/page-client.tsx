@@ -4,12 +4,11 @@ import useWorkspace from "@/lib/swr/use-workspace";
 import { UtmTemplateWithUserProps } from "@/lib/types";
 import { useAddEditUtmTemplateModal } from "@/ui/modals/add-edit-utm-template.modal";
 import { AnimatedEmptyState } from "@/ui/shared/animated-empty-state";
-import { CardList, DiamondTurnRight, Flag6, GlobePointer } from "@dub/ui";
+import { DiamondTurnRight, Flag6, GlobePointer } from "@dub/ui";
 import { fetcher } from "@dub/utils";
 import { Dispatch, SetStateAction, createContext, useState } from "react";
 import useSWR from "swr";
-import { TemplateCard } from "./template-card";
-import { TemplateCardPlaceholder } from "./template-card-placeholder";
+import { TemplateTable } from "./template-table";
 
 export const TemplatesListContext = createContext<{
   openMenuTemplateId: string | null;
@@ -50,15 +49,7 @@ export default function WorkspaceUtmTemplatesClient() {
             <TemplatesListContext.Provider
               value={{ openMenuTemplateId, setOpenMenuTemplateId }}
             >
-              <CardList variant="compact" loading={isLoading}>
-                {templates?.length
-                  ? templates.map((template) => (
-                      <TemplateCard key={template.id} template={template} />
-                    ))
-                  : Array.from({ length: 6 }).map((_, idx) => (
-                      <TemplateCardPlaceholder key={idx} />
-                    ))}
-              </CardList>
+              <TemplateTable templates={templates} isLoading={isLoading} />
             </TemplatesListContext.Provider>
           </>
         ) : (

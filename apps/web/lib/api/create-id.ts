@@ -1,5 +1,4 @@
 import baseX from "base-x";
-import crypto from "crypto";
 
 const prefixes = [
   "ws_",
@@ -14,6 +13,11 @@ const prefixes = [
   "app_",
   "cus_",
   "utm_",
+  "utm_src_",
+  "utm_med_",
+  "utm_cmp_",
+  "utm_trm_",
+  "utm_cnt_",
   "wh_",
   "pn_",
   "prog_",
