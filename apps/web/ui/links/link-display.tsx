@@ -20,8 +20,9 @@ import {
 } from "@dub/ui/icons";
 import { cn } from "@dub/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Layers3 } from "lucide-react";
 import { useContext, useState } from "react";
+import LinkGroupBy from "./link-group-by";
 import LinkSort from "./link-sort";
 import { LinksDisplayContext } from "./links-display-provider";
 
@@ -93,26 +94,22 @@ export default function LinkDisplay() {
               </div>
             </div>
           )}
-          <div className="flex h-16 items-center justify-between gap-2 px-4">
-            <span className="flex items-center gap-2">
-              <Shuffle className="h-4 w-4 text-neutral-800" />
-              Switch position
-            </span>
-            <div>
-              <Switch
-                checked={switchPosition}
-                fn={(checked) => setSwitchPosition(checked)}
-              />
+          {!isMegaFolder && (
+            <div className="flex h-16 items-center justify-between gap-2 px-4">
+              <span className="flex items-center gap-2">
+                <Layers3 className="h-4 w-4 text-neutral-800" />
+                Group By
+              </span>
+              <div>
+                <LinkGroupBy />
+              </div>
             </div>
-          </div>
+          )}
           {!isMegaFolder && (
             <div className="group flex h-16 items-center justify-between gap-2 px-4">
               <div className="flex items-center gap-2">
-                <div className="flex w-6 items-center justify-center">
-                  <BoxArchive className="size-4 text-neutral-800 group-hover:hidden" />
-                  <kbd className="hidden rounded border border-neutral-100 bg-neutral-100 px-2 py-0.5 text-xs font-light text-neutral-500 group-hover:block">
-                    A
-                  </kbd>
+                <div className="flex w-4 items-center justify-center">
+                  <BoxArchive className="size-4 text-neutral-800" />
                 </div>
                 Show archived links
               </div>
@@ -132,6 +129,18 @@ export default function LinkDisplay() {
               </div>
             </div>
           )}
+          <div className="flex h-16 items-center justify-between gap-2 px-4">
+            <span className="flex items-center gap-2">
+              <Shuffle className="h-4 w-4 text-neutral-800" />
+              Switch text ordering
+            </span>
+            <div>
+              <Switch
+                checked={switchPosition}
+                fn={(checked) => setSwitchPosition(checked)}
+              />
+            </div>
+          </div>
           <div className="p-4">
             <span className="text-xs uppercase text-neutral-500">
               Display Properties

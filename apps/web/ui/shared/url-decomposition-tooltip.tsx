@@ -1,8 +1,8 @@
 "use client";
 
-import { Tooltip } from "@dub/ui";
+import { Tooltip, useRouterStuff } from "@dub/ui";
 import { cn, getParamsFromURL } from "@dub/utils";
-import { Copy } from "lucide-react";
+import { Copy, Filter } from "lucide-react";
 import { ReactNode, useMemo, useState } from "react";
 
 interface UrlDecompositionTooltipProps {
@@ -34,6 +34,7 @@ export function UrlDecompositionTooltip({
   forceShow = false,
 }: UrlDecompositionTooltipProps) {
   const [copiedPart, setCopiedPart] = useState<string | null>(null);
+  const { queryParams } = useRouterStuff();
 
   const urlParts = useMemo(() => {
     if (!url) return [];
@@ -98,6 +99,30 @@ export function UrlDecompositionTooltip({
     }
   };
 
+  const applyFilter = (part: UrlPart) => {
+    if (part.type === "base") {
+      // Filter by base URL
+      queryParams({
+        set: { url: part.value },
+      });
+    } else if (part.type === "utm") {
+      // Find the UTM key from the label
+      const utmKey = Object.keys(UTM_LABELS).find(
+        key => UTM_LABELS[key] === part.label.replace("UTM ", "")
+      );
+      if (utmKey) {
+        queryParams({
+          set: { [utmKey]: part.value },
+        });
+      }
+    } else if (part.type === "query") {
+      // For other query params, use the label as key (lowercase)
+      queryParams({
+        set: { [part.label.toLowerCase()]: part.value },
+      });
+    }
+  };
+
   const tooltipContent = (
     <div className="w-80 rounded-lg border border-gray-200 bg-white p-4 shadow-xl">
       <div className="mb-3 flex items-center justify-between">
@@ -122,6 +147,16 @@ export function UrlDecompositionTooltip({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
+                    applyFilter(part);
+                  }}
+                  className="rounded p-1 transition-colors hover:bg-gray-100"
+                  title="Filter by this value"
+                >
+                  <Filter className="h-3 w-3 text-gray-400 hover:text-blue-500" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
                     copyToClipboard(part.value, `${part.label}-${index}`);
                   }}
                   className="rounded p-1 transition-colors hover:bg-gray-100"
@@ -139,14 +174,21 @@ export function UrlDecompositionTooltip({
               </div>
             </div>
             <div
+              onClick={() => applyFilter(part)}
               className={cn(
-                "rounded border-l-2 bg-gray-50 px-2 py-1.5 text-xs",
-                part.type === "base" && "border-blue-400 bg-blue-50",
-                part.type === "utm" && "border-green-400 bg-green-50",
-                part.type === "query" && "border-purple-400 bg-purple-50",
+                "group relative cursor-pointer rounded border-l-2 bg-gray-50 px-2 py-1.5 text-xs transition-all hover:shadow-sm",
+                part.type === "base" && "border-blue-400 bg-blue-50 hover:bg-blue-100",
+                part.type === "utm" && "border-green-400 bg-green-50 hover:bg-green-100",
+                part.type === "query" && "border-purple-400 bg-purple-50 hover:bg-purple-100",
               )}
             >
               <span className="break-all text-gray-700">{part.value}</span>
+              <div className="absolute inset-0 flex items-center justify-center rounded bg-black/5 opacity-0 transition-opacity group-hover:opacity-100">
+                <span className="flex items-center gap-1 rounded bg-white/90 px-2 py-1 text-xs font-medium text-gray-700 shadow-sm">
+                  <Filter className="h-3 w-3" />
+                  Filter
+                </span>
+              </div>
             </div>
           </div>
         ))}

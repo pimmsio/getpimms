@@ -1,5 +1,6 @@
 "use client";
 
+import { LinksGroupBySlug } from "@/lib/links/links-display";
 import { useIsMegaFolder } from "@/lib/swr/use-is-mega-folder";
 import useLinks from "@/lib/swr/use-links";
 import useLinksCount from "@/lib/swr/use-links-count";
@@ -19,11 +20,13 @@ import {
   Dispatch,
   SetStateAction,
   useContext,
+  useMemo,
   useState,
 } from "react";
 import { AnimatedEmptyState } from "../shared/animated-empty-state";
 import { LinkCard } from "./link-card";
 import LinkCardPlaceholder from "./link-card-placeholder";
+import { LinkGroupHeader } from "./link-group-header";
 import { LinkSelectionProvider } from "./link-selection-provider";
 import { LinksDisplayContext } from "./links-display-provider";
 import { LinksToolbar } from "./links-toolbar";
@@ -39,8 +42,9 @@ export default function LinksContainer({
   CreateLinkButton: () => JSX.Element;
 }) {
   const { defaultFolderId } = useWorkspace();
-  const { searchParams } = useRouterStuff();
-  const { viewMode, sortBy, showArchived } = useContext(LinksDisplayContext);
+  const { searchParams, queryParams } = useRouterStuff();
+  const { viewMode, sortBy, showArchived, groupBy, setGroupBy } =
+    useContext(LinksDisplayContext);
 
   // Decide on the folderId to use
   let folderId = searchParams.get("folderId");
@@ -54,6 +58,7 @@ export default function LinksContainer({
     sortBy,
     showArchived,
     folderId,
+    ...(groupBy && { groupBy }),
   });
 
   const { data: count } = useLinksCount<number>({
@@ -64,13 +69,16 @@ export default function LinksContainer({
   });
 
   return (
-    <MaxWidthWrapper className="grid max-w-full gap-y-2 px-0 lg:px-0">
+    <MaxWidthWrapper className="grid max-w-full min-w-0 gap-y-2 px-0 lg:px-0">
       <LinksList
         CreateLinkButton={CreateLinkButton}
         links={links}
         count={count}
         loading={isValidating}
         compact={viewMode === "rows"}
+        groupBy={groupBy}
+        setGroupBy={setGroupBy}
+        queryParams={queryParams}
       />
     </MaxWidthWrapper>
   );
@@ -90,17 +98,24 @@ function LinksList({
   count,
   loading,
   compact,
+  groupBy,
+  setGroupBy,
+  queryParams,
 }: {
   CreateLinkButton: () => JSX.Element;
   links?: ResponseLink[];
   count?: number;
   loading?: boolean;
   compact: boolean;
+  groupBy: LinksGroupBySlug;
+  setGroupBy: (value: LinksGroupBySlug) => void;
+  queryParams: any;
 }) {
   const searchParams = useSearchParams();
   const { isMegaFolder } = useIsMegaFolder();
 
   const [openMenuLinkId, setOpenMenuLinkId] = useState<string | null>(null);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   const isFiltered = [
     "folderId",
@@ -117,26 +132,204 @@ function LinksList({
     "utm_content",
   ].some((param) => searchParams.has(param));
 
+  // Process grouped links
+  const groupedData = useMemo(() => {
+    if (!links || !groupBy) return null;
+
+    const groups: {
+      groupValue: string;
+      links: ResponseLink[];
+    }[] = [];
+    let currentGroup: typeof groups[0] | null = null;
+
+    links.forEach((item: any) => {
+      if (item._group !== undefined) {
+        // This is a group header
+        if (currentGroup) {
+          groups.push(currentGroup);
+        }
+        currentGroup = {
+          groupValue: item._group,
+          links: [],
+        };
+      } else if (currentGroup) {
+        // This is a regular link
+        currentGroup.links.push(item);
+      }
+    });
+
+    if (currentGroup) {
+      groups.push(currentGroup);
+    }
+
+    return groups;
+  }, [links, groupBy]);
+
+  // Initialize expanded groups when groupedData changes
+  // Only expand the first group by default
+  useMemo(() => {
+    if (groupedData && groupedData.length > 0) {
+      setExpandedGroups(new Set([groupedData[0].groupValue]));
+    }
+  }, [groupedData]);
+
+  const toggleGroup = (groupValue: string) => {
+    setExpandedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(groupValue)) {
+        next.delete(groupValue);
+      } else {
+        next.add(groupValue);
+      }
+      return next;
+    });
+  };
+
+  // Flatten links for link selection (only visible links)
+  const flatLinks = useMemo(() => {
+    if (!groupedData) return links;
+    return groupedData.flatMap((group) =>
+      expandedGroups.has(group.groupValue) ? group.links : [],
+    );
+  }, [groupedData, expandedGroups, links]);
+
+  // Calculate total links count when grouping
+  const totalLinksCount = useMemo(() => {
+    if (!groupedData) return count;
+    return groupedData.reduce((acc, group) => acc + group.links.length, 0);
+  }, [groupedData, count]);
+
+  const allExpanded = groupedData
+    ? groupedData.every((g) => expandedGroups.has(g.groupValue))
+    : false;
+  const allCollapsed = groupedData
+    ? groupedData.every((g) => !expandedGroups.has(g.groupValue))
+    : false;
+
+  const expandAll = () => {
+    if (groupedData) {
+      setExpandedGroups(new Set(groupedData.map((g) => g.groupValue)));
+    }
+  };
+
+  const collapseAll = () => {
+    setExpandedGroups(new Set());
+  };
+
   return (
     <LinksListContext.Provider value={{ openMenuLinkId, setOpenMenuLinkId }}>
-      <LinkSelectionProvider links={links}>
+      <LinkSelectionProvider links={flatLinks}>
         {!links || links.length ? (
           // Cards
-          <CardList variant={compact ? "compact" : "loose"} loading={loading}>
-              {links?.length
-                ? // Link cards
-                  links.map((link) => <LinkCard key={link.id} link={link} />)
-                : // Loading placeholder cards
-                  Array.from({ length: 12 }).map((_, idx) => (
-                    <CardList.Card
-                      key={idx}
-                      outerClassName="pointer-events-none"
-                      innerClassName="flex items-center gap-4"
-                    >
-                      <LinkCardPlaceholder />
-                    </CardList.Card>
-                  ))}
-          </CardList>
+          <>
+            {groupedData ? (
+              // Grouped view
+              <>
+                {/* Group controls */}
+                {groupedData.length >= 1 && (
+                  <div className="mx-2 mb-3 flex flex-col gap-2 rounded-lg border border-neutral-200 bg-neutral-50/50 px-3 py-2.5 sm:mx-0 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+                    <div className="flex items-center justify-between gap-2 sm:justify-start">
+                      <div className="text-xs text-neutral-600 sm:text-sm">
+                        <span className="font-medium text-neutral-900">
+                          {groupedData.length}
+                        </span>{" "}
+                        <span>
+                          {groupedData.length === 1 ? "group" : "groups"}
+                        </span>{" "}
+                        <span className="font-medium text-neutral-900">
+                          {flatLinks?.length || 0}
+                        </span>{" "}
+                        <span>
+                          {flatLinks?.length === 1 ? "link" : "links"}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setGroupBy(null);
+                          queryParams({
+                            del: ["groupBy"],
+                          });
+                        }}
+                        className="flex items-center gap-1 rounded-md bg-neutral-200 px-2 py-1 text-xs font-medium text-neutral-700 transition-colors hover:bg-neutral-300 hover:text-neutral-900"
+                      >
+                        <span>Clear</span>
+                        <span className="text-[10px]">✕</span>
+                      </button>
+                    </div>
+                    {groupedData.length > 1 && (
+                      <div className="flex items-center gap-2 text-xs sm:text-xs">
+                        <button
+                          onClick={expandAll}
+                          disabled={allExpanded}
+                          className={cn(
+                            "font-medium transition-colors",
+                            allExpanded
+                              ? "cursor-not-allowed text-neutral-400"
+                              : "text-neutral-600 hover:text-neutral-900",
+                          )}
+                        >
+                          Expand all
+                        </button>
+                        <span className="text-neutral-300">•</span>
+                        <button
+                          onClick={collapseAll}
+                          disabled={allCollapsed}
+                          className={cn(
+                            "font-medium transition-colors",
+                            allCollapsed
+                              ? "cursor-not-allowed text-neutral-400"
+                              : "text-neutral-600 hover:text-neutral-900",
+                          )}
+                        >
+                          Collapse all
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {groupedData.map((group) => (
+                  <div key={group.groupValue} className="min-w-0 space-y-2 sm:space-y-0">
+                    <LinkGroupHeader
+                      groupValue={group.groupValue}
+                      count={group.links.length}
+                      isExpanded={expandedGroups.has(group.groupValue)}
+                      onToggle={() => toggleGroup(group.groupValue)}
+                    />
+                    {expandedGroups.has(group.groupValue) && (
+                      <CardList
+                        variant={compact ? "compact" : "loose"}
+                        loading={loading}
+                      >
+                        {group.links.map((link) => (
+                          <LinkCard key={link.id} link={link} />
+                        ))}
+                      </CardList>
+                    )}
+                  </div>
+                ))}
+              </>
+            ) : (
+              // Regular view
+              <CardList
+                variant={compact ? "compact" : "loose"}
+                loading={loading}
+              >
+                {links?.length
+                  ? // Link cards
+                    links.map((link) => <LinkCard key={link.id} link={link} />)
+                  : // Loading placeholder cards
+                    Array.from({ length: 12 }).map((_, idx) => (
+                      <CardList.Card
+                        key={idx}
+                        outerClassName="pointer-events-none"
+                        innerClassName="flex items-center gap-4"
+                      >
+                        <LinkCardPlaceholder />
+                      </CardList.Card>
+                    ))}
+              </CardList>
+            )}
+          </>
         ) : (
           <AnimatedEmptyState
             title={isFiltered ? "No links found" : "No links yet"}
@@ -174,8 +367,8 @@ function LinksList({
         {links && (
           <LinksToolbar
             loading={!!loading}
-            links={links}
-            linksCount={isMegaFolder ? Infinity : count ?? links?.length ?? 0}
+            links={flatLinks || []}
+            linksCount={isMegaFolder ? Infinity : totalLinksCount ?? links?.length ?? 0}
           />
         )}
       </LinkSelectionProvider>

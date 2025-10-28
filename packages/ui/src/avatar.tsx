@@ -32,8 +32,6 @@ export function Avatar({
     );
   }
 
-  console.log('user', user);
-
   const avatarUrl = getUserAvatarUrl(user);
 
   if (avatarUrl) {

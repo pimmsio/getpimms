@@ -17,13 +17,13 @@ export default function UTMDetector() {
 
   // Check if any UTM data exists
   const hasUTMData = useMemo(() => {
-    return (
+    return Boolean(
       (utmSourcesData && utmSourcesData.length > 0) ||
       (utmMediumsData && utmMediumsData.length > 0) ||
       (utmCampaignsData && utmCampaignsData.length > 0)
     );
   }, [utmSourcesData, utmMediumsData, utmCampaignsData]);
 
-  // Only render UTM component if UTM data exists
-  return hasUTMData ? <UTM /> : null;
+  // Always render UTM component, pass whether data exists
+  return <UTM hasData={hasUTMData} />;
 }

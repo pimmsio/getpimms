@@ -35,6 +35,7 @@ export function AnalyticsCard<T extends string>({
   hasMore,
   children,
   className,
+  headerActions,
 }: {
   tabs: { id: T; label: string; icon: React.ElementType }[];
   selectedTabId: T;
@@ -49,37 +50,47 @@ export function AnalyticsCard<T extends string>({
   children: (props: {
     limit?: number;
     event?: EventType;
-    setShowModal: (show: boolean) => void;
+    setShowModal: (show: boolean, section?: string) => void;
+    isModal?: boolean;
+    modalSection?: string;
   }) => ReactNode;
   className?: string;
+  headerActions?: ReactNode;
 }) {
   const { selectedTab: event } = useContext(AnalyticsContext);
 
   const [showModal, setShowModal] = useState(false);
+  const [modalSection, setModalSection] = useState<string | undefined>();
   const [isOpen, setIsOpen] = useState(false);
 
   const selectedTab = tabs.find(({ id }) => id === selectedTabId) || tabs[0];
   const SelectedTabIcon = selectedTab.icon;
   const { isMobile } = useMediaQuery();
 
+  const handleSetShowModal = (show: boolean, section?: string) => {
+    setShowModal(show);
+    setModalSection(section);
+  };
+
   return (
     <>
       <Modal
         showModal={showModal}
         setShowModal={setShowModal}
-        className="max-w-lg px-0"
+        className="max-w-2xl px-0"
       >
-        <div className="flex items-center justify-between border-b border-gray-200/50 px-4 py-3">
-          <h1 className="text-lg font-semibold">{selectedTab?.label}</h1>
-          <div className="flex items-center gap-1 text-neutral-500">
-            {/* {event === "sales" ? (
-              <InvoiceDollar className="h-4 w-4" />
-            ) : event === "leads" ? (
-              <UserCheck className="h-4 w-4" />
-            ) : (
-              <CursorRays className="h-4 w-4" />
-            )} */}
-            <p className="text-xs uppercase">{EVENT_LABELS[event]}</p>
+        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 bg-gradient-to-r from-neutral-50 to-white">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-neutral-100 to-neutral-50 shadow-sm">
+              <SelectedTabIcon className="h-5 w-5 text-neutral-700" />
+            </div>
+            <div>
+              <h1 className="text-base font-semibold text-neutral-900">{selectedTab?.label}</h1>
+              <p className="text-xs text-neutral-500">All results</p>
+            </div>
+          </div>
+          <div className="rounded-full bg-neutral-900 px-3 py-1.5">
+            <p className="text-xs font-semibold text-white">{EVENT_LABELS[event]}</p>
           </div>
         </div>
         {subTabs && selectedSubTabId && onSelectSubTab && (
@@ -89,76 +100,31 @@ export function AnalyticsCard<T extends string>({
             onSelectTab={onSelectSubTab}
           />
         )}
-        <div className="flex max-h-[70vh] flex-col">
-          {children({ setShowModal, event })}
+        <div className="flex max-h-[70vh] flex-col overflow-auto">
+          {children({ setShowModal: handleSetShowModal, event, isModal: true, modalSection })}
         </div>
       </Modal>
       <div
         className={cn(
-          "group relative z-0 h-[440px] overflow-hidden rounded border border-gray-200/50 bg-white transition-all duration-200 hover:border-gray-300/50",
-          className,
+          "group relative z-0 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md flex flex-col",
+          className || "h-[440px]",
         )}
       >
-        <div className="flex items-center justify-between border-b border-gray-200/50 p-1">
-          {/* Main tabs */}
-          {isMobile ? (
-            <Popover
-              openPopover={isOpen}
-              setOpenPopover={setIsOpen}
-              content={
-                <div className="grid w-full gap-px p-2 sm:w-48">
-                  {tabs.map(({ id, label, icon: Icon }) => (
-                    <Button
-                      key={id}
-                      text={label}
-                      variant="outline"
-                      onClick={() => {
-                        onSelectTab?.(id);
-                        setIsOpen(false);
-                      }}
-                      icon={<Icon className="size-4" />}
-                      className={cn(
-                        "h-9 w-full justify-start px-2 font-medium",
-                        selectedTabId === id && "bg-neutral-100",
-                      )}
-                    />
-                  ))}
-                </div>
-              }
-              align="end"
-            >
-              <Button
-                type="button"
-                className="my-2 h-8 w-fit whitespace-nowrap px-2"
-                variant="outline"
-                icon={<SelectedTabIcon className="size-4" />}
-                text={selectedTab.label}
-                right={
-                  <ChevronsUpDown
-                    className="size-4 shrink-0 text-neutral-400"
-                    aria-hidden="true"
-                  />
-                }
-              />
-            </Popover>
-          ) : (
-            <TabSelect
-              options={tabs}
-              selected={selectedTabId}
-              onSelect={onSelectTab}
-            />
-          )}
-
-          <div className="flex items-center gap-1 pr-2 text-neutral-500">
-            {/* {event === "sales" ? (
-              <InvoiceDollar className="hidden h-4 w-4 sm:block" />
-            ) : event === "leads" ? (
-              <UserCheck className="hidden h-4 w-4 sm:block" />
-            ) : (
-              <CursorRays className="hidden h-4 w-4 sm:block" />
-            )} */}
-            <p className="text-xs uppercase">{EVENT_LABELS[event]}</p>
+        <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3.5 flex-shrink-0">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-neutral-100 to-neutral-50">
+              <SelectedTabIcon className="h-4 w-4 text-neutral-700" />
+            </div>
+            <h3 className="text-sm font-semibold text-neutral-900">
+              {selectedTab.label}
+            </h3>
           </div>
+
+          {headerActions && (
+            <div className="flex items-center gap-2">
+              {headerActions}
+            </div>
+          )}
         </div>
         {subTabs && selectedSubTabId && onSelectSubTab && (
           <SubTabs
@@ -167,23 +133,14 @@ export function AnalyticsCard<T extends string>({
             onSelectTab={onSelectSubTab}
           />
         )}
-        {children({
-          limit: expandLimit,
-          event,
-          setShowModal,
-        })}
-        {hasMore && (
-          <div className="absolute bottom-0 left-0 z-10 flex w-full items-end">
-            <button
-              onClick={() => setShowModal(true)}
-              className="group relative flex w-full items-center justify-center py-4"
-            >
-              <div className="rounded border border-[#08272E] bg-white px-2.5 py-1 text-sm text-neutral-950 group-hover:bg-neutral-100 group-active:border-neutral-300">
-                View All
-              </div>
-            </button>
-          </div>
-        )}
+        <div className="flex-1 overflow-auto">
+          {children({
+            limit: expandLimit,
+            event,
+            setShowModal: handleSetShowModal,
+            isModal: false,
+          })}
+        </div>
       </div>
     </>
   );

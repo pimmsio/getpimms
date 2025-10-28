@@ -116,7 +116,9 @@ export async function getLinksCount({
       }),
     ...(url &&
       groupBy !== "url" && {
-        url: { contains: url },
+        url: url.includes(',')
+          ? { in: url.split(',').filter(Boolean) }  // OR logic for multiple URLs
+          : url  // Exact match for single URL
       }),
     ...(startDate &&
       endDate && {

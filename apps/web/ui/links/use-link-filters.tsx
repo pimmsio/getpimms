@@ -8,8 +8,8 @@ import useUtmValues from "@/lib/swr/use-utm-values";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { TagProps } from "@/lib/types";
 import { TAGS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/tags";
-import { Avatar, BlurImage, Globe, Link4, Tag, User, useRouterStuff } from "@dub/ui";
-import { getPrettyUrl, GOOGLE_FAVICON_URL } from "@dub/utils";
+import { Avatar, BlurImage, Globe, Link4, LinkLogo, Tag, User, useRouterStuff } from "@dub/ui";
+import { getApexDomain, getPrettyUrl, GOOGLE_FAVICON_URL } from "@dub/utils";
 import { useContext, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { LinksDisplayContext } from "./links-display-provider";
@@ -166,9 +166,19 @@ export function useLinkFilters() {
         icon: Link4,
         label: "Destination URL",
         multiple: true,
+        getOptionIcon: (value, props) => (
+          <LinkLogo
+            apexDomain={getApexDomain(value)}
+            className="size-4 sm:size-4"
+          />
+        ),
+        getOptionLabel: (value) => {
+          // Display URL without protocol
+          return value.replace(/^https?:\/\//, '').replace(/\/$/, '');
+        },
         options: urls?.map(({ value, label, count }) => ({
-          value,
-          label: getPrettyUrl(label),
+          value,  // Keep original URL with protocol for backend filtering
+          label: label.replace(/^https?:\/\//, '').replace(/\/$/, ''),  // Normalize display
           right: count,
         })) ?? null,
       },
@@ -262,6 +272,8 @@ export function useLinkFilters() {
 
   const onSelect = (key: string, value: any) => {
     if (key === "tagIds") {
+      // Prevent duplicate values
+      if (selectedTagIds.includes(value)) return;
       queryParams({
         set: {
           tagIds: selectedTagIds.concat(value).join(","),
@@ -269,6 +281,8 @@ export function useLinkFilters() {
         del: "page",
       });
     } else if (key === "url") {
+      // Prevent duplicate values
+      if (selectedUrls.includes(value)) return;
       queryParams({
         set: {
           url: selectedUrls.concat(value).join(","),
@@ -276,6 +290,8 @@ export function useLinkFilters() {
         del: "page",
       });
     } else if (key === "utm_source") {
+      // Prevent duplicate values
+      if (selectedUtmSources.includes(value)) return;
       queryParams({
         set: {
           utm_source: selectedUtmSources.concat(value).join(","),
@@ -283,6 +299,8 @@ export function useLinkFilters() {
         del: "page",
       });
     } else if (key === "utm_medium") {
+      // Prevent duplicate values
+      if (selectedUtmMediums.includes(value)) return;
       queryParams({
         set: {
           utm_medium: selectedUtmMediums.concat(value).join(","),
@@ -290,6 +308,8 @@ export function useLinkFilters() {
         del: "page",
       });
     } else if (key === "utm_campaign") {
+      // Prevent duplicate values
+      if (selectedUtmCampaigns.includes(value)) return;
       queryParams({
         set: {
           utm_campaign: selectedUtmCampaigns.concat(value).join(","),
@@ -297,6 +317,8 @@ export function useLinkFilters() {
         del: "page",
       });
     } else if (key === "utm_term") {
+      // Prevent duplicate values
+      if (selectedUtmTerms.includes(value)) return;
       queryParams({
         set: {
           utm_term: selectedUtmTerms.concat(value).join(","),
@@ -304,6 +326,8 @@ export function useLinkFilters() {
         del: "page",
       });
     } else if (key === "utm_content") {
+      // Prevent duplicate values
+      if (selectedUtmContents.includes(value)) return;
       queryParams({
         set: {
           utm_content: selectedUtmContents.concat(value).join(","),

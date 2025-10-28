@@ -52,7 +52,7 @@ export function shouldShowSegmentLabel(
  * Get top referrer groups for a specific channel
  * @param channelType - The channel type to filter by
  * @param groupedReferrerData - The grouped referrer data
- * @param destinationUrlsData - The destination URLs data (for direct traffic)
+ * @param destinationUrlsData - The destination URLs data (not used for direct anymore)
  * @param maxSources - Maximum number of sources to return
  * @returns Array of top referrer group names
  */
@@ -62,28 +62,14 @@ export function getTopReferrerGroupsForChannel(
   destinationUrlsData: any[] = [],
   maxSources: number = DEFAULT_CHANNEL_CONFIG.maxTopSources
 ): string[] {
-  // For direct traffic, we want to show the top destination domains
+  // For direct traffic, there's no referrer - just show "(direct)"
+  // Don't show destination URLs as that's confusing
   if (channelType === "direct") {
-    const topDirectDomains = destinationUrlsData
-      .sort((a, b) => (b.clicks || 0) - (a.clicks || 0))
-      .slice(0, maxSources)
-      .map((item) => {
-        const url = item.url || "";
-        try {
-          const domain = new URL(
-            url.startsWith("http") ? url : `https://${url}`,
-          ).hostname;
-          return domain.replace(/^www\./, "");
-        } catch {
-          return url.replace(/^https?:\/\/(www\.)?/, "").split("/")[0];
-        }
-      })
-      .filter((domain) => domain && domain.length > 0);
-
-    return topDirectDomains.length > 0 ? topDirectDomains : ["(direct)"];
+    return ["(direct)"];
   }
 
-  // For other channels, filter by channel type
+  // For all other channels (including referral), filter by channel type
+  // This shows the actual referring websites/domains that sent the traffic
   const { getReferrerChannel } = require("./group-channels");
   
   const referrerGroupsInChannel = groupedReferrerData

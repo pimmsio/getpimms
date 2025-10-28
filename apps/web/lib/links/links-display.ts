@@ -2,6 +2,39 @@ export const linksViewModes = ["cards", "rows"] as const;
 
 export type LinksViewMode = (typeof linksViewModes)[number];
 
+export const linksGroupByOptions = [
+  {
+    display: "None",
+    slug: null,
+  },
+  {
+    display: "Destination URL",
+    slug: "url",
+  },
+  {
+    display: "UTM Source",
+    slug: "utm_source",
+  },
+  {
+    display: "UTM Medium",
+    slug: "utm_medium",
+  },
+  {
+    display: "UTM Campaign",
+    slug: "utm_campaign",
+  },
+  {
+    display: "UTM Term",
+    slug: "utm_term",
+  },
+  {
+    display: "UTM Content",
+    slug: "utm_content",
+  },
+] as const;
+
+export type LinksGroupBySlug = (typeof linksGroupByOptions)[number]["slug"];
+
 export const linksSortOptions = [
   {
     display: "Date created",

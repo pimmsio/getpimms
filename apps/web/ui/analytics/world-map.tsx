@@ -276,7 +276,7 @@ export default function WorldMap({ data, maxVisitors }: WorldMapProps) {
   };
 
   return (
-    <div className="relative w-full h-[400px] overflow-hidden">
+    <div className="relative w-full h-[320px] overflow-hidden">
       <ComposableMap
         projection="geoMercator"
         projectionConfig={{

@@ -8,7 +8,6 @@ import { LinkBuilderFolderSelector } from "@/ui/links/link-builder/controls/link
 import { LinkBuilderShortLinkInput } from "@/ui/links/link-builder/controls/link-builder-short-link-input";
 import { LinkCommentsInput } from "@/ui/links/link-builder/controls/link-comments-input";
 import { ConversionTrackingToggle } from "@/ui/links/link-builder/conversion-tracking-toggle";
-import { DisableDeeplinkToggle } from "@/ui/links/link-builder/disable-deeplink-toggle";
 import { DraftControls, DraftControlsHandle } from "@/ui/links/link-builder/draft-controls";
 import { LinkBuilderHeader } from "@/ui/links/link-builder/link-builder-header";
 import {
@@ -214,7 +213,7 @@ function LinkBuilderInner({
 
                 <ConversionTrackingToggle />
 
-                <DisableDeeplinkToggle />
+                {/* <DisableDeeplinkToggle /> */}
 
                 {!customersCount || customersCount === 0 ? (
                   <Alert>

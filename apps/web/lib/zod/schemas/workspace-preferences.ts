@@ -1,5 +1,6 @@
 import {
   linksDisplayPropertyIds,
+  linksGroupByOptions,
   linksSortOptions,
   linksViewModes,
 } from "@/lib/links/links-display";
@@ -10,6 +11,16 @@ export const linksDisplaySchema = z.object({
   sortBy: z.enum(
     linksSortOptions.map(({ slug }) => slug) as [string, ...string[]],
   ),
+  groupBy: z
+    .enum(
+      linksGroupByOptions.map(({ slug }) => slug ?? "null") as [
+        string,
+        ...string[],
+      ],
+    )
+    .transform((val) => (val === "null" ? null : val))
+    .nullable()
+    .optional(),
   showArchived: z.boolean(),
   displayProperties: z.array(z.enum(linksDisplayPropertyIds)),
   switchPosition: z.boolean().optional(),

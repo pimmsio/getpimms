@@ -37,7 +37,7 @@ function useOrganizedTags(tags: ResponseLink["tags"]) {
           )
         : tags;
 
-    return [sortedTags?.[0], sortedTags.slice(1)];
+    return [sortedTags?.[0], sortedTags?.slice(1) ?? []];
   }, [tags, searchParams]);
 
   return { primaryTag, additionalTags };

@@ -1,6 +1,8 @@
 import {
   defaultLinksDisplayProperties,
   LinksDisplayProperty,
+  linksGroupByOptions,
+  LinksGroupBySlug,
   linksSortOptions,
   LinksSortSlug,
   LinksViewMode,
@@ -45,6 +47,8 @@ export const LinksDisplayContext = createContext<{
   setDisplayProperties: Dispatch<SetStateAction<LinksDisplayProperty[]>>;
   sortBy: LinksSortSlug;
   setSort: Dispatch<SetStateAction<LinksSortSlug>>;
+  groupBy: LinksGroupBySlug;
+  setGroupBy: Dispatch<SetStateAction<LinksGroupBySlug>>;
   showArchived: boolean;
   setShowArchived: Dispatch<SetStateAction<boolean>>;
   switchPosition: boolean;
@@ -59,6 +63,8 @@ export const LinksDisplayContext = createContext<{
   setDisplayProperties: () => {},
   sortBy: linksSortOptions[0].slug,
   setSort: () => {},
+  groupBy: linksGroupByOptions[0].slug,
+  setGroupBy: () => {},
   showArchived: false,
   setShowArchived: () => {},
   switchPosition: false,
@@ -75,14 +81,20 @@ const parseSort = (sort: string) =>
   linksSortOptions.find(({ slug }) => slug === sort)?.slug ??
   linksSortOptions[0].slug;
 
+const parseGroupBy = (groupBy: string) =>
+  linksGroupByOptions.find(({ slug }) => slug === groupBy)?.slug ??
+  linksGroupByOptions[0].slug;
+
 export function LinksDisplayProvider({ children }: PropsWithChildren) {
   const searchParams = useSearchParams();
   const sortRaw = searchParams?.get("sortBy");
+  const groupByRaw = searchParams?.get("groupBy");
   const showArchivedRaw = searchParams?.get("showArchived");
 
   const [persisted, setPersisted] = useWorkspacePreferences("linksDisplay", {
     viewMode: linksViewModes[0],
     sortBy: linksSortOptions[0].slug,
+    groupBy: linksGroupByOptions[0].slug,
     showArchived: false,
     displayProperties: defaultLinksDisplayProperties,
     switchPosition: false,
@@ -97,6 +109,12 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
     "sortBy",
     persisted!,
     sortRaw ? parseSort(sortRaw) : undefined,
+  );
+
+  const [groupBy, setGroupBy, resetGroupBy] = useLinksDisplayOption(
+    "groupBy",
+    persisted!,
+    groupByRaw ? parseGroupBy(groupByRaw) : undefined,
   );
 
   const [showArchived, setShowArchived, resetShowArchived] =
@@ -115,6 +133,7 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
   const isDirty = useMemo(() => {
     if (viewMode !== persisted?.viewMode) return true;
     if (sortBy !== persisted?.sortBy) return true;
+    if (groupBy !== persisted?.groupBy) return true;
     if (showArchived !== persisted?.showArchived) return true;
     if (switchPosition !== persisted?.switchPosition) return true;
     if (
@@ -128,6 +147,7 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
     JSON.stringify(persisted),
     viewMode,
     sortBy,
+    groupBy,
     showArchived,
     switchPosition,
     displayProperties,
@@ -142,6 +162,8 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
         setDisplayProperties,
         sortBy: sortBy as LinksSortSlug,
         setSort,
+        groupBy: groupBy as LinksGroupBySlug,
+        setGroupBy,
         showArchived,
         setShowArchived,
         switchPosition: switchPosition ?? false,
@@ -151,6 +173,7 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
           setPersisted({
             viewMode,
             sortBy,
+            groupBy,
             showArchived,
             displayProperties,
             switchPosition,
@@ -159,6 +182,7 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
           resetViewMode();
           resetDisplayProperties();
           resetSort();
+          resetGroupBy();
           resetShowArchived();
           resetSwitchPosition();
         },

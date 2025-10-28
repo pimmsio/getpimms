@@ -39,6 +39,7 @@ export async function getLinksForWorkspace({
   start,
   end,
   interval,
+  groupBy,
 }: z.infer<typeof getLinksQuerySchemaExtended> & {
   workspaceId: string;
   folderIds?: string[];
@@ -79,108 +80,165 @@ export async function getLinksForWorkspace({
     endDate = end;
   }
 
-  const links = await prisma.link.findMany({
-    where: {
-      projectId: workspaceId,
-      AND: [
-        ...(folderIds
-          ? [
-              {
+  // Build the base where clause (reused for both regular and grouped queries)
+  const baseWhere = {
+    projectId: workspaceId,
+    AND: [
+      ...(folderIds
+        ? [
+            {
+              OR: [
+                {
+                  folderId: {
+                    in: folderIds,
+                  },
+                },
+                {
+                  folderId: null,
+                },
+              ],
+            },
+          ]
+        : [
+            {
+              folderId: folderId || null,
+            },
+          ]),
+      ...(search
+        ? [
+            {
+              ...(searchMode === "fuzzy" && {
                 OR: [
                   {
-                    folderId: {
-                      in: folderIds,
-                    },
+                    shortLink: { contains: search },
                   },
                   {
-                    folderId: null,
+                    url: { contains: search },
                   },
                 ],
-              },
-            ]
-          : [
-              {
-                folderId: folderId || null,
-              },
-            ]),
-        ...(search
-          ? [
-              {
-                ...(searchMode === "fuzzy" && {
-                  OR: [
-                    {
-                      shortLink: { contains: search },
-                    },
-                    {
-                      url: { contains: search },
-                    },
-                  ],
-                }),
-                ...(searchMode === "exact" && {
-                  shortLink: { startsWith: search },
-                }),
-              },
-            ]
-          : []),
-      ],
-      archived: showArchived ? undefined : false,
-      ...(domain && { domain }),
-      ...(withTags && {
-        tags: {
-          some: {},
-        },
-      }),
-      ...(combinedTagIds && combinedTagIds.length > 0
+              }),
+              ...(searchMode === "exact" && {
+                shortLink: { startsWith: search },
+              }),
+            },
+          ]
+        : []),
+    ],
+    archived: showArchived ? undefined : false,
+    ...(domain && { domain }),
+    ...(withTags && {
+      tags: {
+        some: {},
+      },
+    }),
+    ...(combinedTagIds && combinedTagIds.length > 0
+      ? {
+          tags: { some: { tagId: { in: combinedTagIds } } },
+        }
+      : tagNames
         ? {
-            tags: { some: { tagId: { in: combinedTagIds } } },
-          }
-        : tagNames
-          ? {
-              tags: {
-                some: {
-                  tag: {
-                    name: {
-                      in: tagNames,
-                    },
+            tags: {
+              some: {
+                tag: {
+                  name: {
+                    in: tagNames,
                   },
                 },
               },
-            }
-          : {}),
-      ...(tenantId && { tenantId }),
-      ...(partnerId && { partnerId }),
-      ...(userId && { userId }),
-      ...(linkIds && { id: { in: linkIds } }),
-      ...(utm_source && { utm_source }),
-      ...(utm_medium && { utm_medium }),
-      ...(utm_campaign && { utm_campaign }),
-      ...(utm_term && { utm_term }),
-      ...(utm_content && { utm_content }),
-      ...(url && { url: { contains: url } }),
-      ...(startDate &&
-        endDate && {
-          lastClicked: {
-            gte: startDate,
-            lte: endDate,
-          },
-        }),
-    },
-    include: {
-      tags: {
-        include: {
-          tag: {
-            select: {
-              id: true,
-              name: true,
-              color: true,
             },
+          }
+        : {}),
+    ...(tenantId && { tenantId }),
+    ...(partnerId && { partnerId }),
+    ...(userId && { userId }),
+    ...(linkIds && { id: { in: linkIds } }),
+    ...(utm_source && { utm_source }),
+    ...(utm_medium && { utm_medium }),
+    ...(utm_campaign && { utm_campaign }),
+    ...(utm_term && { utm_term }),
+    ...(utm_content && { utm_content }),
+    ...(url && {
+      url: url.includes(',')
+        ? { in: url.split(',').filter(Boolean) }  // OR logic for multiple URLs
+        : url  // Exact match for single URL
+    }),
+    ...(startDate &&
+      endDate && {
+        lastClicked: {
+          gte: startDate,
+          lte: endDate,
+        },
+      }),
+  };
+
+  const includeClause = {
+    tags: {
+      include: {
+        tag: {
+          select: {
+            id: true,
+            name: true,
+            color: true,
           },
         },
       },
-      user: includeUser,
-      webhooks: includeWebhooks,
-      dashboard: includeDashboard,
     },
+    user: includeUser,
+    webhooks: includeWebhooks,
+    dashboard: includeDashboard,
+  };
+
+  // If groupBy is specified, use SQL-level GROUP BY approach
+  if (groupBy) {
+    // Step 1: Get distinct group values with counts using Prisma groupBy
+    const groupValues = await prisma.link.groupBy({
+      by: [groupBy],
+      where: baseWhere,
+      _count: true,
+      orderBy: {
+        _count: {
+          [groupBy]: "desc",
+        },
+      },
+    });
+
+    // Step 2: For each group value, fetch all its links
+    const groupedResults = await Promise.all(
+      groupValues
+        .filter((group) => group[groupBy] !== null) // Skip null groups for now to avoid Prisma errors
+        .map(async (group) => {
+          const groupValue = group[groupBy];
+          
+          const groupLinks = await prisma.link.findMany({
+            where: {
+              ...baseWhere,
+              [groupBy]: groupValue,
+            },
+            include: includeClause,
+            orderBy: {
+              [sortBy]: sortOrder,
+            },
+          });
+
+          return {
+            _group: groupValue,
+            _count: group._count,
+            links: groupLinks.map((link) => transformLink(link)),
+          };
+        })
+    );
+
+    // Step 3: Flatten the results with group headers
+    return groupedResults.flatMap(({ _group, _count, links }) => [
+      { _group, _count } as any,
+      ...links,
+    ]);
+  }
+
+  // Regular query without grouping (with pagination)
+  const links = await prisma.link.findMany({
+    where: baseWhere,
+    include: includeClause,
     orderBy: {
       [sortBy]: sortOrder,
     },
