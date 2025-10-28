@@ -1,79 +1,30 @@
-import { SINGULAR_ANALYTICS_ENDPOINTS } from "@/lib/analytics/constants";
-import { 
-  groupChannelAnalytics, 
-  groupReferrerAnalytics, 
-  getReferrerDisplayName,
-  isReferrerInChannel,
-  isGroupedReferrer,
-  getBestDomainForLogo,
-  type ChannelType} from "@/lib/analytics/utils";
-import { UTM_TAGS_PLURAL, UTM_TAGS_PLURAL_LIST } from "@/lib/zod/schemas/utm";
-import { BlurImage, useRouterStuff } from "@dub/ui";
-import { 
-  Link2, 
-  Filter,
-  ArrowUpRight
-} from "lucide-react";
-import { getGoogleFavicon } from "@dub/utils";
-import { useContext, useMemo, useState } from "react";
+import { useRouterStuff } from "@dub/ui";
+import { ReferredVia } from "@dub/ui/icons";
+import { nFormatter } from "@dub/utils";
+import { useContext, useMemo } from "react";
 import { AnalyticsCard } from "./analytics-card";
-import { AnalyticsLoadingSpinner } from "./analytics-loading-spinner";
 import { AnalyticsContext } from "./analytics-provider";
-import MixedBarList from "./mixed-bar-list";
-import ChannelPieChart from "./channel-pie-chart";
+import RefererIcon from "./referer-icon";
 import { useAnalyticsFilterOption } from "./utils";
-
-// Icon mapping for channels
+import { MetricsDisplay } from "./metrics-display";
+import { RANK_COLORS } from "./lib";
+import { groupReferrerAnalytics, getReferrerDisplayName, isGroupedReferrer, getDomainsForReferrerGroup } from "@/lib/analytics/utils";
 
 export default function Channel() {
   const { queryParams, searchParams } = useRouterStuff();
+  const { selectedTab } = useContext(AnalyticsContext);
 
-  const { selectedTab, saleUnit } = useContext(AnalyticsContext);
+  const { data: referersData } = useAnalyticsFilterOption({ groupBy: "referers" });
 
-  const [tab, setTab] = useState<"channels" | "referers">("channels");
-  const [utmTag, setUtmTag] = useState<UTM_TAGS_PLURAL>("utm_sources");
-
-  const { data: rawData } = useAnalyticsFilterOption({
-    groupBy: "referers", // Always fetch referers
-  });
-  
-  const { data: destinationUrlsData } = useAnalyticsFilterOption({
-    groupBy: "top_urls",
-  });
-
-  const singularTabName = SINGULAR_ANALYTICS_ENDPOINTS[
-    tab === "channels" ? "channels" : "referers"
-  ];
-
-  // Process data based on selected tab
-  const data = useMemo(() => {
-    if (!rawData) return rawData;
+  // Group referrer data
+  const groupedData = useMemo(() => {
+    if (!referersData) return null;
     
-    if (tab === "channels") {
-      // Check if we're filtering by a specific channel
-      const channelFilter = searchParams.get("channel");
-      if (channelFilter) {
-        // Filter raw data to show only referrers that belong to this channel
-        const filteredData = rawData.filter(item => {
-          const referrerValue = item.referer || item.referers || '';
-          const referrerDisplayName = getReferrerDisplayName(referrerValue);
-          return isReferrerInChannel(referrerDisplayName, channelFilter as ChannelType);
-        });
-        
-        // Return the grouped referrers for this channel
-        return groupReferrerAnalytics(filteredData);
-      }
-      
-      // Group referrers first, then group by channels
-      const groupedReferrers = groupReferrerAnalytics(rawData);
-      return groupChannelAnalytics(groupedReferrers);
-    }
-    
-    // For referers tab, handle grouped referrer filtering
-    const refererFilter = searchParams.get(singularTabName);
+    // Check if we're filtering by a grouped referrer
+    const refererFilter = searchParams.get('referer');
     if (refererFilter && isGroupedReferrer(refererFilter)) {
       // Filter raw data to show only items that belong to this group
-      const filteredData = rawData.filter(item => {
+      const filteredData = referersData.filter(item => {
         const referrerValue = item.referer || item.referers || '';
         const groupName = getReferrerDisplayName(referrerValue);
         return groupName === refererFilter;
@@ -84,114 +35,129 @@ export default function Channel() {
     }
     
     // Always show grouped data for referrers
-    return groupReferrerAnalytics(rawData);
-  }, [rawData, tab, utmTag, searchParams, singularTabName]);
+    return groupReferrerAnalytics(referersData);
+  }, [referersData, searchParams]);
 
+  const isLoading = !referersData;
+  const hasData = (groupedData?.length ?? 0) > 0;
 
-  const subTabProps = useMemo(() => {
-    return ({
-      utms: {
-        subTabs: [
-          { id: "all", label: "All" },
-          ...UTM_TAGS_PLURAL_LIST.map((u) => ({
-            id: u,
-            label: SINGULAR_ANALYTICS_ENDPOINTS[u].replace("utm_", "").charAt(0).toUpperCase() + SINGULAR_ANALYTICS_ENDPOINTS[u].replace("utm_", "").slice(1),
-          })),
-        ],
-        selectedSubTabId: utmTag === "utm_sources" ? "utm_sources" : utmTag,
-        onSelectSubTab: (value: string) => {
-          if (value === "all") {
-            setUtmTag("utm_sources"); // Default to sources when "All" is selected
-          } else {
-            setUtmTag(value as UTM_TAGS_PLURAL);
-          }
-        },
-      },
-    }[tab] ?? {});
-  }, [tab, utmTag]);
+  // Sort data based on selected metric
+  const sortedReferersData = groupedData ? [...groupedData].sort((a, b) => {
+    const aValue = selectedTab === "sales" ? (a.saleAmount || 0) : selectedTab === "leads" ? (a.leads || 0) : (a.clicks || 0);
+    const bValue = selectedTab === "sales" ? (b.saleAmount || 0) : selectedTab === "leads" ? (b.leads || 0) : (b.clicks || 0);
+    return bValue - aValue;
+  }) : null;
 
   return (
     <AnalyticsCard
-      tabs={[
-        { 
-          id: "channels", 
-          label: "Channels", 
-          icon: Filter
-        },
-        { 
-          id: "referers", 
-          label: "Referrers", 
-          icon: ArrowUpRight
-        },
-      ]}
-      selectedTabId={tab}
-      onSelectTab={setTab}
-      {...subTabProps}
+      tabs={[{ id: "referers", label: "Top Referrers", icon: ReferredVia }]}
+      selectedTabId="referers"
+      onSelectTab={() => {}}
       expandLimit={5}
-      hasMore={(data?.length ?? 0) > 8}
+      hasMore={(sortedReferersData?.length ?? 0) > 5}
     >
-      {({ limit, setShowModal }) => (
+      {({ limit, setShowModal, isModal }) => (
         <>
-          {data ? (
-            data.length > 0 ? (
-              tab === "channels" ? (
-                <ChannelPieChart 
-                  data={data as any}
-                  groupedReferrerData={groupReferrerAnalytics(rawData || [])}
-                  destinationUrlsData={destinationUrlsData || []}
-                  selectedTab={selectedTab as "clicks" | "leads" | "sales"}
-                  saleUnit={saleUnit}
-                />
-              ) : (
-                <MixedBarList
-                  tab="Referrer"
-                  data={
-                    data
-                      ?.map((d) => {
-                        const displayName = getReferrerDisplayName(d[singularTabName]);
-
-                        return {
-                          icon: displayName === "(direct)" ? (
-                            <Link2 className="h-4 w-4" />
-                          ) : (
-                            <BlurImage
-                              src={getGoogleFavicon(
-                                getBestDomainForLogo(getReferrerDisplayName(d[singularTabName])),
-                                false,
-                              )}
-                              alt={displayName}
-                              width={20}
-                              height={20}
-                              className="h-4 w-4 rounded-full"
-                            />
-                          ),
-                          title: displayName,
-                          href: queryParams({
-                            set: {
-                              [singularTabName]: displayName,
-                            },
-                            getNewPath: true,
-                          }) as string,
-                          clicks: d.clicks || 0,
-                          leads: d.leads || 0,
-                          sales: d.sales || 0,
-                          saleAmount: d.saleAmount || 0,
-                        };
-                      })
-                      ?.slice(0, limit)
-                  }
-                  setShowModal={setShowModal}
-                  {...(limit && { limit })}
-                />
-              )
-            ) : (
-              <div className="flex h-[300px] items-center justify-center">
-                <p className="text-sm text-gray-600">No data available</p>
+          {isLoading ? (
+            <div className="flex flex-col px-4 py-3 animate-pulse">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex items-center gap-3 px-3 py-2.5">
+                  <div className="h-8 w-8 rounded-full bg-neutral-100 flex-shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3 bg-neutral-100 rounded w-3/4" />
+                    <div className="h-2 bg-neutral-50 rounded w-1/2" />
+                  </div>
+                  <div className="h-3 w-12 bg-neutral-100 rounded" />
+                </div>
+              ))}
+            </div>
+          ) : !hasData ? (
+            <div className="flex h-[380px] flex-col items-center justify-center gap-3 px-4 text-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-neutral-100 to-neutral-50 ring-1 ring-neutral-200/50">
+                <ReferredVia className="h-6 w-6 text-neutral-600" />
               </div>
-            )
+              <div>
+                <p className="text-sm font-semibold text-neutral-900">No referrer data yet</p>
+                <p className="mt-1.5 text-xs text-neutral-500 leading-relaxed max-w-xs">
+                  Discover where your traffic comes from - social media, search engines, direct visits, and more
+                </p>
+              </div>
+            </div>
           ) : (
-            <div className="flex h-[300px] items-center justify-center">
-              <AnalyticsLoadingSpinner />
+            <div className="flex flex-col px-4 py-3">
+              <div className="space-y-2">
+                {sortedReferersData?.slice(0, isModal ? undefined : (limit || 5)).map((item, idx) => {
+                  const metric = selectedTab === "sales" ? item.saleAmount : selectedTab === "leads" ? item.leads : item.clicks;
+                  const totalClicks = sortedReferersData.reduce((sum, r) => sum + (r.clicks || 0), 0);
+                  const percentage = sortedReferersData.length > 0 ? Math.round((item.clicks / totalClicks) * 100) : 0;
+                  const maxClicks = Math.max(...sortedReferersData.map(r => r.clicks || 0));
+                  const barWidth = maxClicks > 0 ? (item.clicks / maxClicks) * 100 : 0;
+
+                  return (
+                    <a
+                      key={idx}
+                      href={queryParams({
+                        ...(searchParams.has('referer')
+                          ? { del: 'referer' }
+                          : {
+                              set: {
+                                referer: (() => {
+                                  // If this is a grouped referrer, use all domains from the group
+                                  if (isGroupedReferrer(item.referer)) {
+                                    return getDomainsForReferrerGroup(item.referer).join(',');
+                                  }
+                                  // Otherwise use the original referrer
+                                  return item.referer;
+                                })(),
+                              },
+                            }),
+                        getNewPath: true,
+                      }) as string}
+                      className="relative flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-neutral-50 transition-all group border border-transparent hover:border-neutral-200 overflow-hidden"
+                    >
+                      {/* Progress bar background - always visible */}
+                      <div 
+                        className="absolute inset-0 bg-gradient-to-r from-blue-100/30 to-transparent group-hover:from-blue-100/60 transition-all"
+                        style={{ width: `${barWidth}%` }}
+                      />
+                      
+                      {idx < 3 && (
+                        <div className={`relative flex h-6 w-6 items-center justify-center rounded-full ${RANK_COLORS[idx]} text-xs font-bold flex-shrink-0 shadow-sm`}>
+                          {idx + 1}
+                        </div>
+                      )}
+                      <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 flex-shrink-0">
+                        <RefererIcon display={item.referer} className="h-4 w-4" />
+                      </div>
+                      <div className="relative flex-1 min-w-0">
+                        <p className="text-sm font-medium text-neutral-900 truncate">
+                          {getReferrerDisplayName(item.referer) || "(direct)"}
+                        </p>
+                        <p className="text-xs text-neutral-500">
+                          {percentage}% of traffic
+                        </p>
+                      </div>
+                      <MetricsDisplay
+                        clicks={item.clicks || 0}
+                        leads={item.leads}
+                        sales={item.sales}
+                        saleAmount={item.saleAmount}
+                        primaryMetric={selectedTab}
+                        className="relative"
+                      />
+                    </a>
+                  );
+                })}
+              </div>
+              
+              {!isModal && (sortedReferersData?.length ?? 0) > 5 && (
+                <button
+                  onClick={() => setShowModal(true)}
+                  className="mt-4 w-full rounded-lg border border-neutral-200 bg-neutral-50 py-2 text-xs text-neutral-700 hover:bg-neutral-100 hover:border-neutral-300 font-medium transition-all"
+                >
+                  View all {sortedReferersData?.length} referrers →
+                </button>
+              )}
             </div>
           )}
         </>

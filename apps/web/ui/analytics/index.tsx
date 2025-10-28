@@ -12,6 +12,7 @@ import AnalyticsProvider, {
   AnalyticsContext,
   AnalyticsDashboardProps,
 } from "./analytics-provider";
+import Channels from "./channels";
 import Channel from "./channel";
 import DestinationUrls from "./destination-urls";
 import Devices from "./devices";
@@ -43,8 +44,8 @@ export default function Analytics({
               <div className="sticky top-0 z-40 border-b border-gray-200/50 bg-white/90 shadow-sm backdrop-blur-lg">
                 <Toggle />
               </div>
-              <div className="mx-auto max-w-screen-xl px-2 pt-4 sm:px-4 sm:pt-6 lg:px-8">
-                <div className="space-y-4 sm:space-y-6">
+              <div className="mx-auto max-w-screen-xl px-2 pt-5 sm:px-4 sm:pt-7 lg:px-8">
+                <div className="space-y-6 sm:space-y-8">
                   <Main />
                   <StatsGrid />
                 </div>
@@ -67,18 +68,24 @@ function StatsGrid() {
     plan === "free";
 
   return hide ? null : (
-    <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+    <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+      {/* Channels & Referrers row */}
+      <Channels />
       <Channel />
-
+      
+      {/* UTM takes full width */}
+      <div className="xl:col-span-2">
+        <UTMDetector />
+      </div>
+      
+      {/* Links & URLs row */}
       {!dashboardProps && <TopLinks />}
-
-      <UTMDetector />
-
       <DestinationUrls />
-
+      
+      {/* Locations & Devices row - same height for visual balance */}
       <Locations />
-
       <Devices />
     </div>
   );
 }
+

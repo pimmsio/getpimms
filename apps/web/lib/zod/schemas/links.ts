@@ -751,6 +751,17 @@ export const getLinksQuerySchemaExtended = getLinksQuerySchemaBase.merge(
       .enum(["fuzzy", "exact"])
       .default("fuzzy")
       .describe("Search mode to filter by."),
+    groupBy: z
+      .union([
+        z.literal("url"),
+        z.literal("utm_source"),
+        z.literal("utm_medium"),
+        z.literal("utm_campaign"),
+        z.literal("utm_term"),
+        z.literal("utm_content"),
+      ])
+      .optional()
+      .describe("The field to group the links by."),
   }),
 );
 

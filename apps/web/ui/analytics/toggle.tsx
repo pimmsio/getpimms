@@ -35,7 +35,9 @@ import {
   useRouterStuff,
   useScroll,
   UTM_PARAMETERS,
+  Popover,
 } from "@dub/ui";
+import { MousePointerClick, TrendingUp, DollarSign, ArrowUpDown } from "lucide-react";
 import {
   Cube,
   FlagWavy,
@@ -85,7 +87,7 @@ import {
 } from "./events/hot-score-icons";
 import RefererIcon from "./referer-icon";
 import { ShareButton } from "./share-button";
-import { useAnalyticsFilterOption } from "./utils";
+import { useAnalyticsFilterOption, useAnalyticsFilterOptionWithoutSelf } from "./utils";
 
 export default function Toggle({
   page = "analytics",
@@ -109,6 +111,7 @@ export default function Toggle({
     start,
     end,
     interval,
+    showConversions,
   } = useContext(AnalyticsContext);
 
   const scrolled = useScroll(120);
@@ -185,6 +188,68 @@ export default function Toggle({
     [searchParamsObj.hotScore],
   );
 
+  // Parse selected UTM values from URL params
+  const selectedUtmSources = useMemo(
+    () => searchParamsObj.utm_source?.split(",")?.filter(Boolean) ?? [],
+    [searchParamsObj.utm_source],
+  );
+  
+  const selectedUtmMediums = useMemo(
+    () => searchParamsObj.utm_medium?.split(",")?.filter(Boolean) ?? [],
+    [searchParamsObj.utm_medium],
+  );
+  
+  const selectedUtmCampaigns = useMemo(
+    () => searchParamsObj.utm_campaign?.split(",")?.filter(Boolean) ?? [],
+    [searchParamsObj.utm_campaign],
+  );
+  
+  const selectedUtmTerms = useMemo(
+    () => searchParamsObj.utm_term?.split(",")?.filter(Boolean) ?? [],
+    [searchParamsObj.utm_term],
+  );
+  
+  const selectedUtmContents = useMemo(
+    () => searchParamsObj.utm_content?.split(",")?.filter(Boolean) ?? [],
+    [searchParamsObj.utm_content],
+  );
+
+  // Parse selected values for other multi-select filters
+  const selectedUrls = useMemo(
+    () => searchParamsObj.url?.split(",")?.filter(Boolean) ?? [],
+    [searchParamsObj.url],
+  );
+
+  const selectedCountries = useMemo(
+    () => searchParamsObj.country?.split(",")?.filter(Boolean) ?? [],
+    [searchParamsObj.country],
+  );
+
+  const selectedCities = useMemo(
+    () => searchParamsObj.city?.split(",")?.filter(Boolean) ?? [],
+    [searchParamsObj.city],
+  );
+
+  const selectedDevices = useMemo(
+    () => searchParamsObj.device?.split(",")?.filter(Boolean) ?? [],
+    [searchParamsObj.device],
+  );
+
+  const selectedBrowsers = useMemo(
+    () => searchParamsObj.browser?.split(",")?.filter(Boolean) ?? [],
+    [searchParamsObj.browser],
+  );
+
+  const selectedOs = useMemo(
+    () => searchParamsObj.os?.split(",")?.filter(Boolean) ?? [],
+    [searchParamsObj.os],
+  );
+
+  const selectedReferers = useMemo(
+    () => searchParamsObj.referer?.split(",")?.filter(Boolean) ?? [],
+    [searchParamsObj.referer],
+  );
+
   const [requestedFilters, setRequestedFilters] = useState<string[]>([]);
 
   const activeFilters = useMemo(() => {
@@ -210,6 +275,44 @@ export default function Toggle({
       ...(selectedHotScores.length > 0
         ? [{ key: "hotScore", value: selectedHotScores }]
         : []),
+      // Handle UTM multi-select special cases
+      ...(selectedUtmSources.length > 0
+        ? [{ key: "utm_source", value: selectedUtmSources }]
+        : []),
+      ...(selectedUtmMediums.length > 0
+        ? [{ key: "utm_medium", value: selectedUtmMediums }]
+        : []),
+      ...(selectedUtmCampaigns.length > 0
+        ? [{ key: "utm_campaign", value: selectedUtmCampaigns }]
+        : []),
+      ...(selectedUtmTerms.length > 0
+        ? [{ key: "utm_term", value: selectedUtmTerms }]
+        : []),
+      ...(selectedUtmContents.length > 0
+        ? [{ key: "utm_content", value: selectedUtmContents }]
+        : []),
+      // Handle other multi-select filters
+      ...(selectedUrls.length > 0
+        ? [{ key: "url", value: selectedUrls }]
+        : []),
+      ...(selectedCountries.length > 0
+        ? [{ key: "country", value: selectedCountries }]
+        : []),
+      ...(selectedCities.length > 0
+        ? [{ key: "city", value: selectedCities }]
+        : []),
+      ...(selectedDevices.length > 0
+        ? [{ key: "device", value: selectedDevices }]
+        : []),
+      ...(selectedBrowsers.length > 0
+        ? [{ key: "browser", value: selectedBrowsers }]
+        : []),
+      ...(selectedOs.length > 0
+        ? [{ key: "os", value: selectedOs }]
+        : []),
+      ...(selectedReferers.length > 0
+        ? [{ key: "referer", value: selectedReferers }]
+        : []),
       // Handle root special case - convert string to boolean
       ...(root ? [{ key: "root", value: root === "true" }] : []),
       // Handle folderId special case
@@ -220,7 +323,9 @@ export default function Toggle({
     VALID_ANALYTICS_FILTERS.forEach((filter) => {
       // Skip special cases we handled above
       if (
-        ["domain", "key", "tagId", "tagIds", "hotScore", "root"].includes(
+        ["domain", "key", "tagId", "tagIds", "hotScore", "root", 
+         "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
+         "url", "country", "city", "device", "browser", "os", "referer"].includes(
           filter,
         )
       )
@@ -235,7 +340,7 @@ export default function Toggle({
     });
 
     return filters;
-  }, [searchParamsObj, selectedTagIds, selectedHotScores]);
+  }, [searchParamsObj, selectedTagIds, selectedHotScores, selectedUtmSources, selectedUtmMediums, selectedUtmCampaigns, selectedUtmTerms, selectedUtmContents, selectedUrls, selectedCountries, selectedCities, selectedDevices, selectedBrowsers, selectedOs, selectedReferers]);
 
   const isRequested = useCallback(
     (key: string) =>
@@ -247,52 +352,53 @@ export default function Toggle({
   const { data: links } = useAnalyticsFilterOption("top_links", {
     cacheOnly: !isRequested("link"),
   });
-  const { data: countries } = useAnalyticsFilterOption("countries", {
+  // Fetch filter options without applying the filter itself (so all options are visible for multi-select)
+  const { data: countries } = useAnalyticsFilterOptionWithoutSelf("countries", "country", {
     cacheOnly: !isRequested("country"),
   });
   const { data: regions } = useAnalyticsFilterOption("regions", {
     cacheOnly: !isRequested("region"),
   });
-  const { data: cities } = useAnalyticsFilterOption("cities", {
+  const { data: cities } = useAnalyticsFilterOptionWithoutSelf("cities", "city", {
     cacheOnly: !isRequested("city"),
   });
   const { data: continents } = useAnalyticsFilterOption("continents", {
     cacheOnly: !isRequested("continent"),
   });
-  const { data: devices } = useAnalyticsFilterOption("devices", {
+  const { data: devices } = useAnalyticsFilterOptionWithoutSelf("devices", "device", {
     cacheOnly: !isRequested("device"),
   });
-  const { data: browsers } = useAnalyticsFilterOption("browsers", {
+  const { data: browsers } = useAnalyticsFilterOptionWithoutSelf("browsers", "browser", {
     cacheOnly: !isRequested("browser"),
   });
-  const { data: os } = useAnalyticsFilterOption("os", {
+  const { data: os } = useAnalyticsFilterOptionWithoutSelf("os", "os", {
     cacheOnly: !isRequested("os"),
   });
   const { data: triggers } = useAnalyticsFilterOption("triggers", {
     cacheOnly: !isRequested("trigger"),
   });
-  const { data: referers } = useAnalyticsFilterOption("referers", {
+  const { data: referers } = useAnalyticsFilterOptionWithoutSelf("referers", "referer", {
     cacheOnly: !isRequested("referer"),
   });
   const { data: refererUrls } = useAnalyticsFilterOption("referer_urls", {
     cacheOnly: !isRequested("refererUrl"),
   });
-  const { data: urls } = useAnalyticsFilterOption("top_urls", {
+  const { data: urls } = useAnalyticsFilterOptionWithoutSelf("top_urls", "url", {
     cacheOnly: !isRequested("url"),
   });
-  const { data: utmSources } = useAnalyticsFilterOption("utm_sources", {
+  const { data: utmSources } = useAnalyticsFilterOptionWithoutSelf("utm_sources", "utm_source", {
     cacheOnly: !isRequested("utm_source"),
   });
-  const { data: utmMediums } = useAnalyticsFilterOption("utm_mediums", {
+  const { data: utmMediums } = useAnalyticsFilterOptionWithoutSelf("utm_mediums", "utm_medium", {
     cacheOnly: !isRequested("utm_medium"),
   });
-  const { data: utmCampaigns } = useAnalyticsFilterOption("utm_campaigns", {
+  const { data: utmCampaigns } = useAnalyticsFilterOptionWithoutSelf("utm_campaigns", "utm_campaign", {
     cacheOnly: !isRequested("utm_campaign"),
   });
-  const { data: utmTerms } = useAnalyticsFilterOption("utm_terms", {
+  const { data: utmTerms } = useAnalyticsFilterOptionWithoutSelf("utm_terms", "utm_term", {
     cacheOnly: !isRequested("utm_term"),
   });
-  const { data: utmContents } = useAnalyticsFilterOption("utm_contents", {
+  const { data: utmContents } = useAnalyticsFilterOptionWithoutSelf("utm_contents", "utm_content", {
     cacheOnly: !isRequested("utm_content"),
   });
   const utmData = {
@@ -340,6 +446,7 @@ export default function Toggle({
     key: "link",
     icon: Hyperlink,
     label: "Link",
+    multiple: true, // Enable multi-select with OR logic
     getOptionIcon: (value, props) => {
       const url = props.option?.data?.url;
       const [domain, key] = value.split("/");
@@ -566,6 +673,7 @@ export default function Toggle({
         key: "referer",
         icon: ReferredVia,
         label: "Referer",
+        multiple: true, // Enable multi-select with OR logic
         getOptionIcon: (value) => (
           <RefererIcon display={value} className="h-4 w-4" />
         ),
@@ -607,22 +715,25 @@ export default function Toggle({
         key: "url",
         icon: LinkBroken,
         label: "Destination URL",
-        getOptionIcon: (_, props) => (
+        multiple: true, // Enable multi-select with OR logic
+        getOptionIcon: (value, props) => (
           <LinkLogo
-            apexDomain={getApexDomain(props.option?.value)}
+            apexDomain={getApexDomain(value)}
             className="size-4 sm:size-4"
           />
         ),
         options:
           urls
-            ?.map(({ url, count }) => {
-              // Normalize URL for display and filtering consistency
-              const normalizedUrl = url
+            ?.map(({ url, count = 0 }) => {
+              // Display without protocol but keep original URL as value for filtering
+              const displayUrl = url
                 .replace(/^https?:\/\//, '')  // Remove protocol
                 .replace(/\/$/, '');  // Remove trailing slash
+              
               return {
-                value: normalizedUrl,
-                label: normalizedUrl,
+                value: url,  // Keep original URL for backend filtering
+                label: displayUrl,  // Display normalized URL
+                count: count,
                 right: nFormatter(count, { full: true }),
               };
             })
@@ -633,6 +744,7 @@ export default function Toggle({
           key,
           icon: Icon,
           label: `UTM ${label}`,
+          multiple: true, // Enable multi-select with OR logic
           getOptionIcon: (value) => (
             <Icon display={value} className="h-4 w-4" />
           ),
@@ -650,6 +762,7 @@ export default function Toggle({
         key: "country",
         icon: FlagWavy,
         label: "Country",
+        multiple: true, // Enable multi-select with OR logic
         getOptionIcon: (value) => (
           <img
             alt={value}
@@ -671,6 +784,7 @@ export default function Toggle({
         key: "city",
         icon: OfficeBuilding,
         label: "City",
+        multiple: true, // Enable multi-select with OR logic
         options:
           cities
             ?.map(({ city, country, count }) => ({
@@ -724,6 +838,7 @@ export default function Toggle({
         key: "device",
         icon: MobilePhone,
         label: "Device",
+        multiple: true, // Enable multi-select with OR logic
         getOptionIcon: (value) => (
           <DeviceIcon
             display={capitalize(value) ?? value}
@@ -744,6 +859,7 @@ export default function Toggle({
         key: "browser",
         icon: Window,
         label: "Browser",
+        multiple: true, // Enable multi-select with OR logic
         getOptionIcon: (value) => (
           <DeviceIcon display={value} tab="browsers" className="h-4 w-4" />
         ),
@@ -760,6 +876,7 @@ export default function Toggle({
         key: "os",
         icon: Cube,
         label: "OS",
+        multiple: true, // Enable multi-select with OR logic
         getOptionIcon: (value) => (
           <DeviceIcon display={value} tab="os" className="h-4 w-4" />
         ),
@@ -860,9 +977,57 @@ export default function Toggle({
                     ? {
                         hotScore: selectedHotScores.concat(value).join(","),
                       }
-                    : {
-                        [key]: value,
-                      },
+                    : key === "utm_source"
+                      ? {
+                          utm_source: selectedUtmSources.concat(value).join(","),
+                        }
+                      : key === "utm_medium"
+                        ? {
+                            utm_medium: selectedUtmMediums.concat(value).join(","),
+                          }
+                        : key === "utm_campaign"
+                          ? {
+                              utm_campaign: selectedUtmCampaigns.concat(value).join(","),
+                            }
+                          : key === "utm_term"
+                            ? {
+                                utm_term: selectedUtmTerms.concat(value).join(","),
+                              }
+                            : key === "utm_content"
+                              ? {
+                                  utm_content: selectedUtmContents.concat(value).join(","),
+                                }
+                              : key === "url"
+                                ? {
+                                    url: selectedUrls.concat(value).join(","),
+                                  }
+                                : key === "country"
+                                  ? {
+                                      country: selectedCountries.concat(value).join(","),
+                                    }
+                                  : key === "city"
+                                    ? {
+                                        city: selectedCities.concat(value).join(","),
+                                      }
+                                    : key === "device"
+                                      ? {
+                                          device: selectedDevices.concat(value).join(","),
+                                        }
+                                      : key === "browser"
+                                        ? {
+                                            browser: selectedBrowsers.concat(value).join(","),
+                                          }
+                                        : key === "os"
+                                          ? {
+                                              os: selectedOs.concat(value).join(","),
+                                            }
+                                          : key === "referer"
+                                            ? {
+                                                referer: selectedReferers.concat(value).join(","),
+                                              }
+                                            : {
+                                                [key]: value,
+                                              },
             del: "page",
             scroll: false,
           });
@@ -878,10 +1043,106 @@ export default function Toggle({
                 },
                 scroll: false,
               }
-            : {
-                del: key === "link" ? ["domain", "key"] : key,
-                scroll: false,
-              },
+            : key === "utm_source" &&
+                !(selectedUtmSources.length === 1 && selectedUtmSources[0] === value)
+              ? {
+                  set: {
+                    utm_source: selectedUtmSources.filter((v) => v !== value).join(","),
+                  },
+                  scroll: false,
+                }
+              : key === "utm_medium" &&
+                  !(selectedUtmMediums.length === 1 && selectedUtmMediums[0] === value)
+                ? {
+                    set: {
+                      utm_medium: selectedUtmMediums.filter((v) => v !== value).join(","),
+                    },
+                    scroll: false,
+                  }
+                : key === "utm_campaign" &&
+                    !(selectedUtmCampaigns.length === 1 && selectedUtmCampaigns[0] === value)
+                  ? {
+                      set: {
+                        utm_campaign: selectedUtmCampaigns.filter((v) => v !== value).join(","),
+                      },
+                      scroll: false,
+                    }
+                  : key === "utm_term" &&
+                      !(selectedUtmTerms.length === 1 && selectedUtmTerms[0] === value)
+                    ? {
+                        set: {
+                          utm_term: selectedUtmTerms.filter((v) => v !== value).join(","),
+                        },
+                        scroll: false,
+                      }
+                    : key === "utm_content" &&
+                        !(selectedUtmContents.length === 1 && selectedUtmContents[0] === value)
+                      ? {
+                          set: {
+                            utm_content: selectedUtmContents.filter((v) => v !== value).join(","),
+                          },
+                          scroll: false,
+                        }
+                      : key === "url" &&
+                          !(selectedUrls.length === 1 && selectedUrls[0] === value)
+                        ? {
+                            set: {
+                              url: selectedUrls.filter((v) => v !== value).join(","),
+                            },
+                            scroll: false,
+                          }
+                        : key === "country" &&
+                            !(selectedCountries.length === 1 && selectedCountries[0] === value)
+                          ? {
+                              set: {
+                                country: selectedCountries.filter((v) => v !== value).join(","),
+                              },
+                              scroll: false,
+                            }
+                          : key === "city" &&
+                              !(selectedCities.length === 1 && selectedCities[0] === value)
+                            ? {
+                                set: {
+                                  city: selectedCities.filter((v) => v !== value).join(","),
+                                },
+                                scroll: false,
+                              }
+                            : key === "device" &&
+                                !(selectedDevices.length === 1 && selectedDevices[0] === value)
+                              ? {
+                                  set: {
+                                    device: selectedDevices.filter((v) => v !== value).join(","),
+                                  },
+                                  scroll: false,
+                                }
+                              : key === "browser" &&
+                                  !(selectedBrowsers.length === 1 && selectedBrowsers[0] === value)
+                                ? {
+                                    set: {
+                                      browser: selectedBrowsers.filter((v) => v !== value).join(","),
+                                    },
+                                    scroll: false,
+                                  }
+                                : key === "os" &&
+                                    !(selectedOs.length === 1 && selectedOs[0] === value)
+                                  ? {
+                                      set: {
+                                        os: selectedOs.filter((v) => v !== value).join(","),
+                                      },
+                                      scroll: false,
+                                    }
+                                  : key === "referer" &&
+                                      !(selectedReferers.length === 1 && selectedReferers[0] === value)
+                                    ? {
+                                        set: {
+                                          referer: selectedReferers.filter((v) => v !== value).join(","),
+                                        },
+                                        scroll: false,
+                                      }
+                                    : {
+                                        del: key === "link" ? ["domain", "key"] : key,
+                                        scroll: false,
+                                      },
         )
       }
       onOpenFilter={(key) =>
@@ -1051,6 +1312,7 @@ export default function Toggle({
                 })}
               >
                 {isMobile ? filterSelect : dateRangePicker}
+                {showConversions && page === "analytics" && <SortSelector />}
                 <WebhookErrorsWarning />
                 {!dashboardProps && (
                   <div className="flex grow justify-end gap-2">
@@ -1153,10 +1415,50 @@ export default function Toggle({
                       },
                       scroll: false,
                     }
-                  : {
-                      del: key === "link" ? ["domain", "key", "url"] : key,
-                      scroll: false,
-                    },
+                  : key === "utm_source" &&
+                      !(selectedUtmSources.length === 1 && selectedUtmSources[0] === value)
+                    ? {
+                        set: {
+                          utm_source: selectedUtmSources.filter((v) => v !== value).join(","),
+                        },
+                        scroll: false,
+                      }
+                    : key === "utm_medium" &&
+                        !(selectedUtmMediums.length === 1 && selectedUtmMediums[0] === value)
+                      ? {
+                          set: {
+                            utm_medium: selectedUtmMediums.filter((v) => v !== value).join(","),
+                          },
+                          scroll: false,
+                        }
+                      : key === "utm_campaign" &&
+                          !(selectedUtmCampaigns.length === 1 && selectedUtmCampaigns[0] === value)
+                        ? {
+                            set: {
+                              utm_campaign: selectedUtmCampaigns.filter((v) => v !== value).join(","),
+                            },
+                            scroll: false,
+                          }
+                        : key === "utm_term" &&
+                            !(selectedUtmTerms.length === 1 && selectedUtmTerms[0] === value)
+                          ? {
+                              set: {
+                                utm_term: selectedUtmTerms.filter((v) => v !== value).join(","),
+                              },
+                              scroll: false,
+                            }
+                          : key === "utm_content" &&
+                              !(selectedUtmContents.length === 1 && selectedUtmContents[0] === value)
+                            ? {
+                                set: {
+                                  utm_content: selectedUtmContents.filter((v) => v !== value).join(","),
+                                },
+                                scroll: false,
+                              }
+                            : {
+                                del: key === "link" ? ["domain", "key", "url"] : key,
+                                scroll: false,
+                              },
             )
           }
           onRemoveAll={() =>
@@ -1177,6 +1479,58 @@ export default function Toggle({
         />
       </div>
     </>
+  );
+}
+
+function SortSelector() {
+  const { selectedTab } = useContext(AnalyticsContext);
+  const { queryParams } = useRouterStuff();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const sortOptions = [
+    { value: "clicks", label: "Clicks", icon: <MousePointerClick className="h-3.5 w-3.5" /> },
+    { value: "leads", label: "Conversions", icon: <TrendingUp className="h-3.5 w-3.5" /> },
+    { value: "sales", label: "Sales", icon: <DollarSign className="h-3.5 w-3.5" /> },
+  ];
+
+  const currentSort = sortOptions.find(s => s.value === selectedTab) || sortOptions[0];
+
+  return (
+    <Popover
+      openPopover={isOpen}
+      setOpenPopover={setIsOpen}
+      content={
+        <div className="w-48 p-2">
+          <div className="text-xs font-medium text-neutral-500 mb-2 px-2">Sort by</div>
+          {sortOptions.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => {
+                queryParams({ set: { event: option.value }, scroll: false });
+                setIsOpen(false);
+              }}
+              className={cn(
+                "w-full flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium transition-all",
+                selectedTab === option.value
+                  ? "bg-blue-600 text-white"
+                  : "text-neutral-700 hover:bg-neutral-100"
+              )}
+            >
+              {option.icon}
+              {option.label}
+            </button>
+          ))}
+        </div>
+      }
+      align="end"
+    >
+      <Button
+        variant="secondary"
+        className="h-9 px-3 text-sm w-fit"
+        icon={<ArrowUpDown className="h-4 w-4" />}
+        text={`Sort: ${currentSort.label}`}
+      />
+    </Popover>
   );
 }
 

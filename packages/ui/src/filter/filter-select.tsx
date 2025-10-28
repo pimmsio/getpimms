@@ -151,6 +151,22 @@ export function FilterSelect({
     }
   }, [selectedFilter?.options]);
 
+  // Custom filter function for multi-select: show all options but sort matches to top
+  const customFilter = useCallback(
+    (value: string, search: string) => {
+      // For multi-select filters, show all items but prioritize matches
+      if (selectedFilter?.multiple) {
+        const normalizedValue = value.toLowerCase();
+        const normalizedSearch = search.toLowerCase();
+        // Return 1 for matches (top priority), 0.5 for non-matches (still shown)
+        return normalizedValue.includes(normalizedSearch) ? 1 : 0.5;
+      }
+      // For single-select, use default cmdk filtering (0 hides the item)
+      return 0;
+    },
+    [selectedFilter],
+  );
+
   return (
     <Popover
       openPopover={isOpen}
@@ -170,11 +186,12 @@ export function FilterSelect({
         >
           <Command
             loop
-            shouldFilter={
-              !selectedFilter || selectedFilter.shouldFilter !== false
+            shouldFilter={!selectedFilter || selectedFilter.shouldFilter !== false}
+            filter={
+              selectedFilter?.multiple ? customFilter : undefined
             }
           >
-            <div className="flex items-center overflow-hidden rounded-t-lg border-b border-neutral-100">
+            <div className="flex items-center overflow-hidden rounded-t-lg border-b border-neutral-200">
               <CommandInput
                 placeholder={`${selectedFilter?.label || "Filter"}...`}
                 value={search}
@@ -205,7 +222,7 @@ export function FilterSelect({
                 }}
               />
               {/* {!selectedFilter && (
-                <kbd className="mr-2 hidden shrink-0 rounded border border-neutral-100 bg-neutral-100 px-2 py-0.5 text-xs font-light text-neutral-500 md:block">
+                <kbd className="mr-2 hidden shrink-0 rounded border border-neutral-200 bg-neutral-100 px-2 py-0.5 text-xs font-light text-neutral-500 md:block">
                   F
                 </kbd>
               )} */}
@@ -226,7 +243,7 @@ export function FilterSelect({
                           onSelect={() => openFilter(filter.key)}
                         />
                         {filter.separatorAfter && (
-                          <Command.Separator className="-mx-1 my-1 border-b border-neutral-100" />
+                          <Command.Separator className="-mx-1 my-1 border-b border-neutral-200" />
                         )}
                       </Fragment>
                     ))

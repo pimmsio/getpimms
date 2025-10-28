@@ -1,16 +1,10 @@
 import { formatDateTooltip } from "@/lib/analytics/format-date-tooltip";
-import { editQueryString } from "@/lib/analytics/utils";
-
-import { groupTimeseriesData } from "@/lib/analytics/utils/group-timeseries-data";
-// import useHotLeads from "@/lib/swr/use-hot-leads";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { InfoTooltip, useRouterStuff } from "@dub/ui";
 import { TimeSeriesChart, XAxis, YAxis } from "@dub/ui/charts";
-import { fetcher, nFormatter } from "@dub/utils";
-import { useContext, useMemo } from "react";
-import useSWR from "swr";
+import { nFormatter } from "@dub/utils";
+import { useMemo } from "react";
 import { AnalyticsLoadingSpinner } from "./analytics-loading-spinner";
-import { AnalyticsContext } from "./analytics-provider";
 import { MixedAreasAndBars } from "./mixed-areas-bars";
 import {
   UnifiedAnalyticsTooltip,
@@ -18,23 +12,17 @@ import {
   createKeyMetrics,
   type TooltipSection,
 } from "./unified-analytics-tooltip";
+import { useTimeseriesData, useAnalyticsState, useAnalyticsWorkspace } from "./hooks";
+import { aggregateMetrics, calculateDerivedMetrics } from "./lib";
 
 export default function MixedAnalyticsChart({
   demo: demoFromProps,
 }: {
   demo?: boolean;
 }) {
-  const {
-    baseApiPath,
-    queryString,
-    start,
-    end,
-    interval,
-    requiresUpgrade,
-    workspace,
-  } = useContext(AnalyticsContext);
+  const { start, end, interval } = useAnalyticsState();
+  const { workspace } = useAnalyticsWorkspace();
 
-  // const { data: hotLeadsData, loading: hotLeadsLoading } = useHotLeads();
   const { searchParams } = useRouterStuff();
   const { slug } = useWorkspace();
   const { createdAt } = workspace || {};
@@ -46,98 +34,8 @@ export default function MixedAnalyticsChart({
     return `/${slug}/conversions?${params.toString()}`;
   }, [slug, searchParams]);
 
-  const { data } = useSWR<
-    {
-      start: Date;
-      clicks: number;
-      leads: number;
-      sales: number;
-      saleAmount: number;
-    }[]
-  >(
-    !demoFromProps &&
-      `${baseApiPath}?${editQueryString(queryString, {
-        groupBy: "timeseries",
-        event: "composite",
-      })}`,
-    fetcher,
-    {
-      shouldRetryOnError: !requiresUpgrade,
-      dedupingInterval: 60000,
-      revalidateOnFocus: false,
-      keepPreviousData: true,
-    },
-  );
-
-  // Fetch hot/cold lead counts
-  // const { data: leadCounts } = useSWR<{
-  //   hotLeadCount: number;
-  //   coldLeadCount: number;
-  //   totalLeadCount: number;
-  // }>(
-  //   !demoFromProps &&
-  //     `${baseApiPath}/leads/counts?${editQueryString(queryString, {})}`,
-  //   fetcher,
-  //   {
-  //     shouldRetryOnError: !requiresUpgrade,
-  //     dedupingInterval: 60000,
-  //     revalidateOnFocus: false,
-  //     keepPreviousData: true,
-  //   },
-  // );
-
-  const chartData = useMemo(() => {
-    if (!data) return null;
-
-    // Create a map to merge data from all three endpoints
-    const dataMap = new Map();
-
-    // Add clicks data
-    data.forEach(({ start, clicks, leads, sales, saleAmount }) => {
-      const dateKey = start.toString();
-      dataMap.set(dateKey, {
-        date: new Date(start),
-        values: {
-          clicks: clicks || 0,
-          leads: leads || 0,
-          sales: sales || 0,
-          saleAmount: (saleAmount ?? 0) / 100,
-        },
-      });
-    });
-
-    // Merge leads data
-    data?.forEach(({ start, leads }) => {
-      const dateKey = start.toString();
-      const existing = dataMap.get(dateKey);
-      if (existing) {
-        existing.values.leads = leads || 0;
-      }
-    });
-
-    // Merge sales data
-    data?.forEach(({ start, sales, saleAmount }) => {
-      const dateKey = start.toString();
-      const existing = dataMap.get(dateKey);
-      if (existing) {
-        existing.values.sales = sales || 0;
-        existing.values.saleAmount = (saleAmount ?? 0) / 100;
-      }
-    });
-
-    const mergedData = Array.from(dataMap.values()).sort(
-      (a, b) => a.date.getTime() - b.date.getTime(),
-    );
-
-    // Apply grouping for weekly/biweekly intervals
-    if (interval === "90d" || interval === "qtd") {
-      return groupTimeseriesData(mergedData, "week");
-    } else if (interval === "6m" || interval === "all") {
-      return groupTimeseriesData(mergedData, "biweekly");
-    }
-
-    return mergedData;
-  }, [data, interval]);
+  // Use the new timeseries hook - handles fetching, formatting, and grouping
+  const { data: chartData, rawData } = useTimeseriesData({ demo: demoFromProps });
 
   // Mixed series: clicks as line, leads and sales as absolute values for bars
   const series = [
@@ -170,65 +68,70 @@ export default function MixedAnalyticsChart({
   ];
 
   const additionalMetrics = useMemo(() => {
-    const clicks = data?.map((d) => d.clicks).reduce((a, b) => a + b, 0) ?? 0;
-    const leads = data?.map((d) => d.leads).reduce((a, b) => a + b, 0) ?? 0;
-    const sales = data?.map((d) => d.sales).reduce((a, b) => a + b, 0) ?? 0;
-    const saleAmountInCents =
-      data?.map((d) => d.saleAmount).reduce((a, b) => a + b, 0) ?? 0;
-    const saleAmount = saleAmountInCents / 100;
+    if (!rawData) {
+      return {
+        clicks: 0,
+        leads: 0,
+        sales: 0,
+        saleAmount: 0,
+        revenuePerClick: 0,
+        clickToLeadRate: 0,
+        leadToSaleRate: 0,
+        avgOrderValue: 0,
+        recentVisitors: 0,
+        showRecentVisitors: false,
+      };
+    }
 
-    const revenuePerClick = clicks > 0 ? saleAmount / clicks : 0;
-    const clickToLeadRate = clicks > 0 ? (leads / clicks) * 100 : 0;
-    const leadToSaleRate = leads > 0 ? (sales / leads) * 100 : 0;
-    const avgOrderValue = sales > 0 ? saleAmount / sales : 0;
+    // Aggregate metrics using utility
+    const aggregated = aggregateMetrics(rawData);
+    const saleAmount = aggregated.saleAmount / 100;
+
+    // Calculate derived metrics using utility
+    const derived = calculateDerivedMetrics({
+      ...aggregated,
+      saleAmount,
+    });
 
     // Calculate recent visitors and determine if we should show the metric
     let recentVisitors = 0;
     let showRecentVisitors = false;
 
-    if (data && data.length > 1) {
+    if (rawData.length > 1) {
       // Check if this is 24h data with hourly granularity
-      const latestDataPoint = data[data.length - 1];
-      const secondLatest = data[data.length - 2];
+      const latestDataPoint = rawData[rawData.length - 1];
+      const secondLatest = rawData[rawData.length - 2];
       const timeDiff =
         new Date(latestDataPoint.start).getTime() -
         new Date(secondLatest.start).getTime();
 
       // Only show recent visitors for hourly data (24h interval)
       if (timeDiff <= 2 * 60 * 60 * 1000) {
-        // 2 hours or less - hourly data
         showRecentVisitors = true;
         const now = new Date();
         const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
 
-        // Sum clicks from data points within the last hour
-        recentVisitors = data
+        recentVisitors = rawData
           .filter((dataPoint) => {
             const pointDate = new Date(dataPoint.start);
             return pointDate >= oneHourAgo;
           })
           .reduce((total, dataPoint) => total + dataPoint.clicks, 0);
       }
-      // For all other intervals (daily, weekly, etc.), don't show the metric at all
     }
 
     return {
-      clicks,
-      leads,
-      sales,
+      ...aggregated,
       saleAmount,
-      revenuePerClick,
-      clickToLeadRate,
-      leadToSaleRate,
-      avgOrderValue,
+      ...derived,
       recentVisitors,
       showRecentVisitors,
     };
-  }, [data]);
+  }, [rawData]);
 
   return (
     <>
-      {data ? (
+      {chartData ? (
         <div className="mx-4 mb-4 mt-4 grid grid-cols-3 gap-1 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto">
           {/* Clicks Card */}
           <div className="bg-brand-primary-light border-brand-primary/10 rounded-lg border px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
@@ -401,7 +304,7 @@ export default function MixedAnalyticsChart({
       <div className="relative flex h-64 w-full items-center justify-center sm:h-80 lg:h-96">
         {chartData ? (
           <TimeSeriesChart
-            key={queryString}
+            key={interval}
             data={chartData}
             series={series}
             tooltipClassName="p-0"

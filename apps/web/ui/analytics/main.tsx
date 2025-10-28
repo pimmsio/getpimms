@@ -66,7 +66,7 @@ export default function Main() {
       <div className="relative">
         <div
           className={cn(
-            "relative overflow-hidden rounded border border-gray-200/50 bg-white",
+            "relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm",
             showPaywall &&
               "pointer-events-none [mask-image:linear-gradient(#0006,#0006_25%,transparent_40%)]",
           )}

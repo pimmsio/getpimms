@@ -20,8 +20,9 @@ import {
 } from "@dub/ui/icons";
 import { cn } from "@dub/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Layers3 } from "lucide-react";
 import { useContext, useState } from "react";
+import LinkGroupBy from "./link-group-by";
 import LinkSort from "./link-sort";
 import { LinksDisplayContext } from "./links-display-provider";
 
@@ -90,6 +91,17 @@ export default function LinkDisplay() {
               </span>
               <div>
                 <LinkSort />
+              </div>
+            </div>
+          )}
+          {!isMegaFolder && (
+            <div className="flex h-16 items-center justify-between gap-2 px-4">
+              <span className="flex items-center gap-2">
+                <Layers3 className="h-4 w-4 text-neutral-800" />
+                Group By
+              </span>
+              <div>
+                <LinkGroupBy />
               </div>
             </div>
           )}

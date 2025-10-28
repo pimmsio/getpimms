@@ -8,8 +8,8 @@ import useUtmValues from "@/lib/swr/use-utm-values";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { TagProps } from "@/lib/types";
 import { TAGS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/tags";
-import { Avatar, BlurImage, Globe, Link4, Tag, User, useRouterStuff } from "@dub/ui";
-import { getPrettyUrl, GOOGLE_FAVICON_URL } from "@dub/utils";
+import { Avatar, BlurImage, Globe, Link4, LinkLogo, Tag, User, useRouterStuff } from "@dub/ui";
+import { getApexDomain, getPrettyUrl, GOOGLE_FAVICON_URL } from "@dub/utils";
 import { useContext, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { LinksDisplayContext } from "./links-display-provider";
@@ -166,9 +166,19 @@ export function useLinkFilters() {
         icon: Link4,
         label: "Destination URL",
         multiple: true,
+        getOptionIcon: (value, props) => (
+          <LinkLogo
+            apexDomain={getApexDomain(value)}
+            className="size-4 sm:size-4"
+          />
+        ),
+        getOptionLabel: (value) => {
+          // Display URL without protocol
+          return value.replace(/^https?:\/\//, '').replace(/\/$/, '');
+        },
         options: urls?.map(({ value, label, count }) => ({
-          value,
-          label: getPrettyUrl(label),
+          value,  // Keep original URL with protocol for backend filtering
+          label: label.replace(/^https?:\/\//, '').replace(/\/$/, ''),  // Normalize display
           right: count,
         })) ?? null,
       },

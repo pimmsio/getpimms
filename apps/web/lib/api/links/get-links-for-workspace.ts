@@ -39,6 +39,7 @@ export async function getLinksForWorkspace({
   start,
   end,
   interval,
+  groupBy,
 }: z.infer<typeof getLinksQuerySchemaExtended> & {
   workspaceId: string;
   folderIds?: string[];
@@ -156,7 +157,11 @@ export async function getLinksForWorkspace({
       ...(utm_campaign && { utm_campaign }),
       ...(utm_term && { utm_term }),
       ...(utm_content && { utm_content }),
-      ...(url && { url: { contains: url } }),
+      ...(url && {
+        url: url.includes(',')
+          ? { in: url.split(',').filter(Boolean) }  // OR logic for multiple URLs
+          : url  // Exact match for single URL
+      }),
       ...(startDate &&
         endDate && {
           lastClicked: {
@@ -188,5 +193,35 @@ export async function getLinksForWorkspace({
     skip: (page - 1) * pageSize,
   });
 
-  return links.map((link) => transformLink(link));
+  const transformedLinks = links.map((link) => transformLink(link));
+
+  // If groupBy is specified, group the links
+  if (groupBy) {
+    const grouped = new Map<string, typeof transformedLinks>();
+    
+    transformedLinks.forEach((link) => {
+      const groupValue = (link[groupBy as keyof typeof link] as string) || "(empty)";
+      const existing = grouped.get(groupValue);
+      if (existing) {
+        existing.push(link);
+      } else {
+        grouped.set(groupValue, [link]);
+      }
+    });
+
+    // Convert to array and sort groups alphabetically by group value
+    return Array.from(grouped.entries())
+      .sort(([a], [b]) => {
+        // Put "(empty)" at the end
+        if (a === "(empty)") return 1;
+        if (b === "(empty)") return -1;
+        return a.localeCompare(b);
+      })
+      .flatMap(([groupValue, groupLinks]) => [
+        { _group: groupValue, _count: groupLinks.length } as any,
+        ...groupLinks,
+      ]);
+  }
+
+  return transformedLinks;
 }
