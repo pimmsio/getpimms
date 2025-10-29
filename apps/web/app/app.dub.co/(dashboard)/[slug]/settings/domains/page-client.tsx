@@ -25,7 +25,6 @@ import {
 } from "@dub/ui";
 import { capitalize, pluralize } from "@dub/utils";
 import { useEffect, useState } from "react";
-import { DefaultDomains } from "./default-domains";
 
 export default function WorkspaceDomainsClient() {
   const {
@@ -40,7 +39,7 @@ export default function WorkspaceDomainsClient() {
 
   const [openPopover, setOpenPopover] = useState(false);
   const { searchParams, queryParams } = useRouterStuff();
-  const { allWorkspaceDomains, loading } = useDomains({
+  const { allWorkspaceDomains, allDomainsForPage, loading } = useDomains({
     opts: { includeLink: "true" },
   });
   const { data: domainsCount } = useDomainsCount();
@@ -159,9 +158,9 @@ export default function WorkspaceDomainsClient() {
 
         <div key={archived} className="animate-fade-in">
           {!loading ? (
-            allWorkspaceDomains.length > 0 ? (
+            allDomainsForPage.length > 0 ? (
               <ul className="grid grid-cols-1 gap-3">
-                {allWorkspaceDomains.map((domain) => (
+                {allDomainsForPage.map((domain: any) => (
                   <li key={domain.slug}>
                     <DomainCard props={domain} />
                   </li>
@@ -215,8 +214,6 @@ export default function WorkspaceDomainsClient() {
           />
         </div>
       </div>
-
-      <DefaultDomains />
     </>
   );
 }

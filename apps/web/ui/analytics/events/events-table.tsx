@@ -697,8 +697,8 @@ export default function EventsTable({
     emptyState: (
       <EmptyState
         icon={Target}
-        title="No conversions recorded"
-        description="Conversions will appear here when your links convert"
+        title="No leads recorded"
+        description="Leads will appear here when your links convert"
       />
     ),
     resourceName: (plural) => `event${plural ? "s" : ""}`,

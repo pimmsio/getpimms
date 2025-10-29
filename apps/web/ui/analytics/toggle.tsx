@@ -1489,7 +1489,7 @@ function SortSelector() {
 
   const sortOptions = [
     { value: "clicks", label: "Clicks", icon: <MousePointerClick className="h-3.5 w-3.5" /> },
-    { value: "leads", label: "Conversions", icon: <TrendingUp className="h-3.5 w-3.5" /> },
+    { value: "leads", label: "Leads", icon: <TrendingUp className="h-3.5 w-3.5" /> },
     { value: "sales", label: "Sales", icon: <DollarSign className="h-3.5 w-3.5" /> },
   ];
 

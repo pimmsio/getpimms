@@ -20,7 +20,7 @@ import { AnalyticsContext } from "./analytics-provider";
 
 const EVENT_LABELS = {
   sales: "Sales",
-  leads: "Conversions",
+  leads: "Leads",
   clicks: "Clicks",
 };
 

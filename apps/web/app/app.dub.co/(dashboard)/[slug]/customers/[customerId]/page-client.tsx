@@ -62,7 +62,7 @@ export function CustomerPageClient() {
 
   return (
     <div className="mb-10 mt-2">
-      <BackLink href={`/${slug}/conversions`}>Conversions</BackLink>
+      <BackLink href={`/${slug}/conversions`}>Leads</BackLink>
       <div className="mt-4 flex items-center gap-3">
         {customer ? (
           <div className="relative">

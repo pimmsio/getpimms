@@ -8,7 +8,7 @@ import AnalyticsClient from "../analytics/client";
 export default function WorkspaceAnalyticsConversions() {
   return (
     <Suspense fallback={<LayoutLoader />}>
-      <PageContent title="Conversions">
+      <PageContent title="Leads">
         <AnalyticsClient eventsPage>
           <EventsProvider>
             <Events />

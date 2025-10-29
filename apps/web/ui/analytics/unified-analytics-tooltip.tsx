@@ -206,40 +206,45 @@ function TooltipSection({ section, isLast }: { section: TooltipSection; isLast: 
     case "metrics":
       return (
         <div className={`px-3 py-2 space-y-1.5 ${borderClass}`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <div className="h-2 w-2 shrink-0 rounded bg-blue-400"></div>
-              <span className="text-neutral-600 text-xs">Clicks</span>
+          {section.data.clicks > 0 && (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <div className="h-2 w-2 shrink-0 rounded bg-blue-400"></div>
+                <span className="text-neutral-600 text-xs">Clicks</span>
+              </div>
+              <span className="font-medium text-neutral-900 tabular-nums text-xs">
+                {section.data.clicks.toLocaleString()}
+              </span>
             </div>
-            <span className="font-medium text-neutral-900 tabular-nums text-xs">
-              {section.data.clicks.toLocaleString()}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <div className="h-2 w-2 shrink-0 rounded bg-yellow-400"></div>
-              <span className="text-neutral-600 text-xs">Leads</span>
+          )}
+          {section.data.leads > 0 && (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <div className="h-2 w-2 shrink-0 rounded bg-yellow-400"></div>
+                <span className="text-neutral-600 text-xs">Leads</span>
+              </div>
+              <span className="font-medium text-neutral-900 tabular-nums text-xs">
+                {section.data.leads.toLocaleString()}
+              </span>
             </div>
-            <span className="font-medium text-neutral-900 tabular-nums text-xs">
-              {section.data.leads.toLocaleString()}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <div className="h-2 w-2 shrink-0 rounded bg-green-400"></div>
-              <span className="text-neutral-600 text-xs">Sales</span>
+          )}
+          {section.data.sales > 0 && (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <div className="h-2 w-2 shrink-0 rounded bg-green-400"></div>
+                <span className="text-neutral-600 text-xs">Sales</span>
+              </div>
+              <span className="font-medium text-neutral-900 tabular-nums text-xs">
+                {section.data.sales.toLocaleString()}
+              </span>
             </div>
-            <span className="font-medium text-neutral-900 tabular-nums text-xs">
-              {section.data.sales.toLocaleString()}
-            </span>
-          </div>
+          )}
         </div>
       );
 
     case "keyMetrics":
       return (
         <div className={`px-3 py-2 space-y-1.5 ${borderClass}`}>
-          <div className="text-xs font-medium text-neutral-600 mb-2">KEY METRICS</div>
           <div className="flex items-center justify-between">
             <span className="text-neutral-600 text-xs">Conversion Rate</span>
             <span className="font-medium text-neutral-900 tabular-nums text-xs">

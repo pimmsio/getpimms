@@ -48,7 +48,7 @@ export default function Feedback() {
                 type="email"
                 placeholder="cheers@pimms.io"
                 autoComplete="email"
-                className="block w-full rounded border border-gray-200/50 text-gray-900 placeholder-gray-400 focus:border-gray-300/50 focus:outline-none focus:ring-0 focus:ring-transparent/50 sm:text-sm px-3 py-2"
+                className="block w-full rounded-full border border-gray-200/50 text-gray-900 placeholder-gray-400 focus:border-gray-300/50 focus:outline-none focus:ring-0 focus:ring-transparent/50 sm:text-sm px-3 py-2"
               />
             </div>
             <div>

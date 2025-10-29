@@ -133,7 +133,7 @@ export default function MixedAnalyticsChart({
     <>
       {chartData ? (
         <div className="mx-4 mb-4 mt-4 grid grid-cols-3 gap-1 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto">
-          {/* Clicks Card */}
+          {/* Clicks Card - Always show */}
           <div className="bg-brand-primary-light border-brand-primary/10 rounded-lg border px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
             <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
               <div className="bg-brand-primary h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2"></div>
@@ -146,32 +146,36 @@ export default function MixedAnalyticsChart({
             </div>
           </div>
 
-          {/* Leads Card */}
-          <div className="bg-data-leads/15 border-data-leads/20 rounded-lg border px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
-              <div className="bg-data-leads h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2"></div>
-              <span>Leads</span>
+          {/* Leads Card - Only show if > 0 */}
+          {additionalMetrics.leads > 0 && (
+            <div className="bg-data-leads/15 border-data-leads/20 rounded-lg border px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
+                <div className="bg-data-leads h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2"></div>
+                <span>Leads</span>
+              </div>
+              <div className="text-sm font-bold text-gray-800 sm:text-xl">
+                {additionalMetrics.leads > 999
+                  ? (additionalMetrics.leads / 1000).toFixed(1) + "k"
+                  : additionalMetrics.leads.toLocaleString()}
+              </div>
             </div>
-            <div className="text-sm font-bold text-gray-800 sm:text-xl">
-              {additionalMetrics.leads > 999
-                ? (additionalMetrics.leads / 1000).toFixed(1) + "k"
-                : additionalMetrics.leads.toLocaleString()}
-            </div>
-          </div>
+          )}
 
-          {/* Sales Card */}
-          <div className="bg-data-sales/15 border-data-sales/20 rounded-lg border px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
-              <div className="bg-data-sales h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2"></div>
-              <span>Ventes</span>
+          {/* Sales Card - Only show if > 0 */}
+          {additionalMetrics.saleAmount > 0 && (
+            <div className="bg-data-sales/15 border-data-sales/20 rounded-lg border px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
+                <div className="bg-data-sales h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2"></div>
+                <span>Ventes</span>
+              </div>
+              <div className="text-sm font-bold text-gray-800 sm:text-xl">
+                €
+                {additionalMetrics.saleAmount > 999
+                  ? (additionalMetrics.saleAmount / 1000).toFixed(1) + "k"
+                  : additionalMetrics.saleAmount.toLocaleString()}
+              </div>
             </div>
-            <div className="text-sm font-bold text-gray-800 sm:text-xl">
-              €
-              {additionalMetrics.saleAmount > 999
-                ? (additionalMetrics.saleAmount / 1000).toFixed(1) + "k"
-                : additionalMetrics.saleAmount.toLocaleString()}
-            </div>
-          </div>
+          )}
 
           {/* Hot Leads - Combined Metric (Warm + Hot only) */}
           {/* {hotLeadsData && (hotLeadsData.warm > 0 || hotLeadsData.hot > 0) && (
@@ -197,7 +201,7 @@ export default function MixedAnalyticsChart({
           )} */}
 
           {/* Only show recent visitors for 24h hourly data */}
-          {additionalMetrics.showRecentVisitors && (
+          {additionalMetrics.showRecentVisitors && additionalMetrics.recentVisitors > 0 && (
             <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
               <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
                 <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-gray-400 sm:h-2 sm:w-2"></div>
@@ -210,45 +214,57 @@ export default function MixedAnalyticsChart({
             </div>
           )}
 
-          <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
-              <span>RPC</span>
-              <InfoTooltip content="Revenue Per Click - Average revenue generated per click on your links" />
+          {/* RPC - Only show if > 0 */}
+          {additionalMetrics.revenuePerClick > 0 && (
+            <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
+                <span>RPC</span>
+                <InfoTooltip content="Revenue Per Click - Average revenue generated per click on your links" />
+              </div>
+              <div className="text-sm font-bold text-gray-800 sm:text-xl">
+                ${(additionalMetrics.revenuePerClick || 0).toFixed(1)}
+              </div>
             </div>
-            <div className="text-sm font-bold text-gray-800 sm:text-xl">
-              ${(additionalMetrics.revenuePerClick || 0).toFixed(1)}
-            </div>
-          </div>
+          )}
 
-          <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
-              <span>CVR</span>
-              <InfoTooltip content="Conversion Rate - Percentage of visitors who become qualified leads" />
+          {/* CVR - Only show if > 0 */}
+          {additionalMetrics.clickToLeadRate > 0 && (
+            <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
+                <span>CVR</span>
+                <InfoTooltip content="Conversion Rate - Percentage of visitors who become qualified leads" />
+              </div>
+              <div className="text-sm font-bold text-gray-800 sm:text-xl">
+                {Math.round(additionalMetrics.clickToLeadRate || 0)}%
+              </div>
             </div>
-            <div className="text-sm font-bold text-gray-800 sm:text-xl">
-              {Math.round(additionalMetrics.clickToLeadRate || 0)}%
-            </div>
-          </div>
+          )}
 
-          <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
-              <span>Close Rate</span>
-              <InfoTooltip content="Close Rate - Percentage of leads that convert to sales" />
+          {/* Close Rate - Only show if > 0 */}
+          {additionalMetrics.leadToSaleRate > 0 && (
+            <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
+                <span>Close Rate</span>
+                <InfoTooltip content="Close Rate - Percentage of leads that convert to sales" />
+              </div>
+              <div className="text-sm font-bold text-gray-800 sm:text-xl">
+                {Math.round(additionalMetrics.leadToSaleRate || 0)}%
+              </div>
             </div>
-            <div className="text-sm font-bold text-gray-800 sm:text-xl">
-              {Math.round(additionalMetrics.leadToSaleRate || 0)}%
-            </div>
-          </div>
+          )}
 
-          <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
-            <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
-              <span>AOV</span>
-              <InfoTooltip content="Average Order Value - Average value of each order generated" />
+          {/* AOV - Only show if > 0 */}
+          {additionalMetrics.avgOrderValue > 0 && (
+            <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
+                <span>AOV</span>
+                <InfoTooltip content="Average Order Value - Average value of each order generated" />
+              </div>
+              <div className="text-sm font-bold text-gray-800 sm:text-xl">
+                {Math.round(additionalMetrics.avgOrderValue || 0)}€
+              </div>
             </div>
-            <div className="text-sm font-bold text-gray-800 sm:text-xl">
-              {Math.round(additionalMetrics.avgOrderValue || 0)}€
-            </div>
-          </div>
+          )}
         </div>
       ) : (
         <div className="mx-4 mb-4 mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto">

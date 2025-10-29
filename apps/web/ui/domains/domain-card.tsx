@@ -36,6 +36,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import { mutate } from "swr";
 import useSWRImmutable from "swr/immutable";
 import { useAddEditDomainModal } from "../modals/add-edit-domain-modal";
 import { useArchiveDomainModal } from "../modals/archive-domain-modal";
@@ -51,6 +52,7 @@ export default function DomainCard({ props }: { props: DomainProps }) {
   const { slug: domain, primary, registeredDomain } = props || {};
 
   const isDubProvisioned = !!registeredDomain;
+  const isDefaultDomain = (props as any).isDefaultDomain || false;
 
   const { id: workspaceId, slug } = useWorkspace();
 
@@ -118,33 +120,43 @@ export default function DomainCard({ props }: { props: DomainProps }) {
           </div>
         )} */}
         <div className="p-4 sm:p-5">
-          <div className="grid grid-cols-[1.5fr_1fr] items-center gap-3 sm:grid-cols-[3fr_1fr_1.5fr] sm:gap-4 md:grid-cols-[2fr_1fr_0.5fr_1.5fr]">
+          <div className={cn(
+            "grid items-center gap-3 sm:gap-4",
+            isDefaultDomain
+              ? "grid-cols-[1.5fr_1fr] sm:grid-cols-[3fr_1fr_1.5fr]" // 3 columns for default domains (no clicks)
+              : "grid-cols-[1.5fr_1fr] sm:grid-cols-[3fr_1fr_1.5fr] md:grid-cols-[2fr_1fr_0.5fr_1.5fr]" // 4 columns for custom domains
+          )}>
             <DomainCardTitleColumn
               domain={domain}
               icon={tab === "active" ? Globe : Archive}
               url={props.link?.url}
               primary={primary}
+              defaultDomain={isDefaultDomain}
             />
 
-            {/* Clicks */}
-            <div className="hidden md:flex">
-              <NumberTooltip value={props.link?.clicks || 0}>
-                <Link
-                  href={`/${slug}/analytics?domain=${domain}&key=_root`}
-                  className="flex items-center space-x-1 whitespace-nowrap rounded border border-neutral-100 bg-neutral-50 px-3 py-1 transition-colors hover:bg-neutral-100"
-                >
-                  <CursorRays className="h-4 w-4 text-neutral-700" />
-                  <p className="text-xs font-medium text-neutral-900">
-                    {nFormatter(props.link?.clicks || 0)}
-                    <span className="ml-1 hidden sm:inline-block">clicks</span>
-                  </p>
-                </Link>
-              </NumberTooltip>
-            </div>
+            {/* Clicks - Hidden for default domains */}
+            {!isDefaultDomain && (
+              <div className="hidden md:flex">
+                <NumberTooltip value={props.link?.clicks || 0}>
+                  <Link
+                    href={`/${slug}/analytics?domain=${domain}&key=_root`}
+                    className="flex items-center space-x-1 whitespace-nowrap rounded border border-neutral-100 bg-neutral-50 px-3 py-1 transition-colors hover:bg-neutral-100"
+                  >
+                    <CursorRays className="h-4 w-4 text-neutral-700" />
+                    <p className="text-xs font-medium text-neutral-900">
+                      {nFormatter(props.link?.clicks || 0)}
+                      <span className="ml-1 hidden sm:inline-block">clicks</span>
+                    </p>
+                  </Link>
+                </NumberTooltip>
+              </div>
+            )}
 
-            {/* Status */}
+            {/* Status - Simplified for default domains */}
             <div className="hidden sm:block">
-              {verificationData ? (
+              {isDefaultDomain ? (
+                <StatusBadge variant="success">Active</StatusBadge>
+              ) : verificationData ? (
                 <StatusBadge
                   variant={
                     verificationData.status === "Valid Configuration"
@@ -174,51 +186,56 @@ export default function DomainCard({ props }: { props: DomainProps }) {
             </div>
 
             <div className="flex justify-end gap-2 sm:gap-3">
-              {!isDubProvisioned && (
-                <Button
-                  icon={
-                    <div className="flex items-center gap-1">
-                      <div className="relative">
-                        <Gear
-                          className={cn(
-                            "h-4 w-4",
-                            showDetails
-                              ? "text-neutral-800"
-                              : "text-neutral-600",
-                          )}
-                        />
-                        {/* Error indicator */}
-                        {verificationData && isInvalid && (
-                          <div className="absolute -right-px -top-px h-[5px] w-[5px] rounded-full bg-red-500">
-                            <div className="h-full w-full animate-pulse rounded-full ring-2 ring-red-500/30" />
+              {!isDefaultDomain && (
+                <>
+                  {!isDubProvisioned && (
+                    <Button
+                      icon={
+                        <div className="flex items-center gap-1">
+                          <div className="relative">
+                            <Gear
+                              className={cn(
+                                "h-4 w-4",
+                                showDetails
+                                  ? "text-neutral-800"
+                                  : "text-neutral-600",
+                              )}
+                            />
+                            {/* Error indicator */}
+                            {verificationData && isInvalid && (
+                              <div className="absolute -right-px -top-px h-[5px] w-[5px] rounded-full bg-red-500">
+                                <div className="h-full w-full animate-pulse rounded-full ring-2 ring-red-500/30" />
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                      <ChevronDown
-                        className={cn(
-                          "hidden h-4 w-4 text-neutral-400 transition-transform sm:block",
-                          showDetails && "rotate-180",
-                        )}
-                      />
-                    </div>
-                  }
-                  variant="secondary"
-                  className={cn(
-                    "h-8 w-auto px-2.5 opacity-100 transition-opacity",
-                    !showDetails &&
-                      !isInvalid &&
-                      "sm:opacity-0 sm:group-hover:opacity-100",
+                          <ChevronDown
+                            className={cn(
+                              "hidden h-4 w-4 text-neutral-400 transition-transform sm:block",
+                              showDetails && "rotate-180",
+                            )}
+                          />
+                        </div>
+                      }
+                      variant="secondary"
+                      className={cn(
+                        "h-8 w-auto px-2.5 opacity-100 transition-opacity",
+                        !showDetails &&
+                          !isInvalid &&
+                          "sm:opacity-0 sm:group-hover:opacity-100",
+                      )}
+                      onClick={() => setShowDetails((s) => !s)}
+                      data-state={showDetails ? "open" : "closed"}
+                    />
                   )}
-                  onClick={() => setShowDetails((s) => !s)}
-                  data-state={showDetails ? "open" : "closed"}
-                />
+                  <Menu
+                    props={props}
+                    linkProps={props.link}
+                    refreshProps={{ isValidating, mutate }}
+                    groupHover={groupHover}
+                    isDefaultDomain={isDefaultDomain}
+                  />
+                </>
               )}
-              <Menu
-                props={props}
-                linkProps={props.link}
-                refreshProps={{ isValidating, mutate }}
-                groupHover={groupHover}
-              />
             </div>
           </div>
           <motion.div
@@ -260,6 +277,7 @@ function Menu({
   linkProps,
   refreshProps,
   groupHover,
+  isDefaultDomain = false,
 }: {
   props: DomainProps;
   linkProps?: LinkProps;
@@ -268,13 +286,14 @@ function Menu({
     mutate: () => void;
   };
   groupHover: boolean;
+  isDefaultDomain?: boolean;
 }) {
   const { primary, archived, slug: domain, registeredDomain } = props;
   const isDubProvisioned = !!registeredDomain;
 
   const { isMobile } = useMediaQuery();
 
-  const { role } = useWorkspace();
+  const { role, id: workspaceId } = useWorkspace();
   const permissionsError = clientAccessCheck({
     action: "domains.write",
     role,
@@ -347,27 +366,31 @@ function Menu({
         initial={false}
         className="flex items-center justify-end divide-x divide-neutral-200 overflow-hidden rounded border border-neutral-100 sm:divide-transparent sm:group-hover:divide-neutral-200"
       >
-        <Button
-          icon={<PenWriting className={cn("h-4 w-4 shrink-0")} />}
-          variant="outline"
-          className="h-8 rounded-none border-0 px-3"
-          onClick={() => setShowAddEditDomainModal(true)}
-        />
-        <Tooltip content="Refresh">
-          <Button
-            icon={
-              <Refresh2
-                className={cn(
-                  "h-4 w-4 shrink-0 -scale-100 transition-colors [animation-duration:0.25s]",
-                  refreshProps.isValidating && "animate-spin text-neutral-500",
-                )}
+        {!isDefaultDomain && (
+          <>
+            <Button
+              icon={<PenWriting className={cn("h-4 w-4 shrink-0")} />}
+              variant="outline"
+              className="h-8 rounded-none border-0 px-3"
+              onClick={() => setShowAddEditDomainModal(true)}
+            />
+            <Tooltip content="Refresh">
+              <Button
+                icon={
+                  <Refresh2
+                    className={cn(
+                      "h-4 w-4 shrink-0 -scale-100 transition-colors [animation-duration:0.25s]",
+                      refreshProps.isValidating && "animate-spin text-neutral-500",
+                    )}
+                  />
+                }
+                variant="outline"
+                className="h-8 rounded-none border-0 px-3 text-neutral-600"
+                onClick={() => refreshProps.mutate()}
               />
-            }
-            variant="outline"
-            className="h-8 rounded-none border-0 px-3 text-neutral-600"
-            onClick={() => refreshProps.mutate()}
-          />
-        </Tooltip>
+            </Tooltip>
+          </>
+        )}
         <Popover
           content={
             <div className="w-full sm:w-48">
@@ -423,66 +446,113 @@ function Menu({
                 <p className="mb-1.5 mt-1 flex items-center gap-2 px-1 text-xs font-medium text-neutral-500">
                   Domain Settings
                 </p>
-                <Button
-                  text="Edit Domain"
-                  variant="outline"
-                  onClick={() => {
-                    setOpenPopover(false);
-                    setShowAddEditDomainModal(true);
-                  }}
-                  icon={<PenWriting className="h-4 w-4" />}
-                  className="h-9 justify-start px-2 font-medium"
-                />
-                {!primary && (
-                  <Button
-                    text="Set as Primary"
-                    variant="outline"
-                    onClick={() => {
-                      setOpenPopover(false);
-                      setShowPrimaryDomainModal(true);
-                    }}
-                    icon={<Flag2 className="h-4 w-4" />}
-                    className="h-9 justify-start px-2 font-medium"
-                  />
-                )}
-                {/* {!isDubProvisioned && (
-                  <Button
-                    text="Transfer"
-                    variant="outline"
-                    onClick={() => {
-                      setOpenPopover(false);
-                      setShowTransferDomainModal(true);
-                    }}
-                    icon={<FolderInput className="h-4 w-4" />}
-                    className="h-9 justify-start px-2 font-medium"
-                    disabledTooltip={
-                      primary && activeDomainsCount > 1
-                        ? "You cannot transfer your workspace's primary domain. Set another domain as primary to transfer this domain."
-                        : undefined
-                    }
-                  />
-                )} */}
-                <Button
-                  text={archived ? "Unarchive" : "Archive"}
-                  variant="outline"
-                  onClick={() => {
-                    setOpenPopover(false);
-                    setShowArchiveDomainModal(true);
-                  }}
-                  icon={<Archive className="h-4 w-4" />}
-                  className="h-9 justify-start px-2 font-medium"
-                />
-                {!isDubProvisioned && (
-                  <Button
-                    text="Delete"
-                    variant="danger-outline"
-                    onClick={() => {
-                      setOpenPopover(false);
-                      setShowDeleteDomainModal(true);
-                    }}
-                    icon={<Delete className="h-4 w-4" />}
-                    className="h-9 justify-start px-2 font-medium"
-                  />
+                {isDefaultDomain ? (
+                  // Simplified menu for default domains
+                  !primary && (
+                    <Button
+                      text="Set as Primary"
+                      variant="outline"
+                      onClick={() => {
+                        setOpenPopover(false);
+                        setShowPrimaryDomainModal(true);
+                      }}
+                      icon={<Flag2 className="h-4 w-4" />}
+                      className="h-9 justify-start px-2 font-medium"
+                    />
+                  )
+                ) : (
+                  // Full menu for custom domains
+                  <>
+                    <Button
+                      text="Edit Domain"
+                      variant="outline"
+                      onClick={() => {
+                        setOpenPopover(false);
+                        setShowAddEditDomainModal(true);
+                      }}
+                      icon={<PenWriting className="h-4 w-4" />}
+                      className="h-9 justify-start px-2 font-medium"
+                    />
+                    {primary ? (
+                      <Button
+                        text="Remove as Primary"
+                        variant="outline"
+                        onClick={async () => {
+                          setOpenPopover(false);
+                          const response = await fetch(
+                            `/api/domains/${domain}?workspaceId=${workspaceId}`,
+                            {
+                              method: "PATCH",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ primary: false }),
+                            },
+                          );
+                          if (response.ok) {
+                            await Promise.all([
+                              mutate(`/api/domains?workspaceId=${workspaceId}`),
+                              mutate(`/api/domains/default?workspaceId=${workspaceId}`),
+                            ]);
+                            toast.success("Default domain is now primary");
+                          } else {
+                            const { error } = await response.json();
+                            toast.error(error.message);
+                          }
+                        }}
+                        icon={<Flag2 className="h-4 w-4" />}
+                        className="h-9 justify-start px-2 font-medium"
+                      />
+                    ) : (
+                      <Button
+                        text="Set as Primary"
+                        variant="outline"
+                        onClick={() => {
+                          setOpenPopover(false);
+                          setShowPrimaryDomainModal(true);
+                        }}
+                        icon={<Flag2 className="h-4 w-4" />}
+                        className="h-9 justify-start px-2 font-medium"
+                      />
+                    )}
+                    {/* {!isDubProvisioned && (
+                      <Button
+                        text="Transfer"
+                        variant="outline"
+                        onClick={() => {
+                          setOpenPopover(false);
+                          setShowTransferDomainModal(true);
+                        }}
+                        icon={<FolderInput className="h-4 w-4" />}
+                        className="h-9 justify-start px-2 font-medium"
+                        disabledTooltip={
+                          primary && activeDomainsCount > 1
+                            ? "You cannot transfer your workspace's primary domain. Set another domain as primary to transfer this domain."
+                            : undefined
+                        }
+                      />
+                    )} */}
+                    <Button
+                      text={archived ? "Unarchive" : "Archive"}
+                      variant="outline"
+                      onClick={() => {
+                        setOpenPopover(false);
+                        setShowArchiveDomainModal(true);
+                      }}
+                      icon={<Archive className="h-4 w-4" />}
+                      className="h-9 justify-start px-2 font-medium"
+                    />
+                    {!isDubProvisioned && (
+                      <Button
+                        text="Delete"
+                        variant="danger-outline"
+                        onClick={() => {
+                          setOpenPopover(false);
+                          setShowDeleteDomainModal(true);
+                        }}
+                        icon={<Delete className="h-4 w-4" />}
+                        className="h-9 justify-start px-2 font-medium"
+                      />
+                    )}
+                  </>
                 )}
               </div>
             </div>

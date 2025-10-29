@@ -154,6 +154,7 @@ export const EmailSignIn = ({ next }: { next?: string }) => {
               value={password}
               placeholder="Password (optional)"
               onChange={(e) => setPassword(e.target.value)}
+              className="rounded-full"
             />
           </div>
         )}

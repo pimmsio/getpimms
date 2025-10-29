@@ -121,7 +121,7 @@ export function WebhookErrorsModal({ onClose }: WebhookErrorsModalProps) {
                   plan.
                 </p>
                 <p className="text-sm">
-                  Conversion tracking is only available on Starter plans and
+                  Lead tracking is only available on Starter plans and
                   above.
                 </p>
                 <Link href={`/${slug}/settings/billing`} className="w-fit">

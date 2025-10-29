@@ -39,7 +39,7 @@ export function ReferralsEmbedActivity({
                 "Total number of unique clicks your link has received",
             },
             {
-              label: "Conversions",
+              label: "Leads",
               value: leads,
               description: "Total number of signups that came from your link",
             },

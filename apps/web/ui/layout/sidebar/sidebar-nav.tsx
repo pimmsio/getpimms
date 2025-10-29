@@ -137,15 +137,8 @@ export function SidebarNav<T extends Record<any, any>>({
         <div className="relative mt-auto flex flex-col justify-end">{bottom}</div>
       )}
       <div className="relative mx-auto flex items-center justify-between gap-1 pb-2 pt-1">
-        <NavWordmark className="h-2.5" isInApp />
+        <NavWordmark className="h-6" isInApp />
       </div>
-      {/* {data.session?.user?.id && (
-        <SatisMeter
-          userId={data.session?.user?.id}
-          email={data.session?.user?.email}
-          name={data.session?.user?.name}
-        />
-      )} */}
     </ClientOnly>
   );
 }

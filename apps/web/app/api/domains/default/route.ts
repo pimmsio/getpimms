@@ -21,18 +21,28 @@ export const GET = withWorkspace(
       },
     });
 
-    let defaultDomains: string[] = [];
+    let defaultDomains: Array<{
+      slug: string;
+      isDefaultDomain: true;
+    }> = [];
 
     if (data) {
-      defaultDomains = Object.keys(data)
+      const enabledDomains = Object.keys(data)
         .filter((key) => data[key])
-        .map(
-          (domain) =>
-            DUB_DOMAINS_ARRAY.find((d) => d.replace(".", "") === domain)!,
-        )
+        .map((domain) => {
+          const slug = DUB_DOMAINS_ARRAY.find(
+            (d) => d.replace(".", "") === domain,
+          )!;
+          return {
+            slug,
+            isDefaultDomain: true as const,
+          };
+        })
         .filter((domain) =>
-          search ? domain?.toLowerCase().includes(search.toLowerCase()) : true,
+          search ? domain.slug?.toLowerCase().includes(search.toLowerCase()) : true,
         );
+
+      defaultDomains = enabledDomains;
     }
 
     return NextResponse.json(defaultDomains);

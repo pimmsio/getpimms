@@ -2,9 +2,9 @@ import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "PIMMS",
-    short_name: "PIMMS",
-    description: "PIMMS | Link sharing tool that turns more clicks into sales",
+    name: "Pimms",
+    short_name: "Pimms",
+    description: "Pimms | Tracking beyond Clicks",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

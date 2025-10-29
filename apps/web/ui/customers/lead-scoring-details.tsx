@@ -130,7 +130,7 @@ export function LeadScoringDetails({ customerActivity, clickHistory, customerId,
         </div>
         <div className="text-center p-3 bg-neutral-50 rounded">
           <div className="text-lg font-bold text-neutral-900">{conversionEvents.length}</div>
-          <div className="text-xs text-neutral-500">{conversionEvents.length === 1 ? "Conversion" : "Conversions"}</div>
+          <div className="text-xs text-neutral-500">{conversionEvents.length === 1 ? "Lead" : "Leads"}</div>
         </div>
         <div className="text-center p-3 bg-neutral-50 rounded">
           <div className="text-lg font-bold text-neutral-900">

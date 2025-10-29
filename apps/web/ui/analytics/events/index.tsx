@@ -44,7 +44,7 @@ function EventsTableContainer() {
       upgradeOverlay={
         <EmptyState
           icon={TargetIcon}
-          title="Real-time Conversions tracking"
+          title="Real-time leads tracking"
           description="Your free plan tracks clicks only. Upgrade to Starter to track conversions in realtime."
         >
           <div className="flex items-center gap-3">

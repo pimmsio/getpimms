@@ -56,6 +56,7 @@ export const PATCH = withWorkspace(
       archived,
       assetLinks,
       appleAppSiteAssociation,
+      primary,
     } = updateDomainBodySchema.parse(await parseRequestBody(req));
 
     if (workspace.plan === "free") {
@@ -126,6 +127,7 @@ export const PATCH = withWorkspace(
         placeholder,
         expiredUrl,
         notFoundUrl,
+        ...(primary !== undefined && { primary }),
         logo: deleteLogo ? null : logoUploaded?.url || oldLogo,
         assetLinks: assetLinks ? JSON.parse(assetLinks) : null,
         appleAppSiteAssociation: appleAppSiteAssociation

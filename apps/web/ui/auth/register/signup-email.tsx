@@ -52,6 +52,7 @@ export const SignUpEmail = () => {
           readOnly={!errors.email && lockEmail}
           {...register("email")}
           error={errors.email?.message}
+          className="rounded-full"
         />
         <Input
           type="password"
@@ -60,6 +61,7 @@ export const SignUpEmail = () => {
           {...register("password")}
           error={errors.password?.message}
           minLength={8}
+          className="rounded-full"
         />
         <CtaButton
           type="submit"

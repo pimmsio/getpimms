@@ -155,7 +155,7 @@ export async function processLink<T extends Record<string, any>>({
   if (!trackConversion && testVariants) {
     return {
       link: payload,
-      error: "Conversion tracking must be enabled to use A/B testing.",
+      error: "Lead tracking must be enabled to use A/B testing.",
       code: "unprocessable_entity",
     };
   }

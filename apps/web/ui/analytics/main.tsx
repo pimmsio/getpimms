@@ -38,7 +38,7 @@ export default function Main() {
           ? [
               {
                 id: "leads",
-                label: "Conversions",
+                label: "Leads",
                 colorClassName: "text-yellow",
                 conversions: true,
               },

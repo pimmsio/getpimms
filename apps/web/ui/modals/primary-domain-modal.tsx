@@ -33,7 +33,11 @@ function PrimaryDomainModal({
       },
     );
     if (response.ok) {
-      await mutate(`/api/domains?workspaceId=${workspaceId}`);
+      // Mutate both custom domains and default domains
+      await Promise.all([
+        mutate(`/api/domains?workspaceId=${workspaceId}`),
+        mutate(`/api/domains/default?workspaceId=${workspaceId}`),
+      ]);
       setLoading(false);
       setShowPrimaryDomainModal(false);
     } else {

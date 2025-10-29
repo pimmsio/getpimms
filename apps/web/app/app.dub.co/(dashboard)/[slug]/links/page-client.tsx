@@ -175,7 +175,7 @@ function WorkspaceLinks() {
                   <SearchBoxPersisted
                     loading={isValidating}
                     inputClassName="h-11"
-                    placeholder="Search links by name, URL, or key..."
+                    placeholder="Search links..."
                   />
                 </div>
                 <div className="grow basis-0 md:grow-0">

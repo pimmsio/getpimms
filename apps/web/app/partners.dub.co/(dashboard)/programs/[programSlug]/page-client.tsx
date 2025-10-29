@@ -177,7 +177,7 @@ export default function ProgramPageClient() {
             <PayoutsCard programId={program?.id} />
             <NumberFlowGroup>
               <StatCard title="Clicks" event="clicks" />
-              <StatCard title="Conversions" event="leads" />
+              <StatCard title="Leads" event="leads" />
               <StatCard title="Sales" event="sales" />
             </NumberFlowGroup>
           </div>

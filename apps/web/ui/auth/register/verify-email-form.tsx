@@ -69,7 +69,7 @@ export const VerifyEmailForm = () => {
                 setCode(code);
               }}
               autoFocus={!isMobile}
-              containerClassName="group flex items-center justify-center"
+              containerClassName="group flex items-center justify-center rounded-full"
               render={({ slots }) => (
                 <div className="flex items-center">
                   {slots.map(({ char, isActive, hasFakeCaret }, idx) => (

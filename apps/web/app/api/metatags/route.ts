@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         ...metatags,
-        poweredBy: "PIMMS | Link sharing tool that turns more clicks into sales",
+        poweredBy: "Pimms | Tracking beyond Clicks",
       },
       {
         headers: CORS_HEADERS,

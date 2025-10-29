@@ -12,6 +12,7 @@ import {
   Icon,
   LoadingSpinner,
   PaginationControls,
+  Popover,
   Tag,
   TooltipContent,
   Trash,
@@ -19,14 +20,14 @@ import {
   usePagination,
 } from "@dub/ui";
 import { cn } from "@dub/utils";
-import { memo, ReactNode, useContext, useMemo } from "react";
+import { memo, ReactNode, useContext, useMemo, useState } from "react";
 import { useArchiveLinkModal } from "../modals/archive-link-modal";
 import { useDeleteLinkModal } from "../modals/delete-link-modal";
 import { useLinkBuilder } from "../modals/link-builder";
 import { useLinkConversionTrackingModal } from "../modals/link-conversion-tracking-modal";
 import { useMoveLinkToFolderModal } from "../modals/move-link-to-folder-modal";
 import { useTagLinkModal } from "../modals/tag-link-modal";
-import { X } from "../shared/icons";
+import { ThreeDots, X } from "../shared/icons";
 import ArchivedLinksHint from "./archived-links-hint";
 import { useLinkSelection } from "./link-selection-provider";
 import { LinksListContext, ResponseLink } from "./links-container";
@@ -114,7 +115,7 @@ export const LinksToolbar = memo(
     const bulkActions: BulkAction[] = useMemo(
       () => [
         {
-          label: "Tags",
+          label: "Edit tags",
           icon: Tag,
           action: () => setShowTagLinkModal(true),
           keyboardShortcut: "t",
@@ -122,7 +123,7 @@ export const LinksToolbar = memo(
         ...(flags?.linkFolders
           ? [
               {
-                label: "Folder",
+                label: "Move to folder",
                 icon: Folder,
                 action: () => setShowMoveLinkToFolderModal(true),
                 disabledTooltip:
@@ -138,7 +139,11 @@ export const LinksToolbar = memo(
             ]
           : []),
         {
-          label: "Conversion",
+          label:
+            selectedLinks.length &&
+            selectedLinks.every(({ trackConversion }) => trackConversion)
+              ? "Disable tracking"
+              : "Enable tracking",
           icon: CircleDollar,
           action: () => setShowLinkConversionTrackingModal(true),
           // disabledTooltip: conversionsEnabled ? undefined : (
@@ -155,8 +160,8 @@ export const LinksToolbar = memo(
           label:
             selectedLinks.length &&
             selectedLinks.every(({ archived }) => archived)
-              ? "Unarchive"
-              : "Archive",
+              ? "Unarchive links"
+              : "Archive links",
           icon: BoxArchive,
           action: () => setShowArchiveLinkModal(true),
           keyboardShortcut: "a",
@@ -173,6 +178,19 @@ export const LinksToolbar = memo(
       ],
       [plan, selectedLinks],
     );
+
+    // Split actions for mobile display
+    const tagsAction = useMemo(
+      () => bulkActions.find((action) => action.label === "Edit tags"),
+      [bulkActions],
+    );
+
+    const dropdownActions = useMemo(
+      () => bulkActions.filter((action) => action.label !== "Edit tags"),
+      [bulkActions],
+    );
+
+    const [openMorePopover, setOpenMorePopover] = useState(false);
 
     useKeyboardShortcut(
       bulkActions
@@ -299,7 +317,7 @@ export const LinksToolbar = memo(
                         <strong className="font-semibold">
                           {selectedLinkIds.length}
                         </strong>{" "}
-                        selected
+                        checked
                       </span>
                       <span className="text-neutral-300">•</span>
                       <button
@@ -315,8 +333,96 @@ export const LinksToolbar = memo(
                       >
                         {selectedLinkIds.length === links.length
                           ? "Clear all"
-                          : "Select all"}
+                          : "Check all"}
                       </button>
+                    </div>
+
+                    {/* Mobile screen controls */}
+                    <div
+                      className={cn(
+                        "flex md:hidden items-center gap-2 transition-[transform,opacity] duration-150",
+                        selectedLinkIds.length > 0
+                          ? "translate-y-0 opacity-100"
+                          : "pointer-events-none translate-y-1/2 opacity-0",
+                      )}
+                    >
+                      {/* Tags button */}
+                      {tagsAction && (
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          className="h-8 w-8 p-0 shrink-0"
+                          icon={<tagsAction.icon className="size-4" />}
+                          onClick={tagsAction.action}
+                          disabledTooltip={
+                            tagsAction.disabledTooltip ||
+                            (!hasAllFolderPermissions
+                              ? "You don't have permission to perform this action."
+                              : undefined)
+                          }
+                        />
+                      )}
+                      
+                      {/* Actions dropdown menu */}
+                      {dropdownActions.length > 0 && (
+                        <Popover
+                          content={
+                            <div className="w-56 p-1.5">
+                              <div className="grid gap-0.5">
+                                {dropdownActions.map(
+                                  ({
+                                    label,
+                                    icon: Icon,
+                                    action,
+                                    disabledTooltip,
+                                  },
+                                  idx,
+                                ) => (
+                                  <button
+                                    key={idx}
+                                    type="button"
+                                    onClick={() => {
+                                      if (!disabledTooltip && hasAllFolderPermissions) {
+                                        action();
+                                        setOpenMorePopover(false);
+                                      }
+                                    }}
+                                    disabled={!!disabledTooltip || !hasAllFolderPermissions}
+                                    className={cn(
+                                      "flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors",
+                                      disabledTooltip || !hasAllFolderPermissions
+                                        ? "cursor-not-allowed text-neutral-400 bg-neutral-50/50"
+                                        : "text-neutral-900 hover:bg-neutral-100 active:bg-neutral-200",
+                                    )}
+                                  >
+                                    <div className={cn(
+                                      "flex h-8 w-8 items-center justify-center rounded-md",
+                                      disabledTooltip || !hasAllFolderPermissions
+                                        ? "bg-neutral-100"
+                                        : "bg-neutral-100 group-hover:bg-neutral-200",
+                                    )}>
+                                      <Icon className="size-4" />
+                                    </div>
+                                    <span className="flex-1">{label}</span>
+                                  </button>
+                                ),
+                              )}
+                              </div>
+                            </div>
+                          }
+                          openPopover={openMorePopover}
+                          setOpenPopover={setOpenMorePopover}
+                          align="end"
+                        >
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            className="h-8 px-3 gap-1.5 shrink-0 font-medium w-fit"
+                            icon={<ThreeDots className="size-4" />}
+                            onClick={() => setOpenMorePopover(!openMorePopover)}
+                          />
+                        </Popover>
+                      )}
                     </div>
 
                     {/* Large screen controls */}

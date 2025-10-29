@@ -52,7 +52,7 @@ import { LinksDisplayContext } from "./links-display-provider";
 import { TestsBadge } from "./tests-badge";
 
 const quickViewSettings = [
-  // { label: "Conversion Tracking", icon: TargetIcon, key: "trackConversion" },
+  // { label: "Lead Tracking", icon: TargetIcon, key: "trackConversion" },
   // { label: "Custom Link Preview", icon: Cards, key: "proxy" },
   // { label: "Link Cloaking", icon: Incognito, key: "rewrite" },
   // { label: "Password Protection", icon: InputPassword, key: "password" },

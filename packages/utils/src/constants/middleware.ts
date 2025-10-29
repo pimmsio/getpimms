@@ -14,7 +14,7 @@ export const DEFAULT_REDIRECTS = {
 };
 
 export const DUB_HEADERS = {
-  "x-powered-by": "PIMMS | Link sharing tool that turns more clicks into sales",
+  "x-powered-by": "Pimms | Tracking beyond Clicks",
 };
 
 export const REDIRECTION_QUERY_PARAM = "redir_url";

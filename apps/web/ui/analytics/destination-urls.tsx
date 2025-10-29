@@ -89,7 +89,7 @@ export default function DestinationUrls() {
                             set: { url: d.url },
                             getNewPath: true,
                           }) as string}
-                          className="relative flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-neutral-50 transition-all group border border-transparent hover:border-neutral-200 overflow-hidden"
+                          className="relative flex items-center gap-3 rounded-lg px-3 py-1.5 hover:bg-neutral-50 transition-all group border border-transparent hover:border-neutral-200 overflow-hidden"
                         >
                           {/* Progress bar background - always visible */}
                           <div 

@@ -45,7 +45,7 @@ export default function TopLinks() {
                           )}
                           <div className="flex gap-3 text-xs pt-2 border-t border-neutral-200">
                             <span className="text-neutral-500">Clicks: <strong>{d.clicks}</strong></span>
-                            {d.leads > 0 && <span className="text-neutral-500">Conversions: <strong>{d.leads}</strong></span>}
+                            {d.leads > 0 && <span className="text-neutral-500">Leads: <strong>{d.leads}</strong></span>}
                             {d.sales > 0 && <span className="text-neutral-500">Sales: <strong>{d.sales}</strong></span>}
                           </div>
                         </div>
@@ -56,7 +56,7 @@ export default function TopLinks() {
                           set: { domain: d.domain, key: d.key || "_root" },
                           getNewPath: true,
                         }) as string}
-                        className="relative flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-neutral-50 transition-all group border border-transparent hover:border-neutral-200 overflow-hidden"
+                        className="relative flex items-center gap-3 rounded-lg px-3 py-1.5 hover:bg-neutral-50 transition-all group border border-transparent hover:border-neutral-200 overflow-hidden"
                       >
                         {/* Progress bar background - always visible */}
                         <div 

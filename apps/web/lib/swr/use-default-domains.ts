@@ -6,7 +6,12 @@ import useWorkspace from "./use-workspace";
 export default function useDefaultDomains(opts: { search?: string } = {}) {
   const { id: workspaceId, flags } = useWorkspace();
 
-  const { data, error, mutate } = useSWR<string[]>(
+  const { data, error, mutate } = useSWR<
+    Array<{
+      slug: string;
+      isDefaultDomain: true;
+    }>
+  >(
     workspaceId &&
       `/api/domains/default?${new URLSearchParams({
         workspaceId,

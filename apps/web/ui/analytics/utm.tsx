@@ -74,14 +74,14 @@ export default function UTM({ hasData }: { hasData: boolean }) {
       tabs={[
         { 
           id: "utms", 
-          label: "UTM Campaign Performance", 
+          label: "UTM Campaign", 
           icon: TrendingUp
         },
       ]}
       selectedTabId="utms"
       onSelectTab={() => {}}
-      expandLimit={10}
-      hasMore={(utmCombinations?.length ?? 0) > 10}
+      expandLimit={5}
+      hasMore={(utmCombinations?.length ?? 0) > 5}
       className="h-auto"
       headerActions={
         <ToggleGroup
@@ -104,7 +104,7 @@ export default function UTM({ hasData }: { hasData: boolean }) {
           ) : viewMode === "combinations" ? (
             <div className="flex flex-col px-4 py-3">
               <div className="space-y-2.5">
-                {utmCombinations?.slice(0, isModal ? undefined : (limit || 10)).map((combo: any, idx: number) => (
+                {utmCombinations?.slice(0, isModal ? undefined : (limit || 5)).map((combo: any, idx: number) => (
                   <UTMCombinationItem
                     key={idx}
                     combo={combo}
@@ -114,7 +114,7 @@ export default function UTM({ hasData }: { hasData: boolean }) {
                 ))}
               </div>
               
-              {!isModal && (utmCombinations?.length ?? 0) > (limit || 10) && (
+              {!isModal && (utmCombinations?.length ?? 0) > (limit || 5) && (
                 <button
                   onClick={() => setShowModal(true)}
                   className="mt-4 w-full rounded-lg border border-brand-primary-200 bg-brand-primary-50 py-2.5 text-sm text-brand-primary-700 hover:bg-brand-primary-100 hover:border-brand-primary-300 font-semibold transition-all shadow-sm"
@@ -229,10 +229,6 @@ function UTMCombinationItem({ combo, idx, selectedTab }: { combo: any; idx: numb
   const utmEntries = Object.entries(combo.params);
   const gradientColors = ['from-neutral-300 to-neutral-400', 'from-neutral-300 to-neutral-400', 'from-neutral-300 to-neutral-400'];
   const isTopThree = idx < 3;
-  
-  // Calculate conversion quality
-  const conversionRate = combo.clicks > 0 && combo.leads > 0 ? (combo.leads / combo.clicks) * 100 : 0;
-  const isHighConverter = conversionRate > 5; // 5%+ is considered good
 
   return (
     <div 
@@ -242,13 +238,6 @@ function UTMCombinationItem({ combo, idx, selectedTab }: { combo: any; idx: numb
           : 'border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm'
       }`}
     >
-      {/* High converter badge */}
-      {isHighConverter && (
-        <div className="absolute -top-2 -left-2 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 px-2.5 py-0.5 text-xs font-bold text-white shadow-lg animate-pulse">
-          ⭐ High CVR
-        </div>
-      )}
-      
       <div className="flex items-start gap-3">
         {/* Ranking badge for top 3 */}
         {isTopThree && (

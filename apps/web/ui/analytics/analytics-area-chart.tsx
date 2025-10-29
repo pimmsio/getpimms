@@ -33,7 +33,7 @@ const DEMO_DATA = [
 
 const RESOURCE_LABELS = {
   clicks: "Clicks",
-  leads: "Conversions",
+  leads: "Leads",
   sales: "Sales",
   saleAmount: "Revenue",
 };
@@ -224,7 +224,7 @@ export default function AnalyticsAreaChart({
             <EmptyState
               icon={resource === "sales" ? Coins : Target}
               title={`No ${resource === "sales" ? "sales" : "conversions"} recorded`}
-              description={`${resource === "sales" ? "Sales" : "Conversions"} will appear here when your links convert to ${resource}. To get started, install an integration below or follow a guide.`}
+              description={`${resource === "sales" ? "Sales" : "Leads"} will appear here when your links convert to ${resource}. To get started, install an integration below or follow a guide.`}
             />
           </div>
         )}

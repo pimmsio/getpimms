@@ -59,7 +59,7 @@ export function UtmTemplateSelect({
         }}
         options={isLoading ? undefined : options}
         icon={<DiamondTurnRight className="size-4 text-neutral-500" />}
-        searchPlaceholder="Search templates..."
+        searchPlaceholder="Search or add a template..."
         emptyState={
           <div className="p-2 text-center">
             <p className="text-sm text-neutral-500">No templates found</p>

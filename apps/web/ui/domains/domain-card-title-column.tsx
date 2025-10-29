@@ -53,6 +53,11 @@ export function DomainCardTitleColumn({
               Primary
             </span>
           ) : null}
+          {defaultDomain ? (
+            <span className="xs:px-3 xs:py-1 flex items-center gap-1 rounded-full bg-purple-400/[.15] px-1.5 py-0.5 text-xs font-medium text-purple-600">
+              pim.ms domain
+            </span>
+          ) : null}
         </div>
         {(!defaultDomain || description) && (
           <div className="mt-1 flex items-center gap-1 text-xs">

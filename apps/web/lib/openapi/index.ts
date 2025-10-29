@@ -23,12 +23,12 @@ import { workspacesPaths } from "./workspaces";
 export const document = createDocument({
   openapi: "3.0.3",
   info: {
-    title: "PIMMS API",
+    title: "Pimms API",
     description:
-      "PIMMS | Turn more clicks into sales",
+      "Pimms | Tracking beyond Clicks",
     version: "0.0.1",
     contact: {
-      name: "PIMMS Support",
+      name: "Pimms Support",
       email: "alexandre@pimms.io",
       url: "https://pimms.io/api",
     },

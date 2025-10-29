@@ -160,7 +160,9 @@ export const createDomainBodySchema = z.object({
     ),
 });
 
-export const updateDomainBodySchema = createDomainBodySchema.partial();
+export const updateDomainBodySchema = createDomainBodySchema.partial().extend({
+  primary: z.boolean().optional(),
+});
 
 export const transferDomainBodySchema = z.object({
   newWorkspaceId: z

@@ -57,7 +57,9 @@ export default function useDomains({
   const activeDefaultDomains = useMemo(
     () =>
       (workspaceDefaultDomains &&
-        DUB_DOMAINS.filter((d) => workspaceDefaultDomains?.includes(d.slug))) ||
+        DUB_DOMAINS.filter((d) => 
+          workspaceDefaultDomains?.some((wd: any) => wd.slug === d.slug)
+        )) ||
       DUB_DOMAINS,
     [workspaceDefaultDomains],
   );
@@ -81,15 +83,60 @@ export default function useDomains({
     [activeWorkspaceDomains, activeDefaultDomains, workspaceId],
   );
 
-  const primaryDomain = useMemo(() => {
-    if (activeWorkspaceDomains && activeWorkspaceDomains.length > 0) {
-      return (
-        activeWorkspaceDomains.find(({ primary }) => primary)?.slug ||
-        activeWorkspaceDomains[0].slug
-      );
+  // Merge workspace domains with default domains for the domains page
+  const allDomainsForPage = useMemo(() => {
+    // Check if viewing archived domains (allWorkspaceDomains would be filtered by the API based on archived query param)
+    const isViewingArchived = allWorkspaceDomains.some((d) => d.archived);
+    
+    // Don't show default domains on archived tab
+    if (!workspaceDefaultDomains || workspaceId === prefixWorkspaceId(DUB_WORKSPACE_ID) || isViewingArchived) {
+      return allWorkspaceDomains;
     }
+
+    // Check if any custom domain is primary
+    const hasCustomPrimary = allWorkspaceDomains.some((d) => d.primary);
+
+    // Get default domains with their metadata
+    // First enabled default domain is primary if no custom domain is primary
+    const defaultDomainsForPage = workspaceDefaultDomains.map((d: any, index: number) => ({
+      slug: d.slug,
+      primary: !hasCustomPrimary && index === 0, // First enabled default domain is primary
+      isDefaultDomain: true,
+      verified: true,
+      archived: false,
+    }));
+
+    // Sort: primary first, then workspace domains, then default domains
+    const sortedDomains = [
+      ...allWorkspaceDomains,
+      ...defaultDomainsForPage,
+    ].sort((a: any, b: any) => {
+      if (a.primary && !b.primary) return -1;
+      if (!a.primary && b.primary) return 1;
+      // Workspace domains before default domains
+      if (!a.isDefaultDomain && b.isDefaultDomain) return -1;
+      if (a.isDefaultDomain && !b.isDefaultDomain) return 1;
+      return 0;
+    });
+
+    return sortedDomains;
+  }, [allWorkspaceDomains, workspaceDefaultDomains, workspaceId]);
+
+  const primaryDomain = useMemo(() => {
+    // Check if a workspace domain is primary
+    const primaryWorkspaceDomain = activeWorkspaceDomains?.find(({ primary }) => primary);
+    if (primaryWorkspaceDomain) {
+      return primaryWorkspaceDomain.slug;
+    }
+    
+    // If no custom domain is primary, use the first enabled default domain
+    if (workspaceDefaultDomains && workspaceDefaultDomains.length > 0) {
+      return workspaceDefaultDomains[0].slug;
+    }
+    
+    // Fallback to SHORT_DOMAIN (pim.ms)
     return SHORT_DOMAIN;
-  }, [activeDefaultDomains, activeWorkspaceDomains]);
+  }, [activeDefaultDomains, activeWorkspaceDomains, workspaceDefaultDomains]);
 
   return {
     activeWorkspaceDomains, // active workspace domains
@@ -97,6 +144,7 @@ export default function useDomains({
     allWorkspaceDomains, // all workspace domains (active + archived)
     allActiveDomains, // all active domains (active workspace domains + active default Dub domains)
     allDomains, // all domains (all workspace domains + all default Dub domains)
+    allDomainsForPage, // merged domains for the domains page (workspace + default)
     primaryDomain,
     loading: (!data && !error) || loadingDefaultDomains,
     mutate,

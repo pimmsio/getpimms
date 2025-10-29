@@ -13,7 +13,7 @@ export function AnalyticsFunnelChart({ demo }: { demo?: boolean }) {
   //     },
   //     {
   //       id: "leads",
-  //       label: "Conversions",
+  //       label: "Leads",
   //       value: demo ? 100 : totalEvents?.leads ?? 0,
   //       colorClassName: "text-[#08272E]",
   //     },
