@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent overscroll/elastic scrolling on macOS */
+html {
+  overscroll-behavior-y: none;
+}
+
 /* Polices principales */
 .font-inter {
   font-family: var(--font-inter), system-ui, sans-serif;

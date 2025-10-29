@@ -28,8 +28,6 @@ export function BulkUTMParametersSection({
   // Selected templates for bulk (array of template IDs)
   const [selectedTemplateIds, setSelectedTemplateIds] = useState<string[]>([]);
 
-  console.log("[BulkUTMParametersSection] Render - selectedTemplateIds:", selectedTemplateIds);
-
   // Fetch templates
   const { data: templates } = useSWR<UtmTemplateWithUserProps[]>(
     workspaceId ? `/api/utm?workspaceId=${workspaceId}` : null,
@@ -45,13 +43,11 @@ export function BulkUTMParametersSection({
 
   // Notify parent of template changes and their colors
   useEffect(() => {
-    console.log("[BulkUTMParametersSection] useEffect triggered - selectedTemplates:", selectedTemplates?.length);
     // Only notify parent when there are actual selections or when selection changes
     if (onTemplatesChange) {
       const colors = selectedTemplates?.map(
         (t) => (t as any).color || "blue",
       ) || [];
-      console.log("[BulkUTMParametersSection] Calling onTemplatesChange with colors:", colors);
       onTemplatesChange(selectedTemplateIds, colors);
     }
   }, [selectedTemplateIds]); // Only depend on selectedTemplateIds, not the callback or computed array

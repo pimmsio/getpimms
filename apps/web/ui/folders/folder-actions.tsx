@@ -68,9 +68,11 @@ export const FolderActions = ({
       setOpenPopover(false);
       switch (e.key) {
         case "a":
-          if (!unsortedLinks) {
-            router.push(`/${workspaceSlug}/analytics?folderId=${folder.id}`);
-          }
+          router.push(
+            unsortedLinks
+              ? `/${workspaceSlug}/analytics`
+              : `/${workspaceSlug}/analytics?folderId=${folder.id}`,
+          );
           break;
         case "m":
           if (!unsortedLinks) {
@@ -113,14 +115,16 @@ export const FolderActions = ({
       <Popover
         content={
           <div className="grid w-full divide-y divide-neutral-100 sm:w-52">
-            <div className="grid gap-px p-2">
+            {/* <div className="grid gap-px p-2">
               <Button
                 text="Analytics"
                 variant="outline"
                 onClick={() => {
                   setOpenPopover(false);
                   router.push(
-                    `/${workspaceSlug}/analytics?folderId=${folder.id}`,
+                    unsortedLinks
+                      ? `/${workspaceSlug}/analytics`
+                      : `/${workspaceSlug}/analytics?folderId=${folder.id}`,
                   );
                 }}
                 icon={<Chart className="h-4 w-4" />}
@@ -141,7 +145,7 @@ export const FolderActions = ({
                   className="h-9 px-2 font-medium"
                 />
               )}
-            </div>
+            </div> */}
 
             <div className="grid gap-px p-2">
               {!unsortedLinks && (
@@ -197,7 +201,7 @@ export const FolderActions = ({
                     }
                   />
 
-                  <Button
+                  {/* <Button
                     text="Delete"
                     variant="danger-outline"
                     onClick={() => {
@@ -213,7 +217,7 @@ export const FolderActions = ({
                         ? "Only folder owners can delete a folder."
                         : undefined
                     }
-                  />
+                  /> */}
                 </>
               )}
             </div>

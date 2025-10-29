@@ -455,9 +455,6 @@ export default function ChannelPieChart({
                                           className="pointer-events-none"
                                           clipPath={`url(#${clipId})`}
                                           onError={(e) => {
-                                            console.log(
-                                              `Failed to load provider icon for ${referrerGroup}, trying fallback`,
-                                            );
                                             const target =
                                               e.target as SVGImageElement;
                                             const domain =

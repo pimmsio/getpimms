@@ -101,7 +101,7 @@ function WorkspaceLinks() {
                       onRemove={onRemove}
                       onSearchChange={setSearch}
                       onSelectedFilterChange={setSelectedFilter}
-                      className="w-full h-11"
+                      className="w-full h-10"
                       emptyState={{
                         tagIds: (
                           <div className="flex flex-col items-center gap-2 p-2 text-center text-sm">
@@ -174,7 +174,7 @@ function WorkspaceLinks() {
                 <div className="w-full md:w-64 lg:w-72">
                   <SearchBoxPersisted
                     loading={isValidating}
-                    inputClassName="h-11"
+                    inputClassName="h-10"
                     placeholder="Search links..."
                   />
                 </div>

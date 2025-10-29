@@ -31,28 +31,34 @@ export function useAnalyticsFilterOption(
     ? groupByOrParams 
     : groupByOrParams.groupBy;
 
+  const endpoint = `${baseApiPath}?${editQueryString(queryString, {
+    ...(typeof groupByOrParams === "string"
+      ? { groupBy: groupByOrParams }
+      : groupByOrParams),
+    event: "composite", // Always fetch all metrics for mixed bars
+  })}`;
+
+  // Check cache for this exact endpoint
+  const cachedEntry = cache.get(endpoint);
+  
+  // Extract data and check cache freshness
+  // The cache returns SWR state with our added _pimms_cached_at timestamp
+  const cachedData = cachedEntry;
+  const cacheTimestamp = (cachedEntry as any)?._pimms_cached_at || 0;
+  const cacheAge = cacheTimestamp ? Date.now() - cacheTimestamp : Infinity;
+  const isCacheFresh = cacheAge < 60000; // Fresh if < 60 seconds old
+  const hasCachedData = !!cachedData;
+
   const enabled =
-    !options?.cacheOnly ||
-    [...cache.keys()].includes(
-      `${baseApiPath}?${editQueryString(queryString, {
-        ...(typeof groupByOrParams === "string"
-          ? { groupBy: groupByOrParams }
-          : groupByOrParams),
-      })}`,
-    );
+    !options?.cacheOnly || hasCachedData;
 
   const { data, isLoading } = useSWR<Record<string, any>[]>(
-    enabled
-      ? `${baseApiPath}?${editQueryString(queryString, {
-          ...(typeof groupByOrParams === "string"
-            ? { groupBy: groupByOrParams }
-            : groupByOrParams),
-          event: "composite", // Always fetch all metrics for mixed bars
-        })}`
-      : null,
+    enabled ? endpoint : null,
     fetcher,
     {
       shouldRetryOnError: !requiresUpgrade,
+      // Only revalidate if cache is stale or doesn't exist
+      revalidateIfStale: !isCacheFresh,
       dedupingInterval: 60000,
       revalidateOnFocus: false,
       keepPreviousData: true,
@@ -98,28 +104,34 @@ export function useAnalyticsFilterOptionWithoutSelf(
     ? groupByOrParams 
     : groupByOrParams.groupBy;
 
+  const endpoint = `${baseApiPath}?${editQueryString(queryString, {
+    ...(typeof groupByOrParams === "string"
+      ? { groupBy: groupByOrParams }
+      : groupByOrParams),
+    event: "composite", // Always fetch all metrics for mixed bars
+  }, excludeFilter)}`;
+
+  // Check cache for this exact endpoint
+  const cachedEntry = cache.get(endpoint);
+  
+  // Extract data and check cache freshness
+  // The cache returns SWR state with our added _pimms_cached_at timestamp
+  const cachedData = cachedEntry;
+  const cacheTimestamp = (cachedEntry as any)?._pimms_cached_at || 0;
+  const cacheAge = cacheTimestamp ? Date.now() - cacheTimestamp : Infinity;
+  const isCacheFresh = cacheAge < 60000; // Fresh if < 60 seconds old
+  const hasCachedData = !!cachedData;
+
   const enabled =
-    !options?.cacheOnly ||
-    [...cache.keys()].includes(
-      `${baseApiPath}?${editQueryString(queryString, {
-        ...(typeof groupByOrParams === "string"
-          ? { groupBy: groupByOrParams }
-          : groupByOrParams),
-      }, excludeFilter)}`,
-    );
+    !options?.cacheOnly || hasCachedData;
 
   const { data, isLoading } = useSWR<Record<string, any>[]>(
-    enabled
-      ? `${baseApiPath}?${editQueryString(queryString, {
-          ...(typeof groupByOrParams === "string"
-            ? { groupBy: groupByOrParams }
-            : groupByOrParams),
-          event: "composite", // Always fetch all metrics for mixed bars
-        }, excludeFilter)}`
-      : null,
+    enabled ? endpoint : null,
     fetcher,
     {
       shouldRetryOnError: !requiresUpgrade,
+      // Only revalidate if cache is stale or doesn't exist
+      revalidateIfStale: !isCacheFresh,
       dedupingInterval: 60000,
       revalidateOnFocus: false,
       keepPreviousData: true,

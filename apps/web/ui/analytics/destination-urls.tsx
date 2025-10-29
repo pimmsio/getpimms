@@ -12,6 +12,8 @@ export default function DestinationUrls() {
   const { queryParams } = useRouterStuff();
   const { selectedTab } = useAnalyticsState();
 
+  // Fetch top_urls data to display destination URL analytics
+  // This is a primary analytics card that shows on every page load
   const { data: rawData } = useAnalyticsFilterOption({
     groupBy: "top_urls",
   });

@@ -68,6 +68,16 @@ export async function getLinksForWorkspace({
     } catch (e) {}
   }
 
+  console.log('🔍 [getLinksForWorkspace] Processing UTM filters:', {
+    utm_source,
+    utm_medium,
+    utm_campaign,
+    utm_term,
+    utm_content,
+    'utm_source split': utm_source?.includes(',') ? utm_source.split(',') : utm_source,
+    'utm_medium split': utm_medium?.includes(',') ? utm_medium.split(',') : utm_medium,
+  });
+
   // Calculate date range from interval or use explicit start/end dates
   let startDate: Date | undefined;
   let endDate: Date | undefined;
@@ -152,11 +162,31 @@ export async function getLinksForWorkspace({
     ...(partnerId && { partnerId }),
     ...(userId && { userId }),
     ...(linkIds && { id: { in: linkIds } }),
-    ...(utm_source && { utm_source }),
-    ...(utm_medium && { utm_medium }),
-    ...(utm_campaign && { utm_campaign }),
-    ...(utm_term && { utm_term }),
-    ...(utm_content && { utm_content }),
+    ...(utm_source && {
+      utm_source: utm_source.includes(',')
+        ? { in: utm_source.split(',').filter(Boolean) }  // OR logic for multiple UTM sources
+        : utm_source  // Exact match for single UTM source
+    }),
+    ...(utm_medium && {
+      utm_medium: utm_medium.includes(',')
+        ? { in: utm_medium.split(',').filter(Boolean) }  // OR logic for multiple UTM mediums
+        : utm_medium  // Exact match for single UTM medium
+    }),
+    ...(utm_campaign && {
+      utm_campaign: utm_campaign.includes(',')
+        ? { in: utm_campaign.split(',').filter(Boolean) }  // OR logic for multiple UTM campaigns
+        : utm_campaign  // Exact match for single UTM campaign
+    }),
+    ...(utm_term && {
+      utm_term: utm_term.includes(',')
+        ? { in: utm_term.split(',').filter(Boolean) }  // OR logic for multiple UTM terms
+        : utm_term  // Exact match for single UTM term
+    }),
+    ...(utm_content && {
+      utm_content: utm_content.includes(',')
+        ? { in: utm_content.split(',').filter(Boolean) }  // OR logic for multiple UTM contents
+        : utm_content  // Exact match for single UTM content
+    }),
     ...(url && {
       url: url.includes(',')
         ? { in: url.split(',').filter(Boolean) }  // OR logic for multiple URLs
@@ -170,6 +200,8 @@ export async function getLinksForWorkspace({
         },
       }),
   };
+
+  console.log('🔍 [getLinksForWorkspace] Built where clause:', JSON.stringify(baseWhere, null, 2));
 
   const includeClause = {
     tags: {

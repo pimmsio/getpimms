@@ -7,7 +7,6 @@ export default function useRefreshSession(sessionUserAttribute: string) {
   useEffect(() => {
     const refreshSession = async () => {
       if (session?.user && !session.user[sessionUserAttribute]) {
-        console.log(`no ${sessionUserAttribute}, refreshing`);
         await update();
       }
     };

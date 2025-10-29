@@ -122,20 +122,20 @@ export const LinksToolbar = memo(
         },
         ...(flags?.linkFolders
           ? [
-              {
-                label: "Move to folder",
-                icon: Folder,
-                action: () => setShowMoveLinkToFolderModal(true),
-                disabledTooltip:
-                  plan === "free" ? (
-                    <TooltipContent
-                      title="You can only use Link Folders on a Pro plan and above. Upgrade to Pro to continue."
-                      cta="Upgrade to Pro"
-                      href={`/${slug}/upgrade`}
-                    />
-                  ) : undefined,
-                keyboardShortcut: "m",
-              },
+              // {
+              //   label: "Move to folder",
+              //   icon: Folder,
+              //   action: () => setShowMoveLinkToFolderModal(true),
+              //   disabledTooltip:
+              //     plan === "free" ? (
+              //       <TooltipContent
+              //         title="You can only use Link Folders on a Pro plan and above. Upgrade to Pro to continue."
+              //         cta="Upgrade to Pro"
+              //         href={`/${slug}/upgrade`}
+              //       />
+              //     ) : undefined,
+              //   keyboardShortcut: "m",
+              // },
             ]
           : []),
         {

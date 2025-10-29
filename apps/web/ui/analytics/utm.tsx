@@ -14,18 +14,27 @@ import { AnalyticsContext } from "./analytics-provider";
 
 type UTMViewMode = "combinations" | "source" | "medium" | "campaign";
 
-export default function UTM({ hasData }: { hasData: boolean }) {
+export default function UTM() {
   const { queryParams } = useRouterStuff();
   const { slug } = useWorkspace();
   const { dashboardProps } = useAnalyticsDashboard();
   const { selectedTab } = useAnalyticsState();
   const [viewMode, setViewMode] = useState<UTMViewMode>("combinations");
 
-  // Fetch data based on view mode
+  // Fetch top_links data to extract UTM combinations
+  // This is the primary data source for the UTM component (1 API call)
   const { data: topLinksData } = useAnalyticsFilterOption({ groupBy: "top_links" });
-  const { data: sourcesData } = useAnalyticsFilterOption({ groupBy: "utm_sources" });
-  const { data: mediumsData } = useAnalyticsFilterOption({ groupBy: "utm_mediums" });
-  const { data: campaignsData } = useAnalyticsFilterOption({ groupBy: "utm_campaigns" });
+  
+  // Only fetch specific UTM breakdown data when that view is selected
+  const { data: sourcesData } = useAnalyticsFilterOption({ groupBy: "utm_sources" }, {
+    cacheOnly: viewMode !== "source",
+  });
+  const { data: mediumsData } = useAnalyticsFilterOption({ groupBy: "utm_mediums" }, {
+    cacheOnly: viewMode !== "medium",
+  });
+  const { data: campaignsData } = useAnalyticsFilterOption({ groupBy: "utm_campaigns" }, {
+    cacheOnly: viewMode !== "campaign",
+  });
   
   // Filter only links that have UTM parameters and extract UTM combinations
   const utmCombinations = useMemo(() => {

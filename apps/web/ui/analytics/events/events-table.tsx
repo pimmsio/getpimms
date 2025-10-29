@@ -33,8 +33,9 @@ import {
 } from "@dub/utils";
 import { Cell, ColumnDef } from "@tanstack/react-table";
 import { IntegrationsCardsLight } from "app/app.dub.co/(dashboard)/[slug]/settings/integrations/integrations-cards-light";
-import { Link2, Target } from "lucide-react";
+import { ChevronRight, Link2, Target } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ReactNode, useContext, useEffect, useMemo } from "react";
 import useSWR from "swr";
 import { AnalyticsContext } from "../analytics-provider";
@@ -70,6 +71,8 @@ export default function EventsTable({
   const { setExportQueryString } = useContext(EventsContext);
   const { queryString: originalQueryString, eventsApiPath } =
     useContext(AnalyticsContext);
+  const { slug } = useWorkspace();
+  const router = useRouter();
 
   // Get hotScore filter from URL params
   const hotScoreFilter = searchParams.get("hotScore")?.split(",").filter(Boolean) ?? [];
@@ -173,43 +176,45 @@ export default function EventsTable({
           header: "Contact",
           accessorKey: "customer",
           enableHiding: false,
-          minSize: 200,
-          size: 200,
-          maxSize: 300,
+          minSize: 250,
+          size: 280,
+          maxSize: 400,
           cell: ({ getValue }) => {
             const customer = getValue();
             const display = customer.name || customer.email || "Anonymous";
-            const { slug } = useWorkspace();
             return (
-              <Link
-                href={`/${slug}/customers/${customer.id}`}
-                className="flex w-full items-center gap-3 bg-white px-4 py-2 transition-colors hover:bg-neutral-50"
-              >
-                <img
-                  alt={display}
-                  src={
-                    customer.avatar ||
-                    `${OG_AVATAR_URL}${customer.id}&name=${encodeURIComponent(customer.name || customer.email || "")}`
-                  }
-                  className="size-10 shrink-0 rounded-full"
-                />
-                <div className="min-w-0">
-                  <div
-                    className="truncate text-sm font-medium text-neutral-900"
-                    title={display}
-                  >
-                    {customer.name || "Anonymous"}
-                  </div>
-                  {customer.email && customer.name && (
+              <div className="flex w-full items-center justify-between gap-4 px-4 py-3">
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <img
+                    alt={display}
+                    src={
+                      customer.avatar ||
+                      `${OG_AVATAR_URL}${customer.id}&name=${encodeURIComponent(customer.name || customer.email || "")}`
+                    }
+                    className="size-10 shrink-0 rounded-full"
+                  />
+                  <div className="min-w-0 flex-1">
                     <div
-                      className="truncate text-xs text-neutral-500"
-                      title={customer.email}
+                      className="truncate text-sm font-medium text-neutral-900"
+                      title={display}
                     >
-                      {customer.email}
+                      {customer.name || "Anonymous"}
                     </div>
-                  )}
+                    {customer.email && customer.name && (
+                      <div
+                        className="truncate text-xs text-neutral-500"
+                        title={customer.email}
+                      >
+                        {customer.email}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </Link>
+                <div className="flex shrink-0 items-center gap-1.5 text-sm font-medium text-blue-600 transition-transform group-hover:translate-x-1">
+                  <span>View</span>
+                  <ChevronRight className="size-4" />
+                </div>
+              </div>
             );
           },
         },
@@ -683,6 +688,12 @@ export default function EventsTable({
         },
       }),
     columnPinning: { right: ["menu"] },
+    onRowClick: (row) => {
+      const event = row.original;
+      if (event.event !== "click" && event.customer) {
+        router.push(`/${slug}/customers/${event.customer.id}`);
+      }
+    },
     cellRight: (cell) => {
       const meta = cell.column.columnDef.meta as ColumnMeta | undefined;
       return (
@@ -691,6 +702,7 @@ export default function EventsTable({
     },
     tdClassName: (columnId) =>
       cn(
+        "cursor-pointer transition-colors group-hover:bg-blue-50/50",
         columnId === "customer" ? "p-0" : "px-4 py-2",
         columnId === "saleAmount" ? "text-right" : "",
       ),

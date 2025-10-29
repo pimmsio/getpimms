@@ -12,7 +12,6 @@ import { getStartEndDates } from "@/lib/analytics/utils/get-start-end-dates";
 import { useAnalyticsUrl } from "@/lib/hooks/use-analytics-url";
 import useDomains from "@/lib/swr/use-domains";
 import useDomainsCount from "@/lib/swr/use-domains-count";
-import useFolder from "@/lib/swr/use-folder";
 import useFolders from "@/lib/swr/use-folders";
 import useFoldersCount from "@/lib/swr/use-folders-count";
 import useTags from "@/lib/swr/use-tags";
@@ -30,6 +29,7 @@ import {
   ExpandingArrow,
   Filter,
   LinkLogo,
+  Tooltip,
   TooltipContent,
   useMediaQuery,
   useRouterStuff,
@@ -37,24 +37,17 @@ import {
   UTM_PARAMETERS,
   Popover,
 } from "@dub/ui";
-import { MousePointerClick, TrendingUp, DollarSign, ArrowUpDown } from "lucide-react";
+import { MousePointerClick, TrendingUp, DollarSign, ArrowUpDown, RefreshCw } from "lucide-react";
 import {
-  Cube,
-  FlagWavy,
-  Folder,
   Hyperlink,
   LinkBroken,
-  MobilePhone,
-  OfficeBuilding,
   ReferredVia,
   Tag,
-  Window,
 } from "@dub/ui/icons";
+import { useSWRConfig } from "swr";
 import {
   APP_DOMAIN,
-  capitalize,
   cn,
-  COUNTRIES,
   DUB_DEMO_LINKS,
   DUB_LOGO,
   getApexDomain,
@@ -70,16 +63,15 @@ import {
   ComponentProps,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
 import { useDebounce } from "use-debounce";
-import { FolderIcon } from "../folders/folder-icon";
 import { WebhookErrorsWarning } from "../layout/sidebar/webhook-errors-warning";
 import { LinkIcon } from "../links/link-icon";
 import TagBadge from "../links/tag-badge";
 import { AnalyticsContext } from "./analytics-provider";
-import DeviceIcon from "./device-icon";
 import {
   ColdScoreIcon,
   HotScoreIcon,
@@ -173,10 +165,11 @@ export default function Toggle({
     enabled: tagsAsync,
   });
 
-  const selectedFolderId = searchParamsObj.folderId;
-  const { folder: selectedFolder } = useFolder({
-    folderId: selectedFolderId,
-  });
+  // COMMENTED OUT: Folder filtering disabled
+  // const selectedFolderId = searchParamsObj.folderId;
+  // const { folder: selectedFolder } = useFolder({
+  //   folderId: selectedFolderId,
+  // });
 
   const selectedCustomerId = searchParamsObj.customerId;
   // const { data: selectedCustomer } = useCustomer({
@@ -253,7 +246,7 @@ export default function Toggle({
   const [requestedFilters, setRequestedFilters] = useState<string[]>([]);
 
   const activeFilters = useMemo(() => {
-    const { domain, key, root, folderId, ...params } = searchParamsObj;
+    const { domain, key, root, /* folderId, */ ...params } = searchParamsObj; // COMMENTED OUT: folderId - Folder filtering disabled
 
     // Handle special cases first
     const filters = [
@@ -316,7 +309,8 @@ export default function Toggle({
       // Handle root special case - convert string to boolean
       ...(root ? [{ key: "root", value: root === "true" }] : []),
       // Handle folderId special case
-      ...(folderId ? [{ key: "folderId", value: folderId }] : []),
+      // COMMENTED OUT: Folder filtering disabled
+      // ...(folderId ? [{ key: "folderId", value: folderId }] : []),
     ];
 
     // Handle all other filters dynamically
@@ -349,6 +343,8 @@ export default function Toggle({
     [requestedFilters, activeFilters],
   );
 
+  // Only fetch filter options when explicitly requested (filter opened or already active)
+  // This prevents excessive Tinybird QPS on page load
   const { data: links } = useAnalyticsFilterOption("top_links", {
     cacheOnly: !isRequested("link"),
   });
@@ -383,24 +379,97 @@ export default function Toggle({
   const { data: refererUrls } = useAnalyticsFilterOption("referer_urls", {
     cacheOnly: !isRequested("refererUrl"),
   });
+  
+  // Conditionally fetch URL filter data - only when requested or already active
+  // Using conditional hook pattern to prevent ANY API calls until needed
+  const shouldFetchUrl = isRequested("url");
   const { data: urls } = useAnalyticsFilterOptionWithoutSelf("top_urls", "url", {
-    cacheOnly: !isRequested("url"),
+    cacheOnly: !shouldFetchUrl,
   });
-  const { data: utmSources } = useAnalyticsFilterOptionWithoutSelf("utm_sources", "utm_source", {
-    cacheOnly: !isRequested("utm_source"),
+  
+  // Fetch UTM data eagerly so search/filter works when dropdown opens
+  // Data is cached for 60 seconds to avoid excessive API calls
+  const { data: utmSourcesData } = useAnalyticsFilterOption("utm_sources", {
+    cacheOnly: false, // Fetch eagerly
   });
-  const { data: utmMediums } = useAnalyticsFilterOptionWithoutSelf("utm_mediums", "utm_medium", {
-    cacheOnly: !isRequested("utm_medium"),
+  
+  const { data: utmMediumsData } = useAnalyticsFilterOption("utm_mediums", {
+    cacheOnly: false,
   });
-  const { data: utmCampaigns } = useAnalyticsFilterOptionWithoutSelf("utm_campaigns", "utm_campaign", {
-    cacheOnly: !isRequested("utm_campaign"),
+  
+  const { data: utmCampaignsData } = useAnalyticsFilterOption("utm_campaigns", {
+    cacheOnly: false,
   });
-  const { data: utmTerms } = useAnalyticsFilterOptionWithoutSelf("utm_terms", "utm_term", {
-    cacheOnly: !isRequested("utm_term"),
+  
+  const { data: utmTermsData } = useAnalyticsFilterOption("utm_terms", {
+    cacheOnly: false,
   });
-  const { data: utmContents } = useAnalyticsFilterOptionWithoutSelf("utm_contents", "utm_content", {
-    cacheOnly: !isRequested("utm_content"),
+  
+  const { data: utmContentsData } = useAnalyticsFilterOption("utm_contents", {
+    cacheOnly: false,
   });
+
+  // Transform UTM data to match expected format
+  const utmSources = useMemo(
+    () =>
+      utmSourcesData
+        ?.map((item) => ({
+          utm_source: item.utm_source,
+          count: item.count,
+        }))
+        .filter((item) => item.utm_source) // Filter out empty values
+        .sort((a, b) => a.utm_source!.localeCompare(b.utm_source!)) ?? null,
+    [utmSourcesData],
+  );
+
+  const utmMediums = useMemo(
+    () =>
+      utmMediumsData
+        ?.map((item) => ({
+          utm_medium: item.utm_medium,
+          count: item.count,
+        }))
+        .filter((item) => item.utm_medium) // Filter out empty values
+        .sort((a, b) => a.utm_medium!.localeCompare(b.utm_medium!)) ?? null,
+    [utmMediumsData],
+  );
+
+  const utmCampaigns = useMemo(
+    () =>
+      utmCampaignsData
+        ?.map((item) => ({
+          utm_campaign: item.utm_campaign,
+          count: item.count,
+        }))
+        .filter((item) => item.utm_campaign) // Filter out empty values
+        .sort((a, b) => a.utm_campaign!.localeCompare(b.utm_campaign!)) ?? null,
+    [utmCampaignsData],
+  );
+
+  const utmTerms = useMemo(
+    () =>
+      utmTermsData
+        ?.map((item) => ({
+          utm_term: item.utm_term,
+          count: item.count,
+        }))
+        .filter((item) => item.utm_term) // Filter out empty values
+        .sort((a, b) => a.utm_term!.localeCompare(b.utm_term!)) ?? null,
+    [utmTermsData],
+  );
+
+  const utmContents = useMemo(
+    () =>
+      utmContentsData
+        ?.map((item) => ({
+          utm_content: item.utm_content,
+          count: item.count,
+        }))
+        .filter((item) => item.utm_content) // Filter out empty values
+        .sort((a, b) => a.utm_content!.localeCompare(b.utm_content!)) ?? null,
+    [utmContentsData],
+  );
+
   const utmData = {
     utm_source: utmSources,
     utm_medium: utmMediums,
@@ -509,52 +578,52 @@ export default function Toggle({
               //       },
               //     ]
               //   : []),
-              ...(flags?.linkFolders
-                ? [
-                    {
-                      key: "folderId",
-                      icon: Folder,
-                      label: "Folder",
-                      shouldFilter: !foldersAsync,
-                      getOptionIcon: (value, props) => {
-                        const folderName = props.option?.label;
-                        const folder = folders?.find(
-                          ({ name }) => name === folderName,
-                        );
+              // ...(flags?.linkFolders
+              //   ? [
+              //       {
+              //         key: "folderId",
+              //         icon: Folder,
+              //         label: "Folder",
+              //         shouldFilter: !foldersAsync,
+              //         getOptionIcon: (value, props) => {
+              //           const folderName = props.option?.label;
+              //           const folder = folders?.find(
+              //             ({ name }) => name === folderName,
+              //           );
 
-                        return folder ? (
-                          <FolderIcon
-                            folder={folder}
-                            shape="square"
-                            iconClassName="size-3"
-                          />
-                        ) : null;
-                      },
-                      options: loadingFolders
-                        ? null
-                        : [
-                            ...(folders || []),
-                            // Add currently filtered folder if not already in the list
-                            ...(selectedFolder &&
-                            !folders?.find((f) => f.id === selectedFolder.id)
-                              ? [selectedFolder]
-                              : []),
-                          ]
-                            .map((folder) => ({
-                              value: folder.id,
-                              icon: (
-                                <FolderIcon
-                                  folder={folder}
-                                  shape="square"
-                                  iconClassName="size-3"
-                                />
-                              ),
-                              label: folder.name,
-                            }))
-                            .sort((a, b) => a.label.localeCompare(b.label)),
-                    },
-                  ]
-                : []),
+              //           return folder ? (
+              //             <FolderIcon
+              //               folder={folder}
+              //               shape="square"
+              //               iconClassName="size-3"
+              //             />
+              //           ) : null;
+              //         },
+              //         options: loadingFolders
+              //           ? null
+              //           : [
+              //               ...(folders || []),
+              //               // Add currently filtered folder if not already in the list
+              //               ...(selectedFolder &&
+              //               !folders?.find((f) => f.id === selectedFolder.id)
+              //                 ? [selectedFolder]
+              //                 : []),
+              //             ]
+              //               .map((folder) => ({
+              //                 value: folder.id,
+              //                 icon: (
+              //                   <FolderIcon
+              //                     folder={folder}
+              //                     shape="square"
+              //                     iconClassName="size-3"
+              //                   />
+              //                 ),
+              //                 label: folder.name,
+              //               }))
+              //               .sort((a, b) => a.label.localeCompare(b.label)),
+              //       },
+              //     ]
+              //   : []),
               {
                 key: "tagIds",
                 icon: Tag,
@@ -615,41 +684,41 @@ export default function Toggle({
                     },
                   ]
                 : []),
-              {
-                key: "domain",
-                icon: Globe2,
-                label: "Domain",
-                shouldFilter: !domainsAsync,
-                getOptionIcon: (value) => (
-                  <BlurImage
-                    src={getGoogleFavicon(value, false)}
-                    alt={value}
-                    className="h-4 w-4 rounded-full"
-                    width={16}
-                    height={16}
-                  />
-                ),
-                options: loadingDomains
-                  ? null
-                  : [
-                      ...domains.map((domain) => ({
-                        value: domain.slug,
-                        label: domain.slug,
-                      })),
-                      // Add currently filtered domain if not already in the list
-                      ...(!searchParamsObj.domain ||
-                      domains.some((d) => d.slug === searchParamsObj.domain)
-                        ? []
-                        : [
-                            {
-                              value: searchParamsObj.domain,
-                              label: searchParamsObj.domain,
-                              hideDuringSearch: true,
-                            },
-                          ]),
-                    ],
-              },
-              LinkFilterItem,
+              // {
+              //   key: "domain",
+              //   icon: Globe2,
+              //   label: "Domain",
+              //   shouldFilter: !domainsAsync,
+              //   getOptionIcon: (value) => (
+              //     <BlurImage
+              //       src={getGoogleFavicon(value, false)}
+              //       alt={value}
+              //       className="h-4 w-4 rounded-full"
+              //       width={16}
+              //       height={16}
+              //     />
+              //   ),
+              //   options: loadingDomains
+              //     ? null
+              //     : [
+              //         ...domains.map((domain) => ({
+              //           value: domain.slug,
+              //           label: domain.slug,
+              //         })),
+              //         // Add currently filtered domain if not already in the list
+              //         ...(!searchParamsObj.domain ||
+              //         domains.some((d) => d.slug === searchParamsObj.domain)
+              //           ? []
+              //           : [
+              //               {
+              //                 value: searchParamsObj.domain,
+              //                 label: searchParamsObj.domain,
+              //                 hideDuringSearch: true,
+              //               },
+              //             ]),
+              //       ],
+              // },
+              // LinkFilterItem,
               // {
               //   key: "root",
               //   icon: Sliders,
@@ -715,7 +784,8 @@ export default function Toggle({
         key: "url",
         icon: LinkBroken,
         label: "Destination URL",
-        multiple: true, // Enable multi-select with OR logic
+        multiple: true,
+        shouldFilter: true,
         getOptionIcon: (value, props) => (
           <LinkLogo
             apexDomain={getApexDomain(value)}
@@ -725,14 +795,13 @@ export default function Toggle({
         options:
           urls
             ?.map(({ url, count = 0 }) => {
-              // Display without protocol but keep original URL as value for filtering
               const displayUrl = url
-                .replace(/^https?:\/\//, '')  // Remove protocol
-                .replace(/\/$/, '');  // Remove trailing slash
+                .replace(/^https?:\/\//, '')
+                .replace(/\/$/, '');
               
               return {
-                value: url,  // Keep original URL for backend filtering
-                label: displayUrl,  // Display normalized URL
+                value: url,
+                label: displayUrl,
                 count: count,
                 right: nFormatter(count, { full: true }),
               };
@@ -744,7 +813,8 @@ export default function Toggle({
           key,
           icon: Icon,
           label: `UTM ${label}`,
-          multiple: true, // Enable multi-select with OR logic
+          multiple: true,
+          shouldFilter: true,
           getOptionIcon: (value) => (
             <Icon display={value} className="h-4 w-4" />
           ),
@@ -758,49 +828,49 @@ export default function Toggle({
               .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
         }),
       ),
-      {
-        key: "country",
-        icon: FlagWavy,
-        label: "Country",
-        multiple: true, // Enable multi-select with OR logic
-        getOptionIcon: (value) => (
-          <img
-            alt={value}
-            src={`https://flag.vercel.app/m/${value}.svg`}
-            className="h-2.5 w-4"
-          />
-        ),
-        getOptionLabel: (value) => COUNTRIES[value],
-        options:
-          countries
-            ?.map(({ country, count }) => ({
-              value: country,
-              label: COUNTRIES[country],
-              right: nFormatter(count, { full: true }),
-            }))
-            .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
-      },
-      {
-        key: "city",
-        icon: OfficeBuilding,
-        label: "City",
-        multiple: true, // Enable multi-select with OR logic
-        options:
-          cities
-            ?.map(({ city, country, count }) => ({
-              value: city,
-              label: city,
-              icon: (
-                <img
-                  alt={country}
-                  src={`https://flag.vercel.app/m/${country}.svg`}
-                  className="h-2.5 w-4"
-                />
-              ),
-              right: nFormatter(count, { full: true }),
-            }))
-            .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
-      },
+      // {
+      //   key: "country",
+      //   icon: FlagWavy,
+      //   label: "Country",
+      //   multiple: true, // Enable multi-select with OR logic
+      //   getOptionIcon: (value) => (
+      //     <img
+      //       alt={value}
+      //       src={`https://flag.vercel.app/m/${value}.svg`}
+      //       className="h-2.5 w-4"
+      //     />
+      //   ),
+      //   getOptionLabel: (value) => COUNTRIES[value],
+      //   options:
+      //     countries
+      //       ?.map(({ country, count }) => ({
+      //         value: country,
+      //         label: COUNTRIES[country],
+      //         right: nFormatter(count, { full: true }),
+      //       }))
+      //       .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
+      // },
+      // {
+      //   key: "city",
+      //   icon: OfficeBuilding,
+      //   label: "City",
+      //   multiple: true, // Enable multi-select with OR logic
+      //   options:
+      //     cities
+      //       ?.map(({ city, country, count }) => ({
+      //         value: city,
+      //         label: city,
+      //         icon: (
+      //           <img
+      //             alt={country}
+      //             src={`https://flag.vercel.app/m/${country}.svg`}
+      //             className="h-2.5 w-4"
+      //           />
+      //         ),
+      //         right: nFormatter(count, { full: true }),
+      //       }))
+      //       .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
+      // },
       // {
       //   key: "region",
       //   icon: LocationPin,
@@ -834,61 +904,61 @@ export default function Toggle({
       //       right: nFormatter(count, { full: true }),
       //     })) ?? null,
       // },
-      {
-        key: "device",
-        icon: MobilePhone,
-        label: "Device",
-        multiple: true, // Enable multi-select with OR logic
-        getOptionIcon: (value) => (
-          <DeviceIcon
-            display={capitalize(value) ?? value}
-            tab="devices"
-            className="h-4 w-4"
-          />
-        ),
-        options:
-          devices
-            ?.map(({ device, count }) => ({
-              value: device,
-              label: device,
-              right: nFormatter(count, { full: true }),
-            }))
-            .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
-      },
-      {
-        key: "browser",
-        icon: Window,
-        label: "Browser",
-        multiple: true, // Enable multi-select with OR logic
-        getOptionIcon: (value) => (
-          <DeviceIcon display={value} tab="browsers" className="h-4 w-4" />
-        ),
-        options:
-          browsers
-            ?.map(({ browser, count }) => ({
-              value: browser,
-              label: browser,
-              right: nFormatter(count, { full: true }),
-            }))
-            .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
-      },
-      {
-        key: "os",
-        icon: Cube,
-        label: "OS",
-        multiple: true, // Enable multi-select with OR logic
-        getOptionIcon: (value) => (
-          <DeviceIcon display={value} tab="os" className="h-4 w-4" />
-        ),
-        options:
-          os
-            ?.map(({ os, count }) => ({
-              value: os,
-              label: os,
-              right: nFormatter(count, { full: true }),
-            }))
-            .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
-      },
+      // {
+      //   key: "device",
+      //   icon: MobilePhone,
+      //   label: "Device",
+      //   multiple: true, // Enable multi-select with OR logic
+      //   getOptionIcon: (value) => (
+      //     <DeviceIcon
+      //       display={capitalize(value) ?? value}
+      //       tab="devices"
+      //       className="h-4 w-4"
+      //     />
+      //   ),
+      //   options:
+      //     devices
+      //       ?.map(({ device, count }) => ({
+      //         value: device,
+      //         label: device,
+      //         right: nFormatter(count, { full: true }),
+      //       }))
+      //       .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
+      // },
+      // {
+      //   key: "browser",
+      //   icon: Window,
+      //   label: "Browser",
+      //   multiple: true, // Enable multi-select with OR logic
+      //   getOptionIcon: (value) => (
+      //     <DeviceIcon display={value} tab="browsers" className="h-4 w-4" />
+      //   ),
+      //   options:
+      //     browsers
+      //       ?.map(({ browser, count }) => ({
+      //         value: browser,
+      //         label: browser,
+      //         right: nFormatter(count, { full: true }),
+      //       }))
+      //       .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
+      // },
+      // {
+      //   key: "os",
+      //   icon: Cube,
+      //   label: "OS",
+      //   multiple: true, // Enable multi-select with OR logic
+      //   getOptionIcon: (value) => (
+      //     <DeviceIcon display={value} tab="os" className="h-4 w-4" />
+      //   ),
+      //   options:
+      //     os
+      //       ?.map(({ os, count }) => ({
+      //         value: os,
+      //         label: os,
+      //         right: nFormatter(count, { full: true }),
+      //       }))
+      //       .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
+      // },
       // {
       //   key: "trigger",
       //   icon: CursorRays,
@@ -921,6 +991,11 @@ export default function Toggle({
       refererUrls,
       urls,
       utmData,
+      utmSources,
+      utmMediums,
+      utmCampaigns,
+      utmTerms,
+      utmContents,
       tagsAsync,
       loadingTags,
       searchParamsObj.tagIds,
@@ -1312,7 +1387,12 @@ export default function Toggle({
                 })}
               >
                 {isMobile ? filterSelect : dateRangePicker}
-                {showConversions && page === "analytics" && <SortSelector />}
+                {showConversions && (page === "analytics" || page === "links") && (
+                  <>
+                    <SortSelector />
+                    <RefreshButton />
+                  </>
+                )}
                 <WebhookErrorsWarning />
                 {!dashboardProps && (
                   <div className="flex grow justify-end gap-2">
@@ -1526,11 +1606,188 @@ function SortSelector() {
     >
       <Button
         variant="secondary"
-        className="h-9 px-3 text-sm w-fit"
+        className="h-10 px-3 text-sm w-fit rounded-full"
         icon={<ArrowUpDown className="h-4 w-4" />}
         text={`Sort: ${currentSort.label}`}
       />
     </Popover>
+  );
+}
+
+function RefreshButton() {
+  const { mutate, cache } = useSWRConfig();
+  const { slug } = useWorkspace();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastRefreshTime, setLastRefreshTime] = useState<number | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [hasLoadedFromStorage, setHasLoadedFromStorage] = useState(false);
+
+  const workspaceSlug = slug || 'default';
+  const cooldownKey = `analytics_refresh_cooldown_${workspaceSlug}`;
+  const lastFetchKey = `analytics_last_fetch_${workspaceSlug}`;
+
+  // Load persisted cooldown on mount (from manual refresh OR any fetch)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const manualRefresh = localStorage.getItem(cooldownKey);
+      const lastFetch = localStorage.getItem(lastFetchKey);
+      
+      const timestamps = [manualRefresh, lastFetch].filter(Boolean).map(t => parseInt(t!, 10));
+      const mostRecentTimestamp = timestamps.length > 0 ? Math.max(...timestamps) : null;
+      
+      if (mostRecentTimestamp) {
+        const elapsed = Date.now() - mostRecentTimestamp;
+        if (elapsed < 60000) {
+          setLastRefreshTime(mostRecentTimestamp);
+        } else {
+          localStorage.removeItem(cooldownKey);
+          localStorage.removeItem(lastFetchKey);
+        }
+      }
+      
+      setHasLoadedFromStorage(true);
+    } catch (error) {
+      console.error('Failed to load cooldown from localStorage:', error);
+    }
+  }, [cooldownKey, lastFetchKey]);
+
+  // Listen for cache changes to detect when data is fetched
+  useEffect(() => {
+    if (typeof window === 'undefined' || lastRefreshTime || !hasLoadedFromStorage) {
+      return;
+    }
+    
+    const checkForRecentFetch = () => {
+      try {
+        const keys = [...cache.keys()];
+        const analyticsKeys = keys.filter(
+          (key) => typeof key === 'string' && key.includes('/api/analytics')
+        );
+        
+        let mostRecentTimestamp = 0;
+        
+        analyticsKeys.forEach((key) => {
+          const cacheKey = `analytics_cache_${workspaceSlug}_${key}`;
+          const stored = localStorage.getItem(cacheKey);
+          
+          if (stored) {
+            try {
+              const entry = JSON.parse(stored);
+              if (entry.timestamp > mostRecentTimestamp) {
+                mostRecentTimestamp = entry.timestamp;
+              }
+            } catch (e) {
+              // Ignore parse errors
+            }
+          }
+        });
+        
+        if (mostRecentTimestamp > 0) {
+          const age = Date.now() - mostRecentTimestamp;
+          if (age < 60000) {
+            setLastRefreshTime(mostRecentTimestamp);
+            localStorage.setItem(lastFetchKey, mostRecentTimestamp.toString());
+          }
+        }
+      } catch (error) {
+        // Silently ignore errors
+      }
+    };
+    
+    checkForRecentFetch();
+    const timeout = setTimeout(checkForRecentFetch, 1000);
+    
+    return () => clearTimeout(timeout);
+  }, [cache, workspaceSlug, lastRefreshTime, lastFetchKey, hasLoadedFromStorage]);
+
+  // Persist cooldown to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    if (!hasLoadedFromStorage && !lastRefreshTime) {
+      return;
+    }
+
+    try {
+      if (lastRefreshTime) {
+        localStorage.setItem(cooldownKey, lastRefreshTime.toString());
+        localStorage.setItem(lastFetchKey, lastRefreshTime.toString());
+      } else {
+        localStorage.removeItem(cooldownKey);
+        localStorage.removeItem(lastFetchKey);
+      }
+    } catch (error) {
+      console.error('Failed to save cooldown to localStorage:', error);
+    }
+  }, [lastRefreshTime, cooldownKey, lastFetchKey, hasLoadedFromStorage]);
+
+  // Update countdown every second
+  useEffect(() => {
+    if (!lastRefreshTime) return;
+    
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - lastRefreshTime;
+      const remaining = Math.max(0, 60 - Math.floor(elapsed / 1000));
+      
+      setTimeRemaining(remaining);
+      
+      if (remaining === 0) {
+        setLastRefreshTime(null);
+      }
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [lastRefreshTime]);
+
+  const isDisabled = isRefreshing || timeRemaining > 0;
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await mutate(
+        (key) => typeof key === 'string' && key.includes('/api/analytics'),
+        undefined,
+        { revalidate: true }
+      );
+      
+      setLastRefreshTime(Date.now());
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 500);
+    }
+  };
+
+  const tooltipContent = timeRemaining > 0
+    ? `Wait ${timeRemaining} seconds before refreshing again`
+    : isRefreshing
+      ? "Refreshing analytics data..."
+      : "Refresh analytics data";
+
+  return (
+    <Tooltip
+      content={
+        <TooltipContent
+          title={tooltipContent}
+          cta={timeRemaining > 0 ? "Prevents excessive API calls" : "Click to reload latest data"}
+        />
+      }
+    >
+      <Button
+        variant="secondary"
+        className="h-10 px-3 w-fit rounded-full"
+        icon={
+          <RefreshCw 
+            className={cn(
+              "h-4 w-4",
+              isRefreshing && "animate-spin"
+            )} 
+          />
+        }
+        onClick={handleRefresh}
+        disabled={isDisabled}
+      />
+    </Tooltip>
   );
 }
 

@@ -216,7 +216,7 @@ export default function LinkDisplay() {
     >
       <Button
         variant="secondary"
-        className="h-11 hover:bg-white hover:border-neutral-300 [&>div]:w-full rounded-full border-neutral-200 transition-all duration-200 hover:shadow-sm"
+        className="h-10 hover:bg-white hover:border-neutral-300 [&>div]:w-full rounded-full border-neutral-200 transition-all duration-200 hover:shadow-sm"
         textWrapperClassName="!overflow-visible"
         text={
           <div className="flex w-full items-center gap-2.5">

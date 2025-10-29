@@ -27,6 +27,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { AnalyticsCacheProvider } from "@/lib/swr/analytics-cache-provider";
 
 export interface AnalyticsDashboardProps {
   domain: string;
@@ -113,7 +114,10 @@ export default function AnalyticsProvider({
     tagIds: searchParams?.get("tagIds")?.split(","),
   })?.join(",");
 
-  const folderId = searchParams?.get("folderId") ?? undefined;
+  // COMMENTED OUT: Folder filtering disabled
+  // Filter out "unsorted" as it's a UI-only folder ID, not a real database ID
+  // const folderIdParam = searchParams?.get("folderId");
+  // const folderId = folderIdParam === "unsorted" ? undefined : folderIdParam ?? undefined;
 
   const customerId = searchParams?.get("customerId") ?? undefined;
 
@@ -245,7 +249,7 @@ export default function AnalyticsProvider({
     : (domain && key) ||
         (domains && domains?.length > 50) ||
         adminPage ||
-        folderId ||
+        // folderId || // COMMENTED OUT: Folder filtering disabled
         tagIds
       ? undefined
       : "false";
@@ -271,7 +275,7 @@ export default function AnalyticsProvider({
       ...(tagIds && { tagIds }),
       ...(root && { root: root.toString() }),
       event: selectedTab,
-      ...(folderId && { folderId }),
+      // ...(folderId && { folderId }), // COMMENTED OUT: Folder filtering disabled
       ...(customerId && { customerId }),
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     }).toString();
@@ -284,39 +288,50 @@ export default function AnalyticsProvider({
     end,
     tagIds,
     selectedTab,
-    folderId,
+    // folderId, // COMMENTED OUT: Folder filtering disabled
     customerId,
   ]);
 
   // Reset requiresUpgrade when query changes
   useEffect(() => setRequiresUpgrade(false), [queryString]);
 
+  // Determine workspace slug for cache scoping
+  const workspaceSlug = slug || 
+    (adminPage ? 'admin' : '') || 
+    (partner?.id && programSlug ? `partner-${partner.id}` : '') ||
+    (dashboardId ? `dashboard-${dashboardId}` : 'default');
+
+  // Cache clearing will be handled by the new AnalyticsCacheProvider instance
+  // with the new workspaceSlug - previous cache remains in localStorage but won't be accessed
+
   return (
-    <AnalyticsContext.Provider
-      value={{
-        basePath, // basePath for the page (e.g. /[slug]/analytics, /share/[dashboardId])
-        baseApiPath, // baseApiPath for analytics API endpoints (e.g. /api/analytics)
-        selectedTab, // selected event tab (clicks, leads, sales)
-        eventsApiPath, // eventsApiPath for events API endpoints (e.g. /api/events)
-        saleUnit,
-        view,
-        queryString,
-        domain: domain || undefined, // domain for the link (e.g. dub.sh, stey.me, etc.)
-        key: key ? decodeURIComponent(key) : undefined, // link key (e.g. github, weathergpt, etc.)
-        url: dashboardProps?.url, // url for the link (only for public stats pages)
-        start, // start of time period
-        end, // end of time period
-        interval, /// time period interval
-        tagIds, // ids of the tags to filter by
-        adminPage, // whether the user is an admin
-        partnerPage, // whether the user is viewing partner analytics
-        dashboardProps,
-        showConversions, // Whether to show conversions tabs/data
-        requiresUpgrade, // whether an upgrade is required to perform the query
-        workspace: adminPage ? undefined : workspace, // workspace data (undefined for admin)
-      }}
-    >
-      {children}
-    </AnalyticsContext.Provider>
+    <AnalyticsCacheProvider workspaceSlug={workspaceSlug}>
+      <AnalyticsContext.Provider
+        value={{
+          basePath, // basePath for the page (e.g. /[slug]/analytics, /share/[dashboardId])
+          baseApiPath, // baseApiPath for analytics API endpoints (e.g. /api/analytics)
+          selectedTab, // selected event tab (clicks, leads, sales)
+          eventsApiPath, // eventsApiPath for events API endpoints (e.g. /api/events)
+          saleUnit,
+          view,
+          queryString,
+          domain: domain || undefined, // domain for the link (e.g. dub.sh, stey.me, etc.)
+          key: key ? decodeURIComponent(key) : undefined, // link key (e.g. github, weathergpt, etc.)
+          url: dashboardProps?.url, // url for the link (only for public stats pages)
+          start, // start of time period
+          end, // end of time period
+          interval, /// time period interval
+          tagIds, // ids of the tags to filter by
+          adminPage, // whether the user is an admin
+          partnerPage, // whether the user is viewing partner analytics
+          dashboardProps,
+          showConversions, // Whether to show conversions tabs/data
+          requiresUpgrade, // whether an upgrade is required to perform the query
+          workspace: adminPage ? undefined : workspace, // workspace data (undefined for admin)
+        }}
+      >
+        {children}
+      </AnalyticsContext.Provider>
+    </AnalyticsCacheProvider>
   );
 }

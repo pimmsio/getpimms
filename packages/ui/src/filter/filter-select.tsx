@@ -151,15 +151,15 @@ export function FilterSelect({
     }
   }, [selectedFilter?.options]);
 
-  // Custom filter function for multi-select: show all options but sort matches to top
+  // Custom filter function for multi-select: filter items like normal
   const customFilter = useCallback(
     (value: string, search: string) => {
-      // For multi-select filters, show all items but prioritize matches
+      // For multi-select filters, filter normally (hide non-matches)
       if (selectedFilter?.multiple) {
         const normalizedValue = value.toLowerCase();
         const normalizedSearch = search.toLowerCase();
-        // Return 1 for matches (top priority), 0.5 for non-matches (still shown)
-        return normalizedValue.includes(normalizedSearch) ? 1 : 0.5;
+        // Return 1 for matches, 0 for non-matches (hides them)
+        return normalizedValue.includes(normalizedSearch) ? 1 : 0;
       }
       // For single-select, use default cmdk filtering (0 hides the item)
       return 0;
@@ -300,7 +300,7 @@ export function FilterSelect({
       <button
         type="button"
         className={cn(
-          "group flex h-11 cursor-pointer appearance-none items-center gap-x-2.5 truncate rounded-full border px-4 text-sm font-medium outline-none transition-all duration-200",
+          "group flex h-10 cursor-pointer appearance-none items-center gap-x-2.5 truncate rounded-full border px-4 text-sm font-medium outline-none transition-all duration-200",
           "border-neutral-200 bg-white text-neutral-900 placeholder-neutral-400",
           "hover:border-neutral-300 hover:shadow-sm",
           "focus-visible:border-neutral-400 focus-visible:ring-2 focus-visible:ring-blue-500/10",
@@ -450,22 +450,22 @@ const CommandEmpty = ({
   search: string;
   askAI?: boolean;
 }>) => {
-  if (askAI && search) {
-    return (
-      <Command.Empty className="flex min-w-[180px] items-center space-x-2 rounded bg-neutral-100 px-3 py-2">
-        <Magic className="h-4 w-4" />
-        <p className="text-center text-sm text-neutral-600">
-          Ask AI <span className="text-black">"{search}"</span>
-        </p>
-      </Command.Empty>
-    );
-  } else {
+  // if (askAI && search) {
+  //   return (
+  //     <Command.Empty className="flex min-w-[180px] items-center space-x-2 rounded bg-neutral-100 px-3 py-2">
+  //       <Magic className="h-4 w-4" />
+  //       <p className="text-center text-sm text-neutral-600">
+  //         Ask AI <span className="text-black">"{search}"</span>
+  //       </p>
+  //     </Command.Empty>
+  //   );
+  // } else {
     return (
       <Command.Empty className="p-2 text-center text-sm text-neutral-400">
         {children}
       </Command.Empty>
     );
-  }
+  // }
 };
 
 const isReactNode = (element: any): element is ReactNode =>

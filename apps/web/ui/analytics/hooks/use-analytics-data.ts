@@ -3,7 +3,7 @@
  */
 
 import { fetcher } from "@dub/utils";
-import useSWR, { type SWRConfiguration } from "swr";
+import useSWR, { type SWRConfiguration, useSWRConfig } from "swr";
 import { useAnalyticsApi, useAnalyticsWorkspace } from "./use-analytics-context";
 
 export interface UseAnalyticsDataOptions {
@@ -37,12 +37,25 @@ export function useAnalyticsData<T = any>(
   mutate: () => void;
 } {
   const { requiresUpgrade } = useAnalyticsWorkspace();
+  const { cache } = useSWRConfig();
+
+  // Check if we have cached data for this endpoint
+  const cachedEntry = endpoint ? cache.get(endpoint) : undefined;
+  
+  // Extract data and check cache freshness
+  // The cache returns SWR state with our added _pimms_cached_at timestamp
+  const cachedData = cachedEntry;
+  const cacheTimestamp = (cachedEntry as any)?._pimms_cached_at || 0;
+  const cacheAge = cacheTimestamp ? Date.now() - cacheTimestamp : Infinity;
+  const isCacheFresh = cacheAge < 60000; // Fresh if < 60 seconds old
 
   const { data, isLoading, error, mutate } = useSWR<T>(
     !options?.demo && endpoint ? endpoint : null,
     fetcher,
     {
       shouldRetryOnError: !requiresUpgrade,
+      // Only revalidate if cache is stale or doesn't exist
+      revalidateIfStale: !isCacheFresh,
       dedupingInterval: 60000,
       revalidateOnFocus: false,
       keepPreviousData: true,

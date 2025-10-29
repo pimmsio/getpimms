@@ -37,7 +37,7 @@ const OPTIONS = {
   qr: "q",
   duplicate: "d",
   id: "i",
-  move: "m",
+  // move: "m",
   archive: "a",
   transfer: "t",
   delete: "x",

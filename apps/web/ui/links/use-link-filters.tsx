@@ -24,78 +24,69 @@ export function useLinkFilters() {
   const { searchParams } = useRouterStuff();
 
   // Decide on the folderId to use
-  let folderId = searchParams.get("folderId");
-  if (folderId) {
-    folderId = folderId === "unsorted" ? "" : folderId;
-  } else {
-    folderId = defaultFolderId ?? "";
-  }
+  // COMMENTED OUT: Folder filtering disabled
+  // let folderId = searchParams.get("folderId");
+  // if (folderId) {
+  //   folderId = folderId === "unsorted" ? "" : folderId;
+  // } else {
+  //   folderId = defaultFolderId ?? "";
+  // }
 
   const { queryParams, searchParamsObj } = useRouterStuff();
 
   const { tags, tagsAsync } = useTagFilterOptions({
     search: selectedFilter === "tagIds" ? debouncedSearch : "",
-    folderId,
+    // folderId, // COMMENTED OUT: Folder filtering disabled
     enabled: selectedFilter === "tagIds" || Boolean(searchParamsObj.tagIds),
   });
 
   const domains = useDomainFilterOptions({
-    folderId,
+    // folderId, // COMMENTED OUT: Folder filtering disabled
     enabled: selectedFilter === "domain" || Boolean(searchParamsObj.domain),
   });
 
   const users = useUserFilterOptions({
-    folderId,
+    // folderId, // COMMENTED OUT: Folder filtering disabled
     enabled: selectedFilter === "userId" || Boolean(searchParamsObj.userId),
   });
 
+  // Fetch filter data eagerly so search/filter works when dropdown opens
   const { options: utmSources } = useUtmValues({
     utmField: "utm_source",
-    folderId,
-    enabled: selectedFilter === "utm_source" || Boolean(searchParamsObj.utm_source),
+    enabled: true, // Always fetch so data is ready when filter opens
   });
 
   const { options: utmMediums } = useUtmValues({
     utmField: "utm_medium",
-    folderId,
-    enabled: selectedFilter === "utm_medium" || Boolean(searchParamsObj.utm_medium),
+    enabled: true,
   });
 
   const { options: utmCampaigns } = useUtmValues({
     utmField: "utm_campaign",
-    folderId,
-    enabled: selectedFilter === "utm_campaign" || Boolean(searchParamsObj.utm_campaign),
+    enabled: true,
   });
 
   const { options: utmTerms } = useUtmValues({
     utmField: "utm_term",
-    folderId,
-    enabled: selectedFilter === "utm_term" || Boolean(searchParamsObj.utm_term),
+    enabled: true,
   });
 
   const { options: utmContents } = useUtmValues({
     utmField: "utm_content",
-    folderId,
-    enabled: selectedFilter === "utm_content" || Boolean(searchParamsObj.utm_content),
+    enabled: true,
   });
 
   const { options: urls } = useUrlValues({
-    folderId,
-    enabled: selectedFilter === "url" || Boolean(searchParamsObj.url),
+    enabled: true,
   });
 
-  const folders = useFolderFilterOptions({
-    enabled: selectedFilter === "folderId" || Boolean(searchParamsObj.folderId),
-  });
+  // COMMENTED OUT: Folder filtering disabled
+  // const folders = useFolderFilterOptions({
+  //   enabled: selectedFilter === "folderId" || Boolean(searchParamsObj.folderId),
+  // });
 
   const filters = useMemo(() => {
     return [
-      {
-        key: "folderId",
-        icon: FolderIcon,
-        label: "Folder",
-        options: folders ?? null,
-      },
       {
         key: "tagIds",
         icon: Tag,
@@ -120,52 +111,53 @@ export function useLinkFilters() {
             hideDuringSearch,
           })) ?? null,
       },
-      {
-        key: "domain",
-        icon: Globe,
-        label: "Domain",
-        getOptionIcon: (value) => (
-          <BlurImage
-            src={`${GOOGLE_FAVICON_URL}${value}`}
-            alt={value}
-            className="h-4 w-4 rounded-full"
-            width={16}
-            height={16}
-          />
-        ),
-        options: domains.map(({ slug, count }) => ({
-          value: slug,
-          label: slug,
-          right: count,
-        })),
-      },
-      {
-        key: "userId",
-        icon: User,
-        label: "Creator",
-        options:
-          // @ts-expect-error
-          users?.map(({ id, name, email, image, count }) => ({
-            value: id,
-            label: name || email,
-            icon: (
-              <Avatar
-                user={{
-                  id,
-                  name,
-                  image,
-                }}
-                className="h-4 w-4"
-              />
-            ),
-            right: count,
-          })) ?? null,
-      },
+      // {
+      //   key: "domain",
+      //   icon: Globe,
+      //   label: "Domain",
+      //   getOptionIcon: (value) => (
+      //     <BlurImage
+      //       src={`${GOOGLE_FAVICON_URL}${value}`}
+      //       alt={value}
+      //       className="h-4 w-4 rounded-full"
+      //       width={16}
+      //       height={16}
+      //     />
+      //   ),
+      //   options: domains.map(({ slug, count }) => ({
+      //     value: slug,
+      //     label: slug,
+      //     right: count,
+      //   })),
+      // },
+      // {
+      //   key: "userId",
+      //   icon: User,
+      //   label: "Creator",
+      //   options:
+      //     // @ts-expect-error
+      //     users?.map(({ id, name, email, image, count }) => ({
+      //       value: id,
+      //       label: name || email,
+      //       icon: (
+      //         <Avatar
+      //           user={{
+      //             id,
+      //             name,
+      //             image,
+      //           }}
+      //           className="h-4 w-4"
+      //         />
+      //       ),
+      //       right: count,
+      //     })) ?? null,
+      // },
       {
         key: "url",
         icon: Link4,
         label: "Destination URL",
         multiple: true,
+        shouldFilter: true,
         getOptionIcon: (value, props) => (
           <LinkLogo
             apexDomain={getApexDomain(value)}
@@ -173,12 +165,11 @@ export function useLinkFilters() {
           />
         ),
         getOptionLabel: (value) => {
-          // Display URL without protocol
           return value.replace(/^https?:\/\//, '').replace(/\/$/, '');
         },
         options: urls?.map(({ value, label, count }) => ({
-          value,  // Keep original URL with protocol for backend filtering
-          label: label.replace(/^https?:\/\//, '').replace(/\/$/, ''),  // Normalize display
+          value,
+          label: label.replace(/^https?:\/\//, '').replace(/\/$/, ''),
           right: count,
         })) ?? null,
       },
@@ -187,6 +178,7 @@ export function useLinkFilters() {
         icon: Tag,
         label: "UTM Source",
         multiple: true,
+        shouldFilter: true,
         options: utmSources ?? null,
       },
       {
@@ -194,6 +186,7 @@ export function useLinkFilters() {
         icon: Tag,
         label: "UTM Medium",
         multiple: true,
+        shouldFilter: true,
         options: utmMediums ?? null,
       },
       {
@@ -201,6 +194,7 @@ export function useLinkFilters() {
         icon: Tag,
         label: "UTM Campaign",
         multiple: true,
+        shouldFilter: true,
         options: utmCampaigns ?? null,
       },
       {
@@ -208,6 +202,7 @@ export function useLinkFilters() {
         icon: Tag,
         label: "UTM Term",
         multiple: true,
+        shouldFilter: true,
         options: utmTerms ?? null,
       },
       {
@@ -215,10 +210,17 @@ export function useLinkFilters() {
         icon: Tag,
         label: "UTM Content",
         multiple: true,
+        shouldFilter: true,
         options: utmContents ?? null,
       },
+      // {
+      //   key: "folderId",
+      //   icon: FolderIcon,
+      //   label: "Folder",
+      //   options: folders ?? null,
+      // },
     ];
-  }, [folders, tags, urls, utmSources, utmMediums, utmCampaigns, utmTerms, utmContents, tagsAsync]);
+  }, [/* folders, */ tags, urls, utmSources, utmMediums, utmCampaigns, utmTerms, utmContents, tagsAsync]); // COMMENTED OUT: folders - Folder filtering disabled
 
   const selectedTagIds = useMemo(
     () => searchParamsObj["tagIds"]?.split(",")?.filter(Boolean) ?? [],
@@ -424,7 +426,7 @@ export function useLinkFilters() {
 
   const onRemoveAll = () => {
     queryParams({
-      del: ["folderId", "tagIds", "domain", "userId", "url", "search", "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "start", "end", "interval"],
+      del: [/* "folderId", */ "tagIds", "domain", "userId", "url", "search", "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "start", "end", "interval"], // COMMENTED OUT: folderId - Folder filtering disabled
     });
   };
 
@@ -441,11 +443,11 @@ export function useLinkFilters() {
 
 function useTagFilterOptions({
   search,
-  folderId,
+  // folderId, // COMMENTED OUT: Folder filtering disabled
   enabled,
 }: {
   search: string;
-  folderId: string;
+  // folderId: string; // COMMENTED OUT: Folder filtering disabled
   enabled: boolean;
 }) {
   const { searchParamsObj } = useRouterStuff();
@@ -472,7 +474,7 @@ function useTagFilterOptions({
       tagId: string;
       _count: number;
     }[]
-  >({ query: { groupBy: "tagId", showArchived, folderId }, enabled });
+  >({ query: { groupBy: "tagId", showArchived /* , folderId */ }, enabled }); // COMMENTED OUT: folderId - Folder filtering disabled
 
   const tagsResult = useMemo(() => {
     return loadingTags ||
@@ -505,7 +507,7 @@ function useTagFilterOptions({
   return { tags: tagsResult, tagsAsync };
 }
 
-function useDomainFilterOptions({ folderId, enabled }: { folderId: string, enabled: boolean }) {
+function useDomainFilterOptions({ /* folderId, */ enabled }: { /* folderId: string, */ enabled: boolean }) { // COMMENTED OUT: Folder filtering disabled
   const { showArchived } = useContext(LinksDisplayContext);
 
   const { data: domainsCount } = useLinksCount<
@@ -517,7 +519,7 @@ function useDomainFilterOptions({ folderId, enabled }: { folderId: string, enabl
     query: {
       groupBy: "domain",
       showArchived,
-      folderId,
+      // folderId, // COMMENTED OUT: Folder filtering disabled
     },
     enabled
   });
@@ -534,7 +536,7 @@ function useDomainFilterOptions({ folderId, enabled }: { folderId: string, enabl
   }, [domainsCount]);
 }
 
-function useUserFilterOptions({ folderId, enabled }: { folderId: string, enabled: boolean }) {
+function useUserFilterOptions({ /* folderId, */ enabled }: { /* folderId: string, */ enabled: boolean }) { // COMMENTED OUT: Folder filtering disabled
   const { users } = useUsers();
   const { showArchived } = useContext(LinksDisplayContext);
 
@@ -547,7 +549,7 @@ function useUserFilterOptions({ folderId, enabled }: { folderId: string, enabled
     query: {
       groupBy: "userId",
       showArchived,
-      folderId,
+      // folderId, // COMMENTED OUT: Folder filtering disabled
     },
     enabled
   });

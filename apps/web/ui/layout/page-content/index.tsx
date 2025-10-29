@@ -33,7 +33,7 @@ export function PageContent({
     <div
       className={cn(
         "pt-3 bg-zinc-100 md:bg-white",
-        (hasTitle || hasDescription) && "md:mt-6 md:py-3",
+        (hasTitle || hasDescription) && "md:mt-6 md:pt-3",
         className,
       )}
     >

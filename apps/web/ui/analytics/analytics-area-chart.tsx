@@ -74,6 +74,7 @@ export default function AnalyticsAreaChart({
     fetcher,
     {
       shouldRetryOnError: !requiresUpgrade,
+      revalidateIfStale: true, // Only revalidate if cache is stale (>60s old)
       dedupingInterval: 60000,
       revalidateOnFocus: false,
       keepPreviousData: true,
@@ -101,18 +102,25 @@ export default function AnalyticsAreaChart({
   const demo = !!data && !isLoading && (demoFromProps || isDataEmpty);
 
   const chartData = useMemo(
-    () =>
-      demo
-        ? DEMO_DATA
-        : data?.map(({ start, clicks, leads, sales, saleAmount }) => ({
-            date: new Date(start),
-            values: {
-              clicks,
-              leads,
-              sales,
-              saleAmount: (saleAmount ?? 0) / 100,
-            },
-          })) ?? null,
+    () => {
+      if (demo) {
+        return DEMO_DATA;
+      }
+
+      if (!data || !Array.isArray(data)) {
+        return null;
+      }
+
+      return data.map(({ start, clicks, leads, sales, saleAmount }) => ({
+        date: new Date(start),
+        values: {
+          clicks,
+          leads,
+          sales,
+          saleAmount: (saleAmount ?? 0) / 100,
+        },
+      }));
+    },
     [data, demo],
   );
 

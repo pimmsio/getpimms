@@ -18,12 +18,20 @@ import { LOCALHOST_IP } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
 import { NextResponse } from "next/server";
 
-// GET /api/links – get all links for a workspace
+// GET /api/links – get all links for a workspace
 export const GET = withWorkspace(
   async ({ headers, searchParams, workspace, session }) => {
     const params = getLinksQuerySchemaExtended.parse(searchParams);
     const { domain, folderId, search, tagId, tagIds, tagNames, tenantId } =
       params;
+
+    console.log('🔍 [API /links] Incoming UTM filters:', {
+      utm_source: params.utm_source,
+      utm_medium: params.utm_medium,
+      utm_campaign: params.utm_campaign,
+      utm_term: params.utm_term,
+      utm_content: params.utm_content,
+    });
 
     if (domain) {
       await getDomainOrThrow({ workspace, domain });

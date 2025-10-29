@@ -1,7 +1,7 @@
 import { useRouterStuff } from "@dub/ui";
 import { fetcher } from "@dub/utils";
 import { useMemo } from "react";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 import useWorkspace from "./use-workspace";
 
 type UtmField = "utm_source" | "utm_medium" | "utm_campaign" | "utm_term" | "utm_content";
@@ -12,20 +12,28 @@ export default function useUtmValues({
   enabled = true,
 }: {
   utmField: UtmField;
-  folderId: string;
+  folderId?: string; // COMMENTED OUT: Folder filtering disabled - made optional
   enabled: boolean;
 }) {
   const { id: workspaceId } = useWorkspace();
   const { getQueryString } = useRouterStuff();
+  const { cache } = useSWRConfig();
 
   const queryString = getQueryString(
     {
       workspaceId,
       groupBy: utmField,
-      folderId,
+      ...(folderId && { folderId }), // COMMENTED OUT: Folder filtering disabled - only include if provided
     },
     { include: [] },
   );
+
+  const endpoint = workspaceId && enabled ? `/api/links/count${queryString}` : null;
+
+  const cachedEntry = endpoint ? cache.get(endpoint) : undefined;
+  const cacheTimestamp = (cachedEntry as any)?._pimms_cached_at || 0;
+  const cacheAge = cacheTimestamp ? Date.now() - cacheTimestamp : Infinity;
+  const isCacheFresh = cacheAge < 60000;
 
   const { data, error } = useSWR<
     Array<{
@@ -34,11 +42,14 @@ export default function useUtmValues({
       _count: number;
     }>
   >(
-    workspaceId && enabled ? `/api/links/count${queryString}` : null,
+    endpoint,
     fetcher,
     {
       dedupingInterval: 60000,
       revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateIfStale: !isCacheFresh,
+      keepPreviousData: true,
     },
   );
 

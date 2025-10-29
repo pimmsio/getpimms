@@ -1,6 +1,6 @@
 import { fetcher } from "@dub/utils";
 import { useContext } from "react";
-import useSWR, { SWRConfiguration } from "swr";
+import useSWR, { SWRConfiguration, useSWRConfig } from "swr";
 import { AnalyticsContext } from "@/ui/analytics/analytics-provider";
 
 interface LinkInsightData {
@@ -45,6 +45,7 @@ export default function useLinkInsights(
   options?: SWRConfiguration,
 ) {
   const { baseApiPath, queryString, requiresUpgrade } = useContext(AnalyticsContext);
+  const { cache } = useSWRConfig();
 
   // Force event=composite to get all metrics (clicks, leads, sales)
   let enhancedQueryString = queryString.includes('event=') 
@@ -63,11 +64,24 @@ export default function useLinkInsights(
     
   // Removed groupBy parameter - using days only
 
+  const endpoint = `${baseApiPath}/link-insights?${enhancedQueryString}`;
+
+  // Check if we have cached data for this endpoint
+  const cachedEntry = cache.get(endpoint);
+  
+  // Extract data and check cache freshness
+  // The cache returns SWR state with our added _pimms_cached_at timestamp
+  const cacheTimestamp = (cachedEntry as any)?._pimms_cached_at || 0;
+  const cacheAge = cacheTimestamp ? Date.now() - cacheTimestamp : Infinity;
+  const isCacheFresh = cacheAge < 60000; // Fresh if < 60 seconds old
+
   const { data, error, isLoading } = useSWR<LinkInsightsResponse>(
-    `${baseApiPath}/link-insights?${enhancedQueryString}`,
+    endpoint,
     fetcher,
     {
       shouldRetryOnError: !requiresUpgrade,
+      // Only revalidate if cache is stale or doesn't exist
+      revalidateIfStale: !isCacheFresh,
       dedupingInterval: 60000,
       revalidateOnFocus: false,
       keepPreviousData: true,
