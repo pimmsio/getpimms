@@ -126,6 +126,6 @@ export const POST = withWorkspace(
   },
   {
     requiredPermissions: ["links.write"],
-    requiredPlan: ["advanced", "enterprise"],
+    requiredPlan: ["enterprise"],
   },
 );

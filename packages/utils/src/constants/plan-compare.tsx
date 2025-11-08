@@ -219,7 +219,7 @@ export const PLAN_COMPARE_FEATURES: {
           enterprise: true,
         },
         text: ({ id, plan }) =>
-          id === "free" || id === "starter" ? (
+          id === "free" ? (
             "No sales tracking"
           ) : (
             <>

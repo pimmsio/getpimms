@@ -202,6 +202,6 @@ export const GET = withWorkspace(
     return NextResponse.json(topLinksWithEarnings);
   },
   {
-    requiredPlan: ["advanced", "enterprise"],
+    requiredPlan: ["enterprise"],
   },
 );

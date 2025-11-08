@@ -3,20 +3,22 @@
 import { getStripe } from "@/lib/stripe/client";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { Button, ButtonProps } from "@dub/ui";
-import { APP_DOMAIN, capitalize, cn, SELF_SERVE_PAID_PLANS } from "@dub/utils";
+import { APP_DOMAIN, capitalize, cn, type EventsLimit } from "@dub/utils";
 import { usePlausible } from "next-plausible";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
 import { useState } from "react";
 
 export function UpgradePlanButton({
-  plan,
+  eventsLimit,
   period,
+  variant = "default",
   className,
   ...rest
 }: {
-  plan: string;
-  period: "monthly" | "yearly";
+  eventsLimit: EventsLimit;
+  period: "monthly" | "yearly" | "lifetime";
+  variant?: "default" | "white";
 } & Partial<ButtonProps>) {
   const router = useRouter();
   const pathname = usePathname();
@@ -25,16 +27,11 @@ export function UpgradePlanButton({
 
   const plausible = usePlausible();
 
-  const selectedPlan =
-    SELF_SERVE_PAID_PLANS.find(
-      (p) => p.name.toLowerCase() === plan.toLowerCase(),
-    ) ?? SELF_SERVE_PAID_PLANS[0];
-
   const [clicked, setClicked] = useState(false);
 
   const queryString = searchParams.toString();
 
-  const isCurrentPlan = currentPlan === selectedPlan.name.toLowerCase();
+  const isCurrentPlan = currentPlan === "pro";
 
   return (
     <Button
@@ -42,23 +39,20 @@ export function UpgradePlanButton({
       text={
         isCurrentPlan
           ? "Your current plan"
-          : currentPlan === "free"
-            ? `Get started with ${selectedPlan.name} ${capitalize(period)}`
-            : `Switch to ${selectedPlan.name} ${capitalize(period)}`
+          : rest.text || (currentPlan === "free"
+            ? `Get started with Pro ${capitalize(period)}`
+            : `Switch to Pro ${capitalize(period)}`)
       }
-      className={cn("text-sm rounded-2xl text-white bg-gradient-to-r from-[#2fcdfa] to-[#3970ff] hover:scale-105 transition-all duration-300", className)}
+      className={cn(
+        "text-sm rounded-2xl transition-all duration-300",
+        variant === "white" 
+          ? "bg-white text-gray-900 hover:bg-gray-100" 
+          : "text-white bg-gradient-to-r from-[#2fcdfa] to-[#3970ff] hover:scale-105",
+        className
+      )}
       loading={clicked}
       disabled={!workspaceSlug || isCurrentPlan}
       onClick={() => {
-        if (selectedPlan.name === "Starter") {
-          window.location.href = `/api/pay?id=5kAeWJ8Q2f0O1e8dQS`;
-          return;
-        }
-        if (selectedPlan.name === "Pro") {
-          window.location.href = `/api/pay?id=9B66oG2VvcYq3STaGmc7u07`;
-          return;
-        }
-
         setClicked(true);
         fetch(`/api/workspaces/${workspaceSlug}/billing/upgrade`, {
           method: "POST",
@@ -66,7 +60,8 @@ export function UpgradePlanButton({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            plan,
+            plan: "pro",
+            eventsLimit: eventsLimit,
             period,
             baseUrl: `${APP_DOMAIN}${pathname}${queryString.length > 0 ? `?${queryString}` : ""}`,
             onboarding: searchParams.get("workspace"),
@@ -75,8 +70,10 @@ export function UpgradePlanButton({
           .then(async (res) => {
             plausible("Opened Checkout");
             posthog.capture("checkout_opened", {
-              currentPlan: capitalize(plan),
-              newPlan: selectedPlan.name,
+              currentPlan: currentPlan,
+              newPlan: "pro",
+              eventsLimit: eventsLimit,
+              period: period,
             });
             if (currentPlan === "free") {
               const data = await res.json();

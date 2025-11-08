@@ -22,7 +22,7 @@ export function ClicksExceeded({
     name: "PIMMS",
     slug: "pimms",    usage: 2410,
     usageLimit: 600,
-    plan: "business",
+    plan: "pro",
   },
   type = "firstUsageLimitEmail",
 }: {

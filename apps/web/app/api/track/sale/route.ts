@@ -300,11 +300,6 @@ export const POST = withWorkspace(
   {
     requiredPlan: [
       "pro",
-      "business",
-      "business plus",
-      "business extra",
-      "business max",
-      "advanced",
       "enterprise",
     ],
     requiredPermissions: ["sale.write"],

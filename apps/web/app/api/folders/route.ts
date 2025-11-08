@@ -36,11 +36,6 @@ export const GET = withWorkspace(
     requiredPermissions: ["folders.read"],
     requiredPlan: [
       "pro",
-      "business",
-      "business plus",
-      "business extra",
-      "business max",
-      "advanced",
       "enterprise",
     ],
     featureFlag: "linkFolders",
@@ -117,11 +112,6 @@ export const POST = withWorkspace(
     requiredPermissions: ["folders.write"],
     requiredPlan: [
       "pro",
-      "business",
-      "business plus",
-      "business extra",
-      "business max",
-      "advanced",
       "enterprise",
     ],
     featureFlag: "linkFolders",
