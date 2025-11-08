@@ -86,7 +86,7 @@ export const PATCH = withPartnerProfile(
       },
       workspace: {
         id: program.workspaceId,
-        plan: "business",
+        plan: "pro",
       },
       userId: session.user.id,
       skipKeyChecks,

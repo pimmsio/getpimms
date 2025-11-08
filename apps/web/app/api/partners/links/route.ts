@@ -58,7 +58,7 @@ export const GET = withWorkspace(
     return NextResponse.json(z.array(ProgramPartnerLinkSchema).parse(links));
   },
   {
-    requiredPlan: ["advanced", "enterprise"],
+    requiredPlan: ["enterprise"],
   },
 );
 
@@ -145,6 +145,6 @@ export const POST = withWorkspace(
     return NextResponse.json(partnerLink, { status: 201 });
   },
   {
-    requiredPlan: ["advanced", "enterprise"],
+    requiredPlan: ["enterprise"],
   },
 );

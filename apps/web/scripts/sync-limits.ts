@@ -4,7 +4,7 @@ import "dotenv-flow/config";
 async function main() {
   const response = await prisma.project.updateMany({
     where: {
-      plan: "business",
+      plan: "pro",
     },
     data: {
       domainsLimit: 40,

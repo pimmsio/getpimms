@@ -47,11 +47,6 @@ export const GET = withWorkspace(
   {
     requiredPlan: [
       "pro",
-      "business",
-      "business extra",
-      "business max",
-      "business plus",
-      "advanced",
       "enterprise",
     ],
   },
@@ -109,6 +104,6 @@ export const POST = withWorkspace(
     });
   },
   {
-    requiredPlan: ["advanced", "enterprise"],
+    requiredPlan: ["enterprise"],
   },
 );

@@ -8,13 +8,9 @@ export default function PlanBadge({ plan }: { plan: PlanProps }) {
       variant={
         plan === "enterprise"
           ? "violet"
-          : plan === "advanced"
-            ? "amber"
-            : plan.startsWith("business")
-              ? "sky"
-              : plan === "pro"
-                ? "blue"
-                : "black"
+          : plan === "pro"
+            ? "blue"
+            : "black"
       }
     >
       {capitalize(plan)}

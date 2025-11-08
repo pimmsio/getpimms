@@ -39,7 +39,7 @@ async function main() {
         const partnerLink = await createPartnerLink({
           workspace: {
             id: program.workspace.id,
-            plan: program.workspace.plan as "advanced",
+            plan: program.workspace.plan as "enterprise",
             webhookEnabled: program.workspace.webhookEnabled,
           },
           program: {

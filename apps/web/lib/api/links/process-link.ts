@@ -129,7 +129,7 @@ export async function processLink<T extends Record<string, any>>({
         code: "forbidden",
       };
     }
-  } else if (workspace.plan === "starter") {
+  } else if (workspace.plan === "pro") {
     try {
       businessFeaturesCheck(payload);
       proFeaturesCheck(payload);
@@ -463,7 +463,7 @@ export async function processLink<T extends Record<string, any>>({
 
     // Webhook validity checks
     if (webhookIds && webhookIds.length > 0) {
-      if (!workspace || workspace.plan === "free" || workspace.plan === "starter") {
+      if (!workspace || workspace.plan === "free") {
         return {
           link: payload,
           error:
