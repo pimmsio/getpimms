@@ -22,7 +22,6 @@ import {
 import { normalizeUtmValue } from "@dub/utils";
 import { useState } from "react";
 import { toast } from "sonner";
-import { mutate } from "swr";
 
 type ParameterType = "source" | "medium" | "campaign" | "term" | "content";
 
@@ -34,19 +33,19 @@ interface Parameter {
 export default function WorkspaceUtmParametersClient() {
   const { id: workspaceId } = useWorkspace();
 
-  const { utmSources, loading: loadingSources } = useUtmSources({
+  const { utmSources, loading: loadingSources, mutate: mutateSources } = useUtmSources({
     query: { sortBy: "name", sortOrder: "asc" },
   });
-  const { utmMediums, loading: loadingMediums } = useUtmMediums({
+  const { utmMediums, loading: loadingMediums, mutate: mutateMediums } = useUtmMediums({
     query: { sortBy: "name", sortOrder: "asc" },
   });
-  const { utmCampaigns, loading: loadingCampaigns } = useUtmCampaigns({
+  const { utmCampaigns, loading: loadingCampaigns, mutate: mutateCampaigns } = useUtmCampaigns({
     query: { sortBy: "name", sortOrder: "asc" },
   });
-  const { utmTerms, loading: loadingTerms } = useUtmTerms({
+  const { utmTerms, loading: loadingTerms, mutate: mutateTerms } = useUtmTerms({
     query: { sortBy: "name", sortOrder: "asc" },
   });
-  const { utmContents, loading: loadingContents } = useUtmContents({
+  const { utmContents, loading: loadingContents, mutate: mutateContents } = useUtmContents({
     query: { sortBy: "name", sortOrder: "asc" },
   });
 
@@ -77,6 +76,7 @@ export default function WorkspaceUtmParametersClient() {
             count={sourcesCount}
             loading={loadingSources}
             workspaceId={workspaceId}
+            mutateCache={mutateSources}
           />
           <ParameterColumn
             type="medium"
@@ -86,6 +86,7 @@ export default function WorkspaceUtmParametersClient() {
             count={mediumsCount}
             loading={loadingMediums}
             workspaceId={workspaceId}
+            mutateCache={mutateMediums}
           />
           <ParameterColumn
             type="campaign"
@@ -95,6 +96,7 @@ export default function WorkspaceUtmParametersClient() {
             count={campaignsCount}
             loading={loadingCampaigns}
             workspaceId={workspaceId}
+            mutateCache={mutateCampaigns}
           />
           <ParameterColumn
             type="term"
@@ -104,6 +106,7 @@ export default function WorkspaceUtmParametersClient() {
             count={termsCount}
             loading={loadingTerms}
             workspaceId={workspaceId}
+            mutateCache={mutateTerms}
           />
           <ParameterColumn
             type="content"
@@ -113,6 +116,7 @@ export default function WorkspaceUtmParametersClient() {
             count={contentsCount}
             loading={loadingContents}
             workspaceId={workspaceId}
+            mutateCache={mutateContents}
           />
         </div>
       </div>
@@ -128,6 +132,7 @@ function ParameterColumn({
   count,
   loading,
   workspaceId,
+  mutateCache,
 }: {
   type: ParameterType;
   icon: React.ComponentType<{ className?: string }>;
@@ -136,6 +141,7 @@ function ParameterColumn({
   count?: number;
   loading: boolean;
   workspaceId: string | undefined;
+  mutateCache: (data?: any, opts?: any) => Promise<any>;
 }) {
   if (!workspaceId) return null;
   const [newValue, setNewValue] = useState("");
@@ -151,46 +157,26 @@ function ParameterColumn({
     setIsAdding(true);
     const normalizedValue = normalizeUtmValue(newValue);
 
-    console.log(`[UTM Parameters] Adding ${type}:`, normalizedValue);
-
     try {
-      const apiUrl = `/api/${apiEndpoint}?workspaceId=${workspaceId}`;
-      console.log(`[UTM Parameters] API URL:`, apiUrl);
-      
-      const res = await fetch(apiUrl, {
+      const res = await fetch(`/api/${apiEndpoint}?workspaceId=${workspaceId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: normalizedValue }),
       });
 
       if (res.ok) {
-        const newParam = await res.json();
-        console.log(`[UTM Parameters] Successfully created:`, newParam);
-        
         toast.success(`Successfully added ${title.toLowerCase()}!`);
         setNewValue("");
         
-        // Mutate with function matcher to invalidate all related queries
-        console.log(`[UTM Parameters] Mutating cache for ${apiEndpoint}...`);
-        await mutate(
-          (key) => {
-            const matches = typeof key === "string" && 
-              key.startsWith(`/api/${apiEndpoint}`) && 
-              key.includes(`workspaceId=${workspaceId}`);
-            if (matches) {
-              console.log(`[UTM Parameters] Invalidating cache key:`, key);
-            }
-            return matches;
-          },
-        );
-        console.log(`[UTM Parameters] Cache mutation complete`);
+        // Use bound mutate function from the hook
+        console.log(`[UTM Parameters] Revalidating cache after add...`);
+        await mutateCache(undefined, { revalidate: true });
+        console.log(`[UTM Parameters] Cache revalidation complete`);
       } else {
         const { error } = await res.json();
-        console.error(`[UTM Parameters] API error:`, error);
         toast.error(error.message);
       }
     } catch (error) {
-      console.error(`[UTM Parameters] Exception:`, error);
       toast.error(`Failed to add ${title.toLowerCase()}`);
     } finally {
       setIsAdding(false);
@@ -198,28 +184,34 @@ function ParameterColumn({
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm(`Are you sure you want to delete this ${title.toLowerCase()}?`))
-      return;
-
+    console.log(`[UTM Parameters] Delete clicked for ${type}:`, id);
+    console.log(`[UTM Parameters] Setting deletingId to:`, id);
     setDeletingId(id);
 
     try {
-      const res = await fetch(
-        `/api/${apiEndpoint}/${id}?workspaceId=${workspaceId}`,
-        { method: "DELETE" },
-      );
+      const apiUrl = `/api/${apiEndpoint}/${id}?workspaceId=${workspaceId}`;
+      console.log(`[UTM Parameters] Deleting from:`, apiUrl);
+      
+      const res = await fetch(apiUrl, { method: "DELETE" });
+      console.log(`[UTM Parameters] Delete response status:`, res.status);
 
       if (res.ok) {
         toast.success(`Successfully deleted ${title.toLowerCase()}!`);
-        await mutate(`/api/${apiEndpoint}?workspaceId=${workspaceId}`);
-        await mutate(`/api/${apiEndpoint}/count?workspaceId=${workspaceId}`);
+        
+        // Use bound mutate function from the hook
+        console.log(`[UTM Parameters] Revalidating cache after delete...`);
+        await mutateCache(undefined, { revalidate: true });
+        console.log(`[UTM Parameters] Cache revalidation complete`);
       } else {
         const { error } = await res.json();
+        console.error(`[UTM Parameters] Delete error:`, error);
         toast.error(error.message);
       }
     } catch (error) {
+      console.error(`[UTM Parameters] Delete exception:`, error);
       toast.error(`Failed to delete ${title.toLowerCase()}`);
     } finally {
+      console.log(`[UTM Parameters] Clearing deletingId`);
       setDeletingId(null);
     }
   };
@@ -281,7 +273,11 @@ function ParameterColumn({
                   <button
                     onClick={() => handleDelete(param.id)}
                     disabled={deletingId === param.id}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-red-600 disabled:cursor-not-allowed"
+                    className={`transition-opacity text-neutral-400 hover:text-red-600 disabled:cursor-not-allowed ${
+                      deletingId === param.id
+                        ? "opacity-100"
+                        : "opacity-0 group-hover:opacity-100"
+                    }`}
                   >
                     {deletingId === param.id ? (
                       <LoadingSpinner className="size-4" />

@@ -246,9 +246,9 @@ function LinkBuilderInner({
                   <>
                     <LinkBuilderDestinationUrlInput />
 
-                    <UTMParametersSection />
-
                     <LinkBuilderShortLinkInput />
+
+                    <UTMParametersSection />
 
                     <TagSelect />
 

@@ -17,7 +17,7 @@ export default function useUtmMediums({
   const { id: workspaceId } = useWorkspace();
   const { getQueryString } = useRouterStuff();
 
-  const { data: utmMediums, error } = useSWR<
+  const { data: utmMediums, error, mutate } = useSWR<
     Array<{
       id: string;
       name: string;
@@ -40,6 +40,7 @@ export default function useUtmMediums({
     utmMediums,
     loading: !error && !utmMediums,
     error,
+    mutate,
   };
 }
 

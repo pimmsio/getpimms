@@ -2,20 +2,24 @@
 
 import { cn, normalizeUtmValue } from "@dub/utils";
 import { ReactNode } from "react";
-import { UtmSourceSelect } from "./utm-source-select";
-import { UtmMediumSelect } from "./utm-medium-select";
-import { UtmCampaignSelect } from "./utm-campaign-select";
-import { UtmTermSelect } from "./utm-term-select";
-import { UtmContentSelect } from "./utm-content-select";
+import { UtmParameterSelect } from "./utm-parameter-select";
+import { UtmParameterType } from "@/lib/utils/utm-parameter-utils";
 
-const UTM_FIELDS = [
+const UTM_FIELDS: Array<{
+  key: string;
+  label: string;
+  placeholder: string;
+  description: string;
+  example: string;
+  parameterType: UtmParameterType;
+}> = [
   {
     key: "utm_campaign",
     label: "Campaign",
     placeholder: "black-friday",
     description: "Use to identify your campaign",
     example: "e.g. black-friday, launch-new-product",
-    Component: UtmCampaignSelect,
+    parameterType: "campaign",
   },
   {
     key: "utm_medium",
@@ -23,7 +27,7 @@ const UTM_FIELDS = [
     placeholder: "email",
     description: "Use to identify the type of content",
     example: "e.g. email, social-post, meta-ad",
-    Component: UtmMediumSelect,
+    parameterType: "medium",
   },
   {
     key: "utm_source",
@@ -31,7 +35,7 @@ const UTM_FIELDS = [
     placeholder: "linkedin",
     description: "Use to identify which site or software send the traffic",
     example: "e.g. linkedin, brevo, meta",
-    Component: UtmSourceSelect,
+    parameterType: "source",
   },
   {
     key: "utm_content",
@@ -39,7 +43,7 @@ const UTM_FIELDS = [
     placeholder: "post-1",
     description: "Use to differentiate the content",
     example: "e.g. post-1, email-2, ad-3",
-    Component: UtmContentSelect,
+    parameterType: "content",
   },
   {
     key: "utm_term",
@@ -47,7 +51,7 @@ const UTM_FIELDS = [
     placeholder: "keyword",
     description: "Use to add a list of keywords",
     example: "e.g. marketing, saas, automation",
-    Component: UtmTermSelect,
+    parameterType: "term",
   },
 ] as const;
 
@@ -72,7 +76,7 @@ export function UTMBuilderEnhanced({
 
   return (
     <div className={cn("space-y-4", className)}>
-      {UTM_FIELDS.map(({ key, label, description, example, Component }) => (
+      {UTM_FIELDS.map(({ key, label, description, example, parameterType }) => (
         <div key={key} className="space-y-1.5">
           <div className="flex items-baseline justify-between">
             <label className="text-sm font-medium text-neutral-900">
@@ -80,7 +84,8 @@ export function UTMBuilderEnhanced({
             </label>
             <span className="text-xs text-neutral-500">{description}</span>
           </div>
-          <Component
+          <UtmParameterSelect
+            parameterType={parameterType}
             value={values[key]}
             onChange={(value) => handleChange(key, value)}
             disabled={disabled}

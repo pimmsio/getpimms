@@ -17,7 +17,7 @@ export default function useUtmCampaigns({
   const { id: workspaceId } = useWorkspace();
   const { getQueryString } = useRouterStuff();
 
-  const { data: utmCampaigns, error } = useSWR<
+  const { data: utmCampaigns, error, mutate } = useSWR<
     Array<{
       id: string;
       name: string;
@@ -40,6 +40,7 @@ export default function useUtmCampaigns({
     utmCampaigns,
     loading: !error && !utmCampaigns,
     error,
+    mutate,
   };
 }
 

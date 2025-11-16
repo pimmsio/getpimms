@@ -94,11 +94,15 @@ export const DestinationUrlInput = forwardRef<
             } block w-full rounded-lg border border-neutral-200 text-black outline-none placeholder:text-neutral-400 sm:text-sm transition-all`}
             aria-invalid="true"
             {...inputProps}
-            {...(formContext && {
-              onChange: (e) => {
-                formContext.setValue("url", e.target.value);
-              },
-            })}
+            onChange={(e) => {
+              // Prefer the provided onChange (e.g., Controller's field.onChange) which already updates form state
+              if (typeof inputProps.onChange === "function") {
+                inputProps.onChange(e);
+              } else if (formContext) {
+                // Fallback: update RHF value and mark as dirty when no external handler is provided
+                formContext.setValue("url", e.target.value, { shouldDirty: true });
+              }
+            }}
           />
           {error && (
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">

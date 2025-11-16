@@ -9,6 +9,7 @@ import { LinkFormData } from "./link-builder-provider";
 import { useUtmSectionContextOptional } from "./utm-section-context";
 import { saveUtmParameters } from "./save-utm-parameters";
 import useWorkspace from "@/lib/swr/use-workspace";
+import { checkUtmParameterExists, UtmParameterType } from "@/lib/utils/utm-parameter-utils";
 
 export function UtmDetectionBanner() {
   const { control, setValue } = useFormContext<LinkFormData>();
@@ -87,8 +88,31 @@ export function UtmDetectionBanner() {
       }
 
       // Save UTM parameters to the library (silently, no toast)
+      // But first check which ones don't exist to avoid 409 errors
       if (workspaceId) {
-        await saveUtmParameters(utmParams, workspaceId);
+        try {
+          // Check each parameter for existence
+          const existenceChecks = await Promise.all(
+            Object.entries(utmParams).map(async ([key, value]) => {
+              const type = key.replace('utm_', '') as UtmParameterType;
+              const normalizedValue = normalizeUtmValue(value);
+              const exists = await checkUtmParameterExists(type, normalizedValue, workspaceId);
+              return { key, exists };
+            })
+          );
+          
+          // Only save parameters that don't exist
+          const newParams = Object.fromEntries(
+            Object.entries(utmParams).filter((_, idx) => !existenceChecks[idx].exists)
+          );
+          
+          if (Object.keys(newParams).length > 0) {
+            await saveUtmParameters(newParams, workspaceId);
+          }
+        } catch (error) {
+          console.error("Error checking/saving UTM parameters:", error);
+          // Continue even if saving fails - the parameters are already in the form
+        }
       }
     } catch (error) {
       console.error("Failed to auto-extract UTMs:", error);
@@ -202,22 +226,52 @@ export function UtmDetectionBanner() {
       }
 
       // Save UTM parameters to the library
+      // But first check which ones don't exist to avoid 409 errors
       if (workspaceId) {
-        const results = await saveUtmParameters(detectedUtms, workspaceId);
-        
-        // Check if any parameters were saved successfully
-        const successCount = Object.values(results).filter(r => r?.success).length;
-        const totalCount = Object.keys(detectedUtms).length;
-        
-        if (successCount === totalCount) {
-          toast.success(
-            "UTM parameters extracted and saved to your library!",
+        try {
+          // Check each parameter for existence
+          const existenceChecks = await Promise.all(
+            Object.entries(detectedUtms).map(async ([key, value]) => {
+              const type = key.replace('utm_', '') as UtmParameterType;
+              const normalizedValue = normalizeUtmValue(value);
+              const exists = await checkUtmParameterExists(type, normalizedValue, workspaceId);
+              return { key, exists };
+            })
           );
-        } else if (successCount > 0) {
-          toast.success(
-            `UTM parameters extracted. ${successCount}/${totalCount} saved to library.`,
+          
+          // Only save parameters that don't exist
+          const newParams = Object.fromEntries(
+            Object.entries(detectedUtms).filter((_, idx) => !existenceChecks[idx].exists)
           );
-        } else {
+          
+          if (Object.keys(newParams).length > 0) {
+            const results = await saveUtmParameters(newParams, workspaceId);
+            
+            // Check if any parameters were saved successfully
+            const successCount = Object.values(results).filter(r => r?.success).length;
+            const totalCount = Object.keys(newParams).length;
+            
+            if (successCount === totalCount) {
+              toast.success(
+                "UTM parameters extracted and saved to your library!",
+              );
+            } else if (successCount > 0) {
+              toast.success(
+                `UTM parameters extracted. ${successCount}/${totalCount} saved to library.`,
+              );
+            } else {
+              toast.success(
+                "UTM parameters extracted and normalized.",
+              );
+            }
+          } else {
+            // All parameters already exist
+            toast.success(
+              "UTM parameters extracted and normalized.",
+            );
+          }
+        } catch (error) {
+          console.error("Error checking/saving UTM parameters:", error);
           toast.success(
             "UTM parameters extracted and normalized.",
           );

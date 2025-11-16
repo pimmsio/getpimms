@@ -17,7 +17,7 @@ export default function useUtmTerms({
   const { id: workspaceId } = useWorkspace();
   const { getQueryString } = useRouterStuff();
 
-  const { data: utmTerms, error } = useSWR<
+  const { data: utmTerms, error, mutate } = useSWR<
     Array<{
       id: string;
       name: string;
@@ -40,6 +40,7 @@ export default function useUtmTerms({
     utmTerms,
     loading: !error && !utmTerms,
     error,
+    mutate,
   };
 }
 

@@ -17,7 +17,7 @@ export default function useUtmSources({
   const { id: workspaceId } = useWorkspace();
   const { getQueryString } = useRouterStuff();
 
-  const { data: utmSources, error } = useSWR<
+  const { data: utmSources, error, mutate } = useSWR<
     Array<{
       id: string;
       name: string;
@@ -40,6 +40,7 @@ export default function useUtmSources({
     utmSources,
     loading: !error && !utmSources,
     error,
+    mutate,
   };
 }
 

@@ -13,8 +13,6 @@ export function LinkActionBar({ children }: PropsWithChildren) {
   const { props } = useLinkBuilderContext();
   const { skipNextAutoFetch } = useMetatags();
 
-  const showActionBar = isDirty || isSubmitting;
-
   const handleDiscard = async () => {    
     if (props) {
       skipNextAutoFetch(); // Prevent auto-fetch on reset
@@ -27,15 +25,13 @@ export function LinkActionBar({ children }: PropsWithChildren) {
   return (
     <div
       className={cn(
-        "sticky bottom-0 z-50 w-full overflow-hidden lg:bottom-4 lg:[filter:drop-shadow(0_5px_8px_#222A351d)]",
+        "fixed inset-x-0 bottom-0 lg:bottom-4 z-50 w-full overflow-hidden [filter:drop-shadow(0_5px_8px_#222A351d)]",
       )}
     >
       <div
         className={cn(
           "mx-auto flex max-w-3xl items-center justify-between gap-4 overflow-hidden px-4 py-3",
           "border-t border-neutral-200 bg-white lg:rounded lg:border",
-          "lg:transition-[opacity,transform]",
-          !showActionBar && "lg:translate-y-4 lg:scale-90 lg:opacity-0",
         )}
       >
         {children || (
@@ -53,6 +49,7 @@ export function LinkActionBar({ children }: PropsWithChildren) {
             variant="secondary"
             className="hidden h-7 px-2.5 text-xs lg:flex"
             onClick={handleDiscard}
+            disabled={!isDirty}
           />
           <Button
             type="submit"
@@ -60,6 +57,7 @@ export function LinkActionBar({ children }: PropsWithChildren) {
             variant="primary"
             className="h-7 px-2.5 text-xs"
             loading={isSubmitting || isSubmitSuccessful}
+            disabled={!isDirty}
           />
         </div>
       </div>

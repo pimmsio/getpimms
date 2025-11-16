@@ -212,13 +212,13 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
         )}
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="relative flex min-h-full flex-col px-4 md:px-6">
+        <div className="relative flex min-h-full flex-col px-4 pb-20 md:px-6 lg:pb-24">
           <div className="relative mx-auto flex w-full max-w-xl flex-col gap-7 pb-4 pt-10 lg:pb-10">
             <LinkBuilderDestinationUrlInput />
 
-            <UTMParametersSection />
-
             <LinkBuilderShortLinkInput />
+
+            <UTMParametersSection />
 
             <TagSelect />
 

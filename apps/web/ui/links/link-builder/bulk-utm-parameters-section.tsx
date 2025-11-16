@@ -2,11 +2,7 @@
 
 import { LinkFormData } from "@/ui/links/link-builder/link-builder-provider";
 import { UtmTemplateSelect } from "@/ui/links/link-builder/utm-template-select";
-import { UtmCampaignSelect } from "@/ui/links/link-builder/utm-campaign-select";
-import { UtmContentSelect } from "@/ui/links/link-builder/utm-content-select";
-import { UtmMediumSelect } from "@/ui/links/link-builder/utm-medium-select";
-import { UtmSourceSelect } from "@/ui/links/link-builder/utm-source-select";
-import { UtmTermSelect } from "@/ui/links/link-builder/utm-term-select";
+import { UtmParameterSelect } from "@/ui/links/link-builder/utm-parameter-select";
 import { COLORS_LIST } from "@/ui/links/tag-badge";
 import { UtmTemplateWithUserProps } from "@/lib/types";
 import useWorkspace from "@/lib/swr/use-workspace";
@@ -151,7 +147,8 @@ export function BulkUTMParametersSection({
           <label className="text-sm font-medium text-neutral-700">
             Campaign
           </label>
-          <UtmCampaignSelect
+          <UtmParameterSelect
+            parameterType="campaign"
             value={manualUtms.utm_campaign}
             onChange={(val) => handleManualChange("utm_campaign", val)}
             className="border-neutral-200 focus-within:border-neutral-400"
@@ -162,7 +159,8 @@ export function BulkUTMParametersSection({
           <label className="text-sm font-medium text-neutral-700">
             Medium
           </label>
-          <UtmMediumSelect
+          <UtmParameterSelect
+            parameterType="medium"
             value={manualUtms.utm_medium}
             onChange={(val) => handleManualChange("utm_medium", val)}
             className="border-neutral-200 focus-within:border-neutral-400"
@@ -173,7 +171,8 @@ export function BulkUTMParametersSection({
           <label className="text-sm font-medium text-neutral-700">
             Source
           </label>
-          <UtmSourceSelect
+          <UtmParameterSelect
+            parameterType="source"
             value={manualUtms.utm_source}
             onChange={(val) => handleManualChange("utm_source", val)}
             className="border-neutral-200 focus-within:border-neutral-400"
@@ -184,7 +183,8 @@ export function BulkUTMParametersSection({
           <label className="text-sm font-medium text-neutral-700">
             Content
           </label>
-          <UtmContentSelect
+          <UtmParameterSelect
+            parameterType="content"
             value={manualUtms.utm_content}
             onChange={(val) => handleManualChange("utm_content", val)}
             className="border-neutral-200 focus-within:border-neutral-400"
@@ -195,7 +195,8 @@ export function BulkUTMParametersSection({
           <label className="text-sm font-medium text-neutral-700">
             Term
           </label>
-          <UtmTermSelect
+          <UtmParameterSelect
+            parameterType="term"
             value={manualUtms.utm_term}
             onChange={(val) => handleManualChange("utm_term", val)}
             className="border-neutral-200 focus-within:border-neutral-400"

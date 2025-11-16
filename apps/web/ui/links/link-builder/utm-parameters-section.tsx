@@ -1,12 +1,8 @@
 import useWorkspace from "@/lib/swr/use-workspace";
 import { UtmTemplateWithUserProps } from "@/lib/types";
 import { LinkFormData } from "@/ui/links/link-builder/link-builder-provider";
-import { UtmCampaignSelect } from "@/ui/links/link-builder/utm-campaign-select";
-import { UtmContentSelect } from "@/ui/links/link-builder/utm-content-select";
-import { UtmMediumSelect } from "@/ui/links/link-builder/utm-medium-select";
-import { UtmSourceSelect } from "@/ui/links/link-builder/utm-source-select";
+import { UtmParameterSelect } from "@/ui/links/link-builder/utm-parameter-select";
 import { UtmTemplateSelect } from "@/ui/links/link-builder/utm-template-select";
-import { UtmTermSelect } from "@/ui/links/link-builder/utm-term-select";
 import { COLORS_LIST } from "@/ui/links/tag-badge";
 import { cn, fetcher, normalizeUtmValue, getUrlFromString } from "@dub/utils";
 import { Check, ChevronDown, Copy } from "lucide-react";
@@ -14,6 +10,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import useSWR from "swr";
 import { UtmSectionProvider } from "./utm-section-context";
+import { Badge } from "@dub/ui";
 
 export function UTMParametersSection() {
   const { id: workspaceId } = useWorkspace();
@@ -183,14 +180,14 @@ export function UTMParametersSection() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="text-left">
-              <div className="text-sm font-normal text-neutral-900">
-                UTM Parameters
+              <div className="text-sm font-medium text-neutral-700">
+                <Badge variant={hasUtmParams ? "green" : "neutral"} className="text-sm font-medium text-neutral-700">?utm_</Badge> parameters
               </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {hasUtmParams && (
-              <span className="inline-flex items-center rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-600">
+              <span className={cn("inline-flex items-center rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-600", (selectedTemplate || hasUtmParams) && "bg-green-100 text-green-900")}>
                 {selectedTemplate ? "Template" : "Active"}
               </span>
             )}
@@ -276,7 +273,8 @@ export function UTMParametersSection() {
                     selectedTemplate && colorConfig?.css,
                   )}
                 >
-                  <UtmCampaignSelect
+                  <UtmParameterSelect
+                    parameterType="campaign"
                     value={utm_campaign || ""}
                     onChange={(val) => handleChange("utm_campaign", val)}
                     className={cn(
@@ -297,7 +295,8 @@ export function UTMParametersSection() {
                     selectedTemplate && colorConfig?.css,
                   )}
                 >
-                  <UtmMediumSelect
+                  <UtmParameterSelect
+                    parameterType="medium"
                     value={utm_medium || ""}
                     onChange={(val) => handleChange("utm_medium", val)}
                     className={cn(
@@ -318,7 +317,8 @@ export function UTMParametersSection() {
                     selectedTemplate && colorConfig?.css,
                   )}
                 >
-                  <UtmSourceSelect
+                  <UtmParameterSelect
+                    parameterType="source"
                     value={utm_source || ""}
                     onChange={(val) => handleChange("utm_source", val)}
                     className={cn(
@@ -339,7 +339,8 @@ export function UTMParametersSection() {
                     selectedTemplate && colorConfig?.css,
                   )}
                 >
-                  <UtmContentSelect
+                  <UtmParameterSelect
+                    parameterType="content"
                     value={utm_content || ""}
                     onChange={(val) => handleChange("utm_content", val)}
                     className={cn(
@@ -360,7 +361,8 @@ export function UTMParametersSection() {
                     selectedTemplate && colorConfig?.css,
                   )}
                 >
-                  <UtmTermSelect
+                  <UtmParameterSelect
+                    parameterType="term"
                     value={utm_term || ""}
                     onChange={(val) => handleChange("utm_term", val)}
                     className={cn(
