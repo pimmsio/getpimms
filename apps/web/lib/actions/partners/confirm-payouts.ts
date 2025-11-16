@@ -95,7 +95,7 @@ export const confirmPayoutsAction = authActionClient
 
       const fee =
         amount *
-        PAYOUT_FEES[workspace.plan?.split(" ")[0] ?? "business"][
+        PAYOUT_FEES[workspace.plan?.split(" ")[0] ?? "pro"][
           paymentMethod.type === "us_bank_account" ? "ach" : "card"
         ];
 

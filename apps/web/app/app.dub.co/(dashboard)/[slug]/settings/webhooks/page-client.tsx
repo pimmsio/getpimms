@@ -21,7 +21,7 @@ export default function WebhooksPageClient() {
     role: role,
   });
 
-  const needsHigherPlan = plan === "free" || plan === "starter";
+  const needsHigherPlan = plan === "free";
 
   if (needsHigherPlan) {
     return (

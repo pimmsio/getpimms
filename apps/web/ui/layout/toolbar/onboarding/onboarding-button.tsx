@@ -97,7 +97,7 @@ function OnboardingButtonInner({
         display: "Collect a first Lead",
         cta: `/${slug}/conversions`,
         checked: customersCount && customersCount > 0,
-        premium: "starter",
+        premium: "pro",
         feature: "Lead tracking",
       },
       // {

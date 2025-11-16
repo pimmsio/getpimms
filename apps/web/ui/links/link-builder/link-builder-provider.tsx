@@ -58,7 +58,7 @@ export function LinkBuilderProvider({
       rest.duplicateProps || {
         ...DEFAULT_LINK_PROPS,
         trackConversion:
-          (plan && plan !== "free" && plan !== "starter" && conversionEnabled) ||
+          (plan && plan !== "free" && conversionEnabled) ||
           false,
       },
   });

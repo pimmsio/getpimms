@@ -5,16 +5,24 @@ import { APP_DOMAIN } from "@dub/utils";
 import { NextResponse } from "next/server";
 
 export const POST = withWorkspace(async ({ req, workspace, session }) => {
-  let { plan, period, baseUrl, onboarding } = await req.json();
+  let { plan, eventsLimit, period, baseUrl, onboarding } = await req.json();
 
-  if (!plan || !period) {
-    return new Response("Invalid plan or period", { status: 400 });
+  if (!plan || !period || !eventsLimit) {
+    return new Response("Invalid plan, period, or eventsLimit", { status: 400 });
   }
 
   plan = plan.replace(" ", "+");
 
+  // Create lookup key based on tier: pro_5k_monthly, pro_20k_yearly, etc.
+  const tierName = eventsLimit === 5000 ? '5k' : 
+                   eventsLimit === 20000 ? '20k' :
+                   eventsLimit === 40000 ? '40k' :
+                   eventsLimit === 100000 ? '100k' : '200k';
+  
+  const lookupKey = `${plan}_${tierName}_${period}`;
+
   const prices = await stripe.prices.list({
-    lookup_keys: [`${plan}_${period}`],
+    lookup_keys: [lookupKey],
   });
 
   const activeSubscription = workspace.stripeId
@@ -96,10 +104,12 @@ export const POST = withWorkspace(async ({ req, workspace, session }) => {
       tax_id_collection: {
         enabled: true,
       },
-      mode: "subscription",
+      mode: period === "lifetime" ? "payment" : "subscription",
       client_reference_id: workspace.id,
       metadata: {
         pimmsCustomerId: session.user.id,
+        eventsLimit: eventsLimit.toString(),
+        period: period,
       },
     });
 

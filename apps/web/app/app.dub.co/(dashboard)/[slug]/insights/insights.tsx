@@ -36,7 +36,7 @@ function InsightsTableContainer() {
   const { selectedTab } = useContext(AnalyticsContext);
   const { plan, slug } = useWorkspace();
 
-  const requiresUpgrade = (plan === "free" || plan === "starter") && selectedTab === "sales";
+  const requiresUpgrade = plan === "free" && selectedTab === "sales";
 
   return (
     <InsightsTable

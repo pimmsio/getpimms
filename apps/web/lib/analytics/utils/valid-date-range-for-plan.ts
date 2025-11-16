@@ -43,7 +43,7 @@ export const validDateRangeForPlan = ({
 
   // Starter plan users can only get analytics for 6 months
   if (
-    plan === "starter" &&
+    plan === "pro" &&
     start &&
     getDaysDifference(new Date(start), end || now) > 183
   ) {

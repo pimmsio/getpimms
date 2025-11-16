@@ -78,7 +78,7 @@ export const POST = withPartnerProfile(
       },
       workspace: {
         id: program.workspaceId,
-        plan: "business",
+        plan: "pro",
       },
       userId: session.user.id,
       skipFolderChecks: true, // can't be changed by the partner

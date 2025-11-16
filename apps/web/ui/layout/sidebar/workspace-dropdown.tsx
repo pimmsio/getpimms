@@ -9,7 +9,7 @@ import {
   Popover,
   useScrollProgress,
 } from "@dub/ui";
-import { Book2, Check2, ConnectedDots, Plus } from "@dub/ui/icons";
+import { Check2, ConnectedDots, Plus } from "@dub/ui/icons";
 import { cn, OG_AVATAR_URL } from "@dub/utils";
 import { ChevronsUpDown, HelpCircle, Settings2 } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -47,7 +47,8 @@ export function WorkspaceDropdown() {
       return {
         ...selectedWorkspace,
         image:
-          selectedWorkspace.logo || `https://avatar.vercel.sh/${selectedWorkspace.id}`,
+          selectedWorkspace.logo ||
+          `https://avatar.vercel.sh/${selectedWorkspace.id}`,
       };
 
       // return personal account selector if there's no workspace or error (user doesn't have access to workspace)
@@ -226,29 +227,31 @@ function WorkspaceList({
         className="relative max-h-80 w-full space-y-0.5 overflow-auto rounded bg-white text-base sm:w-64 sm:text-sm"
       >
         <div className="flex flex-col gap-0.5 border-b border-neutral-100 p-2">
-          {filteredLinks.map(({ name, icon: Icon, href: linkHref, target, isWorkspaceLink }) => {
-            const finalHref = isWorkspaceLink 
-              ? linkHref.replace("{slug}", selected.slug)
-              : linkHref;
-            
-            return (
-              <Link
-                key={name}
-                href={finalHref}
-                target={target}
-                className={cn(
-                  "flex items-center gap-x-3 rounded-lg px-3 py-2.5 transition-all duration-75",
-                  "text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900",
-                  "active:scale-[0.98]",
-                  "outline-none focus-visible:ring-2 focus-visible:ring-neutral-300",
-                )}
-                onClick={() => setOpenPopover(false)}
-              >
-                <Icon className="size-4 shrink-0 text-neutral-600" />
-                <span className="block truncate">{name}</span>
-              </Link>
-            );
-          })}
+          {filteredLinks.map(
+            ({ name, icon: Icon, href: linkHref, target, isWorkspaceLink }) => {
+              const finalHref = isWorkspaceLink
+                ? linkHref.replace("{slug}", selected.slug)
+                : linkHref;
+
+              return (
+                <Link
+                  key={name}
+                  href={finalHref}
+                  target={target}
+                  className={cn(
+                    "flex items-center gap-x-3 rounded-lg px-3 py-2.5 transition-all duration-75",
+                    "text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900",
+                    "active:scale-[0.98]",
+                    "outline-none focus-visible:ring-2 focus-visible:ring-neutral-300",
+                  )}
+                  onClick={() => setOpenPopover(false)}
+                >
+                  <Icon className="size-4 shrink-0 text-neutral-600" />
+                  <span className="block truncate">{name}</span>
+                </Link>
+              );
+            },
+          )}
         </div>
         <div className="p-2">
           <div className="flex items-center justify-between pb-1">
@@ -328,10 +331,6 @@ function WorkspaceList({
 const getPlanColor = (plan: string) =>
   plan === "enterprise"
     ? "text-purple-700"
-    : plan === "advanced"
-      ? "text-amber-800"
-      : plan.startsWith("business")
-        ? "text-blue-900"
-        : plan === "pro"
-          ? "text-cyan-900"
-          : "text-neutral-500";
+    : plan === "pro"
+        ? "text-cyan-900"
+        : "text-neutral-500";
