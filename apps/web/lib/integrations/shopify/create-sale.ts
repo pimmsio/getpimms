@@ -1,6 +1,7 @@
 import { includeTags } from "@/lib/api/links/include-tags";
 import { notifyPartnerSale } from "@/lib/api/partners/notify-partner-sale";
 import { createPartnerCommission } from "@/lib/partners/create-partner-commission";
+import { calculateEvents } from "@/lib/utils/calculate-events";
 import { recordSale } from "@/lib/tinybird";
 import { redis } from "@/lib/upstash";
 import { sendWorkspaceWebhook } from "@/lib/webhook/publish";
@@ -62,6 +63,9 @@ export async function createShopifySale({
     metadata: JSON.stringify(order),
   };
 
+  // Calculate total events: clicks (0) + leads (0) + sales (amount / $10)
+  const saleEvents = calculateEvents(0, 0, amount);
+
   const [_sale, link, workspace, customer] = await Promise.all([
     // record sale
     recordSale(saleData),
@@ -88,11 +92,14 @@ export async function createShopifySale({
         id: workspaceId,
       },
       data: {
-        usage: {
-          increment: 1,
+        eventsUsage: {
+          increment: saleEvents,
         },
         salesUsage: {
           increment: amount,
+        },
+        totalEvents: {
+          increment: saleEvents,
         },
       },
     }),

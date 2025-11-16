@@ -54,8 +54,9 @@ export const GET = async (req: Request) => {
           project: {
             select: {
               plan: true,
-              usage: true,
-              usageLimit: true,
+              eventsUsage: true,
+              eventsLimit: true,
+              createdAt: true,
             },
           },
         },
@@ -80,13 +81,13 @@ export const GET = async (req: Request) => {
         throwError: true,
       });
 
-      if (workspace && workspace.usage > workspace.usageLimit) {
+      if (workspace && workspace.eventsUsage >= workspace.eventsLimit) {
         throw new DubApiError({
           code: "forbidden",
           message: exceededLimitError({
             plan: workspace.plan as PlanProps,
-            limit: workspace.usageLimit,
-            type: "clicks",
+            limit: workspace.eventsLimit,
+            type: "events",
           }),
         });
       }

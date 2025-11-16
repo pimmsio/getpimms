@@ -100,7 +100,10 @@ export async function createNewCustomer(event: Stripe.Event) {
         id: workspaceId,
       },
       data: {
-        usage: {
+        eventsUsage: {
+          increment: 1,
+        },
+        totalEvents: {
           increment: 1,
         },
       },

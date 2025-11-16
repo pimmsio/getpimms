@@ -3,13 +3,17 @@
 import { PlanFeatures } from "@/ui/workspaces/plan-features";
 import { UpgradePlanButton } from "@/ui/workspaces/upgrade-plan-button";
 import { Badge } from "@dub/ui";
-import { cn, PRO_PLAN, STARTER_PLAN } from "@dub/utils";
+import { cn, PRO_PLAN, STARTER_PLAN, type ProPlan } from "@dub/utils";
 import NumberFlow from "@number-flow/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CSSProperties, useState } from "react";
 import { LaterButton } from "../../later-button";
 
 const plans = [STARTER_PLAN, PRO_PLAN /*, ADVANCED_PLAN*/];
+
+function isProPlan(plan: typeof plans[number]): plan is ProPlan {
+  return plan.name === "Pro" && "eventsLimit" in plan;
+}
 
 export function PlanSelector() {
   const [period, setPeriod] = useState<"monthly" | "yearly">("yearly");
@@ -68,24 +72,22 @@ export function PlanSelector() {
                 )}
               </div>
               <div className="mt-1 text-base font-medium text-neutral-400">
-                <NumberFlow
-                  value={
-                    plan.name === "Pro" || plan.name === "Starter"
-                      ? plan.price["lifetime"]!
-                      : plan.price[period]!
-                  }
-                  className="tabular-nums text-neutral-700"
-                  format={{
-                    style: "currency",
-                    currency: "EUR",
-                    maximumFractionDigits: 0,
-                  }}
-                  continuous
-                />
-                {plan.name === "Starter" || plan.name === "Pro" ? (
-                  <span className="ml-1 font-medium">One-time payment</span>
+                {plan.name === "Free" ? (
+                  <span className="tabular-nums text-neutral-700">Free</span>
                 ) : (
-                  <span className="ml-1 font-medium">Contact Sales</span>
+                  <>
+                    <NumberFlow
+                      value={plan.price?.lifetime || 99}
+                      className="tabular-nums text-neutral-700"
+                      format={{
+                        style: "currency",
+                        currency: "EUR",
+                        maximumFractionDigits: 0,
+                      }}
+                      continuous
+                    />
+                    <span className="ml-1 font-medium">One-time payment</span>
+                  </>
                 )}
               </div>
               <div className="my-6 flex gap-2">
@@ -97,12 +99,21 @@ export function PlanSelector() {
                 >
                   <ChevronLeft className="size-5 text-neutral-800" />
                 </button>
-                <UpgradePlanButton
-                  plan={plan.name.toLowerCase()}
-                  period={period}
-                  text="Unlock lifetime access"
-                  className="h-10 rounded shadow-sm"
-                />
+                {isProPlan(plan) ? (
+                  <UpgradePlanButton
+                    eventsLimit={plan.eventsLimit}
+                    period="lifetime"
+                    text="Unlock lifetime access"
+                    className="h-10 rounded shadow-sm"
+                  />
+                ) : (
+                  <button
+                    disabled
+                    className="h-10 rounded shadow-sm bg-neutral-100 text-neutral-500 px-4 text-sm font-medium"
+                  >
+                    Current plan
+                  </button>
+                )}
                 <button
                   type="button"
                   className="h-full w-fit rounded bg-neutral-100 px-2.5 transition-colors duration-75 hover:bg-neutral-200/80 active:bg-neutral-200 disabled:opacity-30 lg:hidden"

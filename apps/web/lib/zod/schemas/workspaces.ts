@@ -47,8 +47,13 @@ export const WorkspaceSchema = z
     totalClicks: z
       .number()
       .describe("The total number of clicks in the workspace."),
-    usage: z.number().describe("The usage of the workspace."),
-    usageLimit: z.number().describe("The usage limit of the workspace."),
+    totalEvents: z
+      .number()
+      .describe("The total number of events (clicks + leads + sales) in the workspace."),
+    clicksUsage: z.number().describe("The clicks usage of the workspace."),
+    leadsUsage: z.number().describe("The leads usage of the workspace."),
+    eventsUsage: z.number().describe("The total events usage (clicks + leads + sales/10)."),
+    eventsLimit: z.number().describe("The events limit of the workspace."),
     linksUsage: z.number().describe("The links usage of the workspace."),
     linksLimit: z.number().describe("The links limit of the workspace."),
     salesUsage: z

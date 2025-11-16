@@ -9,21 +9,18 @@ export const starterFeaturesCheck = (payload: NewLinkProps) => {
     ios,
     android,
     geo,
-    trackConversion,
   } = payload;
 
   if (
     password ||
     rewrite ||
-    expiresAt ||
-    trackConversion
+    expiresAt
   ) {
     const starterFeaturesString = combineWords(
       [
         password && "password protection",
         rewrite && "link cloaking",
         expiresAt && "link expiration",
-        trackConversion && "conversion tracking",
       ].filter(Boolean) as string[],
     );
 

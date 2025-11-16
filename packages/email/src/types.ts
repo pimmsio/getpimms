@@ -2,7 +2,10 @@ export type WorkspaceProps = {
   id: string;
   name: string;
   slug: string;
-  usage: number;
-  usageLimit: number;
+  eventsUsage: number;
+  eventsLimit: number;
+  clicksUsage: number;
+  leadsUsage: number;
+  salesUsage: number;
   plan: string;
 };

@@ -3,7 +3,7 @@ import { getFolderIdsToFilter } from "@/lib/analytics/get-folder-ids-to-filter";
 import { convertToCSV, validDateRangeForPlan } from "@/lib/analytics/utils";
 import { getDomainOrThrow } from "@/lib/api/domains/get-domain-or-throw";
 import { getLinkOrThrow } from "@/lib/api/links/get-link-or-throw";
-import { throwIfClicksUsageExceeded } from "@/lib/api/links/usage-checks";
+import { throwIfEventsUsageExceeded } from "@/lib/api/links/usage-checks";
 import { withWorkspace } from "@/lib/auth";
 import { verifyFolderAccess } from "@/lib/folder/permissions";
 import { ClickEvent, LeadEvent, SaleEvent } from "@/lib/types";
@@ -36,7 +36,7 @@ const columnAccessors = {
 // GET /api/events/export – get export data for analytics
 export const GET = withWorkspace(
   async ({ searchParams, workspace, session }) => {
-    throwIfClicksUsageExceeded(workspace);
+    throwIfEventsUsageExceeded(workspace);
 
     const parsedParams = eventsQuerySchema
       .and(

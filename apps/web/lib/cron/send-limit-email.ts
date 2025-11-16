@@ -22,23 +22,32 @@ export const sendLimitEmail = async ({
     (workspace.linksUsage / workspace.linksLimit) * 100,
   );
 
+  // Prepare workspace data with "exceed" for exceeded limits
+  const workspaceData = {
+    ...workspace,
+    eventsUsage: workspace.eventsUsage >= workspace.eventsLimit ? "exceed" : workspace.eventsUsage,
+    clicksUsage: workspace.clicksUsage >= workspace.eventsLimit ? "exceed" : workspace.clicksUsage,
+    leadsUsage: workspace.leadsUsage >= workspace.eventsLimit ? "exceed" : workspace.leadsUsage,
+    salesUsage: workspace.salesUsage >= workspace.eventsLimit ? "exceed" : workspace.salesUsage,
+  };
+
   return await Promise.allSettled([
     emails.map((email) => {
       limiter.schedule(() =>
         sendEmail({
           subject: type.endsWith("UsageLimitEmail")
-            ? "PiMMs Alert: Clicks Limit Exceeded"
+            ? "PiMMs Alert: Events Limit Exceeded"
             : `PiMMs Alert: ${workspace.name} has used ${percentage.toString()}% of its links limit for the month.`,
           email,
           react: type.endsWith("UsageLimitEmail")
             ? ClicksExceeded({
                 email,
-                workspace,
+                workspace: workspaceData as any,
                 type: type as "firstUsageLimitEmail" | "secondUsageLimitEmail",
               })
             : LinksLimitAlert({
                 email,
-                workspace,
+                workspace: workspaceData as any,
               }),
           variant: "notifications",
         }),

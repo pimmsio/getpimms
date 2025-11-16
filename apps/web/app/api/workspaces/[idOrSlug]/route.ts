@@ -39,6 +39,7 @@ export const GET = withWorkspace(
         ...WorkspaceSchemaExtended.parse({
           ...workspace,
           id: prefixWorkspaceId(workspace.id),
+          totalEvents: workspace.totalEvents ?? 0,
           domains,
           // TODO: Remove this once Folders goes GA
           flags: {
@@ -122,6 +123,7 @@ export const PATCH = withWorkspace(
         WorkspaceSchema.parse({
           ...response,
           id: prefixWorkspaceId(response.id),
+          totalEvents: response.totalEvents ?? 0,
           flags: await getFeatureFlags({
             workspaceId: response.id,
           }),

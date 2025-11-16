@@ -1,4 +1,5 @@
 import { INFINITY_NUMBER } from "./misc";
+import { type EventsLimit, getPricingForEvents, getLinksForEvents, getDomainsForEvents, getRetentionForEvents, getFakePriceId } from "../functions/pricing-tiers";
 
 export type PlanFeature = {
   id?: string;
@@ -10,7 +11,86 @@ export type PlanFeature = {
   };
 };
 
-export const PLANS = [
+export type PlanLimits = {
+  links: number;
+  clicks: number;
+  events: number;
+  sales: number;
+  domains: number;
+  tags: number;
+  folders: number;
+  users: number;
+  ai: number;
+  api: number;
+  retention: string;
+};
+
+export type PlanPrice = {
+  monthly?: number | null;
+  yearly?: number | null;
+  lifetime?: number | null;
+  ids?: string[];
+};
+
+export type BasePlan = {
+  name: string;
+  price: PlanPrice;
+  limits: PlanLimits;
+  featureTitle?: string;
+  features?: PlanFeature[];
+};
+
+export type ProPlan = BasePlan & {
+  name: "Pro";
+  eventsLimit: EventsLimit;
+};
+
+export type Plan = BasePlan | ProPlan;
+
+// Create Pro plans for each event tier
+const createProPlan = (events: EventsLimit): ProPlan => ({
+  name: "Pro",
+  eventsLimit: events,
+  price: {
+    monthly: getPricingForEvents(events, 'monthly'),
+    yearly: getPricingForEvents(events, 'yearly'),
+    lifetime: events === 100000 ? null : getPricingForEvents(events, 'lifetime'),
+    ids: [
+      getFakePriceId(events, 'monthly'),
+      getFakePriceId(events, 'yearly'),
+      ...(events === 100000 ? [] : [getFakePriceId(events, 'lifetime')]),
+    ],
+  },
+  limits: {
+    links: getLinksForEvents(events),
+    clicks: events,
+    events: events,
+    sales: INFINITY_NUMBER,
+    domains: getDomainsForEvents(events),
+    tags: INFINITY_NUMBER,
+    folders: INFINITY_NUMBER,
+    users: INFINITY_NUMBER,
+    ai: 1000,
+    api: 3000,
+    retention: getRetentionForEvents(events),
+  },
+  featureTitle: "Everything included:",
+  features: [
+    { id: "links", text: `${getLinksForEvents(events)} smart links /month` },
+    { id: "events", text: `${events.toLocaleString()} tracking events /month (click, lead, sale)` },
+    { id: "integrations", text: "100+ integrations incl. Zapier" },
+    { id: "stripe", text: "Support Stripe payments" },
+    { id: "testing", text: "A/B testing" },
+    { id: "webhooks", text: "Webhooks" },
+    { id: "utm", text: "Unlimited UTM" },
+    { id: "domains", text: getDomainsForEvents(events) === Infinity ? "Unlimited custom domains" : `${getDomainsForEvents(events)} custom domains` },
+    { id: "users", text: "Unlimited team members" },
+    { id: "retention", text: getRetentionForEvents(events) === '6-month' ? "6 months of data" : "12 months of data" },
+    { id: "support", text: "3 months priority support included" },
+  ] as PlanFeature[],
+});
+
+export const PLANS: Plan[] = [
   {
     name: "Free",
     price: {
@@ -20,7 +100,8 @@ export const PLANS = [
     limits: {
       links: 10,
       clicks: 400,
-      sales: 0,
+      events: 400,
+      sales: INFINITY_NUMBER, // Free plan now includes sales tracking
       domains: 1,
       tags: 5,
       folders: 0,
@@ -45,6 +126,7 @@ export const PLANS = [
     limits: {
       links: 200,
       clicks: 50_000,
+      events: 400,
       sales: 0,
       domains: 3,
       tags: 25,
@@ -56,65 +138,34 @@ export const PLANS = [
     },
     featureTitle: "Everything in Free, plus:",
     features: [
-      { id: "links", text: "200 links /month" },
-      { id: "tracking", text: "Unlimited tracking" },
-      { id: "events", text: "Event tracking (subscription, meetings etc.)" },
-      { id: "integrations", text: "100+ integrations incl. Zapier" },
-      { id: "domains", text: "3 custom domains" },
-      { id: "users", text: "3 team members" },
-      { id: "retention", text: "6 months of data" },
-      { id: "support", text: "1 month priority support included" },
+      { id: "links", text: "10 smart links /month" },
+      { id: "events", text: "400 tracking events /month" },
+      { id: "tracking", text: "Event tracking (clicks, leads, sales)" },
+      { id: "mobile", text: "Mobile app redirects" },
+      { id: "qr", text: "Custom QR codes" },
+      { id: "domains", text: "1 custom domain" },
     ] as PlanFeature[],
   },
+  // Pro plans for each event tier
+  createProPlan(5000),
+  createProPlan(20000),
+  createProPlan(40000),
+  createProPlan(100000),
   {
-    name: "Pro",
-    price: {
-      lifetime: 99,
-      ids: [
-        "price_1R9AM5BL7DFxjjSQ9e32QsT1", // new monthly (test)
-        "price_1R9AM5BL7DFxjjSQcvE5Yu0T", // new yearly (test)
-        "price_1RBgEFBN5sOoOmBUUITvArZY", // new monthly (prod)
-        "price_1RBgEXBN5sOoOmBUcJyO7uIs", // new yearly (prod)
-      ],
-    },
-    limits: {
-      links: 600,
-      clicks: 50_000,
-      sales: 30_000_00,
-      domains: 5,
-      tags: 100,
-      folders: 20,
-      users: 5,
-      ai: 1000,
-      api: 3000,
-      retention: "1-year",
-    },
-    featureTitle: "Everything in Starter, plus:",
-    features: [
-      { id: "links", text: "600 links /month" },
-      { id: "sales", text: "Sales tracking up to 30k€ /month" },
-      { id: "stripe", text: "Stripe payments integration" },
-      { id: "testing", text: "A/B testing" },
-      { id: "webhooks", text: "Webhooks" },
-      { id: "users", text: "5 team members" },
-      { id: "retention", text: "12 months of data" },
-      { id: "support", text: "3 months priority support included" },
-    ] as PlanFeature[],
-  },
-  {
-    name: "Business",
+    name: "Enterprise",
     price: {
       monthly: null,
       yearly: null,
     },
     limits: {
       links: INFINITY_NUMBER,
-      clicks: 50_000,
-      sales: 30_000_00,
-      domains: 100,
-      tags: 100,
-      folders: 20,
-      users: 10,
+      clicks: INFINITY_NUMBER,
+      events: INFINITY_NUMBER,
+      sales: INFINITY_NUMBER,
+      domains: INFINITY_NUMBER,
+      tags: INFINITY_NUMBER,
+      folders: INFINITY_NUMBER,
+      users: INFINITY_NUMBER,
       ai: 10000,
       api: 10000,
       retention: "2-year",
@@ -131,86 +182,6 @@ export const PLANS = [
       { id: "support", text: "Priority support" },
     ] as PlanFeature[],
   },
-  // {
-  //   name: "Advanced",
-  //   price: {
-  //     monthly: 300,
-  //     yearly: 250,
-  //     ids: [
-  //       // 2025 pricing
-  //       "price_1R8Xw4AlJJEpqkPV6nwdink9", //  yearly
-  //       "price_1R3j0qAlJJEpqkPVkfGNXRwb", // monthly
-  //       "price_1R8XztAlJJEpqkPVnHmIU2tf", // yearly (test),
-  //       "price_1R7ofzAlJJEpqkPV0L2TwyJo", // monthly (test),
-  //     ],
-  //   },
-  //   limits: {
-  //     links: 50_000,
-  //     clicks: 1_000_000,
-  //     sales: 100_000_00,
-  //     domains: 250,
-  //     tags: INFINITY_NUMBER,
-  //     folders: 50,
-  //     users: 20,
-  //     ai: 1000,
-  //     api: 3000,
-  //     retention: "5-year",
-  //   },
-  //   featureTitle: "Everything in Business, plus:",
-  //   features: [
-  //     {
-  //       id: "clicks",
-  //       text: "1M tracked clicks/mo",
-  //     },
-  //     {
-  //       id: "links",
-  //       text: "50K new links/mo",
-  //     },
-  //     {
-  //       id: "retention",
-  //       text: "5-year analytics retention",
-  //     },
-  //     {
-  //       id: "sales",
-  //       text: "$100K tracked sales/mo",
-  //       tooltip: {
-  //         title:
-  //           "Use Dub Conversions to track how your link clicks are converting to signups and sales. Limits are based on the total sale amount tracked within a given month.",
-  //         cta: "Learn more.",
-  //         href: "https://d.to/conversions",
-  //       },
-  //     },
-  //     {
-  //       id: "users",
-  //       text: "20 users",
-  //     },
-  //     {
-  //       id: "roles",
-  //       text: "Folders RBAC",
-  //     },
-  //     {
-  //       id: "whitelabel",
-  //       text: "White-labeling support",
-  //     },
-  //     {
-  //       id: "volume",
-  //       text: "Lower payout fees",
-  //       tooltip: {
-  //         title: "Lower fees associated with Partner payouts.",
-  //         cta: "Learn more.",
-  //         href: "https://dub.co/help/article/partner-payouts",
-  //       },
-  //     },
-  //     {
-  //       id: "email",
-  //       text: "Branded email domains",
-  //     },
-  //     {
-  //       id: "slack",
-  //       text: "Priority Slack support",
-  //     },
-  //   ] as PlanFeature[],
-  // },
   {
     name: "Enterprise",
     price: {
@@ -220,6 +191,7 @@ export const PLANS = [
     limits: {
       links: 250000,
       clicks: 5000000,
+      events: INFINITY_NUMBER,
       sales: 1000000_00,
       domains: 1000,
       tags: INFINITY_NUMBER,
@@ -234,7 +206,7 @@ export const PLANS = [
 
 export const FREE_PLAN = PLANS.find((plan) => plan.name === "Free")!;
 export const STARTER_PLAN = PLANS.find((plan) => plan.name === "Starter")!;
-export const PRO_PLAN = PLANS.find((plan) => plan.name === "Pro")!;
+export const PRO_PLAN = PLANS.find((plan) => plan.name === "Pro" && "eventsLimit" in plan) as ProPlan;
 export const BUSINESS_PLAN = PLANS.find((plan) => plan.name === "Business")!;
 
 export const SELF_SERVE_PAID_PLANS = PLANS.filter((p) =>
@@ -275,3 +247,16 @@ export const isDowngradePlan = (currentPlan: string, newPlan: string) => {
   );
   return currentPlanIndex > newPlanIndex;
 };
+
+// Export event-based utilities
+export { 
+  calculateEvents, 
+  getPricingForEvents, 
+  getLinksForEvents, 
+  getDomainsForEvents, 
+  getRetentionForEvents,
+  getLookupKey,
+  getFakePriceId,
+  getEventsLimitFromLookupKey
+} from "../functions/pricing-tiers";
+export type { EventsLimit } from "../functions/pricing-tiers";

@@ -72,16 +72,16 @@ export const updateUsage = async () => {
   // also send 30-day summary email
   await Promise.allSettled(
     billingReset.map(async (workspace) => {
-      const { plan, usage, usageLimit } = workspace;
+      const { plan, eventsUsage, eventsLimit } = workspace;
 
       /* 
-        We only reset clicks usage if it's not over usageLimit by:
-        - 4x for free plan (4K clicks)
+        We only reset events usage if it's not over eventsLimit by:
+        - 4x for free plan (1600 events)
         - 2x for all other plans
       */
 
       const resetUsage =
-        plan === "free" ? usage <= usageLimit * 4 : usage <= usageLimit * 2;
+        plan === "free" ? eventsUsage <= eventsLimit * 4 : eventsUsage <= eventsLimit * 2;
 
       await prisma.project.update({
         where: {
@@ -89,10 +89,12 @@ export const updateUsage = async () => {
         },
         data: {
           ...(resetUsage && {
-            usage: 0,
+            clicksUsage: 0,
+            leadsUsage: 0,
+            eventsUsage: 0,
+            salesUsage: 0,
           }),
           linksUsage: 0,
-          salesUsage: 0,
           aiUsage: 0,
           sentEmails: {
             deleteMany: {
@@ -114,7 +116,7 @@ export const updateUsage = async () => {
          - the workspace was created more than 30 days ago
        */
       if (
-        workspace.usage > 0 &&
+        workspace.eventsUsage > 0 &&
         workspace.createdAt.getTime() <
           new Date().getTime() - 30 * 24 * 60 * 60 * 1000
       ) {
@@ -196,19 +198,19 @@ export const updateUsage = async () => {
 
   // Get all workspaces that have exceeded usage
   const exceedingUsage = workspaces.filter(
-    ({ usage, usageLimit }) => usage > usageLimit,
+    ({ eventsUsage, eventsLimit }) => eventsUsage > eventsLimit,
   );
 
   // Send email to notify overages
   await Promise.allSettled(
     exceedingUsage.map(async (workspace) => {
-      const { slug, plan, usage, usageLimit, users, sentEmails } = workspace;
+      const { slug, plan, eventsUsage, eventsLimit, users, sentEmails } = workspace;
       const emails = users.map((user) => user.user.email) as string[];
 
       await log({
         message: `*${slug}* is over their *${capitalize(
           plan,
-        )} Plan* usage limit. Usage: ${usage}, Limit: ${usageLimit}, Email: ${emails.join(
+        )} Plan* events limit. Usage: ${eventsUsage}, Limit: ${eventsLimit}, Email: ${emails.join(
           ", ",
         )}`,
         type: plan === "free" ? "cron" : "alerts",

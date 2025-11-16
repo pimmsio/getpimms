@@ -128,7 +128,7 @@ export const customerCreated = async (
     }),
     prisma.project.update({
       where: { id: workspaceId },
-      data: { usage: { increment: 1 } },
+      data: { leadsUsage: { increment: 1 } },
     }),
   ]);
 

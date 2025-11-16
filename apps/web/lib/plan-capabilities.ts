@@ -6,6 +6,6 @@ export const getPlanCapabilities = (
 ) => {
   return {
     canAddFolder: plan && !["free"].includes(plan),
-    canManageFolderPermissions: plan && !["free", "starter", "pro"].includes(plan), // default access level is write
+    canManageFolderPermissions: plan && !["free"].includes(plan), // default access level is write
   };
 };

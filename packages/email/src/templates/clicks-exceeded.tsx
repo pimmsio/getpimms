@@ -20,8 +20,12 @@ export function ClicksExceeded({
   workspace = {
     id: "ckqf1q3xw0000gk5u2q1q2q1q",
     name: "PIMMS",
-    slug: "pimms",    usage: 2410,
-    usageLimit: 600,
+    slug: "pimms",
+    eventsUsage: 2410,
+    eventsLimit: 600,
+    clicksUsage: 1500,
+    leadsUsage: 600,
+    salesUsage: 310,
     plan: "business",
   },
   type = "firstUsageLimitEmail",
@@ -30,16 +34,19 @@ export function ClicksExceeded({
   workspace: Partial<WorkspaceProps>;
   type: "firstUsageLimitEmail" | "secondUsageLimitEmail";
 }) {
-  const { slug, name, usage, usageLimit, plan } = workspace;
+  const { slug, name, eventsUsage, clicksUsage, leadsUsage, salesUsage, eventsLimit, plan } = workspace;
   const nextPlan = getNextPlan(plan as string);
+  
+  // Format usage values - show "exceed" or formatted number
+  const formatUsage = (val: number | string | undefined) => 
+    val === "exceed" ? "exceed" : nFormatter(val as number, { digits: 2 });
 
   return (
     <Html>
       <Head />
       <Preview>
         Your PiMMs workspace, {name || ""} has exceeded the{" "}
-        {capitalize(plan) || ""} Plan limit of {nFormatter(usageLimit)} link
-        clicks/month.
+        {capitalize(plan) || ""} Plan limit of {nFormatter(eventsLimit)} events/month.
       </Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
@@ -48,7 +55,7 @@ export function ClicksExceeded({
               <Img src={DUB_WORDMARK} height="14" alt="PIMMS" className="my-0" />
             </Section>
             <Heading className="mx-0 my-7 p-0 text-lg font-medium text-black">
-              Clicks Limit Exceeded
+              Events Limit Exceeded
             </Heading>
             <Text className="text-sm leading-6 text-black">
               Your PiMMs workspace,{" "}
@@ -61,10 +68,18 @@ export function ClicksExceeded({
               has exceeded the
               <strong> {capitalize(plan)} Plan </strong>
               limit of{" "}
-              <strong>{nFormatter(usageLimit)} link clicks/month</strong>. You
-              have used{" "}
-              <strong>{nFormatter(usage, { digits: 2 })} link clicks</strong>{" "}
-              across all your links in your current billing cycle.
+              <strong>{nFormatter(eventsLimit)} events/month</strong>.
+            </Text>
+            <Text className="text-sm leading-6 text-black">
+              <strong>Usage Summary:</strong>
+              <br />
+              • Total Events: <strong>{formatUsage(eventsUsage)}</strong>
+              <br />
+              • Clicks: <strong>{formatUsage(clicksUsage)}</strong>
+              <br />
+              • Leads: <strong>{formatUsage(leadsUsage)}</strong>
+              <br />
+              • Sales: <strong>{formatUsage(salesUsage)}</strong>
             </Text>
             <Text className="text-sm leading-6 text-black">
               All your existing links will continue to work, and we are still

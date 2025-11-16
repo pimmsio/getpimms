@@ -32,7 +32,7 @@ export const GET = withAdmin(async ({ searchParams }) => {
         totalClicks: true,
         totalLinks: true,
         linksUsage: true,
-        usage: true,
+        clicksUsage: true,
         billingCycleStart: true,
         createdAt: true,
         users: {
@@ -79,7 +79,7 @@ export const GET = withAdmin(async ({ searchParams }) => {
       const totalLinks = workspace.totalLinks;
       const totalClicks = workspace.totalClicks;
       const monthlyLinks = workspace.linksUsage;
-      const monthlyClicks = workspace.usage;
+      const monthlyClicks = workspace.clicksUsage;
 
       // Calculate activity score for Free plans only
       let activityScore: number | null = null;

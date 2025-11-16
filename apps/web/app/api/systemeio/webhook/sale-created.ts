@@ -3,6 +3,7 @@ import { createId } from "@/lib/api/create-id";
 import { includeTags } from "@/lib/api/links/include-tags";
 import { notifyPartnerSale } from "@/lib/api/partners/notify-partner-sale";
 import { createPartnerCommission } from "@/lib/partners/create-partner-commission";
+import { calculateEvents } from "@/lib/utils/calculate-events";
 import { recordLead, recordSale } from "@/lib/tinybird";
 import { redis } from "@/lib/upstash";
 import {
@@ -130,6 +131,14 @@ export async function customSaleCreated(req: Request, body: any) {
     metadata: JSON.stringify(body),
   };
 
+  // Calculate total events: clicks (0) + leads (1 if new customer) + sales (amount / $10)
+  // Note: Assuming amount is in cents. If systemeio uses dollars, this needs adjustment
+  const totalSaleEvents = calculateEvents(
+    0, // no clicks being added here
+    existingCustomer ? 0 : 1, // +1 lead if new customer
+    amount // sales amount in cents
+  );
+
   const [_sale, linkUpdated, updatedWorkspace] = await Promise.all([
     recordSale(saleData),
     prisma.link.update({
@@ -144,8 +153,10 @@ export async function customSaleCreated(req: Request, body: any) {
     prisma.project.update({
       where: { id: customer.projectId },
       data: {
-        usage: { increment: existingCustomer ? 1 : 2 },
+        eventsUsage: { increment: totalSaleEvents },
+        leadsUsage: { increment: existingCustomer ? 0 : 1 },
         salesUsage: { increment: amount },
+        totalEvents: { increment: totalSaleEvents },
       },
     }),
   ]);

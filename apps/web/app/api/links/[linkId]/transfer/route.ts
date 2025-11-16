@@ -5,6 +5,7 @@ import { getLinkOrThrow } from "@/lib/api/links/get-link-or-throw";
 import { normalizeWorkspaceId } from "@/lib/api/workspace-id";
 import { withWorkspace } from "@/lib/auth";
 import { verifyFolderAccess } from "@/lib/folder/permissions";
+import { calculateEvents } from "@/lib/utils/calculate-events";
 import { recordLink } from "@/lib/tinybird";
 import z from "@/lib/zod";
 import { prisma } from "@dub/prisma";
@@ -74,6 +75,22 @@ export const POST = withWorkspace(
       interval: "30d",
     });
 
+    const { events: linkLeads = 0 } = await getAnalytics({
+      event: "leads",
+      groupBy: "count",
+      linkId: link.id,
+      interval: "30d",
+    });
+
+    const { saleAmount: linkSalesAmount = 0 } = await getAnalytics({
+      event: "sales",
+      groupBy: "count",
+      linkId: link.id,
+      interval: "30d",
+    });
+
+    const linkEvents = calculateEvents(linkClicks, linkLeads, linkSalesAmount);
+
     const updatedLink = await prisma.link.update({
       where: {
         id: link.id,
@@ -95,14 +112,47 @@ export const POST = withWorkspace(
 
         recordLink(updatedLink),
 
+        // decrement old workspace usage
+        prisma.project.update({
+          where: {
+            id: workspace.id,
+          },
+          data: {
+            clicksUsage: {
+              decrement: linkClicks,
+            },
+            eventsUsage: {
+              decrement: linkEvents,
+            },
+            totalClicks: {
+              decrement: linkClicks,
+            },
+            totalEvents: {
+              decrement: linkEvents,
+            },
+            linksUsage: {
+              decrement: 1,
+            },
+          },
+        }),
+
         // increment new workspace usage
         prisma.project.update({
           where: {
             id: newWorkspaceId,
           },
           data: {
-            usage: {
+            clicksUsage: {
               increment: linkClicks,
+            },
+            eventsUsage: {
+              increment: linkEvents,
+            },
+            totalClicks: {
+              increment: linkClicks,
+            },
+            totalEvents: {
+              increment: linkEvents,
             },
             linksUsage: {
               increment: 1,

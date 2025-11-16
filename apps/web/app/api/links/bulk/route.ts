@@ -7,7 +7,6 @@ import {
 } from "@/lib/api/links";
 import { bulkDeleteLinks } from "@/lib/api/links/bulk-delete-links";
 import { bulkUpdateLinks } from "@/lib/api/links/bulk-update-links";
-import { throwIfLinksUsageExceeded } from "@/lib/api/links/usage-checks";
 import { checkIfLinksHaveFolders } from "@/lib/api/links/utils/check-if-links-have-folders";
 import { combineTagIds } from "@/lib/api/tags/combine-tag-ids";
 import { parseRequestBody } from "@/lib/api/utils";
@@ -38,13 +37,8 @@ export const POST = withWorkspace(
       });
     }
 
-    throwIfLinksUsageExceeded(workspace);
-
     const links = bulkCreateLinksBodySchema.parse(await parseRequestBody(req));
-    if (
-      workspace.linksUsage + links.length > workspace.linksLimit &&
-      (workspace.plan === "free" || workspace.plan === "starter" || workspace.plan === "pro")
-    ) {
+    if (workspace.linksUsage + links.length > workspace.linksLimit) {
       throw new DubApiError({
         code: "exceeded_limit",
         message: exceededLimitError({

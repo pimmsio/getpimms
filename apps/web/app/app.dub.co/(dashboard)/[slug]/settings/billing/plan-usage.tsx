@@ -37,8 +37,8 @@ export default function PlanUsage() {
     slug,
     plan,
     stripeId,
-    usage,
-    usageLimit,
+    eventsUsage,
+    eventsLimit,
     salesUsage,
     salesLimit,
     linksUsage,
@@ -131,8 +131,8 @@ export default function PlanUsage() {
               id="events"
               icon={CursorRays}
               title="Events tracked (clicks + conversions)"
-              usage={usage}
-              limit={usageLimit}
+              usage={eventsUsage}
+              limit={eventsLimit}
             />
             <UsageTabCard
               id="links"
@@ -155,7 +155,7 @@ export default function PlanUsage() {
             <UsageChart />
           </div>
         </div>
-        {/* <div
+        <div
           className={cn(
             "grid grid-cols-1 gap-[1px] overflow-hidden rounded-b bg-neutral-200 md:grid-cols-3",
             flags?.linkFolders &&
@@ -193,7 +193,7 @@ export default function PlanUsage() {
             usageLimit={usersLimit}
             href={`/${slug}/settings/people`}
           />
-        </div> */}
+        </div>
         {/* {partnersEnabled && (
         <div className="flex flex-col items-center justify-between space-y-3 border-x border-neutral-100 px-6 py-4 text-center md:flex-row md:space-y-0 md:px-8 md:text-left">
             <UsageCategory

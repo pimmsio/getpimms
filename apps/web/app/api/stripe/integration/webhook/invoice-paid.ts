@@ -92,6 +92,9 @@ export async function invoicePaid(event: Stripe.Event) {
     return `Link with ID ${linkId} not found, skipping...`;
   }
 
+  // Sales: $10 = 1 event, so amount (in cents) / 1000 = events
+  const saleEvents = Math.floor(invoice.amount_paid / 1000);
+
   const [_sale, linkUpdated, workspace] = await Promise.all([
     recordSale(saleData),
 
@@ -116,11 +119,14 @@ export async function invoicePaid(event: Stripe.Event) {
         id: customer.projectId,
       },
       data: {
-        usage: {
-          increment: 1,
+        eventsUsage: {
+          increment: saleEvents,
         },
         salesUsage: {
           increment: invoice.amount_paid,
+        },
+        totalEvents: {
+          increment: saleEvents,
         },
       },
     }),

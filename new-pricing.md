@@ -1,6 +1,6 @@
 pricing:
 
-Starter 5k:
+Pro 5k:
 - 9€ / 12$ / month : starter_5k_monthly : price_1SPrifBN5sOoOmBUe12XYlCp
 - 99€ / 120$ / year : starter_5k_yearly : price_1SPrifBN5sOoOmBUAyqMM3BX
 - 99€ / 120$ / lifetime : starter_5k_lifetime : price_1SPrifBN5sOoOmBUAyqMM3BX
@@ -18,4 +18,3 @@ Pro 40k: pro_40k
 Pro 100k: pro_100k
 - 49€ / 60$ / month : pro_100k_monthly : 
 - 490€ / 600$ / year : pro_100k_yearly
-- 699€ / 799$ / lifetime : pro_100k_lifetime

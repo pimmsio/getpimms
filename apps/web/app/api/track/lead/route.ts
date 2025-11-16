@@ -263,7 +263,13 @@ export const POST = withWorkspace(
                 id: workspaceId,
               },
               data: {
-                usage: {
+                leadsUsage: {
+                  increment: eventQuantity ?? 1,
+                },
+                eventsUsage: {
+                  increment: eventQuantity ?? 1,
+                },
+                totalEvents: {
                   increment: eventQuantity ?? 1,
                 },
               },

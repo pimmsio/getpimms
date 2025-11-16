@@ -85,7 +85,13 @@ export async function createShopifyLead({
         id: workspaceId,
       },
       data: {
-        usage: {
+        leadsUsage: {
+          increment: 1,
+        },
+        eventsUsage: {
+          increment: 1,
+        },
+        totalEvents: {
           increment: 1,
         },
       },

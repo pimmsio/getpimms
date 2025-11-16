@@ -4,6 +4,7 @@ import { transformDomain } from "@/lib/api/domains/transform-domain";
 import { DubApiError } from "@/lib/api/errors";
 import { withWorkspace } from "@/lib/auth";
 import { qstash } from "@/lib/cron";
+import { calculateEvents } from "@/lib/utils/calculate-events";
 import { transferDomainBodySchema } from "@/lib/zod/schemas/domains";
 import { prisma } from "@dub/prisma";
 import { APP_DOMAIN_WITH_NGROK } from "@dub/utils";
@@ -98,6 +99,28 @@ export const POST = withWorkspace(
       interval: "30d",
     });
 
+    const { events: totalLinkLeads } = await getAnalytics({
+      domain,
+      event: "leads",
+      groupBy: "count",
+      workspaceId: workspace.id,
+      interval: "30d",
+    });
+
+    const { saleAmount: totalLinkSalesAmount = 0 } = await getAnalytics({
+      domain,
+      event: "sales",
+      groupBy: "count",
+      workspaceId: workspace.id,
+      interval: "30d",
+    });
+
+    const totalLinkEvents = calculateEvents(
+      totalLinkClicks,
+      totalLinkLeads,
+      totalLinkSalesAmount
+    );
+
     // Update the domain to use the new workspace
     const [domainResponse] = await Promise.all([
       prisma.domain.update({
@@ -113,8 +136,17 @@ export const POST = withWorkspace(
       prisma.project.update({
         where: { id: workspace.id },
         data: {
-          usage: {
-            set: Math.max(workspace.usage - totalLinkClicks, 0),
+          clicksUsage: {
+            set: Math.max(workspace.clicksUsage - totalLinkClicks, 0),
+          },
+          eventsUsage: {
+            set: Math.max(workspace.eventsUsage - totalLinkEvents, 0),
+          },
+          totalClicks: {
+            decrement: totalLinkClicks,
+          },
+          totalEvents: {
+            decrement: totalLinkEvents,
           },
           linksUsage: {
             set: Math.max(workspace.linksUsage - linksCount, 0),
@@ -124,8 +156,17 @@ export const POST = withWorkspace(
       prisma.project.update({
         where: { id: newWorkspaceId },
         data: {
-          usage: {
+          clicksUsage: {
             increment: totalLinkClicks,
+          },
+          eventsUsage: {
+            increment: totalLinkEvents,
+          },
+          totalClicks: {
+            increment: totalLinkClicks,
+          },
+          totalEvents: {
+            increment: totalLinkEvents,
           },
           linksUsage: {
             increment: linksCount,

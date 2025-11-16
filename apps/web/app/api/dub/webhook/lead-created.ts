@@ -41,10 +41,10 @@ export async function leadCreated(data: LeadCreatedEvent["data"]) {
           increment: 1,
         },
         // If the referral link has less than the max number of signups,
-        // update the referrer's workspace usage
+        // update the referrer's workspace events limit
         ...(referralLink.leads &&
           referralLink.leads < REFERRAL_SIGNUPS_MAX && {
-            usageLimit: {
+            eventsLimit: {
               increment: 500,
             },
           }),

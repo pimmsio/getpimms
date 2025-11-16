@@ -61,7 +61,7 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
       stripeId,
       billingCycleStart: new Date().getDate(),
       plan: planName,
-      usageLimit: plan.limits.clicks!,
+      eventsLimit: plan.limits.events!,
       linksLimit: plan.limits.links!,
       domainsLimit: plan.limits.domains!,
       aiLimit: plan.limits.ai!,

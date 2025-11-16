@@ -174,14 +174,14 @@ export async function recordClick({
     // and then we have a cron that will reset it at the start of new billing cycle
     url &&
       conn.execute(
-        "UPDATE Project p JOIN Link l ON p.id = l.projectId SET p.usage = p.usage + 1, p.totalClicks = p.totalClicks + 1 WHERE l.id = ?",
+        "UPDATE Project p JOIN Link l ON p.id = l.projectId SET p.clicksUsage = p.clicksUsage + 1, p.eventsUsage = p.eventsUsage + 1, p.totalClicks = p.totalClicks + 1, p.totalEvents = p.totalEvents + 1 WHERE l.id = ?",
         [linkId],
       ),
 
     // fetch the workspace usage for the workspace
     workspaceId && hasWebhooks
       ? conn.execute(
-          "SELECT usage, usageLimit FROM Project WHERE id = ? LIMIT 1",
+          "SELECT eventsUsage, eventsLimit FROM Project WHERE id = ? LIMIT 1",
           [workspaceId],
         )
       : null,
@@ -201,12 +201,12 @@ export async function recordClick({
     workspaceRows.value.rows.length > 0
       ? (workspaceRows.value.rows[0] as Pick<
           WorkspaceProps,
-          "usage" | "usageLimit"
+          "eventsUsage" | "eventsLimit"
         >)
       : null;
 
   const hasExceededUsageLimit =
-    workspace && workspace.usage >= workspace.usageLimit;
+    workspace && workspace.eventsUsage >= workspace.eventsLimit;
 
   // Send webhook events if link has webhooks enabled and the workspace usage has not exceeded the limit
   if (hasWebhooks && !hasExceededUsageLimit) {
