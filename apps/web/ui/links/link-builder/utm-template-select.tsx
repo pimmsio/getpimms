@@ -20,7 +20,7 @@ export function UtmTemplateSelect({
   const { id: workspaceId } = useWorkspace();
   const [isOpen, setIsOpen] = useState(false);
 
-  const { data: templates, isLoading } = useSWR<UtmTemplateWithUserProps[]>(
+  const { data: templates, isLoading, mutate } = useSWR<UtmTemplateWithUserProps[]>(
     workspaceId ? `/api/utm?workspaceId=${workspaceId}` : null,
     fetcher,
     {
@@ -29,7 +29,11 @@ export function UtmTemplateSelect({
   );
 
   const { AddEditUtmTemplateModal, setShowAddEditUtmTemplateModal } =
-    useAddEditUtmTemplateModal();
+    useAddEditUtmTemplateModal({
+      mutate: async () => {
+        await mutate();
+      },
+    });
 
   const options = useMemo(
     () =>

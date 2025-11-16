@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutatePrefix } from "@/lib/swr/mutate";
 import { ReactNode, useMemo } from "react";
 import { Cache, SWRConfig } from "swr";
 import { createPersistentCache } from "./cache-persistence";
@@ -24,10 +25,15 @@ const cacheInstances = new Map<string, Cache>();
  * - Network reconnects
  * - Reload within 1 minute (uses cache from localStorage)
  */
-export function AnalyticsCacheProvider({ 
-  children, 
+function MutatePrefixBinder({ children }: { children: ReactNode }) {
+  useMutatePrefix();
+  return <>{children}</>;
+}
+
+export function AnalyticsCacheProvider({
+  children,
   workspaceSlug 
-}: { 
+}: {
   children: ReactNode;
   workspaceSlug: string;
 }) {
@@ -174,7 +180,7 @@ export function AnalyticsCacheProvider({
         
       }}
     >
-      {children}
+      <MutatePrefixBinder>{children}</MutatePrefixBinder>
     </SWRConfig>
   );
 }

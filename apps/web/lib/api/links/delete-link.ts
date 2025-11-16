@@ -39,6 +39,7 @@ export async function deleteLink(linkId: string) {
             id: link.projectId,
           },
           data: {
+            linksUsage: { decrement: 1 },
             totalLinks: { decrement: 1 },
           },
         }),

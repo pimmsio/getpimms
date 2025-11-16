@@ -83,7 +83,6 @@ const NAV_AREAS: SidebarNavAreas<{
             name: "Templates",
             icon: Tags,
             href: `/${slug}/settings/library`,
-            enabled: plan !== "free",
           },
         ],
       },
@@ -316,9 +315,9 @@ export function AppSidebarNav({
           <div className="relative border-t border-neutral-200/80 pt-3">
             <div className="flex flex-col gap-2 px-3 pb-3 sm:gap-2.5">
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-2">
+                <ReferralButton className="sm:col-span-2" />
                 <SettingsLink />
                 <HelpButton />
-                <ReferralButton className="sm:col-span-2" />
               </div>
             </div>
             <Usage />

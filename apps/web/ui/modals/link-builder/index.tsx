@@ -1,6 +1,5 @@
 "use client";
 
-import useCustomersCount from "@/lib/swr/use-customers-count";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { ExpandedLinkProps } from "@/lib/types";
 import { BulkDestinationUrlInput } from "@/ui/links/link-builder/bulk-destination-url-input";
@@ -13,7 +12,6 @@ import { LinkCommentsInput } from "@/ui/links/link-builder/controls/link-comment
 import { ConversionTrackingToggle } from "@/ui/links/link-builder/conversion-tracking-toggle";
 import { DraftControls, DraftControlsHandle } from "@/ui/links/link-builder/draft-controls";
 import { LinkBuilderHeader } from "@/ui/links/link-builder/link-builder-header";
-import { UrlModeToggle } from "@/ui/links/link-builder/url-mode-toggle";
 import {
   LinkBuilderProps,
   LinkBuilderProvider,
@@ -31,9 +29,6 @@ import { bulkCreateLinks } from "@/ui/links/link-builder/use-bulk-create-links";
 import { useMetatags } from "@/ui/links/link-builder/use-metatags";
 import { useAvailableDomains } from "@/ui/links/use-available-domains";
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
   ArrowTurnLeft,
   Button,
   ButtonProps,
@@ -45,7 +40,6 @@ import {
   useRouterStuff,
 } from "@dub/ui";
 import { cn, isValidUrl } from "@dub/utils";
-import { Info } from "lucide-react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   Dispatch,
@@ -106,10 +100,6 @@ function LinkBuilderInner({
   // Bulk mode state
   const [urlMode, setUrlMode] = useState<"single" | "bulk">("single");
   const [bulkUrls, setBulkUrls] = useState<string[]>([]);
-
-  console.log("[LinkBuilder] Render - urlMode:", urlMode, "bulkUrls:", bulkUrls.length);
-
-  // Removed bulk keys functionality - no longer needed
 
   const [domain, key] = useWatch({
     control,
@@ -192,8 +182,6 @@ function LinkBuilderInner({
     }
   };
 
-  const { data: customersCount } = useCustomersCount();
-
   return (
     <>
       <Modal
@@ -255,25 +243,6 @@ function LinkBuilderInner({
                     <LinkCommentsInput />
 
                     <ConversionTrackingToggle />
-
-                    {!customersCount || customersCount === 0 ? (
-                      <Alert>
-                        <Info className="mt-2 mr-3 h-5 w-5 text-green-500" />
-                        <AlertTitle className="text-sm text-neutral-600 mt-0 mb-1">
-                          Get started with advanced tracking
-                        </AlertTitle>
-                        <AlertDescription className="text-neutral-500">
-                          Use our guides: {" "}
-                          <a
-                            href={`/${slug}/settings/integrations`}
-                            target="_blank"
-                            className="font-medium underline underline-offset-4 hover:text-black"
-                          >
-                            Read more
-                          </a>
-                        </AlertDescription>
-                      </Alert>
-                    ) : null}
 
                     <MoreOptionsSection />
                   </>

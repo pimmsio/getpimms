@@ -17,13 +17,14 @@ import { DiamondTurnRight, LoadingSpinner, PenWriting } from "@dub/ui/icons";
 import { cn, formatDate } from "@dub/utils";
 import { Fragment, useContext, useState } from "react";
 import { toast } from "sonner";
-import { mutate } from "swr";
 import { TemplatesListContext } from "./page-client";
 
 export function TemplateCard({
   template,
+  mutate,
 }: {
   template: UtmTemplateWithUserProps;
+  mutate: () => Promise<any>;
 }) {
   const { id } = useWorkspace();
 
@@ -39,11 +40,11 @@ export function TemplateCard({
   const { AddEditUtmTemplateModal, setShowAddEditUtmTemplateModal } =
     useAddEditUtmTemplateModal({
       props: template,
+      mutate,
     });
 
-  const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this template?")) return;
-
+  const handleDelete = async (e: React.MouseEvent | React.KeyboardEvent<Element> | KeyboardEvent) => {
+    e.stopPropagation();
     setOpenPopover(false);
     setProcessing(true);
     fetch(`/api/utm/${template.id}?workspaceId=${id}`, {
@@ -51,7 +52,7 @@ export function TemplateCard({
     })
       .then(async (res) => {
         if (res.ok) {
-          await mutate(`/api/utm?workspaceId=${id}`);
+          await mutate();
           toast.success("Template deleted");
         } else {
           const { error } = await res.json();
@@ -118,7 +119,8 @@ export function TemplateCard({
                 <Button
                   text="Edit"
                   variant="outline"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setOpenPopover(false);
                     setShowAddEditUtmTemplateModal(true);
                   }}
@@ -172,7 +174,7 @@ export function TemplateCard({
                     setShowAddEditUtmTemplateModal(true);
                     break;
                   case "x":
-                    handleDelete();
+                    handleDelete(e);
                     break;
                 }
               }}

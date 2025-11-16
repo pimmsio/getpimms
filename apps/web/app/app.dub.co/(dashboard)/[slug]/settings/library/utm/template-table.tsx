@@ -19,15 +19,16 @@ import {
 import { cn, formatDate } from "@dub/utils";
 import { useContext, useState } from "react";
 import { toast } from "sonner";
-import { mutate } from "swr";
 import { TemplatesListContext } from "./page-client";
 
 export function TemplateTable({
   templates,
   isLoading,
+  mutate,
 }: {
   templates?: UtmTemplateWithUserProps[];
   isLoading: boolean;
+  mutate: () => Promise<any>;
 }) {
   if (isLoading) {
     return <TemplateTableSkeleton />;
@@ -87,7 +88,7 @@ export function TemplateTable({
         </thead>
         <tbody className="divide-y divide-neutral-100">
           {templates?.map((template) => (
-            <TemplateRow key={template.id} template={template} />
+            <TemplateRow key={template.id} template={template} mutate={mutate} />
           ))}
         </tbody>
       </table>
@@ -95,7 +96,13 @@ export function TemplateTable({
   );
 }
 
-function TemplateRow({ template }: { template: UtmTemplateWithUserProps }) {
+function TemplateRow({ 
+  template,
+  mutate,
+}: { 
+  template: UtmTemplateWithUserProps;
+  mutate: () => Promise<any>;
+}) {
   const { id: workspaceId } = useWorkspace();
   const { openMenuTemplateId, setOpenMenuTemplateId } =
     useContext(TemplatesListContext);
@@ -109,11 +116,11 @@ function TemplateRow({ template }: { template: UtmTemplateWithUserProps }) {
   const { AddEditUtmTemplateModal, setShowAddEditUtmTemplateModal } =
     useAddEditUtmTemplateModal({
       props: template,
+      mutate,
     });
 
-  const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this template?")) return;
-
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     setOpenPopover(false);
     setProcessing(true);
     fetch(`/api/utm/${template.id}?workspaceId=${workspaceId}`, {
@@ -121,7 +128,7 @@ function TemplateRow({ template }: { template: UtmTemplateWithUserProps }) {
     })
       .then(async (res) => {
         if (res.ok) {
-          await mutate(`/api/utm?workspaceId=${workspaceId}`);
+          await mutate();
           toast.success("Template deleted");
         } else {
           const { error } = await res.json();
@@ -205,7 +212,8 @@ function TemplateRow({ template }: { template: UtmTemplateWithUserProps }) {
                 <Button
                   text="Edit"
                   variant="outline"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setOpenPopover(false);
                     setShowAddEditUtmTemplateModal(true);
                   }}

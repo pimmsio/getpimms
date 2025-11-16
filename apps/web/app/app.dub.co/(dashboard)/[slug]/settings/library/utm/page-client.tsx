@@ -21,8 +21,10 @@ export const TemplatesListContext = createContext<{
 export default function WorkspaceUtmTemplatesClient() {
   const { id: workspaceId } = useWorkspace();
 
-  const { data: templates, isLoading } = useSWR<UtmTemplateWithUserProps[]>(
-    workspaceId && `/api/utm?workspaceId=${workspaceId}`,
+  const swrKey = workspaceId && `/api/utm?workspaceId=${workspaceId}`;
+
+  const { data: templates, isLoading, mutate: mutateTemplates } = useSWR<UtmTemplateWithUserProps[]>(
+    swrKey,
     fetcher,
     {
       dedupingInterval: 60000,
@@ -34,7 +36,7 @@ export default function WorkspaceUtmTemplatesClient() {
   );
 
   const { AddEditUtmTemplateModal, AddUtmTemplateButton } =
-    useAddEditUtmTemplateModal();
+    useAddEditUtmTemplateModal({ mutate: mutateTemplates });
 
   return (
     <>
@@ -49,7 +51,7 @@ export default function WorkspaceUtmTemplatesClient() {
             <TemplatesListContext.Provider
               value={{ openMenuTemplateId, setOpenMenuTemplateId }}
             >
-              <TemplateTable templates={templates} isLoading={isLoading} />
+              <TemplateTable templates={templates} isLoading={isLoading} mutate={mutateTemplates} />
             </TemplatesListContext.Provider>
           </>
         ) : (

@@ -110,7 +110,20 @@ export function UTMTemplatesCombo({
             return false;
           }
 
-          mutate(`/api/utm?workspaceId=${workspaceId}`);
+          await res.json();
+          
+          const swrKey = `/api/utm?workspaceId=${workspaceId}`;
+          
+          // Use fetcher explicitly to ensure SWR knows how to fetch the data
+          await mutate(
+            swrKey,
+            async () => fetcher(swrKey),
+            {
+              revalidate: true,
+              populateCache: true,
+            }
+          );
+          
           toast.success("Template saved successfully");
           return true;
         } catch (e) {

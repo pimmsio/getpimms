@@ -17,16 +17,17 @@ import {
 } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { mutate } from "swr";
 
 function AddEditUtmTemplateModal({
   showAddEditUtmTemplateModal,
   setShowAddEditUtmTemplateModal,
   props,
+  mutate,
 }: {
   showAddEditUtmTemplateModal: boolean;
   setShowAddEditUtmTemplateModal: Dispatch<SetStateAction<boolean>>;
   props?: UtmTemplateProps;
+  mutate: () => Promise<any>;
 }) {
   const { id } = props || {};
   const { id: workspaceId } = useWorkspace();
@@ -95,6 +96,8 @@ function AddEditUtmTemplateModal({
               return;
             }
 
+            await res.json();
+            
             posthog.capture(
               props ? "utm-template_edited" : "utm-template_created",
               {
@@ -102,7 +105,9 @@ function AddEditUtmTemplateModal({
                 utmTemplateName: data.name,
               },
             );
-            await mutate(`/api/utm?workspaceId=${workspaceId}`);
+            
+            await mutate();
+            
             toast.success(endpoint.successMessage);
             setShowAddEditUtmTemplateModal(false);
           } catch (e) {
@@ -188,7 +193,11 @@ function AddUtmTemplateButton({
 
 export function useAddEditUtmTemplateModal({
   props,
-}: { props?: UtmTemplateProps } = {}) {
+  mutate,
+}: { 
+  props?: UtmTemplateProps;
+  mutate: () => Promise<any>;
+}) {
   const [showAddEditUtmTemplateModal, setShowAddEditUtmTemplateModal] =
     useState(false);
 
@@ -198,9 +207,10 @@ export function useAddEditUtmTemplateModal({
         showAddEditUtmTemplateModal={showAddEditUtmTemplateModal}
         setShowAddEditUtmTemplateModal={setShowAddEditUtmTemplateModal}
         props={props}
+        mutate={mutate}
       />
     );
-  }, [showAddEditUtmTemplateModal, setShowAddEditUtmTemplateModal]);
+  }, [showAddEditUtmTemplateModal, setShowAddEditUtmTemplateModal, props, mutate]);
 
   const AddUtmTemplateButtonCallback = useCallback(() => {
     return (

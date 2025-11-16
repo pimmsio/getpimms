@@ -27,12 +27,13 @@ export async function bulkDeleteLinks(links: ExpandedLink[]) {
       .filter((link) => link.image?.startsWith(`${R2_URL}/images/${link.id}`))
       .map((link) => storage.delete(link.image!.replace(`${R2_URL}/`, ""))),
 
-    // Update totalLinks for the workspace
+    // Update linksUsage and totalLinks for the workspace
     prisma.project.update({
       where: {
         id: links[0].projectId!,
       },
       data: {
+        linksUsage: { decrement: links.length },
         totalLinks: { decrement: links.length },
       },
     }),
