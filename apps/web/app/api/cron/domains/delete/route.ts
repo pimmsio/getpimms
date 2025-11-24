@@ -70,13 +70,14 @@ export async function POST(req: Request) {
         },
       }),
 
-      // Update the project's total links count
+      // Update the project's links usage and total links count
       links[0].projectId &&
         prisma.project.update({
           where: {
             id: links[0].projectId,
           },
           data: {
+            linksUsage: { decrement: links.length },
             totalLinks: { decrement: links.length },
           },
         }),

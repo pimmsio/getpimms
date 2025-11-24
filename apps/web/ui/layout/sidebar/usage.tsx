@@ -2,8 +2,8 @@
 
 import useWorkspace from "@/lib/swr/use-workspace";
 import ManageSubscriptionButton from "@/ui/workspaces/manage-subscription-button";
-import { AnimatedSizeContainer, buttonVariants, Icon } from "@dub/ui";
-import { CircleDollar, CursorRays, Hyperlink } from "@dub/ui/icons";
+import { AnimatedSizeContainer, buttonVariants, Icon, Tooltip } from "@dub/ui";
+import { CursorRays, Hyperlink } from "@dub/ui/icons";
 import {
   cn,
   getFirstAndLastDay,
@@ -12,11 +12,11 @@ import {
   nFormatter,
 } from "@dub/utils";
 import NumberFlow from "@number-flow/react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { CSSProperties, forwardRef, useMemo, useState } from "react";
+import { CSSProperties, forwardRef, useMemo, useState, type ReactNode } from "react";
 import { ConversionsOnboarding } from "./conversions/conversions-onboarding";
 import UserDropdown from "./user-dropdown";
 
@@ -28,8 +28,8 @@ export function Usage() {
 
 function UsageInner() {
   const {
-    usage,
-    usageLimit,
+    eventsUsage,
+    eventsLimit,
     linksUsage,
     linksLimit,
     salesUsage,
@@ -62,7 +62,7 @@ function UsageInner() {
   const warnings = useMemo(
     () =>
       [
-        [usage, usageLimit],
+        [eventsUsage, eventsLimit],
         [linksUsage, linksLimit],
         [salesUsage, salesLimit],
       ].map(
@@ -71,14 +71,14 @@ function UsageInner() {
           limit !== undefined &&
           usage / Math.max(0, usage, limit) >= 0.9,
       ),
-    [usage, usageLimit, linksUsage, linksLimit, salesUsage, salesLimit],
+    [eventsUsage, eventsLimit, linksUsage, linksLimit, salesUsage, salesLimit],
   );
 
   const warning = warnings.some((w) => w);
 
   const [salesRef, setSalesRef] = useState<HTMLDivElement | null>(null);
 
-  return loading || usage !== undefined ? (
+  return loading || eventsUsage !== undefined ? (
     <>
       <AnimatedSizeContainer height>
       <div className="p-3">
@@ -99,34 +99,29 @@ function UsageInner() {
           <div className="hidden md:flex mt-4 flex-col gap-4">
             <UsageRow
               icon={CursorRays}
-              label="Clicks + leads"
-              usage={usage}
-              limit={usageLimit}
+              label="Events"
+              labelWithTooltip={
+                <Tooltip content="Events = clicks + leads + sales">
+                  <span className="underline decoration-dotted cursor-help">
+                    Events
+                  </span>
+                </Tooltip>
+              }
+              usage={eventsUsage}
+              limit={eventsLimit}
               showNextPlan={hovered}
-              nextPlanLimit={nextPlan?.limits.clicks}
+              nextPlanLimit={nextPlan?.limits.events}
               warning={warnings[0]}
             />
             <UsageRow
               icon={Hyperlink}
-              label="Deep links"
+              label="Links"
               usage={linksUsage}
               limit={linksLimit}
               showNextPlan={hovered}
               nextPlanLimit={nextPlan?.limits.links}
               warning={warnings[1]}
             />
-            {/* {salesLimit && salesLimit > 0 ? (
-              <UsageRow
-                ref={setSalesRef}
-                icon={CircleDollar}
-                label="Sales"
-                usage={salesUsage}
-                limit={salesLimit}
-                showNextPlan={hovered}
-                nextPlanLimit={nextPlan?.limits.sales}
-                warning={warnings[2]}
-              />
-            ) : null} */}
           </div>
 
           <ConversionsOnboarding referenceElement={salesRef} />
@@ -187,6 +182,7 @@ function UsageInner() {
 type UsageRowProps = {
   icon: Icon;
   label: string;
+  labelWithTooltip?: ReactNode;
   usage?: number;
   limit?: number;
   showNextPlan: boolean;
@@ -199,6 +195,7 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
     {
       icon: Icon,
       label,
+      labelWithTooltip,
       usage,
       limit,
       showNextPlan,
@@ -216,7 +213,7 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
           <div className="flex items-center gap-2">
             {/* <Icon className="size-3.5 text-neutral-600" /> */}
             <span className="text-xs font-medium text-neutral-700">
-              {label}
+              {labelWithTooltip || label}
             </span>
           </div>
           {!loading ? (

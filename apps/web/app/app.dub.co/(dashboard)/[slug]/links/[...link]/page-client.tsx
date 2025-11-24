@@ -1,6 +1,5 @@
 "use client";
 
-import useCustomersCount from "@/lib/swr/use-customers-count";
 import useLink from "@/lib/swr/use-link";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { ExpandedLinkProps } from "@/lib/types";
@@ -29,9 +28,6 @@ import { UTMParametersSection } from "@/ui/links/link-builder/utm-parameters-sec
 import { useLinkBuilderSubmit } from "@/ui/links/link-builder/use-link-builder-submit";
 import { LinkControls } from "@/ui/links/link-controls";
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
   Button,
   Check,
   Copy,
@@ -40,7 +36,6 @@ import {
   useMediaQuery,
 } from "@dub/ui";
 import { cn } from "@dub/utils";
-import { Info } from "lucide-react";
 import { notFound, useParams, useRouter } from "next/navigation";
 import { memo, useEffect, useRef, useState } from "react";
 import { useFormContext, useFormState } from "react-hook-form";
@@ -129,7 +124,6 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
   });
 
   const [isChangingLink, setIsChangingLink] = useState(false);
-  const { data: customersCount } = useCustomersCount();
 
   return (
     <div className="flex min-h-[calc(100vh-8px)] flex-col rounded-t-[inherit] bg-white">
@@ -225,25 +219,6 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
             <LinkCommentsInput />
 
             <ConversionTrackingToggle />
-
-            {!customersCount || customersCount === 0 ? (
-              <Alert>
-                <Info className="mr-3 mt-2 h-5 w-5 text-green-500" />
-                <AlertTitle className="mb-1 mt-0 text-sm text-neutral-600">
-                  Get started with advanced tracking
-                </AlertTitle>
-                <AlertDescription className="text-neutral-500">
-                  Use our guides:{" "}
-                  <a
-                    href={`/${workspace.slug}/settings/integrations`}
-                    target="_blank"
-                    className="font-medium underline underline-offset-4 hover:text-black"
-                  >
-                    Read more
-                  </a>
-                </AlertDescription>
-              </Alert>
-            ) : null}
 
             <MoreOptionsSection />
 

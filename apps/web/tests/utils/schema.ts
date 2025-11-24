@@ -77,8 +77,8 @@ export const expectedWorkspace: Partial<Project> = {
   billingCycleStart: expect.any(Number),
   inviteCode: expect.any(String),
 
-  usage: expect.any(Number),
-  usageLimit: expect.any(Number),
+  eventsUsage: expect.any(Number),
+  eventsLimit: expect.any(Number),
   linksUsage: expect.any(Number),
   linksLimit: expect.any(Number),
   salesUsage: expect.any(Number),

@@ -12,8 +12,8 @@ async function main() {
       id: true,
       name: true,
       slug: true,
-      usage: true,
-      usageLimit: true,
+      eventsUsage: true,
+      eventsLimit: true,
       plan: true,
       billingCycleStart: true,
       users: {

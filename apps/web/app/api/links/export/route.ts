@@ -1,7 +1,7 @@
 import { INTERVAL_DATA } from "@/lib/analytics/constants";
 import { convertToCSV } from "@/lib/analytics/utils";
 import { getDomainOrThrow } from "@/lib/api/domains/get-domain-or-throw";
-import { throwIfClicksUsageExceeded } from "@/lib/api/links/usage-checks";
+import { throwIfEventsUsageExceeded } from "@/lib/api/links/usage-checks";
 import { withWorkspace } from "@/lib/auth";
 import { verifyFolderAccess } from "@/lib/folder/permissions";
 import { linksExportQuerySchema } from "@/lib/zod/schemas/links";
@@ -11,7 +11,7 @@ import { linkConstructor } from "@dub/utils";
 // GET /api/links/export – export links to CSV
 export const GET = withWorkspace(
   async ({ searchParams, workspace, session }) => {
-    throwIfClicksUsageExceeded(workspace);
+    throwIfEventsUsageExceeded(workspace);
 
     const {
       domain,

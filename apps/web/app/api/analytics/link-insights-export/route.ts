@@ -1,7 +1,7 @@
 import { withWorkspace } from "@/lib/auth";
 import { analyticsQuerySchema } from "@/lib/zod/schemas/analytics";
 import { getAnalytics } from "@/lib/analytics/get-analytics";
-import { throwIfClicksUsageExceeded } from "@/lib/api/links/usage-checks";
+import { throwIfEventsUsageExceeded } from "@/lib/api/links/usage-checks";
 import { prisma } from "@dub/prisma";
 import { NextResponse } from "next/server";
 
@@ -30,7 +30,7 @@ function arrayToCSV(data: any[]): string {
 // GET /api/analytics/link-insights-export – export link insights table as CSV
 export const GET = withWorkspace(
   async ({ searchParams, workspace }) => {
-    throwIfClicksUsageExceeded(workspace);
+    throwIfEventsUsageExceeded(workspace);
 
     const parsedParams = analyticsQuerySchema.parse(searchParams);
 
