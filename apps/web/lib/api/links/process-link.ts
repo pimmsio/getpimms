@@ -2,9 +2,13 @@ import { isBlacklistedDomain, updateConfig } from "@/lib/edge-config";
 import { verifyFolderAccess } from "@/lib/folder/permissions";
 import { getPangeaDomainIntel } from "@/lib/pangea";
 import { checkIfUserExists, getRandomKey } from "@/lib/planetscale";
+import { checkUrlWithSafeBrowsing } from "@/lib/safeBrowsing";
 import { isStored } from "@/lib/storage";
 import { NewLinkProps, ProcessedLinkProps, WorkspaceProps } from "@/lib/types";
 import { prisma } from "@dub/prisma";
+import { sendEmail } from "@dub/email";
+import { CheckFailureEmail } from "@dub/email/templates/check-failure";
+import { MaliciousLinkAttemptEmail } from "@dub/email/templates/malicious-link-attempt";
 import {
   DUB_DOMAINS,
   SHORT_DOMAIN,
@@ -171,6 +175,20 @@ export async function processLink<T extends Record<string, any>>({
     domain = domains?.find((d) => d.primary)?.slug || SHORT_DOMAIN;
   }
 
+  const isMaliciousLink = await maliciousLinkCheck({
+    url,
+    userId,
+    workspaceId: workspace?.id,
+  });
+  
+  if (isMaliciousLink) {
+    return {
+      link: payload,
+      error: "Malicious URL detected. An administrator has been notified.",
+      code: "unprocessable_entity",
+    };
+  }
+
   // checks for pim.ms links
   if (domain === SHORT_DOMAIN) {
     // for dub.link: check if workspace plan is pro+
@@ -193,15 +211,6 @@ export async function processLink<T extends Record<string, any>>({
           code: "not_found",
         };
       }
-    }
-
-    const isMaliciousLink = await maliciousLinkCheck(url);
-    if (isMaliciousLink) {
-      return {
-        link: payload,
-        error: "Malicious URL detected",
-        code: "unprocessable_entity",
-      };
     }
     // checks for other Dub-owned domains (chatg.pt, spti.fi, etc.)
   } else if (isDubDomain(domain)) {
@@ -582,31 +591,88 @@ export async function processLink<T extends Record<string, any>>({
   };
 }
 
-async function maliciousLinkCheck(url: string) {
+async function maliciousLinkCheck({
+  url,
+  userId,
+  workspaceId,
+}: {
+  url: string;
+  userId?: string;
+  workspaceId?: string;
+}): Promise<boolean> {
+  // Helper to get user/workspace info and send email when malicious link detected
+  const handleMaliciousLink = async (domain: string, reason: string) => {
+    const { userEmail, userName, workspaceName, workspaceSlug } =
+      await getUserAndWorkspaceInfo(userId, workspaceId);
+    
+    await sendMaliciousLinkEmail({
+      url,
+      domain,
+      userEmail,
+      userName,
+      workspaceName,
+      workspaceSlug,
+      reason,
+    });
+  };
+
   const [domain, apexDomain] = [getDomainWithoutWWW(url), getApexDomain(url)];
 
   if (!domain) {
     return false;
   }
 
+  // Check blacklist first - if detected, skip all other checks
   const domainBlacklisted = await isBlacklistedDomain(domain);
   if (domainBlacklisted === true) {
+    await handleMaliciousLink(domain, "blacklisted domain");
     return true;
   } else if (domainBlacklisted === "whitelisted") {
     return false;
   }
 
-  // Check with Pangea for domain reputation
+  // Safe Browsing check (first, before Pangea)
+  if (process.env.SAFE_BROWSING_API_KEY) {
+    try {
+      const result = await checkUrlWithSafeBrowsing(url);
+      if (!result.safe) {
+        await Promise.all([
+          updateConfig({
+            key: "domains",
+            value: domain,
+          }),
+          log({
+            message: `Malicious link detected via Safe Browsing → ${url}`,
+            type: "links",
+            mention: true,
+          }),
+          handleMaliciousLink(
+            domain,
+            `Safe Browsing check failed`,
+          ),
+        ]);
+        
+        return true;
+      }
+    } catch (e) {
+      console.error("Error checking URL with Safe Browsing", e);
+      await sendCheckFailureEmail({
+        url,
+        domain,
+        service: "Google Safe Browsing",
+        error: e instanceof Error ? e.message : String(e),
+      });
+    }
+  }
+
+  // Pangea check (only if Safe Browsing didn't detect anything)
   if (process.env.PANGEA_API_KEY) {
     try {
       const response = await getPangeaDomainIntel(domain);
-
+      console.log("Pangea response:", response);
       const verdict = response.result.data[apexDomain].verdict;
-      console.log("Pangea verdict for domain", apexDomain, verdict);
 
-      if (verdict === "benign") {
-        return false;
-      } else if (verdict === "malicious" || verdict === "suspicious") {
+      if (verdict === "malicious" || verdict === "suspicious") {
         await Promise.all([
           updateConfig({
             key: "domains",
@@ -617,14 +683,144 @@ async function maliciousLinkCheck(url: string) {
             type: "links",
             mention: true,
           }),
+          handleMaliciousLink(domain, `Pangea: ${verdict}`),
         ]);
 
         return true;
       }
+
     } catch (e) {
       console.error("Error checking domain with Pangea", e);
+      await sendCheckFailureEmail({
+        url,
+        domain,
+        service: "Pangea",
+        error: e instanceof Error ? e.message : String(e),
+      });
     }
   }
 
   return false;
+}
+
+async function getUserAndWorkspaceInfo(
+  userId?: string,
+  workspaceId?: string,
+): Promise<{
+  userEmail?: string;
+  userName?: string;
+  workspaceName?: string;
+  workspaceSlug?: string;
+}> {
+  const [userInfo, workspaceInfo] = await Promise.all([
+    userId
+      ? prisma.user
+          .findUnique({
+            where: { id: userId },
+            select: { email: true, name: true },
+          })
+          .then((user) => ({
+            email: user?.email ?? undefined,
+            name: user?.name ?? undefined,
+          }))
+          .catch((e) => {
+            console.error("Error fetching user info for malicious link email", e);
+            return { email: undefined, name: undefined };
+          })
+      : { email: undefined, name: undefined },
+    workspaceId
+      ? prisma.project
+          .findUnique({
+            where: { id: workspaceId },
+            select: { name: true, slug: true },
+          })
+          .then((workspace) => ({
+            name: workspace?.name ?? undefined,
+            slug: workspace?.slug ?? undefined,
+          }))
+          .catch((e) => {
+            console.error(
+              "Error fetching workspace info for malicious link email",
+              e,
+            );
+            return { name: undefined, slug: undefined };
+          })
+      : { name: undefined, slug: undefined },
+  ]);
+
+  return {
+    userEmail: userInfo.email,
+    userName: userInfo.name,
+    workspaceName: workspaceInfo.name,
+    workspaceSlug: workspaceInfo.slug,
+  };
+}
+
+async function sendMaliciousLinkEmail({
+  url,
+  domain,
+  userEmail,
+  userName,
+  workspaceName,
+  workspaceSlug,
+  reason,
+}: {
+  url: string;
+  domain: string;
+  userEmail?: string;
+  userName?: string;
+  workspaceName?: string;
+  workspaceSlug?: string;
+  reason: string;
+}) {
+  try {
+    const adminEmail = process.env.ADMIN_EMAIL || "alexandre@pimms.io";
+    
+    await sendEmail({
+      email: adminEmail,
+      subject: `⚠️ Malicious Link Attempt: ${domain}`,
+      react: MaliciousLinkAttemptEmail({
+        url,
+        domain,
+        userEmail,
+        userName,
+        workspaceName,
+        workspaceSlug,
+        reason,
+      }),
+      variant: "notifications",
+    });
+  } catch (e) {
+    console.error("Error sending malicious link attempt email", e);
+  }
+}
+
+async function sendCheckFailureEmail({
+  url,
+  domain,
+  service,
+  error,
+}: {
+  url: string;
+  domain: string;
+  service: string;
+  error: string;
+}) {
+  try {
+    const adminEmail = process.env.ADMIN_EMAIL || "alexandre@pimms.io";
+    
+    await sendEmail({
+      email: adminEmail,
+      subject: `⚠️ ${service} Check Failed: ${domain}`,
+      react: CheckFailureEmail({
+        url,
+        domain,
+        service,
+        error,
+      }),
+      variant: "notifications",
+    });
+  } catch (e) {
+    console.error("Error sending check failure email", e);
+  }
 }

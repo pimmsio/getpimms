@@ -85,8 +85,6 @@ export const withWorkspace = (
           apiKey = authorizationHeader.replace("Bearer ", "");
         }
 
-        console.log("apiKey", apiKey);
-
         let session: Session | undefined;
         let workspaceId: string | undefined;
         let workspaceSlug: string | undefined;

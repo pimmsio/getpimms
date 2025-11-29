@@ -22,12 +22,6 @@ export const sendWorkspaceWebhook = async ({
     | SaleEventDataProps
     | PartnerEventDataProps;
 }) => {
-  console.log("Sending workspace webhook", {
-    trigger,
-    workspace,
-    data,
-  });
-
   if (!workspace.webhookEnabled) {
     return;
   }

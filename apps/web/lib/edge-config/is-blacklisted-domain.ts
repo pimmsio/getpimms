@@ -3,7 +3,7 @@ import { getAll } from "@vercel/edge-config";
 export const isBlacklistedDomain = async (
   domain: string,
 ): Promise<boolean | "whitelisted"> => {
-  if (!process.env.NEXT_PUBLIC_IS_DUB || !process.env.EDGE_CONFIG) {
+  if (!process.env.EDGE_CONFIG) {
     return false;
   }
 
@@ -23,21 +23,22 @@ export const isBlacklistedDomain = async (
       return "whitelisted";
     }
 
-    const blacklistedTermsRegex = new RegExp(
+      const blacklistedTermsRegex = new RegExp(
       blacklistedTerms
-        .map((term: string) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")) // replace special characters with escape sequences
-        .join("|"),
-    );
+          .map((term: string) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")) // replace special characters with escape sequences
+          .join("|"),
+      );
 
     const isBlacklisted =
       blacklistedDomains.includes(domain) || blacklistedTermsRegex.test(domain);
 
     if (isBlacklisted) {
-      return true;
+        return true;
     }
 
     return false;
   } catch (e) {
+    console.error("Error checking blacklisted domain", e);
     return false;
   }
 };
