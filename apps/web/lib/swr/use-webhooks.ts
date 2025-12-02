@@ -12,7 +12,7 @@ export default function useWebhooks() {
     isLoading,
   } = useSWR<WebhookProps[]>(
     plan &&
-      !["free", "pro"].includes(plan) &&
+      !["free", "starter"].includes(plan) &&
       `/api/webhooks?workspaceId=${id}`,
     fetcher,
     {

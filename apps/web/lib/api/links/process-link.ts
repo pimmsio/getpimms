@@ -9,6 +9,8 @@ import { prisma } from "@dub/prisma";
 import { sendEmail } from "@dub/email";
 import { CheckFailureEmail } from "@dub/email/templates/check-failure";
 import { MaliciousLinkAttemptEmail } from "@dub/email/templates/malicious-link-attempt";
+import { TooManyRedirectsEmail } from "@dub/email/templates/too-many-redirects";
+import { FreePlanRedirectAttemptEmail } from "@dub/email/templates/free-plan-redirect-attempt";
 import {
   DUB_DOMAINS,
   SHORT_DOMAIN,
@@ -26,6 +28,7 @@ import {
 import { combineTagIds } from "../tags/combine-tag-ids";
 import { businessFeaturesCheck, proFeaturesCheck, starterFeaturesCheck } from "./plan-features-check";
 import { keyChecks, processKey } from "./utils";
+import { followRedirectChain, MAX_REDIRECTS } from "./follow-redirects";
 
 export async function processLink<T extends Record<string, any>>({
   payload,
@@ -175,17 +178,34 @@ export async function processLink<T extends Record<string, any>>({
     domain = domains?.find((d) => d.primary)?.slug || SHORT_DOMAIN;
   }
 
-  const isMaliciousLink = await maliciousLinkCheck({
+  // Check redirect restrictions and security
+  const redirectCheck = await checkRedirectRestrictions({
     url,
+    workspacePlan: workspace?.plan || "free",
+    userId,
+    workspaceId: workspace?.id,
+  });
+
+  if (redirectCheck.error) {
+    return {
+      link: payload,
+      error: redirectCheck.error,
+      code: redirectCheck.code,
+    };
+  }
+
+  const maliciousCheck = await checkUrlSecurity({
+    urlsToCheck: redirectCheck.urlsToCheck!,
+    originalUrl: url,
     userId,
     workspaceId: workspace?.id,
   });
   
-  if (isMaliciousLink) {
+  if (maliciousCheck.isMalicious) {
     return {
       link: payload,
-      error: "Malicious URL detected. An administrator has been notified.",
-      code: "unprocessable_entity",
+      error: maliciousCheck.reason || "Malicious URL detected. An administrator has been notified.",
+      code: maliciousCheck.code || "unprocessable_entity",
     };
   }
 
@@ -591,116 +611,296 @@ export async function processLink<T extends Record<string, any>>({
   };
 }
 
-async function maliciousLinkCheck({
+/**
+ * Check redirect restrictions including count limits and plan restrictions
+ */
+async function checkRedirectRestrictions({
   url,
+  workspacePlan,
   userId,
   workspaceId,
 }: {
   url: string;
+  workspacePlan: WorkspaceProps["plan"];
   userId?: string;
   workspaceId?: string;
-}): Promise<boolean> {
-  // Helper to get user/workspace info and send email when malicious link detected
-  const handleMaliciousLink = async (domain: string, reason: string) => {
-    const { userEmail, userName, workspaceName, workspaceSlug } =
-      await getUserAndWorkspaceInfo(userId, workspaceId);
+}): Promise<
+  | { error: null; urlsToCheck: string[]; code?: never }
+  | { error: string; code: string; urlsToCheck?: never }
+> {
+  // Follow redirect chain
+  const redirectResult = await followRedirectChain(url);
+  
+  // Handle redirect following errors
+  if (!redirectResult.success) {
+    console.error("Error following redirect chain:", redirectResult.error);
     
-    await sendMaliciousLinkEmail({
+    // If too many redirects, reject the link
+    if (redirectResult.tooManyRedirects) {
+      await sendTooManyRedirectsEmail({
+        url,
+        redirectCount: redirectResult.urls.length - 1,
+        redirectChain: redirectResult.urls,
+        userId,
+        workspaceId,
+      });
+      
+      await log({
+        message: `Link rejected due to too many redirects → ${url} (${redirectResult.urls.length - 1} redirects)`,
+        type: "links",
+        mention: true,
+      });
+      
+      return {
+        error: `Invalid destination URL: This link has too many redirects (maximum ${MAX_REDIRECTS} allowed).`,
+        code: "unprocessable_entity",
+      };
+    }
+  }
+
+  // Free users cannot create links with any redirects (preventive measure)
+  if (workspacePlan === "free" && redirectResult.success && redirectResult.urls.length > 1) {
+    await Promise.all([
+      sendFreePlanRedirectAttemptEmail({
+        url,
+        redirectCount: redirectResult.urls.length - 1,
+        redirectChain: redirectResult.urls,
+        userId,
+        workspaceId,
+      }),
+      log({
+        message: `Free user attempted to create link with redirects → ${url} (${redirectResult.urls.length - 1} redirects). Chain: ${redirectResult.urls.join(" → ")}`,
+        type: "links",
+        mention: false,
+      }),
+    ]);
+    
+    return {
+      error: "Invalid destination URL: Links with redirects are not allowed on the free plan.",
+      code: "unprocessable_entity",
+    };
+  }
+
+  // Get all URLs in the chain to check (use original URL if redirect following failed)
+  const urlsToCheck = redirectResult.success ? redirectResult.urls : [url];
+
+  return { error: null, urlsToCheck };
+}
+
+/**
+ * Check URL security by scanning for malicious content
+ */
+async function checkUrlSecurity({
+  urlsToCheck,
+  originalUrl,
+  userId,
+  workspaceId,
+}: {
+  urlsToCheck: string[];
+  originalUrl: string;
+  userId?: string;
+  workspaceId?: string;
+}): Promise<{ isMalicious: boolean; reason?: string; code?: string }> {
+  console.log(`Checking ${urlsToCheck.length} URL(s) in redirect chain:`, urlsToCheck);
+
+  // Check each URL in the chain
+  for (let i = 0; i < urlsToCheck.length; i++) {
+    const currentUrl = urlsToCheck[i];
+    const isRedirect = i > 0;
+    const [domain, apexDomain] = [
+      getDomainWithoutWWW(currentUrl), 
+      getApexDomain(currentUrl),
+    ];
+
+    if (!domain) {
+      continue;
+    }
+
+    // Check blacklist
+    const blacklistResult = await checkBlacklist(domain);
+    if (blacklistResult.isBlacklisted) {
+      await handleMaliciousDetection({
+        url: currentUrl,
+        domain,
+        reason: "blacklisted domain",
+        isRedirect,
+        originalUrl,
+        urlsToCheck,
+        userId,
+        workspaceId,
+      });
+      return {
+        isMalicious: true,
+        reason: "Invalid destination URL: Flagged as malicious. An administrator has been notified.",
+        code: "unprocessable_entity",
+      };
+    } else if (blacklistResult.isWhitelisted) {
+      console.log(`URL ${currentUrl} is whitelisted, skipping remaining checks`);
+      return { isMalicious: false };
+    }
+
+    // Check Safe Browsing
+    if (process.env.SAFE_BROWSING_API_KEY) {
+      const safeBrowsingResult = await checkSafeBrowsing(currentUrl, domain);
+      if (safeBrowsingResult.isMalicious) {
+        await handleMaliciousDetection({
+          url: currentUrl,
+          domain,
+          reason: "Safe Browsing check failed",
+          isRedirect,
+          originalUrl,
+          urlsToCheck,
+          userId,
+          workspaceId,
+        });
+          return {
+            isMalicious: true,
+            reason: "Invalid destination URL: Flagged as malicious. An administrator has been notified.",
+            code: "unprocessable_entity",
+          };
+      }
+    }
+
+    // Check Pangea
+    if (process.env.PANGEA_API_KEY) {
+      const pangeaResult = await checkPangeaSecurity(domain, apexDomain);
+      if (pangeaResult.isMalicious) {
+        await handleMaliciousDetection({
+          url: currentUrl,
+          domain,
+          reason: `Pangea: ${pangeaResult.verdict}`,
+          isRedirect,
+          originalUrl,
+          urlsToCheck,
+          userId,
+          workspaceId,
+        });
+          return {
+            isMalicious: true,
+            reason: `Invalid destination URL: Flagged as malicious. An administrator has been notified.`,
+            code: "unprocessable_entity",
+          };
+      }
+    }
+  }
+
+  return { isMalicious: false };
+}
+
+/**
+ * Check if domain is blacklisted or whitelisted
+ */
+async function checkBlacklist(domain: string): Promise<{
+  isBlacklisted: boolean;
+  isWhitelisted: boolean;
+}> {
+  const result = await isBlacklistedDomain(domain);
+  return {
+    isBlacklisted: result === true,
+    isWhitelisted: result === "whitelisted",
+  };
+}
+
+/**
+ * Check URL with Google Safe Browsing
+ */
+async function checkSafeBrowsing(
+  url: string,
+  domain: string,
+): Promise<{ isMalicious: boolean }> {
+  try {
+    const result = await checkUrlWithSafeBrowsing(url);
+    return { isMalicious: !result.safe };
+  } catch (e) {
+    console.error("Error checking URL with Safe Browsing", e);
+    await sendCheckFailureEmail({
+      url,
+      domain,
+      service: "Google Safe Browsing",
+      error: e instanceof Error ? e.message : String(e),
+    });
+    return { isMalicious: false };
+  }
+}
+
+/**
+ * Check domain with Pangea security
+ */
+async function checkPangeaSecurity(
+  domain: string,
+  apexDomain: string,
+): Promise<{ isMalicious: boolean; verdict?: string }> {
+  try {
+    const response = await getPangeaDomainIntel(domain);
+    console.log("Pangea response:", response);
+    const verdict = response.result.data[apexDomain].verdict;
+
+    if (verdict === "malicious" || verdict === "suspicious") {
+      return { isMalicious: true, verdict };
+    }
+
+    return { isMalicious: false };
+  } catch (e) {
+    console.error("Error checking domain with Pangea", e);
+    await sendCheckFailureEmail({
+      url: domain,
+      domain,
+      service: "Pangea",
+      error: e instanceof Error ? e.message : String(e),
+    });
+    return { isMalicious: false };
+  }
+}
+
+/**
+ * Handle malicious link detection - send notifications and update configs
+ */
+async function handleMaliciousDetection({
+  url,
+  domain,
+  reason,
+  isRedirect,
+  originalUrl,
+  urlsToCheck,
+  userId,
+  workspaceId,
+}: {
+  url: string;
+  domain: string;
+  reason: string;
+  isRedirect: boolean;
+  originalUrl: string;
+  urlsToCheck: string[];
+  userId?: string;
+  workspaceId?: string;
+}) {
+  const redirectInfo = isRedirect 
+    ? ` (detected in redirect chain from ${originalUrl}: ${urlsToCheck.join(" → ")})`
+    : "";
+  
+  const { userEmail, userName, workspaceName, workspaceSlug } =
+    await getUserAndWorkspaceInfo(userId, workspaceId);
+
+  await Promise.all([
+    updateConfig({
+      key: "domains",
+      value: domain,
+    }),
+    log({
+      message: `Malicious link detected → ${url}${isRedirect ? ` (via redirect from ${originalUrl})` : ""}`,
+      type: "links",
+      mention: true,
+    }),
+    sendMaliciousLinkEmail({
       url,
       domain,
       userEmail,
       userName,
       workspaceName,
       workspaceSlug,
-      reason,
-    });
-  };
-
-  const [domain, apexDomain] = [getDomainWithoutWWW(url), getApexDomain(url)];
-
-  if (!domain) {
-    return false;
-  }
-
-  // Check blacklist first - if detected, skip all other checks
-  const domainBlacklisted = await isBlacklistedDomain(domain);
-  if (domainBlacklisted === true) {
-    await handleMaliciousLink(domain, "blacklisted domain");
-    return true;
-  } else if (domainBlacklisted === "whitelisted") {
-    return false;
-  }
-
-  // Safe Browsing check (first, before Pangea)
-  if (process.env.SAFE_BROWSING_API_KEY) {
-    try {
-      const result = await checkUrlWithSafeBrowsing(url);
-      if (!result.safe) {
-        await Promise.all([
-          updateConfig({
-            key: "domains",
-            value: domain,
-          }),
-          log({
-            message: `Malicious link detected via Safe Browsing → ${url}`,
-            type: "links",
-            mention: true,
-          }),
-          handleMaliciousLink(
-            domain,
-            `Safe Browsing check failed`,
-          ),
-        ]);
-        
-        return true;
-      }
-    } catch (e) {
-      console.error("Error checking URL with Safe Browsing", e);
-      await sendCheckFailureEmail({
-        url,
-        domain,
-        service: "Google Safe Browsing",
-        error: e instanceof Error ? e.message : String(e),
-      });
-    }
-  }
-
-  // Pangea check (only if Safe Browsing didn't detect anything)
-  if (process.env.PANGEA_API_KEY) {
-    try {
-      const response = await getPangeaDomainIntel(domain);
-      console.log("Pangea response:", response);
-      const verdict = response.result.data[apexDomain].verdict;
-
-      if (verdict === "malicious" || verdict === "suspicious") {
-        await Promise.all([
-          updateConfig({
-            key: "domains",
-            value: domain,
-          }),
-          log({
-            message: `Suspicious link detected via Pangea → ${url}`,
-            type: "links",
-            mention: true,
-          }),
-          handleMaliciousLink(domain, `Pangea: ${verdict}`),
-        ]);
-
-        return true;
-      }
-
-    } catch (e) {
-      console.error("Error checking domain with Pangea", e);
-      await sendCheckFailureEmail({
-        url,
-        domain,
-        service: "Pangea",
-        error: e instanceof Error ? e.message : String(e),
-      });
-    }
-  }
-
-  return false;
+      reason: reason + redirectInfo,
+    }),
+  ]);
 }
 
 async function getUserAndWorkspaceInfo(
@@ -822,5 +1022,81 @@ async function sendCheckFailureEmail({
     });
   } catch (e) {
     console.error("Error sending check failure email", e);
+  }
+}
+
+async function sendTooManyRedirectsEmail({
+  url,
+  redirectCount,
+  redirectChain,
+  userId,
+  workspaceId,
+}: {
+  url: string;
+  redirectCount: number;
+  redirectChain: string[];
+  userId?: string;
+  workspaceId?: string;
+}) {
+  try {
+    const { userEmail, userName, workspaceName, workspaceSlug } =
+      await getUserAndWorkspaceInfo(userId, workspaceId);
+    
+    const adminEmail = process.env.ADMIN_EMAIL || "alexandre@pimms.io";
+    
+    await sendEmail({
+      email: adminEmail,
+      subject: `⚠️ Too Many Redirects Detected: ${getDomainWithoutWWW(url) || url}`,
+      react: TooManyRedirectsEmail({
+        url,
+        redirectCount,
+        redirectChain,
+        userEmail,
+        userName,
+        workspaceName,
+        workspaceSlug,
+      }),
+      variant: "notifications",
+    });
+  } catch (e) {
+    console.error("Error sending too many redirects email", e);
+  }
+}
+
+async function sendFreePlanRedirectAttemptEmail({
+  url,
+  redirectCount,
+  redirectChain,
+  userId,
+  workspaceId,
+}: {
+  url: string;
+  redirectCount: number;
+  redirectChain: string[];
+  userId?: string;
+  workspaceId?: string;
+}) {
+  try {
+    const { userEmail, userName, workspaceName, workspaceSlug } =
+      await getUserAndWorkspaceInfo(userId, workspaceId);
+    
+    const adminEmail = process.env.ADMIN_EMAIL || "alexandre@pimms.io";
+    
+    await sendEmail({
+      email: adminEmail,
+      subject: `💎 Free Plan Redirect Attempt: ${getDomainWithoutWWW(url) || url}`,
+      react: FreePlanRedirectAttemptEmail({
+        url,
+        redirectCount,
+        redirectChain,
+        userEmail,
+        userName,
+        workspaceName,
+        workspaceSlug,
+      }),
+      variant: "notifications",
+    });
+  } catch (e) {
+    console.error("Error sending free plan redirect attempt email", e);
   }
 }
