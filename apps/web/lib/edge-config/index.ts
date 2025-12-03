@@ -4,4 +4,5 @@ export * from "./is-blacklisted-email";
 export * from "./is-blacklisted-key";
 export * from "./is-blacklisted-referrer";
 export * from "./is-reserved-username";
+export * from "./is-whitelisted-domain";
 export * from "./update";

@@ -1,4 +1,4 @@
-import { isBlacklistedDomain, updateConfig } from "@/lib/edge-config";
+import { isBlacklistedDomain, isWhitelistedDomain, updateConfig } from "@/lib/edge-config";
 import { verifyFolderAccess } from "@/lib/folder/permissions";
 import { getPangeaDomainIntel } from "@/lib/pangea";
 import { checkIfUserExists, getRandomKey } from "@/lib/planetscale";
@@ -29,6 +29,30 @@ import { combineTagIds } from "../tags/combine-tag-ids";
 import { businessFeaturesCheck, proFeaturesCheck, starterFeaturesCheck } from "./plan-features-check";
 import { keyChecks, processKey } from "./utils";
 import { followRedirectChain, MAX_REDIRECTS } from "./follow-redirects";
+
+/**
+ * Check if a URL's domain is in the whitelist of allowed short link services
+ * Uses the whitelistedDomains from Vercel Edge Config
+ */
+async function isDomainWhitelisted(url: string): Promise<boolean> {
+  try {
+    const domain = getDomainWithoutWWW(url);
+    if (!domain) return false;
+    
+    // Check both the full domain and apex domain against the whitelist
+    const apexDomain = getApexDomain(url);
+    
+    const [isDomainWhitelisted, isApexWhitelisted] = await Promise.all([
+      isWhitelistedDomain(domain),
+      apexDomain ? isWhitelistedDomain(apexDomain) : Promise.resolve(false),
+    ]);
+    
+    return isDomainWhitelisted || isApexWhitelisted;
+  } catch (error) {
+    console.error("Error checking whitelisted domain:", error);
+    return false;
+  }
+}
 
 export async function processLink<T extends Record<string, any>>({
   payload,
@@ -658,8 +682,17 @@ async function checkRedirectRestrictions({
     }
   }
 
-  // Free users cannot create links with any redirects (preventive measure)
-  if (workspacePlan === "free" && redirectResult.success && redirectResult.urls.length > 1) {
+  // Check if the original URL is from a whitelisted domain (e.g., wa.me, youtu.be, bit.ly)
+  // If it is, allow multiple redirects regardless of plan
+  const isOriginalUrlWhitelisted = await isDomainWhitelisted(url);
+  
+  // Free users cannot create links with redirects, UNLESS the original URL is whitelisted
+  if (
+    workspacePlan === "free" && 
+    redirectResult.success && 
+    redirectResult.urls.length > 1 &&
+    !isOriginalUrlWhitelisted
+  ) {
     await Promise.all([
       sendFreePlanRedirectAttemptEmail({
         url,
@@ -676,7 +709,7 @@ async function checkRedirectRestrictions({
     ]);
     
     return {
-      error: "Invalid destination URL: Links with redirects are not allowed on the free plan.",
+      error: "Invalid destination URL: Links with redirects are not allowed on the free plan. However, well-known services like wa.me, youtu.be, etc. are allowed.",
       code: "unprocessable_entity",
     };
   }
