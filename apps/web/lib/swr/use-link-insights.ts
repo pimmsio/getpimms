@@ -3,6 +3,12 @@ import { useContext } from "react";
 import useSWR, { SWRConfiguration, useSWRConfig } from "swr";
 import { AnalyticsContext } from "@/ui/analytics/analytics-provider";
 
+interface TagData {
+  id: string;
+  name: string;
+  color: string;
+}
+
 interface LinkInsightData {
   id: string;
   domain: string;
@@ -11,12 +17,14 @@ interface LinkInsightData {
   shortLink: string;
   comments?: string;
   title?: string;
+  description?: string;
   createdAt: string;
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;
   utmTerm?: string;
   utmContent?: string;
+  tags: TagData[];
   clicks: number;
   leads: number;
   sales: number;

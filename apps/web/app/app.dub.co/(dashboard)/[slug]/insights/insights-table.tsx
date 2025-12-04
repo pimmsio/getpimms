@@ -1,10 +1,13 @@
 "use client";
 
 import useLinkInsights from "@/lib/swr/use-link-insights";
+import { TagColorProps } from "@/lib/types";
 import { AnalyticsContext } from "@/ui/analytics/analytics-provider";
 import EmptyState from "@/ui/shared/empty-state";
 import { LinkCell } from "@/ui/shared/link-cell";
-import { nFormatter } from "@dub/utils";
+import { UtmBadge } from "@/ui/links/utm-badge";
+import TagBadge from "@/ui/links/tag-badge";
+import { getParamsFromURL, nFormatter } from "@dub/utils";
 import NumberFlow from "@number-flow/react";
 import { endOfDay, format, isAfter, startOfDay } from "date-fns";
 import { BarChart } from "lucide-react";
@@ -15,12 +18,22 @@ export type LinkInsight = {
   domain: string;
   key: string;
   url: string;
+  title?: string | null;
+  description?: string | null;
   clicks: number;
   leads: number;
   sales: number;
   saleAmount: number;
   comments?: string;
   createdAt: string;
+  utmSource?: string | null;
+  utmMedium?: string | null;
+  utmCampaign?: string | null;
+  tags?: Array<{
+    id: string;
+    name: string;
+    color: string;
+  }>;
   timeseriesData?: Array<{
     start: string;
     clicks: number;
@@ -51,12 +64,6 @@ export default function InsightsTable({
   const periodColumns = useMemo(() => {
     if (!combinedData?.links) return [];
 
-    console.log(
-      "🔍 Frontend - combinedData.links:",
-      combinedData.links.length,
-      "links",
-    );
-
     // Collect all unique dates from all links
     const allDates = new Set<string>();
     combinedData.links.forEach((link) => {
@@ -64,12 +71,6 @@ export default function InsightsTable({
         allDates.add(ts.start);
       });
     });
-
-    console.log("🔍 Frontend - All unique dates:", allDates.size, "dates");
-    console.log(
-      "🔍 Frontend - Sample dates:",
-      Array.from(allDates).slice(0, 3),
-    );
 
     const sortedDates = Array.from(allDates).sort(
       (a, b) => new Date(a).getTime() - new Date(b).getTime(),
@@ -122,12 +123,18 @@ export default function InsightsTable({
           domain: item.domain,
           key: item.key,
           url: item.url,
+          title: item.title,
+          description: item.description,
           clicks: item.clicks || 0,
           leads: item.leads || 0,
           sales: item.sales || 0,
           saleAmount: item.saleAmount || 0,
           comments: item.comments,
           createdAt: item.createdAt,
+          utmSource: item.utmSource,
+          utmMedium: item.utmMedium,
+          utmCampaign: item.utmCampaign,
+          tags: item.tags || [],
           timeseriesData: processedTimeseriesData,
         };
       })
@@ -284,6 +291,12 @@ export default function InsightsTable({
                 </th>
                 <th
                   rowSpan={2}
+                  className="px-2 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                >
+                  Tags
+                </th>
+                <th
+                  rowSpan={2}
                   className="px-2 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500"
                 >
                   Clics
@@ -364,13 +377,57 @@ export default function InsightsTable({
                   className="hover:bg-gray-50"
                 >
                   {/* Link column */}
-                  <td className="whitespace-nowrap bg-white px-4 py-3 md:sticky md:left-0 md:z-10">
-                    <LinkCell
-                      link={link}
-                      variant="table"
-                      showCopyButton={false}
-                      maxWidth="320px"
-                    />
+                  <td className="bg-white px-2 py-3 sm:px-4 md:sticky md:left-0 md:z-10 w-[200px] md:w-[400px]">
+                    <div className="space-y-2">
+                      <LinkCell
+                        link={link}
+                        variant="table"
+                        showCopyButton={false}
+                        className="max-w-[200px] md:max-w-[400px]"
+                      />
+                      
+                      {/* UTM parameters row */}
+                      {(() => {
+                        // Get UTM values from link or URL params
+                        let utmSource = link.utmSource;
+                        let utmMedium = link.utmMedium;
+                        let utmCampaign = link.utmCampaign;
+                        
+                        if (!utmSource && !utmMedium && !utmCampaign && link.url) {
+                          const urlParams = getParamsFromURL(link.url);
+                          utmSource = urlParams.utm_source || null;
+                          utmMedium = urlParams.utm_medium || null;
+                          utmCampaign = urlParams.utm_campaign || null;
+                        }
+                        
+                        const hasUtms = utmSource || utmMedium || utmCampaign;
+                        
+                        if (!hasUtms) return null;
+                        
+                        return (
+                          <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden flex-wrap">
+                            {/* UTM Parameters */}
+                            {utmSource && <UtmBadge type="source" value={utmSource} />}
+                            {utmMedium && <UtmBadge type="medium" value={utmMedium} />}
+                            {utmCampaign && <UtmBadge type="campaign" value={utmCampaign} />}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </td>
+
+                  {/* Tags column */}
+                  <td className="px-2 py-3">
+                    <div className="flex flex-wrap gap-1.5">
+                      {link.tags?.map((tag) => (
+                        <TagBadge
+                          key={tag.id}
+                          name={tag.name}
+                          color={tag.color as TagColorProps}
+                          withIcon
+                        />
+                      ))}
+                    </div>
                   </td>
 
                   {/* Metric columns */}
@@ -443,17 +500,6 @@ export default function InsightsTable({
                       (ts) => ts.start === period.data.start,
                     );
 
-                    // Debug log for first link and first period
-                    if (linkIndex === 0 && periodIndex === 0) {
-                      console.log("🔍 Frontend - Matching period data:");
-                      console.log("  period.data.start:", period.data.start);
-                      console.log(
-                        "  link.timeseriesData:",
-                        link.timeseriesData?.slice(0, 3),
-                      );
-                      console.log("  periodData found:", periodData);
-                    }
-
                     const isGrayedOut = isAfter(
                       startOfDay(new Date(link.createdAt)),
                       endOfDay(period.date),
@@ -525,6 +571,9 @@ export default function InsightsTable({
                       Total ({transformedData.length} links)
                     </div>
                   </td>
+
+                  {/* Tags column - empty in totals */}
+                  <td className="bg-gray-100 px-2 py-3"></td>
 
                   {/* Metric totals */}
                   <td className="bg-gray-100 px-2 py-3 text-center">

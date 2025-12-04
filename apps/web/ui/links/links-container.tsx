@@ -144,7 +144,6 @@ function LinksList({
 
     links.forEach((item: any) => {
       if (item._group !== undefined) {
-        // This is a group header
         if (currentGroup) {
           groups.push(currentGroup);
         }
@@ -153,7 +152,6 @@ function LinksList({
           links: [],
         };
       } else if (currentGroup) {
-        // This is a regular link
         currentGroup.links.push(item);
       }
     });
@@ -227,65 +225,61 @@ function LinksList({
               <>
                 {/* Group controls */}
                 {groupedData.length >= 1 && (
-                  <div className="mx-2 mb-4 flex flex-col gap-2 rounded-xl border border-neutral-200 bg-gradient-to-b from-white to-neutral-50/50 px-4 py-3 shadow-sm sm:mx-0 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center justify-between gap-3 sm:justify-start">
-                      <div className="text-sm text-neutral-600">
-                        <span className="font-semibold text-neutral-900">
+                  <div className="mx-auto w-full max-w-screen-xl px-3 lg:px-10 flex items-center justify-between gap-3 bg-neutral-50/50 rounded-lg py-1.5 px-3">
+                    <div className="flex items-center gap-3">
+                      <div className="text-xs text-neutral-500">
+                        <span className="font-medium text-neutral-700">
                           {groupedData.length}
                         </span>{" "}
-                        <span>
-                          {groupedData.length === 1 ? "group" : "groups"}
-                        </span>
-                        <span className="mx-1.5 text-neutral-300">•</span>
-                        <span className="font-semibold text-neutral-900">
+                        {groupedData.length === 1 ? "group" : "groups"}
+                        <span className="mx-1.5">•</span>
+                        <span className="font-medium text-neutral-700">
                           {flatLinks?.length || 0}
                         </span>{" "}
-                        <span>
-                          {flatLinks?.length === 1 ? "link" : "links"}
-                        </span>
+                        {flatLinks?.length === 1 ? "link" : "links"}
                       </div>
-                      <button
-                        onClick={() => {
-                          setGroupBy(null);
-                          queryParams({
-                            del: ["groupBy"],
-                          });
-                        }}
-                        className="flex items-center gap-1.5 rounded-lg border border-neutral-200 bg-white px-2.5 py-1.5 text-xs font-medium text-neutral-700 shadow-sm transition-all hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900"
-                      >
-                        <span>Clear grouping</span>
-                        <span className="text-xs">✕</span>
-                      </button>
+                      {groupedData.length > 1 && (
+                        <div className="flex items-center gap-2 text-xs">
+                          <button
+                            onClick={expandAll}
+                            disabled={allExpanded}
+                            className={cn(
+                              "font-medium transition-colors",
+                              allExpanded
+                                ? "cursor-not-allowed text-neutral-400"
+                                : "text-neutral-600 hover:text-neutral-900",
+                            )}
+                          >
+                            Expand all
+                          </button>
+                          <span className="text-neutral-300">·</span>
+                          <button
+                            onClick={collapseAll}
+                            disabled={allCollapsed}
+                            className={cn(
+                              "font-medium transition-colors",
+                              allCollapsed
+                                ? "cursor-not-allowed text-neutral-400"
+                                : "text-neutral-600 hover:text-neutral-900",
+                            )}
+                          >
+                            Collapse all
+                          </button>
+                        </div>
+                      )}
                     </div>
-                    {groupedData.length > 1 && (
-                      <div className="flex items-center gap-3 text-xs sm:text-sm">
-                        <button
-                          onClick={expandAll}
-                          disabled={allExpanded}
-                          className={cn(
-                            "font-medium transition-all rounded px-2 py-1",
-                            allExpanded
-                              ? "cursor-not-allowed text-neutral-400"
-                              : "text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900",
-                          )}
-                        >
-                          Expand all
-                        </button>
-                        <span className="text-neutral-300">|</span>
-                        <button
-                          onClick={collapseAll}
-                          disabled={allCollapsed}
-                          className={cn(
-                            "font-medium transition-all rounded px-2 py-1",
-                            allCollapsed
-                              ? "cursor-not-allowed text-neutral-400"
-                              : "text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900",
-                          )}
-                        >
-                          Collapse all
-                        </button>
-                      </div>
-                    )}
+                    <button
+                      onClick={() => {
+                        setGroupBy(null);
+                        queryParams({
+                          del: ["groupBy"],
+                        });
+                      }}
+                      className="flex items-center gap-1 rounded-md bg-white px-2 py-1 text-xs font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
+                    >
+                      <span>Clear</span>
+                      <span className="text-[10px]">✕</span>
+                    </button>
                   </div>
                 )}
                 {groupedData.map((group) => (

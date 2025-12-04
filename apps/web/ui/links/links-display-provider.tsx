@@ -1,6 +1,7 @@
 import {
   defaultLinksDisplayProperties,
   LinksDisplayProperty,
+  linksDisplayPropertyIds,
   linksGroupByOptions,
   LinksGroupBySlug,
   linksSortOptions,
@@ -51,8 +52,6 @@ export const LinksDisplayContext = createContext<{
   setGroupBy: Dispatch<SetStateAction<LinksGroupBySlug>>;
   showArchived: boolean;
   setShowArchived: Dispatch<SetStateAction<boolean>>;
-  switchPosition: boolean;
-  setSwitchPosition: Dispatch<SetStateAction<boolean>>;
   isDirty: boolean;
   persist: () => void;
   reset: () => void;
@@ -67,8 +66,6 @@ export const LinksDisplayContext = createContext<{
   setGroupBy: () => {},
   showArchived: false,
   setShowArchived: () => {},
-  switchPosition: false,
-  setSwitchPosition: () => {},
   /** Whether the current values differ from the persisted values */
   isDirty: false,
   /** Updates the persisted values to the current values */
@@ -97,7 +94,6 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
     groupBy: linksGroupByOptions[0].slug,
     showArchived: false,
     displayProperties: defaultLinksDisplayProperties,
-    switchPosition: false,
   });
 
   const [viewMode, setViewMode, resetViewMode] = useLinksDisplayOption(
@@ -124,21 +120,35 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
       showArchivedRaw ? showArchivedRaw === "true" : undefined,
     );
 
-  const [displayProperties, setDisplayProperties, resetDisplayProperties] =
+  const [rawDisplayProperties, setRawDisplayProperties, resetDisplayProperties] =
     useLinksDisplayOption("displayProperties", persisted!);
 
-  const [switchPosition, setSwitchPosition, resetSwitchPosition] =
-    useLinksDisplayOption("switchPosition", persisted!);
+  // Filter out old properties that are no longer supported and ensure we have all required ones
+  const validPropertyIds = new Set(linksDisplayPropertyIds);
+  const filteredProperties = rawDisplayProperties.filter((p) =>
+    validPropertyIds.has(p),
+  );
+  
+  // If we filtered out properties or have too few, use defaults (need at least 7: icon + 6 sortable)
+  const displayProperties =
+    filteredProperties.length >= 7 ? filteredProperties : defaultLinksDisplayProperties;
+
+  // Wrapper to ensure we only set valid properties
+  const setDisplayProperties = (
+    value: LinksDisplayProperty[] | ((prev: LinksDisplayProperty[]) => LinksDisplayProperty[]),
+  ) => {
+    const newValue = typeof value === "function" ? value(displayProperties) : value;
+    const validValue = newValue.filter((p) => validPropertyIds.has(p));
+    setRawDisplayProperties(validValue);
+  };
 
   const isDirty = useMemo(() => {
     if (viewMode !== persisted?.viewMode) return true;
     if (sortBy !== persisted?.sortBy) return true;
     if (groupBy !== persisted?.groupBy) return true;
     if (showArchived !== persisted?.showArchived) return true;
-    if (switchPosition !== persisted?.switchPosition) return true;
     if (
-      displayProperties.slice().sort().join(",") !==
-      persisted?.displayProperties.slice().sort().join(",")
+      displayProperties.join(",") !== persisted?.displayProperties.join(",")
     )
       return true;
 
@@ -149,7 +159,6 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
     sortBy,
     groupBy,
     showArchived,
-    switchPosition,
     displayProperties,
   ]);
 
@@ -166,8 +175,6 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
         setGroupBy,
         showArchived,
         setShowArchived,
-        switchPosition: switchPosition ?? false,
-        setSwitchPosition,
         isDirty,
         persist: () =>
           setPersisted({
@@ -176,7 +183,6 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
             groupBy,
             showArchived,
             displayProperties,
-            switchPosition,
           }),
         reset: () => {
           resetViewMode();
@@ -184,7 +190,6 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
           resetSort();
           resetGroupBy();
           resetShowArchived();
-          resetSwitchPosition();
         },
       }}
     >

@@ -1,30 +1,88 @@
 import {
   linksDisplayProperties,
-  LinksViewMode,
+  LinksDisplayProperty,
 } from "@/lib/links/links-display";
 import { useIsMegaFolder } from "@/lib/swr/use-is-mega-folder";
 import {
-  Button,
-  Popover,
-  Switch,
-  useKeyboardShortcut,
-  useRouterStuff,
-} from "@dub/ui";
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import {
-  ArrowsOppositeDirectionY,
-  BoxArchive,
-  GridLayoutRows,
-  Shuffle,
-  Sliders,
-  TableRows2,
-} from "@dub/ui/icons";
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { Button, Popover, useKeyboardShortcut, useRouterStuff } from "@dub/ui";
+import { ArrowsOppositeDirectionY, Sliders } from "@dub/ui/icons";
 import { cn } from "@dub/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Layers3 } from "lucide-react";
+import { ChevronDown, GripVertical, Layers3 } from "lucide-react";
 import { useContext, useState } from "react";
 import LinkGroupBy from "./link-group-by";
 import LinkSort from "./link-sort";
 import { LinksDisplayContext } from "./links-display-provider";
+
+function SortableItem({
+  property,
+  index,
+}: {
+  property: LinksDisplayProperty;
+  index: number;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: property });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const propertyLabel =
+    linksDisplayProperties.find((p) => p.id === property)?.label || property;
+
+  const isActive = index < 4;
+  const lineNumber = Math.floor(index / 2) + 1;
+  const positionLabel = index < 2 ? `1` : index < 4 ? `2` : "";
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={cn(
+        "flex cursor-grab items-center gap-2 rounded border-2 px-2.5 py-2 text-xs transition-all active:cursor-grabbing",
+        isDragging && "opacity-50 shadow-lg",
+        isActive
+          ? "border-blue-200 bg-blue-50 text-blue-950"
+          : "border-neutral-200 bg-neutral-50 text-neutral-700",
+        isActive && "border-dashed",
+      )}
+    >
+      <GripVertical className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
+      <span className="grow truncate font-medium">{propertyLabel}</span>
+      {isActive && (
+        <span className="shrink-0 text-[10px] font-medium text-blue-600">
+          {positionLabel}
+        </span>
+      )}
+    </div>
+  );
+}
 
 export default function LinkDisplay() {
   const {
@@ -34,8 +92,6 @@ export default function LinkDisplay() {
     setShowArchived,
     displayProperties,
     setDisplayProperties,
-    switchPosition,
-    setSwitchPosition,
     isDirty,
     persist,
     reset,
@@ -50,10 +106,40 @@ export default function LinkDisplay() {
     enabled: !isMegaFolder,
   });
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = displayProperties.findIndex((id) => id === active.id);
+      const newIndex = displayProperties.findIndex((id) => id === over.id);
+
+      const newDisplayProperties = arrayMove(
+        displayProperties,
+        oldIndex,
+        newIndex,
+      );
+      setDisplayProperties(newDisplayProperties);
+    }
+  };
+
+  // Filter out icon from display (it's implicit)
+  const sortableProperties = displayProperties.filter((p) => p !== "icon");
+
   return (
     <Popover
       content={
-        <div className="w-full divide-y divide-neutral-100 text-sm md:w-80">
+        <div className="w-full divide-y divide-neutral-100 text-sm md:w-[400px]">
           {/* <div className="grid grid-cols-2 gap-2 p-3">
             {[
               { id: "cards", label: "Cards", icon: GridLayoutRows },
@@ -96,92 +182,49 @@ export default function LinkDisplay() {
           )}
           {!isMegaFolder && (
             <div className="flex h-16 items-center justify-between gap-2 px-4">
-              <span className="flex items-center gap-2">
-                <Layers3 className="h-4 w-4 text-neutral-800" />
-                Group By
-              </span>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <Layers3 className="h-4 w-4 text-neutral-800" />
+                  <span className="font-medium">Group By</span>
+                </div>
+                <span className="text-xs text-neutral-500">
+                  Organize links by criteria
+                </span>
+              </div>
               <div>
                 <LinkGroupBy />
               </div>
             </div>
           )}
-          {!isMegaFolder && (
-            <div className="group flex h-16 items-center justify-between gap-2 px-4">
-              <div className="flex items-center gap-2">
-                <div className="flex w-4 items-center justify-center">
-                  <BoxArchive className="size-4 text-neutral-800" />
-                </div>
-                Show archived links
-              </div>
-              <div>
-                <Switch
-                  checked={showArchived}
-                  fn={(checked) => {
-                    setShowArchived(checked);
-                    queryParams({
-                      del: [
-                        "showArchived", // Remove legacy query param
-                        "page", // Reset pagination
-                      ],
-                    });
-                  }}
-                />
-              </div>
-            </div>
-          )}
-          <div className="flex h-16 items-center justify-between gap-2 px-4">
-            <span className="flex items-center gap-2">
-              <Shuffle className="h-4 w-4 text-neutral-800" />
-              Switch text ordering
-            </span>
-            <div>
-              <Switch
-                checked={switchPosition}
-                fn={(checked) => setSwitchPosition(checked)}
-              />
-            </div>
-          </div>
           <div className="p-4">
-            <span className="text-xs uppercase text-neutral-500">
-              Display Properties
-            </span>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {linksDisplayProperties.map((property) => {
-                const active = displayProperties.includes(property.id);
-                return (
-                  <button
-                    key={property.id}
-                    aria-pressed={active}
-                    onClick={() => {
-                      let newDisplayProperties = active
-                        ? displayProperties.filter((p) => p !== property.id)
-                        : [...displayProperties, property.id];
-
-                      if (property.switch) {
-                        // Toggle switched property
-                        newDisplayProperties = [
-                          ...newDisplayProperties.filter(
-                            (p) => p !== property.switch,
-                          ),
-                          ...(active ? [property.switch] : []),
-                        ];
-                      }
-
-                      setDisplayProperties(newDisplayProperties);
-                    }}
-                    className={cn(
-                      "rounded border px-2 py-0.5 text-sm",
-                      property.mobile === false && "hidden md:block",
-                      active
-                        ? "border-neutral-300 bg-neutral-100 text-neutral-950"
-                        : "border-transparent text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950",
-                    )}
-                  >
-                    {property.label}
-                  </button>
-                );
-              })}
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-xs uppercase text-neutral-500">
+                Display Properties
+              </span>
+              <span className="text-xs text-neutral-400">
+                First 4 shown (2 lines)
+              </span>
             </div>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={sortableProperties}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="grid grid-cols-2 gap-2">
+                  {sortableProperties.map((property, index) => (
+                    <SortableItem
+                      key={property}
+                      property={property}
+                      index={index}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
           </div>
           <AnimatePresence initial={false}>
             {isDirty && (
@@ -216,7 +259,7 @@ export default function LinkDisplay() {
     >
       <Button
         variant="secondary"
-        className="h-10 hover:bg-white hover:border-neutral-300 [&>div]:w-full rounded-full border-neutral-200 transition-all duration-200 hover:shadow-sm"
+        className="h-10 rounded-full border-neutral-200 transition-all duration-200 hover:border-neutral-300 hover:bg-white hover:shadow-sm [&>div]:w-full"
         textWrapperClassName="!overflow-visible"
         text={
           <div className="flex w-full items-center gap-2.5">
@@ -228,11 +271,16 @@ export default function LinkDisplay() {
                 </div>
               )}
             </div>
-            <span className="grow text-left font-medium">Display</span>
+            <span className="grow text-left font-medium">
+              Customize Results
+            </span>
             <ChevronDown
-              className={cn("h-4 w-4 text-neutral-400 transition-all duration-200", {
-                "rotate-180": openPopover,
-              })}
+              className={cn(
+                "h-4 w-4 text-neutral-400 transition-all duration-200",
+                {
+                  "rotate-180": openPopover,
+                },
+              )}
             />
           </div>
         }

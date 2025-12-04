@@ -1,6 +1,6 @@
 import { TagProps } from "@/lib/types";
-import { CardList, Tooltip, useRouterStuff } from "@dub/ui";
-import { cn } from "@dub/utils";
+import { CardList, CopyButton, Tooltip, useRouterStuff } from "@dub/ui";
+import { cn, linkConstructor } from "@dub/utils";
 import { useSearchParams } from "next/navigation";
 import {
   memo,
@@ -44,7 +44,7 @@ function useOrganizedTags(tags: ResponseLink["tags"]) {
 }
 
 export function LinkDetailsColumn({ link }: { link: ResponseLink }) {
-  const { tags } = link;
+  const { tags, domain, key } = link;
 
   const { displayProperties } = useContext(LinksDisplayContext);
 
@@ -52,21 +52,34 @@ export function LinkDetailsColumn({ link }: { link: ResponseLink }) {
 
   const { primaryTag, additionalTags } = useOrganizedTags(tags);
 
+  const shortLink = linkConstructor({ domain, key, pretty: true });
+  const fullShortLink = linkConstructor({ domain, key, pretty: false });
+
   return (
     <div ref={ref} className="flex items-center justify-end gap-2 sm:gap-3">
-      {displayProperties.includes("tags") && primaryTag && (
+      {primaryTag && (
         <TagsTooltip additionalTags={additionalTags}>
           <TagButton tag={primaryTag} plus={additionalTags.length} />
         </TagsTooltip>
       )}
-      {displayProperties.includes("utm_columns") && (
-        <LinkUtmColumns link={link} />
-      )}
-      {displayProperties.includes("analytics") && (
-        <div className="flex lg:justify-end lg:min-w-36">
-          <LinkAnalyticsBadge link={link} />
-        </div>
-      )}
+      {/* Always show UTM columns when present - not controlled by displayProperties */}
+      <LinkUtmColumns link={link} />
+      {/* Copy button - always after UTM columns */}
+      <div className="flex shrink-0 items-center">
+        <Tooltip content={`Copy short link: ${shortLink}`} delayDuration={150}>
+          <div>
+            <CopyButton
+              value={fullShortLink}
+              variant="neutral"
+              className="p-1.5"
+              withText
+            />
+          </div>
+        </Tooltip>
+      </div>
+      <div className="flex lg:justify-end lg:min-w-36">
+        <LinkAnalyticsBadge link={link} />
+      </div>
       <Controls link={link} />
     </div>
   );

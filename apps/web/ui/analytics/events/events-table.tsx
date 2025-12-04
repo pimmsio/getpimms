@@ -269,8 +269,7 @@ export default function EventsTable({
                 }}
                 variant="table"
                 showCopyButton={false}
-                className="min-w-0 flex-1"
-                maxWidth="280px"
+                className="min-w-0 flex-1 max-w-[280px]"
               />
             );
           },

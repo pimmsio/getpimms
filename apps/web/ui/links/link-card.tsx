@@ -117,14 +117,14 @@ const LinkCardInner = memo(({ link }: { link: ResponseLink }) => {
             ),
           })}
       >
-        <div className="flex min-w-0 items-center gap-3 px-5 py-3 text-sm overflow-hidden">
+        <div className="flex min-w-0 items-center gap-3 px-2 py-1.5 sm:px-5 sm:py-3 text-sm overflow-hidden">
           <div ref={ref} className="min-w-0 flex-1 overflow-hidden">
             <LinkCell 
               link={link}
               variant="links-page"
               showCopyButton={true}
               showBadges={true}
-              maxWidth="100%"
+              className="max-w-[100%]"
             />
           </div>
           <LinkDetailsColumn link={link} />

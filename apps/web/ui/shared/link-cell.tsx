@@ -25,6 +25,7 @@ import { useLinkSelection } from "../links/link-selection-provider";
 import { LinksDisplayContext } from "../links/links-display-provider";
 import { TestsBadge } from "../links/tests-badge";
 import { UrlDecompositionTooltip } from "./url-decomposition-tooltip";
+import { UrlDisplayWithUtm } from "./url-display-with-utm";
 
 interface LinkData {
   domain: string;
@@ -49,7 +50,6 @@ interface LinkCellProps {
   variant?: "table" | "card" | "links-page";
   showCopyButton?: boolean;
   className?: string;
-  maxWidth?: string;
   showComments?: boolean;
   showBadges?: boolean;
 }
@@ -59,7 +59,6 @@ export function LinkCell({
   variant = "table",
   showCopyButton = false,
   className,
-  maxWidth = "300px",
   showComments = true,
   showBadges = false,
 }: LinkCellProps) {
@@ -77,13 +76,155 @@ export function LinkCell({
   // Use display settings from LinksDisplayContext if available
   const displayContext = useContext(LinksDisplayContext);
   const displayProperties = displayContext?.displayProperties || [
-    "title",
+    "icon",
+    "link",
+    "comments",
     "url",
+    "createdAt",
+    "title",
+    "description",
   ];
-  const switchPosition = displayContext?.switchPosition || false;
+
+  // Get the first 4 non-icon properties for display (2 lines of 2)
+  const sortableProperties = displayProperties.filter((p) => p !== "icon");
+  const line1Property1 = sortableProperties[0] || "link";
+  const line1Property2 = sortableProperties[1] || "comments";
+  const line2Property1 = sortableProperties[2] || "url";
+  const line2Property2 = sortableProperties[3] || "createdAt";
 
   const shortLink = linkConstructor({ domain, key, pretty: true });
   const fullShortLink = linkConstructor({ domain, key, pretty: false });
+
+  // Helper function to check if a property should be shown (always show except comments when empty)
+  const hasPropertyValue = (propertyId: string) => {
+    switch (propertyId) {
+      case "link":
+      case "url":
+        return true;
+      case "title":
+        return !!title;
+      case "description":
+        return !!description;
+      case "comments":
+        return !!comments;
+      case "createdAt":
+        return !!createdAt;
+      default:
+        return false;
+    }
+  };
+
+  // Helper function to render a property value
+  const renderProperty = (
+    propertyId: string,
+    opts: { primary?: boolean } = {},
+  ) => {
+    const { primary = false } = opts;
+    const baseClass = primary
+      ? "font-semibold text-neutral-800"
+      : "text-neutral-500";
+
+    switch (propertyId) {
+      case "link":
+        return variant === "links-page" ? (
+          <UnverifiedTooltip domain={domain} _key={key}>
+            <a
+              href={fullShortLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={shortLink}
+              className={cn(
+                "block truncate transition-colors hover:text-black hover:underline",
+                baseClass,
+                archived && "text-neutral-600",
+              )}
+            >
+              {shortLink}
+            </a>
+          </UnverifiedTooltip>
+        ) : (
+          <a
+            href={fullShortLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={shortLink}
+            className={cn(
+              "block truncate transition-colors hover:text-black hover:underline",
+              baseClass,
+              archived && "text-neutral-600",
+            )}
+          >
+            {shortLink}
+          </a>
+        );
+
+      case "url":
+        return url ? (
+          <UrlDecompositionTooltip url={url} forceShow={variant === "table"}>
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                "block truncate transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2",
+                baseClass,
+                archived && "text-neutral-600",
+              )}
+              title={url}
+            >
+              {primary ? (
+                <UrlDisplayWithUtm url={url} className={cn("truncate block", baseClass)} />
+              ) : (
+                <UrlDisplayWithUtm url={url} className="truncate block" />
+              )}
+            </a>
+          </UrlDecompositionTooltip>
+        ) : (
+          <span className={cn("truncate text-neutral-400", archived && "text-neutral-600")}>
+            No URL
+          </span>
+        );
+
+      case "title":
+        return title ? (
+          <span className={cn("block truncate", baseClass, archived && "text-neutral-600")} title={title}>
+            {title}
+          </span>
+        ) : (
+          <span className="block truncate text-neutral-400">No title</span>
+        );
+
+      case "description":
+        return description ? (
+          <span className={cn("block truncate", baseClass, archived && "text-neutral-600")} title={description}>
+            {description}
+          </span>
+        ) : (
+          <span className="block truncate text-neutral-400">No description</span>
+        );
+
+      case "comments":
+        return comments ? (
+          <span className={cn("block truncate", baseClass, archived && "text-neutral-600")} title={comments}>
+            {comments}
+          </span>
+        ) : null;
+
+      case "createdAt":
+        return createdAt ? (
+          <Tooltip content={formatDateTime(createdAt)} delayDuration={150}>
+            <span className={cn("truncate whitespace-nowrap", baseClass)}>
+              {timeAgo(new Date(createdAt))}
+            </span>
+          </Tooltip>
+        ) : (
+          <span className="truncate text-neutral-400">-</span>
+        );
+
+      default:
+        return <span className="truncate text-neutral-400">-</span>;
+    }
+  };
 
   // Selection functionality (optional - only available within LinkSelectionProvider)
   let isSelectMode = false;
@@ -107,7 +248,9 @@ export function LinkCell({
       : "flex items-center gap-3 py-1";
 
   return (
-    <div className={cn(containerClassName, className)}>
+    <div 
+      className={cn(containerClassName, className)}
+    >
       {/* Logo with checkbox selection */}
       <button
         type="button"
@@ -116,7 +259,7 @@ export function LinkCell({
         data-checked={isSelected}
         onClick={(e) => handleLinkSelection?.(link.id, e)}
         className={cn(
-          "group relative flex shrink-0 items-center justify-center outline-none",
+          "group relative flex shrink-0 items-center justify-center outline-none w-9 h-9 sm:w-10 sm:h-10",
           isSelectMode && "flex",
         )}
       >
@@ -124,14 +267,14 @@ export function LinkCell({
         <div className="absolute inset-0 shrink-0 rounded-full border border-neutral-100 bg-gradient-to-t from-neutral-100 opacity-100" />
         <div
           className={cn(
-            "relative transition-[padding,transform] sm:p-1.5",
+            "relative transition-[padding,transform]",
             isSelectMode ? "scale-90" : "group-hover:scale-90",
           )}
         >
           <LinkLogo
             apexDomain={getApexDomain(url)}
             className={cn(
-              "size-4 shrink-0 transition-opacity sm:size-5",
+              "size-6 rounded-full shrink-0 transition-opacity sm:size-8",
               isSelectMode && "opacity-0",
             )}
           />
@@ -157,188 +300,74 @@ export function LinkCell({
         </div>
       </button>
 
-      {/* Link info - same structure as LinkTitleColumn */}
+      {/* Link info - 2 lines of 2 properties on desktop, 4 lines on mobile */}
       <div
-        className="flex min-w-0 flex-col text-sm leading-tight"
-        style={{ maxWidth }}
+        className="flex min-w-0 flex-1 flex-col gap-0.5 text-sm leading-tight"
       >
-        {/* Main title line */}
+        {/* Line 1 Property 1 - always shown */}
         <div className="flex items-center gap-2">
-          <div className="flex min-w-0 md:min-w-36 items-center gap-2">
-            {switchPosition ? (
-              // When position is switched, show destination URL as main title
-              displayProperties.includes("url") && url ? (
-                <UrlDecompositionTooltip
-                  url={url}
-                  forceShow={variant === "table"}
-                >
-                  <a
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={cn(
-                      "truncate font-semibold text-neutral-800 transition-colors hover:text-black hover:underline",
-                      archived && "text-neutral-600",
-                    )}
-                    title={url}
-                  >
-                    {getPrettyUrl(url)}
-                  </a>
-                </UrlDecompositionTooltip>
-              ) : (
-                <span
-                  className={cn(
-                    "truncate font-semibold text-neutral-400",
-                    archived && "text-neutral-600",
-                  )}
-                >
-                  No URL configured
-                </span>
-              )
-            ) : // Default behavior: show title or short link as main title
-            displayProperties.includes("title") && title ? (
-              <span
-                className={cn(
-                  "truncate font-semibold text-neutral-800",
-                  archived && "text-neutral-600",
-                )}
-                title={title}
-              >
-                {title}
-              </span>
-            ) : variant === "links-page" ? (
-              <UnverifiedTooltip domain={domain} _key={key}>
-                <a
-                  href={fullShortLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title={shortLink}
-                  className={cn(
-                    "truncate font-semibold text-neutral-800 transition-colors hover:text-black hover:underline",
-                    archived && "text-neutral-600",
-                  )}
-                >
-                  {shortLink}
-                </a>
-              </UnverifiedTooltip>
-            ) : (
-              <a
-                href={fullShortLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                title={shortLink}
-                className={cn(
-                  "truncate font-semibold text-neutral-800 transition-colors hover:text-black hover:underline",
-                  archived && "text-neutral-600",
-                )}
-              >
-                {shortLink}
-              </a>
+          {/* Spacer to align with line 2's arrow */}
+          <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
+            {hasPropertyValue(line1Property1) && (
+              <div className="min-w-0 sm:max-w-[50%] shrink-0 overflow-hidden">
+                {renderProperty(line1Property1, { primary: true })}
+              </div>
             )}
-
-            {/* Copy button */}
-            {showCopyButton && (
-              <CopyButton
-                value={fullShortLink}
-                variant="neutral"
-                className="p-1.5"
-                withText
-              />
+            {/* Only show separator if both properties exist - desktop only */}
+            {hasPropertyValue(line1Property1) && hasPropertyValue(line1Property2) && (
+              <div className="hidden sm:block shrink-0 text-neutral-300">•</div>
+            )}
+            {/* Line 1 Property 2 - desktop: inline, mobile: hidden (shown on separate line below) */}
+            {hasPropertyValue(line1Property2) && (
+              <div className="hidden sm:block min-w-0 max-w-[50%] shrink overflow-hidden">
+                {renderProperty(line1Property2, { primary: true })}
+              </div>
             )}
           </div>
+        </div>
 
-          {/* Comments badge - hidden on mobile */}
-          {(showBadges || showComments) && comments && (
-            <CommentsBadge
-              comments={comments}
-              maxWidth={variant === "table" ? "150px" : undefined}
-            />
-          )}
+        {/* Line 1 Property 2 - mobile only, full width */}
+        {hasPropertyValue(line1Property2) && (
+          <div className="flex items-center gap-2 sm:hidden">
+            <div className="flex min-w-0 flex-1 items-center overflow-hidden">
+              {renderProperty(line1Property2, { primary: true })}
+            </div>
+          </div>
+        )}
 
-          {/* Settings badge for links page */}
-          {/* {showBadges &&
-            variant === "links-page" &&
-            (link.ios || link.android) && (
-              <div className="rounded-full p-1.5 hover:bg-neutral-100">
-                <Bolt className="size-3.5" />
-              </div>
-            )} */}
-
-          {/* Tests badge - hidden on mobile */}
-          {showBadges &&
-            link.testVariants &&
-            link.testCompletedAt &&
-            new Date(link.testCompletedAt) > new Date() && (
-              <div className="hidden lg:block">
-                <TestsBadge
-                  link={{
-                    testVariants: link.testVariants,
-                    testCompletedAt:
-                      link.testCompletedAt instanceof Date
-                        ? link.testCompletedAt
-                        : new Date(link.testCompletedAt),
-                  }}
-                />
+        {/* Line 2 Property 1 */}
+        <div className="flex items-center gap-2">
+          <ArrowTurnRight2 className="h-3 w-3 shrink-0 text-neutral-400" />
+          <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
+            {hasPropertyValue(line2Property1) && (
+              <div className="min-w-0 sm:max-w-[50%] shrink-0 overflow-hidden">
+                {renderProperty(line2Property1)}
               </div>
             )}
+            {/* Only show separator if both properties exist - desktop only */}
+            {hasPropertyValue(line2Property1) && hasPropertyValue(line2Property2) && (
+              <div className="hidden sm:block shrink-0 text-neutral-300">•</div>
+            )}
+            {/* Line 2 Property 2 - desktop: inline, mobile: hidden (shown on separate line below) */}
+            {hasPropertyValue(line2Property2) && (
+              <div className="hidden sm:block min-w-0 max-w-[50%] shrink overflow-hidden">
+                {renderProperty(line2Property2)}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Secondary line - destination URL or short link depending on switchPosition */}
-        <div className="flex items-center gap-1.5">
-          <ArrowTurnRight2 className="h-3 w-3 shrink-0 text-neutral-400" />
-          {switchPosition ? (
-            // When position is switched, show short link in secondary line
-            <a
-              href={fullShortLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              title={shortLink}
-              className="max-w-lg truncate text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2"
-            >
-              {shortLink}
-            </a>
-          ) : displayProperties.includes("url") ? (
-            // Default: show destination URL in secondary line
-            url ? (
-              <UrlDecompositionTooltip
-                url={url}
-                forceShow={variant === "table"}
-              >
-                <a
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="max-w-lg truncate text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2"
-                  title={url}
-                >
-                  {getPrettyUrl(url)}
-                </a>
-              </UrlDecompositionTooltip>
-            ) : (
-              <span className="truncate text-neutral-400">
-                No URL configured
-              </span>
-            )
-          ) : (
-            <span className="truncate text-neutral-500">
-              {description || "No description"}
-            </span>
-          )}
-          {/* Creation date display - inline with separator */}
-          {createdAt && displayProperties.includes("createdAt") && (
-            <>
-              <span className="hidden shrink-0 text-neutral-300 sm:inline">
-                •
-              </span>
-              <Tooltip content={formatDateTime(createdAt)} delayDuration={150}>
-                <span className="hidden shrink-0 whitespace-nowrap text-neutral-400 sm:inline">
-                  {timeAgo(new Date(createdAt))}
-                </span>
-              </Tooltip>
-            </>
-          )}
-        </div>
+        {/* Line 2 Property 2 - mobile only, full width */}
+        {hasPropertyValue(line2Property2) && (
+          <div className="flex items-center gap-2 sm:hidden">
+            <ArrowTurnRight2 className="h-3 w-3 shrink-0 text-neutral-400" />
+            <div className="flex min-w-0 flex-1 items-center overflow-hidden">
+              {renderProperty(line2Property2)}
+            </div>
+          </div>
+        )}
       </div>
+
     </div>
   );
 }

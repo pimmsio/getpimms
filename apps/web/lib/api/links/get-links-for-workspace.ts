@@ -68,15 +68,6 @@ export async function getLinksForWorkspace({
     } catch (e) {}
   }
 
-  console.log('🔍 [getLinksForWorkspace] Processing UTM filters:', {
-    utm_source,
-    utm_medium,
-    utm_campaign,
-    utm_term,
-    utm_content,
-    'utm_source split': utm_source?.includes(',') ? utm_source.split(',') : utm_source,
-    'utm_medium split': utm_medium?.includes(',') ? utm_medium.split(',') : utm_medium,
-  });
 
   // Calculate date range from interval or use explicit start/end dates
   let startDate: Date | undefined;
@@ -201,7 +192,6 @@ export async function getLinksForWorkspace({
       }),
   };
 
-  console.log('🔍 [getLinksForWorkspace] Built where clause:', JSON.stringify(baseWhere, null, 2));
 
   const includeClause = {
     tags: {
@@ -220,7 +210,6 @@ export async function getLinksForWorkspace({
     dashboard: includeDashboard,
   };
 
-  // If groupBy is specified, use SQL-level GROUP BY approach
   if (groupBy) {
     // Step 1: Get distinct group values with counts using Prisma groupBy
     const groupValues = await prisma.link.groupBy({
@@ -236,32 +225,102 @@ export async function getLinksForWorkspace({
 
     // Step 2: For each group value, fetch all its links
     const groupedResults = await Promise.all(
-      groupValues
-        .filter((group) => group[groupBy] !== null) // Skip null groups for now to avoid Prisma errors
-        .map(async (group) => {
-          const groupValue = group[groupBy];
-          
-          const groupLinks = await prisma.link.findMany({
-            where: {
-              ...baseWhere,
-              [groupBy]: groupValue,
-            },
-            include: includeClause,
-            orderBy: {
-              [sortBy]: sortOrder,
-            },
-          });
+      groupValues.map(async (group) => {
+        const groupValue = group[groupBy];
+        
+        const groupLinks = await prisma.link.findMany({
+          where: {
+            ...baseWhere,
+            [groupBy]: groupValue,
+          },
+          include: includeClause,
+          orderBy: {
+            [sortBy]: sortOrder,
+          },
+        });
 
-          return {
-            _group: groupValue,
-            _count: group._count,
-            links: groupLinks.map((link) => transformLink(link)),
-          };
-        })
+        // Display null groups as "(No <field>)"
+        const displayValue = groupValue === null 
+          ? `(No ${groupBy.replace('utm_', 'UTM ').replace(/_/g, ' ')})`
+          : groupValue;
+
+        return {
+          _group: displayValue,
+          _count: group._count,
+          links: groupLinks.map((link) => transformLink(link)),
+        };
+      })
     );
 
-    // Step 3: Flatten the results with group headers
-    return groupedResults.flatMap(({ _group, _count, links }) => [
+    // Step 3: For URL and UTM grouping, extract values from destination URLs in memory
+    let finalGroupedResults = groupedResults;
+    
+    // Helper function to normalize URL by removing query params and hash
+    const normalizeUrl = (url: string | null): string => {
+      if (!url) return '(No URL)';
+      try {
+        const urlObj = new URL(url);
+        // Return protocol + hostname + pathname (no search params or hash)
+        return `${urlObj.protocol}//${urlObj.hostname}${urlObj.pathname}`;
+      } catch (e) {
+        return url; // Return as-is if parsing fails
+      }
+    };
+
+    // Helper function to extract UTM parameter from destination URL
+    const extractUtmParam = (url: string | null, utmParam: string): string => {
+      if (!url) return `(No ${utmParam.replace('utm_', 'UTM ').replace(/_/g, ' ')})`;
+      try {
+        const urlObj = new URL(url);
+        const value = urlObj.searchParams.get(utmParam);
+        return value || `(No ${utmParam.replace('utm_', 'UTM ').replace(/_/g, ' ')})`;
+      } catch (e) {
+        return `(No ${utmParam.replace('utm_', 'UTM ').replace(/_/g, ' ')})`;
+      }
+    };
+
+    const isUtmGrouping = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'].includes(groupBy || '');
+    const isUrlGrouping = groupBy === 'url';
+
+    if (isUrlGrouping || isUtmGrouping) {
+      const allLinks = await prisma.link.findMany({
+        where: baseWhere,
+        include: includeClause,
+        orderBy: {
+          [sortBy]: sortOrder,
+        },
+      });
+
+      // Group links by extracted value from destination URL
+      const regroupedMap = new Map<string, any[]>();
+      
+      allLinks.forEach((link) => {
+        let groupKey: string;
+        
+        if (isUrlGrouping) {
+          groupKey = normalizeUrl(link.url);
+        } else {
+          groupKey = extractUtmParam(link.url, groupBy!);
+        }
+        
+        if (!regroupedMap.has(groupKey)) {
+          regroupedMap.set(groupKey, []);
+        }
+        regroupedMap.get(groupKey)!.push(transformLink(link));
+      });
+
+      // Convert to array format and sort by count
+      finalGroupedResults = Array.from(regroupedMap.entries())
+        .map(([groupKey, links]) => ({
+          _group: groupKey,
+          _count: links.length,
+          links,
+        }))
+        .sort((a, b) => b._count - a._count);
+    }
+
+    // Step 4: Flatten the results with group headers
+    return finalGroupedResults.flatMap(({ _group, _count, links }) => [
       { _group, _count } as any,
       ...links,
     ]);

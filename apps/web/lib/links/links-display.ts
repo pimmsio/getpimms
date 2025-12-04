@@ -76,38 +76,28 @@ export const linksDisplayPropertyIds = [
   "description",
   "comments",
   "createdAt",
-  "user",
-  "tags",
-  "analytics",
-  "utm_columns",
 ] as const;
 
 export const linksDisplayProperties: {
   id: LinksDisplayProperty;
   label: string;
-  switch?: LinksDisplayProperty;
-  mobile?: boolean;
 }[] = [
-  { id: "link", label: "Short link", switch: "title" },
-  { id: "url", label: "Destination URL", switch: "description" },
-  { id: "title", label: "Title", switch: "link" },
-  { id: "description", label: "Description", switch: "url" },
-  { id: "createdAt", label: "Created Date", mobile: false },
-  { id: "user", label: "Creator", mobile: false },
-  { id: "tags", label: "Tags" },
-  { id: "analytics", label: "Analytics" },
-  { id: "utm_columns", label: "UTM Columns", mobile: false },
+  { id: "link", label: "Short link" },
+  { id: "url", label: "Destination URL" },
+  { id: "title", label: "Meta title" },
+  { id: "description", label: "Meta description" },
+  { id: "comments", label: "Title" },
+  { id: "createdAt", label: "Date" },
 ];
 
 export type LinksDisplayProperty = (typeof linksDisplayPropertyIds)[number];
 
 export const defaultLinksDisplayProperties: LinksDisplayProperty[] = [
   "icon",
-  "link",
-  "url",
-  "createdAt",
-  "user",
-  "tags",
-  "analytics",
-  "utm_columns",
+  "link",  // Line 1, position 1: Short link
+  "comments",  // Line 1, position 2: Title
+  "url",  // Line 2, position 1: Destination URL
+  "createdAt",  // Line 2, position 2: Date
+  "title",
+  "description",
 ];

@@ -69,7 +69,12 @@ export function LinkTitleColumn({ link }: { link: ResponseLink }) {
   const { domain, key } = link;
 
   const { variant } = useContext(CardList.Context);
-  const { displayProperties, switchPosition } = useContext(LinksDisplayContext);
+  const { displayProperties } = useContext(LinksDisplayContext);
+
+  // Get the first 2 non-icon properties for display
+  const sortableProperties = displayProperties.filter((p) => p !== "icon");
+  const primaryProperty = sortableProperties[0] || "link";
+  const secondaryProperty = sortableProperties[1] || "url";
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -105,57 +110,57 @@ export function LinkTitleColumn({ link }: { link: ResponseLink }) {
       <div className="h-[32px] min-w-0 overflow-hidden transition-[height] group-data-[variant=loose]/card-list:h-[46px]">
         <div className="flex items-center gap-2">
           <div className="flex min-w-0 items-center gap-2">
-            {switchPosition ? (
-              // When position is switched, show destination URL as main title
-              displayProperties.includes("url") && link.url ? (
-                <UrlDecompositionTooltip url={link.url}>
-                  <a
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={cn(
-                      "truncate font-semibold leading-6 text-neutral-800 transition-colors hover:text-black",
-                      link.archived && "text-neutral-600",
-                    )}
-                  >
-                    {getPrettyUrl(link.url)}
-                  </a>
-                </UrlDecompositionTooltip>
-              ) : (
-                <span className={cn(
-                  "truncate font-semibold leading-6 text-neutral-400",
-                  link.archived && "text-neutral-600",
-                )}>
-                  No URL configured
-                </span>
-              )
-            ) : (
-              // Default behavior: show title or short link as main title
-              displayProperties.includes("title") && link.title ? (
-                <span
+            {primaryProperty === "url" && link.url ? (
+              <UrlDecompositionTooltip url={link.url}>
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={cn(
-                    "truncate font-semibold leading-6 text-neutral-800",
+                    "truncate font-semibold leading-6 text-neutral-800 transition-colors hover:text-black",
                     link.archived && "text-neutral-600",
                   )}
                 >
-                  {link.title}
-                </span>
-              ) : (
-                <UnverifiedTooltip domain={domain} _key={key}>
-                  <a
-                    href={linkConstructor({ domain, key })}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={linkConstructor({ domain, key, pretty: true })}
-                    className={cn(
-                      "truncate font-semibold leading-6 text-neutral-800 transition-colors hover:text-black",
-                      link.archived && "text-neutral-600",
-                    )}
-                  >
-                    {linkConstructor({ domain, key, pretty: true })}
-                  </a>
-                </UnverifiedTooltip>
-              )
+                  {getPrettyUrl(link.url)}
+                </a>
+              </UrlDecompositionTooltip>
+            ) : primaryProperty === "url" && !link.url ? (
+              <span className={cn("truncate font-semibold leading-6 text-neutral-400", link.archived && "text-neutral-600")}>
+                No URL configured
+              </span>
+            ) : primaryProperty === "title" && link.title ? (
+              <span
+                className={cn("truncate font-semibold leading-6 text-neutral-800", link.archived && "text-neutral-600")}
+              >
+                {link.title}
+              </span>
+            ) : primaryProperty === "description" && link.description ? (
+              <span
+                className={cn("truncate font-semibold leading-6 text-neutral-800", link.archived && "text-neutral-600")}
+              >
+                {link.description}
+              </span>
+            ) : primaryProperty === "comments" && link.comments ? (
+              <span
+                className={cn("truncate font-semibold leading-6 text-neutral-800", link.archived && "text-neutral-600")}
+              >
+                {link.comments}
+              </span>
+            ) : (
+              <UnverifiedTooltip domain={domain} _key={key}>
+                <a
+                  href={linkConstructor({ domain, key })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={linkConstructor({ domain, key, pretty: true })}
+                  className={cn(
+                    "truncate font-semibold leading-6 text-neutral-800 transition-colors hover:text-black",
+                    link.archived && "text-neutral-600",
+                  )}
+                >
+                  {linkConstructor({ domain, key, pretty: true })}
+                </a>
+              </UnverifiedTooltip>
             )}
             <CopyButton
               value={linkConstructor({
@@ -338,7 +343,12 @@ const Details = memo(
   ({ link, compact }: { link: ResponseLink; compact?: boolean }) => {
     const { url, createdAt } = link;
 
-    const { displayProperties, switchPosition } = useContext(LinksDisplayContext);
+    const { displayProperties } = useContext(LinksDisplayContext);
+
+    // Get the first 2 non-icon properties for display
+    const sortableProperties = displayProperties.filter((p) => p !== "icon");
+    const primaryProperty = sortableProperties[0] || "link";
+    const secondaryProperty = sortableProperties[1] || "url";
 
     return (
       <div
@@ -353,14 +363,12 @@ const Details = memo(
         )}
       >
         <div className="flex min-w-0 items-center gap-1.5">
-          {(switchPosition ? true : displayProperties.includes("url")) &&
-            (compact ? (
-              <ArrowRight className="mr-1 h-3 w-3 shrink-0 text-neutral-400" />
-            ) : (
-              <ArrowTurnRight2 className="h-3 w-3 shrink-0 text-neutral-400" />
-            ))}
-          {switchPosition ? (
-            // When position is switched, show short link in details
+          {compact ? (
+            <ArrowRight className="mr-1 h-3 w-3 shrink-0 text-neutral-400" />
+          ) : (
+            <ArrowTurnRight2 className="h-3 w-3 shrink-0 text-neutral-400" />
+          )}
+          {secondaryProperty === "link" ? (
             <UnverifiedTooltip domain={link.domain} _key={link.key}>
               <a
                 href={linkConstructor({ domain: link.domain, key: link.key })}
@@ -372,27 +380,27 @@ const Details = memo(
                 {linkConstructor({ domain: link.domain, key: link.key, pretty: true })}
               </a>
             </UnverifiedTooltip>
-          ) : displayProperties.includes("url") ? (
-            url ? (
-              <UrlDecompositionTooltip url={url}>
-                <a
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="truncate text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2"
-                >
-                  {getPrettyUrl(url)}
-                </a>
-              </UrlDecompositionTooltip>
-            ) : (
-              <span className="truncate text-neutral-400">
-                No URL configured
-              </span>
-            )
+          ) : secondaryProperty === "url" && url ? (
+            <UrlDecompositionTooltip url={url}>
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="truncate text-neutral-500 transition-colors hover:text-neutral-700 hover:underline hover:underline-offset-2"
+              >
+                {getPrettyUrl(url)}
+              </a>
+            </UrlDecompositionTooltip>
+          ) : secondaryProperty === "url" && !url ? (
+            <span className="truncate text-neutral-400">No URL configured</span>
+          ) : secondaryProperty === "title" && link.title ? (
+            <span className="truncate text-neutral-500">{link.title}</span>
+          ) : secondaryProperty === "description" && link.description ? (
+            <span className="truncate text-neutral-500">{link.description}</span>
+          ) : secondaryProperty === "comments" && link.comments ? (
+            <span className="truncate text-neutral-500">{link.comments}</span>
           ) : (
-            <span className="truncate text-neutral-500">
-              {link.description}
-            </span>
+            <span className="truncate text-neutral-500">-</span>
           )}
           {/* <div
             className={cn(

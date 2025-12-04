@@ -24,49 +24,20 @@ export const GET = withWorkspace(
     // Removed groupBy parameter - using days only for now
 
     try {
-      console.log("🔍 Starting analytics fetch...");
-      console.log("📊 Params:", { ...parsedParams, workspaceId: workspace.id });
-      
       // Get top links data with all metrics
-      console.log("🔗 Fetching top links...");
       const topLinksData = await getAnalytics({
         ...parsedParams,
         event: "composite", // Force composite to get clicks, leads, sales
         groupBy: "top_links",
         workspaceId: workspace.id,
       });
-      console.log("✅ Top links result:", { 
-        isArray: Array.isArray(topLinksData), 
-        count: Array.isArray(topLinksData) ? topLinksData.length : 'not array',
-        sample: Array.isArray(topLinksData) ? topLinksData.slice(0, 1) : topLinksData
-      });
-
-      // TEST: Try standard timeseries first to see if we have data at all
-      console.log("🧪 Testing standard timeseries first...");
-      const standardTimeseries = await getAnalytics({
-        ...parsedParams,
-        event: "composite",
-        groupBy: "timeseries",
-        workspaceId: workspace.id,
-      });
-      console.log("🧪 Standard timeseries result:", { 
-        isArray: Array.isArray(standardTimeseries), 
-        count: Array.isArray(standardTimeseries) ? standardTimeseries.length : 'not array',
-        sample: Array.isArray(standardTimeseries) ? standardTimeseries.slice(0, 1) : standardTimeseries
-      });
 
       // Get timeseries data grouped by link_id using our new pipe
-      console.log("📈 Fetching link timeseries with our custom pipe...");
       const linkTimeseriesData = await getAnalytics({
         ...parsedParams,
         event: "composite", // Force composite to get clicks, leads, sales
         groupBy: "link_timeseries", // Use our new pipe
         workspaceId: workspace.id,
-      });
-      console.log("✅ Link timeseries result:", { 
-        isArray: Array.isArray(linkTimeseriesData), 
-        count: Array.isArray(linkTimeseriesData) ? linkTimeseriesData.length : 'not array',
-        sample: Array.isArray(linkTimeseriesData) ? linkTimeseriesData.slice(0, 2) : linkTimeseriesData
       });
 
       if (!Array.isArray(topLinksData)) {
@@ -90,48 +61,46 @@ export const GET = withWorkspace(
           url: true,
           comments: true,
           title: true,
+          description: true,
           createdAt: true,
           utm_source: true,
           utm_medium: true,
           utm_campaign: true,
           utm_term: true,
           utm_content: true,
+          tags: {
+            select: {
+              tag: {
+                select: {
+                  id: true,
+                  name: true,
+                  color: true,
+                },
+              },
+            },
+          },
         },
       });
 
       // Group link timeseries data by link_id
-      console.log("🗂️ Grouping timeseries data by link_id...");
       const linkTimeseriesMap = new Map<string, any[]>();
       
       if (Array.isArray(linkTimeseriesData)) {
-        console.log("📋 Processing", linkTimeseriesData.length, "timeseries items");
-        linkTimeseriesData.forEach((item: any, index) => {
+        linkTimeseriesData.forEach((item: any) => {
           const linkId = item.link_id;
-          if (index < 3) { // Log first 3 items for debugging
-            console.log(`📈 Item ${index}:`, { linkId, start: item.start, clicks: item.clicks, leads: item.leads, sales: item.sales });
-          }
           
           if (!linkTimeseriesMap.has(linkId)) {
             linkTimeseriesMap.set(linkId, []);
           }
           
-          let processedItem = {
+          linkTimeseriesMap.get(linkId)!.push({
             start: item.start,
             clicks: item.clicks || 0,
             leads: item.leads || 0,
             sales: item.sales || 0,
             saleAmount: item.saleAmount || 0,
-          };
-          
-          linkTimeseriesMap.get(linkId)!.push(processedItem);
+          });
         });
-        console.log("🗂️ Created map with", linkTimeseriesMap.size, "links");
-        console.log("🔑 Link IDs in map:", Array.from(linkTimeseriesMap.keys()).slice(0, 5));
-        
-        // Keep daily data as-is
-        console.log("📅 Using daily data only");
-      } else {
-        console.log("❌ linkTimeseriesData is not an array:", typeof linkTimeseriesData);
       }
 
       // Map links with their metadata (no individual timeseries fetching)
@@ -155,12 +124,14 @@ export const GET = withWorkspace(
           }),
           comments: link.comments,
           title: link.title || null,
+          description: link.description || null,
           createdAt: link.createdAt.toISOString(),
           utmSource: link.utm_source,
           utmMedium: link.utm_medium,
           utmCampaign: link.utm_campaign,
           utmTerm: link.utm_term,
           utmContent: link.utm_content,
+          tags: link.tags.map((t) => t.tag),
           // Use the totals from top links
           clicks: linkData.clicks || 0,
           leads: linkData.leads || 0,
@@ -171,18 +142,10 @@ export const GET = withWorkspace(
         };
       }).filter(item => item !== null);
 
-      console.log("Debug - Parsed params:", parsedParams);
-      console.log("Debug - Top links data count:", Array.isArray(topLinksData) ? topLinksData.length : 'not array');
-      console.log("Debug - Link timeseries data count:", Array.isArray(linkTimeseriesData) ? linkTimeseriesData.length : 'not array');
-      console.log("Debug - Link timeseries map size:", linkTimeseriesMap.size);
-      console.log("Debug - Links from DB:", links.length);
-
       // Sort by creation date (oldest first)
       const result = linksWithMetadata.sort((a, b) => 
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
-
-      console.log("Debug - Final result count:", result.length);
 
       return NextResponse.json({
         links: result,

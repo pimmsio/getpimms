@@ -23,7 +23,6 @@ export const linksDisplaySchema = z.object({
     .optional(),
   showArchived: z.boolean(),
   displayProperties: z.array(z.enum(linksDisplayPropertyIds)),
-  switchPosition: z.boolean().optional(),
 });
 
 export const workspacePreferencesValueSchemas = {

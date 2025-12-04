@@ -396,25 +396,24 @@ function PartnerLinkModalContent({
                 htmlFor="comments"
                 className="block text-sm font-medium text-neutral-700"
               >
-                Comments
+                Title
               </label>
               {/* <InfoTooltip
                 content={
                   <SimpleTooltipContent
-                    title="Use comments to add context to your short links – for you and your team."
+                    title="Add a custom title to your short link for easy identification."
                     cta="Learn more."
                     href="https://dub.co/help/article/link-comments"
                   />
                 }
               /> */}
             </div>
-            <TextareaAutosize
+            <input
               {...register("comments")}
               id="comments"
-              minRows={3}
+              type="text"
               className="mt-2 block w-full rounded-lg border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
-              placeholder="Add comments (optional)"
-              onKeyDown={handleKeyDown}
+              placeholder="Add a title (optional)"
             />
           </div>
 
