@@ -211,14 +211,17 @@ export async function getLinksForWorkspace({
   };
 
   if (groupBy) {
+    // Map 'url' groupBy to 'baseUrl' field for efficient database-level grouping
+    const dbGroupByField = groupBy === 'url' ? 'baseUrl' : groupBy;
+    
     // Step 1: Get distinct group values with counts using Prisma groupBy
     const groupValues = await prisma.link.groupBy({
-      by: [groupBy],
+      by: [dbGroupByField],
       where: baseWhere,
       _count: true,
       orderBy: {
         _count: {
-          [groupBy]: "desc",
+          [dbGroupByField]: "desc",
         },
       },
     });
@@ -226,12 +229,12 @@ export async function getLinksForWorkspace({
     // Step 2: For each group value, fetch all its links
     const groupedResults = await Promise.all(
       groupValues.map(async (group) => {
-        const groupValue = group[groupBy];
+        const groupValue = group[dbGroupByField];
         
         const groupLinks = await prisma.link.findMany({
           where: {
             ...baseWhere,
-            [groupBy]: groupValue,
+            [dbGroupByField]: groupValue,
           },
           include: includeClause,
           orderBy: {
@@ -241,7 +244,7 @@ export async function getLinksForWorkspace({
 
         // Display null groups as "(No <field>)"
         const displayValue = groupValue === null 
-          ? `(No ${groupBy.replace('utm_', 'UTM ').replace(/_/g, ' ')})`
+          ? `(No ${groupBy === 'url' ? 'URL' : groupBy.replace('utm_', 'UTM ').replace(/_/g, ' ')})`
           : groupValue;
 
         return {
@@ -252,37 +255,25 @@ export async function getLinksForWorkspace({
       })
     );
 
-    // Step 3: For URL and UTM grouping, extract values from destination URLs in memory
+    // Step 3: For UTM grouping, extract values from destination URLs in memory
+    // (UTM values might be in URL params rather than Link UTM fields)
     let finalGroupedResults = groupedResults;
     
-    // Helper function to normalize URL by removing query params and hash
-    const normalizeUrl = (url: string | null): string => {
-      if (!url) return '(No URL)';
-      try {
-        const urlObj = new URL(url);
-        // Return protocol + hostname + pathname (no search params or hash)
-        return `${urlObj.protocol}//${urlObj.hostname}${urlObj.pathname}`;
-      } catch (e) {
-        return url; // Return as-is if parsing fails
-      }
-    };
-
-    // Helper function to extract UTM parameter from destination URL
-    const extractUtmParam = (url: string | null, utmParam: string): string => {
-      if (!url) return `(No ${utmParam.replace('utm_', 'UTM ').replace(/_/g, ' ')})`;
-      try {
-        const urlObj = new URL(url);
-        const value = urlObj.searchParams.get(utmParam);
-        return value || `(No ${utmParam.replace('utm_', 'UTM ').replace(/_/g, ' ')})`;
-      } catch (e) {
-        return `(No ${utmParam.replace('utm_', 'UTM ').replace(/_/g, ' ')})`;
-      }
-    };
-
     const isUtmGrouping = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'].includes(groupBy || '');
-    const isUrlGrouping = groupBy === 'url';
 
-    if (isUrlGrouping || isUtmGrouping) {
+    if (isUtmGrouping) {
+      // Helper function to extract UTM parameter from destination URL
+      const extractUtmParam = (url: string | null, utmParam: string): string => {
+        if (!url) return `(No ${utmParam.replace('utm_', 'UTM ').replace(/_/g, ' ')})`;
+        try {
+          const urlObj = new URL(url);
+          const value = urlObj.searchParams.get(utmParam);
+          return value || `(No ${utmParam.replace('utm_', 'UTM ').replace(/_/g, ' ')})`;
+        } catch (e) {
+          return `(No ${utmParam.replace('utm_', 'UTM ').replace(/_/g, ' ')})`;
+        }
+      };
+
       const allLinks = await prisma.link.findMany({
         where: baseWhere,
         include: includeClause,
@@ -295,13 +286,7 @@ export async function getLinksForWorkspace({
       const regroupedMap = new Map<string, any[]>();
       
       allLinks.forEach((link) => {
-        let groupKey: string;
-        
-        if (isUrlGrouping) {
-          groupKey = normalizeUrl(link.url);
-        } else {
-          groupKey = extractUtmParam(link.url, groupBy!);
-        }
+        const groupKey = extractUtmParam(link.url, groupBy!);
         
         if (!regroupedMap.has(groupKey)) {
           regroupedMap.set(groupKey, []);

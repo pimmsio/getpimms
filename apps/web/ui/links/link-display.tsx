@@ -86,8 +86,6 @@ function SortableItem({
 
 export default function LinkDisplay() {
   const {
-    viewMode,
-    setViewMode,
     showArchived,
     setShowArchived,
     displayProperties,
@@ -140,35 +138,6 @@ export default function LinkDisplay() {
     <Popover
       content={
         <div className="w-full divide-y divide-neutral-100 text-sm md:w-[400px]">
-          {/* <div className="grid grid-cols-2 gap-2 p-3">
-            {[
-              { id: "cards", label: "Cards", icon: GridLayoutRows },
-              { id: "rows", label: "Rows", icon: TableRows2 },
-            ].map(({ id, label, icon: Icon }) => {
-              const selected = viewMode === id;
-              return (
-                <button
-                  key={id}
-                  className={cn(
-                    "flex h-16 flex-col items-center justify-center gap-1 rounded border border-transparent transition-colors",
-                    selected
-                      ? "border-neutral-300 bg-neutral-100 text-neutral-950"
-                      : "text-neutral-800 hover:bg-neutral-100 hover:text-neutral-950",
-                  )}
-                  onClick={() => setViewMode(id as LinksViewMode)}
-                  aria-pressed={selected}
-                >
-                  <Icon
-                    className={cn(
-                      "h-5 w-5 text-neutral-600",
-                      selected && "text-neutral-800",
-                    )}
-                  />
-                  {label}
-                </button>
-              );
-            })}
-          </div> */}
           {!isMegaFolder && (
             <div className="flex h-16 items-center justify-between gap-2 px-4">
               <span className="flex items-center gap-2">

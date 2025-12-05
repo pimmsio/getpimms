@@ -43,7 +43,7 @@ export default function LinksContainer({
 }) {
   const { defaultFolderId } = useWorkspace();
   const { searchParams, queryParams } = useRouterStuff();
-  const { viewMode, sortBy, showArchived, groupBy, setGroupBy } =
+  const { sortBy, showArchived, groupBy, setGroupBy } =
     useContext(LinksDisplayContext);
 
   // Decide on the folderId to use
@@ -75,7 +75,6 @@ export default function LinksContainer({
         links={links}
         count={count}
         loading={isValidating}
-        compact={viewMode === "rows"}
         groupBy={groupBy}
         setGroupBy={setGroupBy}
         queryParams={queryParams}
@@ -97,7 +96,6 @@ function LinksList({
   links,
   count,
   loading,
-  compact,
   groupBy,
   setGroupBy,
   queryParams,
@@ -106,7 +104,6 @@ function LinksList({
   links?: ResponseLink[];
   count?: number;
   loading?: boolean;
-  compact: boolean;
   groupBy: LinksGroupBySlug;
   setGroupBy: (value: LinksGroupBySlug) => void;
   queryParams: any;
@@ -136,6 +133,10 @@ function LinksList({
   const groupedData = useMemo(() => {
     if (!links || !groupBy) return null;
 
+    // Check if the data actually has group markers that match current groupBy
+    const hasGroupMarkers = links.some((item: any) => item._group !== undefined);
+    if (!hasGroupMarkers) return null; // Don't show groups during transition
+
     const groups: {
       groupValue: string;
       links: ResponseLink[];
@@ -160,7 +161,7 @@ function LinksList({
       groups.push(currentGroup);
     }
 
-    return groups;
+    return groups.length > 0 ? groups : null;
   }, [links, groupBy]);
 
   // Initialize expanded groups when groupedData changes
@@ -214,40 +215,46 @@ function LinksList({
     setExpandedGroups(new Set());
   };
 
+  // Don't show grouped data if we're loading and groupBy setting doesn't match the data structure
+  const shouldShowGrouped = groupedData && !(loading && !groupBy);
+
   return (
     <LinksListContext.Provider value={{ openMenuLinkId, setOpenMenuLinkId }}>
       <LinkSelectionProvider links={flatLinks}>
         {!links || links.length ? (
           // Cards
           <>
-            {groupedData ? (
+            {shouldShowGrouped ? (
               // Grouped view
               <>
                 {/* Group controls */}
                 {groupedData.length >= 1 && (
-                  <div className="mx-auto w-full max-w-screen-xl px-3 lg:px-10 flex items-center justify-between gap-3 bg-neutral-50/50 rounded-lg py-1.5 px-3">
+                  <div key="group-controls" className={cn(
+                    "mx-auto w-full max-w-screen-xl flex items-center justify-between gap-3 bg-neutral-50 border border-neutral-200 rounded-lg py-2.5 px-3 lg:px-10 transition-opacity duration-200",
+                    loading && "opacity-40"
+                  )}>
                     <div className="flex items-center gap-3">
-                      <div className="text-xs text-neutral-500">
-                        <span className="font-medium text-neutral-700">
+                      <div className="text-xs text-neutral-600">
+                        <span className="font-semibold text-neutral-900">
                           {groupedData.length}
                         </span>{" "}
                         {groupedData.length === 1 ? "group" : "groups"}
-                        <span className="mx-1.5">•</span>
-                        <span className="font-medium text-neutral-700">
+                        <span className="mx-2 text-neutral-300">·</span>
+                        <span className="font-semibold text-neutral-900">
                           {flatLinks?.length || 0}
                         </span>{" "}
                         {flatLinks?.length === 1 ? "link" : "links"}
                       </div>
                       {groupedData.length > 1 && (
-                        <div className="flex items-center gap-2 text-xs">
+                        <div className="flex items-center gap-2.5 text-xs">
                           <button
                             onClick={expandAll}
                             disabled={allExpanded}
                             className={cn(
-                              "font-medium transition-colors",
+                              "font-medium transition-all",
                               allExpanded
                                 ? "cursor-not-allowed text-neutral-400"
-                                : "text-neutral-600 hover:text-neutral-900",
+                                : "text-neutral-600 hover:text-blue-600",
                             )}
                           >
                             Expand all
@@ -257,10 +264,10 @@ function LinksList({
                             onClick={collapseAll}
                             disabled={allCollapsed}
                             className={cn(
-                              "font-medium transition-colors",
+                              "font-medium transition-all",
                               allCollapsed
                                 ? "cursor-not-allowed text-neutral-400"
-                                : "text-neutral-600 hover:text-neutral-900",
+                                : "text-neutral-600 hover:text-blue-600",
                             )}
                           >
                             Collapse all
@@ -275,26 +282,27 @@ function LinksList({
                           del: ["groupBy"],
                         });
                       }}
-                      className="flex items-center gap-1 rounded-md bg-white px-2 py-1 text-xs font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
+                      className="flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 transition-all hover:border-red-300 hover:bg-red-50 hover:text-red-600"
                     >
-                      <span>Clear</span>
-                      <span className="text-[10px]">✕</span>
+                      <span>Clear grouping</span>
+                      <span className="text-[11px]">✕</span>
                     </button>
                   </div>
                 )}
                 {groupedData.map((group) => (
-                  <div key={group.groupValue} className="min-w-0 space-y-2 sm:space-y-0">
+                  <div key={group.groupValue} className={cn(
+                    "min-w-0 space-y-2 transition-opacity duration-200",
+                    loading && "opacity-40"
+                  )}>
                     <LinkGroupHeader
                       groupValue={group.groupValue}
                       count={group.links.length}
                       isExpanded={expandedGroups.has(group.groupValue)}
                       onToggle={() => toggleGroup(group.groupValue)}
+                      groupType={groupBy || undefined}
                     />
                     {expandedGroups.has(group.groupValue) && (
-                      <CardList
-                        variant={compact ? "compact" : "loose"}
-                        loading={loading}
-                      >
+                      <CardList loading={loading}>
                         {group.links.map((link) => (
                           <LinkCard key={link.id} link={link} />
                         ))}
@@ -305,18 +313,18 @@ function LinksList({
               </>
             ) : (
               // Regular view
-              <CardList
-                variant={compact ? "compact" : "loose"}
-                loading={loading}
+              <CardList 
+                loading={false}
+                className={cn("transition-opacity duration-200", loading && links?.length && "opacity-40")}
               >
                 {links?.length
                   ? // Link cards
                     links.map((link) => <LinkCard key={link.id} link={link} />)
-                  : // Loading placeholder cards
-                    Array.from({ length: 12 }).map((_, idx) => (
+                  : // Initial loading placeholder cards (no skeleton animation)
+                    Array.from({ length: 8 }).map((_, idx) => (
                       <CardList.Card
                         key={idx}
-                        outerClassName="pointer-events-none"
+                        outerClassName="pointer-events-none animate-pulse"
                         innerClassName="flex items-center gap-4"
                       >
                         <LinkCardPlaceholder />

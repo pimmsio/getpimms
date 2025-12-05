@@ -18,6 +18,7 @@ import { scheduleABTestCompletion } from "./ab-test-scheduler";
 import { linkCache } from "./cache";
 import { encodeKeyIfCaseSensitive } from "./case-sensitivity";
 import { includeTags } from "./include-tags";
+import { normalizeUrl } from "./normalize-url";
 import { upsertUtmParameters } from "./upsert-utm-parameters";
 import { transformLink } from "./utils";
 
@@ -97,6 +98,7 @@ export async function updateLink({
         proxy && image && !isStored(image)
           ? `${R2_URL}/images/${id}_${imageUrlNonce}`
           : image,
+      baseUrl: normalizeUrl(url),
       utm_source: utm_source || null,
       utm_medium: utm_medium || null,
       utm_campaign: utm_campaign || null,

@@ -2,12 +2,10 @@ import {
   linksDisplayPropertyIds,
   linksGroupByOptions,
   linksSortOptions,
-  linksViewModes,
 } from "@/lib/links/links-display";
 import { z } from "zod";
 
 export const linksDisplaySchema = z.object({
-  viewMode: z.enum(linksViewModes),
   sortBy: z.enum(
     linksSortOptions.map(({ slug }) => slug) as [string, ...string[]],
   ),
@@ -23,7 +21,9 @@ export const linksDisplaySchema = z.object({
     .optional(),
   showArchived: z.boolean(),
   displayProperties: z.array(z.enum(linksDisplayPropertyIds)),
-});
+  // Legacy field - ignore if present for backward compatibility
+  viewMode: z.any().optional(),
+}).transform(({ viewMode, ...rest }) => rest); // Strip out viewMode
 
 export const workspacePreferencesValueSchemas = {
   linksDisplay: linksDisplaySchema.nullish(),

@@ -171,7 +171,7 @@ function WorkspaceLinks() {
 
               {/* Right side: Search, Display */}
               <div className="flex w-full gap-3 md:w-auto">
-                <div className="w-full md:w-44 lg:w-72">
+                <div className="w-full md:w-44 xl:w-72">
                   <SearchBoxPersisted
                     loading={isValidating}
                     inputClassName="h-10"

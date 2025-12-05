@@ -39,7 +39,7 @@ export function UtmBadge({
   const badge = (
     <span
       className={cn(
-        "inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-[80px] xl:w-[110px]",
+        "inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs font-medium w-[80px] xl:w-[110px]",
         config.bg,
         config.border,
         config.text,

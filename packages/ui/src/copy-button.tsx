@@ -55,9 +55,9 @@ export function CopyButton({
       <span className="sr-only">Copy</span>
       {withText && <span className="hidden text-xs sm:block">Copy</span>}
       {copied ? (
-        <Tick className="h-3.5 w-3.5" />
+        <Tick className="h-2.5 w-2.5" />
       ) : (
-        <Comp className="h-3.5 w-3.5" />
+        <Comp className="h-2.5 w-2.5" />
       )}
     </button>
   );

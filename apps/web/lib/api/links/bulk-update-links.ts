@@ -6,6 +6,7 @@ import { Prisma } from "@dub/prisma/client";
 import { R2_URL, getParamsFromURL, nanoid, truncate } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
 import { combineTagIds } from "../tags/combine-tag-ids";
+import { normalizeUrl } from "./normalize-url";
 import { propagateBulkLinkChanges } from "./propagate-bulk-link-changes";
 import { transformLink } from "./utils";
 
@@ -53,6 +54,7 @@ export async function bulkUpdateLinks(
             proxy && image && !isStored(image)
               ? `${R2_URL}/images/${linkIds[0]}_${imageUrlNonce}`
               : image,
+          baseUrl: url ? normalizeUrl(url) : undefined,
           expiresAt: expiresAt ? new Date(expiresAt) : null,
           geo: geo || Prisma.JsonNull,
           testVariants: testVariants || Prisma.JsonNull,

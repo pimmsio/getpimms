@@ -19,6 +19,7 @@ import { scheduleABTestCompletion } from "./ab-test-scheduler";
 import { linkCache } from "./cache";
 import { encodeKeyIfCaseSensitive } from "./case-sensitivity";
 import { includeTags } from "./include-tags";
+import { normalizeUrl } from "./normalize-url";
 import { updateLinksUsage } from "./update-links-usage";
 import { upsertUtmParameters } from "./upsert-utm-parameters";
 import { transformLink } from "./utils";
@@ -61,6 +62,7 @@ export async function createLink(link: ProcessedLinkProps) {
       description: truncate(description, 240),
       // if it's an uploaded image, make this null first because we'll update it later
       image: proxy && image && !isStored(image) ? null : image,
+      baseUrl: normalizeUrl(url),
       utm_source,
       utm_medium,
       utm_campaign,

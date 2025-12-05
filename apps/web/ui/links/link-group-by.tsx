@@ -50,7 +50,11 @@ export default function LinkGroupBy() {
     >
       <button
         onClick={() => setOpenPopover(!openPopover)}
-        className="flex items-center gap-2 rounded border border-transparent bg-transparent px-1 py-1 text-sm text-neutral-600 transition-colors hover:text-neutral-950"
+        className={cn(
+          "group flex h-10 cursor-pointer appearance-none items-center gap-x-2 truncate rounded-full border px-3 text-sm outline-none transition-all",
+          "border-neutral-200 bg-white text-neutral-900 placeholder-neutral-400",
+          "focus-visible:border-neutral-500 data-[state=open]:border-neutral-500 data-[state=open]:ring-4 data-[state=open]:ring-transparent",
+        )}
       >
         <span>{currentGroupBy?.display}</span>
         <ChevronDown className="h-4 w-4" />
@@ -58,4 +62,3 @@ export default function LinkGroupBy() {
     </Popover>
   );
 }
-

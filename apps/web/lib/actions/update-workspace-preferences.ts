@@ -46,5 +46,5 @@ export const updateWorkspacePreferences = authActionClient
       },
     });
 
-    return { ok: true };
+    return { success: true };
   });

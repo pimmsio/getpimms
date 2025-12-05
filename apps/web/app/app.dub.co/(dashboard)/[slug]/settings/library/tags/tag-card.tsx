@@ -2,7 +2,7 @@
 
 import { mutatePrefix } from "@/lib/swr/mutate";
 import useWorkspace from "@/lib/swr/use-workspace";
-import { TagProps } from "@/lib/types";
+import { TagColorProps, TagProps } from "@/lib/types";
 import TagBadge from "@/ui/links/tag-badge";
 import { useAddEditTagModal } from "@/ui/modals/add-edit-tag-modal";
 import { Delete, ThreeDots } from "@/ui/shared/icons";
@@ -89,7 +89,7 @@ export function TagCard({
         )}
       >
         <div className="flex min-w-0 grow items-center gap-3">
-          <TagBadge color={tag.color} withIcon className="sm:p-1.5" />
+          <TagBadge color={tag.color as TagColorProps} withIcon className="sm:p-1.5" />
           <span className="min-w-0 truncate whitespace-nowrap text-neutral-800">
             {tag.name}
           </span>

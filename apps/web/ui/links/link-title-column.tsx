@@ -62,13 +62,11 @@ const quickViewSettings = [
   // { label: "Geo Targeting", icon: EarthPosition, key: "geo" },
 ];
 
-const LOGO_SIZE_CLASS_NAME =
-  "size-4 sm:size-6 group-data-[variant=loose]/card-list:sm:size-6";
+const LOGO_SIZE_CLASS_NAME = "size-4 sm:size-6";
 
 export function LinkTitleColumn({ link }: { link: ResponseLink }) {
   const { domain, key } = link;
 
-  const { variant } = useContext(CardList.Context);
   const { displayProperties } = useContext(LinksDisplayContext);
 
   // Get the first 2 non-icon properties for display
@@ -87,27 +85,10 @@ export function LinkTitleColumn({ link }: { link: ResponseLink }) {
   return (
     <div
       ref={ref}
-      className="flex h-[32px] items-center gap-3 transition-[height] group-data-[variant=loose]/card-list:h-[60px]"
+      className="flex h-[60px] items-center gap-3"
     >
-      {variant === "compact" &&
-        link.folderId &&
-        ![defaultFolderId, searchParams.get("folderId")].includes(
-          link.folderId,
-        ) && (
-          <Link href={`/${slug}/links?folderId=${link.folderId}`}>
-            {folder ? (
-              <FolderIcon
-                folder={folder}
-                shape="square"
-                innerClassName="p-1.5"
-              />
-            ) : (
-              <div className="size-4 rounded bg-neutral-200" />
-            )}
-          </Link>
-        )}
       <LinkIcon link={link} />
-      <div className="h-[32px] min-w-0 overflow-hidden transition-[height] group-data-[variant=loose]/card-list:h-[46px]">
+      <div className="h-[46px] min-w-0 overflow-hidden">
         <div className="flex items-center gap-2">
           <div className="flex min-w-0 items-center gap-2">
             {primaryProperty === "url" && link.url ? (
@@ -173,14 +154,14 @@ export function LinkTitleColumn({ link }: { link: ResponseLink }) {
               withText
             />
           </div>
-          {link.comments && <CommentsBadge comments={link.comments} />}
-          {hasQuickViewSettings && <SettingsBadge link={link} />}
+          {/* {link.comments && <CommentsBadge comments={link.comments} />}
+          {hasQuickViewSettings && <SettingsBadge link={link} />} */}
           {link.testVariants &&
             link.testCompletedAt &&
             new Date(link.testCompletedAt) > new Date() && (
               <TestsBadge link={link} />
             )}
-          <Details link={link} compact />
+          <Details link={link} />
         </div>
 
         <Details link={link} />
@@ -293,7 +274,7 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
     >
       {/* Link logo background circle */}
       <div className="absolute inset-0 shrink-0 rounded border border-neutral-100 opacity-100" />
-      <div className="relative transition-[padding,transform] group-hover:scale-90 group-data-[variant=loose]/card-list:sm:p-1">
+        <div className="relative transition-[padding,transform] group-hover:scale-90 sm:p-1">
         <div className="hidden sm:block">
           {link.archived ? (
             <BoxArchive
@@ -315,7 +296,7 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
             />
           )}
         </div>
-        <div className="size-5 group-data-[variant=loose]/card-list:size-6 sm:hidden" />
+        <div className="size-5 sm:size-6 sm:hidden" />
       </div>
       {/* Checkbox */}
       <div
@@ -328,7 +309,7 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
       >
         <div
           className={cn(
-            "rounded-full bg-neutral-800 p-0.5 group-data-[variant=loose]/card-list:p-1",
+            "rounded-full bg-neutral-800 p-0.5 sm:p-1",
             "scale-90 opacity-0 transition-[transform,opacity] duration-100 group-data-[checked=true]:scale-100 group-data-[checked=true]:opacity-100",
           )}
         >
@@ -340,7 +321,7 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
 });
 
 const Details = memo(
-  ({ link, compact }: { link: ResponseLink; compact?: boolean }) => {
+  ({ link }: { link: ResponseLink }) => {
     const { url, createdAt } = link;
 
     const { displayProperties } = useContext(LinksDisplayContext);
@@ -351,23 +332,9 @@ const Details = memo(
     const secondaryProperty = sortableProperties[1] || "url";
 
     return (
-      <div
-        className={cn(
-          "min-w-0 items-center whitespace-nowrap text-sm transition-[opacity,display] delay-[0s,150ms] duration-[150ms,0s]",
-          compact
-            ? [
-                "hidden gap-2.5 opacity-0 group-data-[variant=compact]/card-list:flex group-data-[variant=compact]/card-list:opacity-100",
-                "xs:min-w-[40px] xs:basis-[40px] min-w-0 shrink-0 grow basis-0 sm:min-w-[120px] sm:basis-[120px]",
-              ]
-            : "hidden gap-1.5 opacity-0 group-data-[variant=loose]/card-list:flex group-data-[variant=loose]/card-list:opacity-100 md:gap-3",
-        )}
-      >
+      <div className="flex min-w-0 items-center whitespace-nowrap text-sm gap-1.5 md:gap-3">
         <div className="flex min-w-0 items-center gap-1.5">
-          {compact ? (
-            <ArrowRight className="mr-1 h-3 w-3 shrink-0 text-neutral-400" />
-          ) : (
-            <ArrowTurnRight2 className="h-3 w-3 shrink-0 text-neutral-400" />
-          )}
+          <ArrowTurnRight2 className="h-3 w-3 shrink-0 text-neutral-400" />
           {secondaryProperty === "link" ? (
             <UnverifiedTooltip domain={link.domain} _key={link.key}>
               <a
@@ -405,7 +372,7 @@ const Details = memo(
           {/* <div
             className={cn(
               "hidden shrink-0",
-              displayProperties.includes("user") && "sm:block",
+              "sm:block",
             )}
           >
             <UserAvatar link={link} />

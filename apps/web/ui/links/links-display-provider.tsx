@@ -6,8 +6,6 @@ import {
   LinksGroupBySlug,
   linksSortOptions,
   LinksSortSlug,
-  LinksViewMode,
-  linksViewModes,
 } from "@/lib/links/links-display";
 import { useWorkspacePreferences } from "@/lib/swr/use-workspace-preferences";
 import { linksDisplaySchema } from "@/lib/zod/schemas/workspace-preferences";
@@ -17,6 +15,7 @@ import {
   Dispatch,
   PropsWithChildren,
   SetStateAction,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -38,12 +37,17 @@ function useLinksDisplayOption<K extends LinksDisplayKey>(
 ] {
   const [value, setValue] = useState(overrideValue ?? persisted[key]);
 
+  // Sync with persisted value when it changes (only if no override from URL)
+  useEffect(() => {
+    if (overrideValue === undefined) {
+      setValue(persisted[key]);
+    }
+  }, [persisted[key], overrideValue]);
+
   return [value, setValue, () => setValue(persisted[key])];
 }
 
 export const LinksDisplayContext = createContext<{
-  viewMode: LinksViewMode;
-  setViewMode: Dispatch<SetStateAction<LinksViewMode>>;
   displayProperties: LinksDisplayProperty[];
   setDisplayProperties: Dispatch<SetStateAction<LinksDisplayProperty[]>>;
   sortBy: LinksSortSlug;
@@ -56,8 +60,6 @@ export const LinksDisplayContext = createContext<{
   persist: () => void;
   reset: () => void;
 }>({
-  viewMode: "cards",
-  setViewMode: () => {},
   displayProperties: defaultLinksDisplayProperties,
   setDisplayProperties: () => {},
   sortBy: linksSortOptions[0].slug,
@@ -89,17 +91,11 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
   const showArchivedRaw = searchParams?.get("showArchived");
 
   const [persisted, setPersisted] = useWorkspacePreferences("linksDisplay", {
-    viewMode: linksViewModes[0],
     sortBy: linksSortOptions[0].slug,
     groupBy: linksGroupByOptions[0].slug,
     showArchived: false,
     displayProperties: defaultLinksDisplayProperties,
   });
-
-  const [viewMode, setViewMode, resetViewMode] = useLinksDisplayOption(
-    "viewMode",
-    persisted!,
-  );
 
   const [sortBy, setSort, resetSort] = useLinksDisplayOption(
     "sortBy",
@@ -143,19 +139,24 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
   };
 
   const isDirty = useMemo(() => {
-    if (viewMode !== persisted?.viewMode) return true;
-    if (sortBy !== persisted?.sortBy) return true;
-    if (groupBy !== persisted?.groupBy) return true;
-    if (showArchived !== persisted?.showArchived) return true;
+    if (sortBy !== persisted?.sortBy) {
+      return true;
+    }
+    if (groupBy !== persisted?.groupBy) {
+      return true;
+    }
+    if (showArchived !== persisted?.showArchived) {
+      return true;
+    }
     if (
       displayProperties.join(",") !== persisted?.displayProperties.join(",")
-    )
+    ) {
       return true;
+    }
 
     return false;
   }, [
     JSON.stringify(persisted),
-    viewMode,
     sortBy,
     groupBy,
     showArchived,
@@ -165,8 +166,6 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
   return (
     <LinksDisplayContext.Provider
       value={{
-        viewMode: viewMode as LinksViewMode,
-        setViewMode,
         displayProperties,
         setDisplayProperties,
         sortBy: sortBy as LinksSortSlug,
@@ -176,16 +175,15 @@ export function LinksDisplayProvider({ children }: PropsWithChildren) {
         showArchived,
         setShowArchived,
         isDirty,
-        persist: () =>
+        persist: () => {
           setPersisted({
-            viewMode,
             sortBy,
             groupBy,
             showArchived,
             displayProperties,
-          }),
+          });
+        },
         reset: () => {
-          resetViewMode();
           resetDisplayProperties();
           resetSort();
           resetGroupBy();

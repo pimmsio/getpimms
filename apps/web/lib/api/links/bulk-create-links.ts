@@ -7,6 +7,7 @@ import { createId } from "../create-id";
 import { combineTagIds } from "../tags/combine-tag-ids";
 import { encodeKeyIfCaseSensitive } from "./case-sensitivity";
 import { includeTags } from "./include-tags";
+import { normalizeUrl } from "./normalize-url";
 import { propagateBulkLinkChanges } from "./propagate-bulk-link-changes";
 import { updateLinksUsage } from "./update-links-usage";
 import { upsertUtmParameters } from "./upsert-utm-parameters";
@@ -66,6 +67,7 @@ export async function bulkCreateLinks({
         }),
         title: truncate(link.title, 120),
         description: truncate(link.description, 240),
+        baseUrl: normalizeUrl(link.url),
         utm_source,
         utm_medium,
         utm_campaign,

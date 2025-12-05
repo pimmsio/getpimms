@@ -52,7 +52,7 @@ export default function useLinks(
     {
       dedupingInterval: 60000,
       revalidateOnFocus: false,
-      // keepPreviousData: true,
+      keepPreviousData: true,
       ...swrOpts,
     },
   );

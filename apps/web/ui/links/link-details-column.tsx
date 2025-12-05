@@ -1,13 +1,9 @@
-import { TagProps } from "@/lib/types";
-import { CardList, CopyButton, Tooltip, useRouterStuff } from "@dub/ui";
+import { CardList, CopyButton, Tooltip } from "@dub/ui";
 import { cn, linkConstructor } from "@dub/utils";
-import { useSearchParams } from "next/navigation";
 import {
   memo,
-  PropsWithChildren,
   useCallback,
   useContext,
-  useMemo,
   useRef,
 } from "react";
 import { LinkAnalyticsBadge } from "./link-analytics-badge";
@@ -16,32 +12,6 @@ import { useLinkSelection } from "./link-selection-provider";
 import { LinkUtmColumns } from "./link-utm-columns";
 import { LinksListContext, ResponseLink } from "./links-container";
 import { LinksDisplayContext } from "./links-display-provider";
-import TagBadge from "./tag-badge";
-
-function useOrganizedTags(tags: ResponseLink["tags"]) {
-  const searchParams = useSearchParams();
-
-  const [primaryTag, additionalTags] = useMemo(() => {
-    const filteredTagIds =
-      searchParams?.get("tagIds")?.split(",")?.filter(Boolean) ?? [];
-
-    /*
-      Sort tags so that the filtered tags are first. The most recently selected
-      filtered tag (last in array) should be displayed first.
-    */
-    const sortedTags =
-      filteredTagIds.length > 0
-        ? [...tags].sort(
-            (a, b) =>
-              filteredTagIds.indexOf(b.id) - filteredTagIds.indexOf(a.id),
-          )
-        : tags;
-
-    return [sortedTags?.[0], sortedTags?.slice(1) ?? []];
-  }, [tags, searchParams]);
-
-  return { primaryTag, additionalTags };
-}
 
 export function LinkDetailsColumn({ link }: { link: ResponseLink }) {
   const { tags, domain, key } = link;
@@ -50,34 +20,24 @@ export function LinkDetailsColumn({ link }: { link: ResponseLink }) {
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const { primaryTag, additionalTags } = useOrganizedTags(tags);
-
   const shortLink = linkConstructor({ domain, key, pretty: true });
   const fullShortLink = linkConstructor({ domain, key, pretty: false });
 
   return (
     <div ref={ref} className="flex items-center justify-end gap-2 sm:gap-3">
-      {primaryTag && (
-        <TagsTooltip additionalTags={additionalTags}>
-          <TagButton tag={primaryTag} plus={additionalTags.length} />
-        </TagsTooltip>
-      )}
       {/* Always show UTM columns when present - not controlled by displayProperties */}
-      <LinkUtmColumns link={link} />
+      {/* Tags are now included in the UTM column in a second row */}
+      <LinkUtmColumns link={link} tags={tags} />
       {/* Copy button - always after UTM columns */}
       <div className="flex shrink-0 items-center">
-        <Tooltip content={`Copy short link: ${shortLink}`} delayDuration={150}>
-          <div>
-            <CopyButton
-              value={fullShortLink}
-              variant="neutral"
-              className="p-1.5"
-              withText
-            />
-          </div>
-        </Tooltip>
+        <CopyButton
+          value={fullShortLink}
+          variant="neutral"
+          className="p-1"
+          withText
+        />
       </div>
-      <div className="flex lg:justify-end lg:min-w-36">
+      <div className="flex lg:min-w-36 lg:justify-end">
         <LinkAnalyticsBadge link={link} />
       </div>
       <Controls link={link} />
@@ -109,53 +69,3 @@ const Controls = memo(({ link }: { link: ResponseLink }) => {
     </div>
   );
 });
-
-function TagsTooltip({
-  additionalTags,
-  children,
-}: PropsWithChildren<{ additionalTags: TagProps[] }>) {
-  return !!additionalTags.length ? (
-    <Tooltip
-      content={
-        <div className="flex flex-wrap gap-1.5 p-3">
-          {additionalTags.map((tag) => (
-            <TagButton key={tag.id} tag={tag} />
-          ))}
-        </div>
-      }
-      side="top"
-      align="end"
-    >
-      <div>{children}</div>
-    </Tooltip>
-  ) : (
-    children
-  );
-}
-
-function TagButton({ tag, plus }: { tag: TagProps; plus?: number }) {
-  const { queryParams } = useRouterStuff();
-  const searchParams = useSearchParams();
-
-  const selectedTagIds =
-    searchParams?.get("tagIds")?.split(",")?.filter(Boolean) ?? [];
-
-  return (
-    <button
-      onClick={() => {
-        let newTagIds = selectedTagIds.includes(tag.id)
-          ? selectedTagIds.filter((id) => id !== tag.id)
-          : [...selectedTagIds, tag.id];
-
-        queryParams({
-          set: {
-            tagIds: newTagIds.join(","),
-          },
-          del: [...(newTagIds.length ? [] : ["tagIds"])],
-        });
-      }}
-    >
-      <TagBadge {...tag} withIcon plus={plus} />
-    </button>
-  );
-}

@@ -1,7 +1,3 @@
-export const linksViewModes = ["cards", "rows"] as const;
-
-export type LinksViewMode = (typeof linksViewModes)[number];
-
 export const linksGroupByOptions = [
   {
     display: "None",

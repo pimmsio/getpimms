@@ -37,7 +37,6 @@ export function LinkAnalyticsBadge({
   const { domain, key, trackConversion, clicks, leads, saleAmount } = link;
 
   const { isMobile } = useMediaQuery();
-  const { variant } = useContext(CardList.Context);
 
   const stats = useMemo(
     () => [
@@ -144,10 +143,7 @@ export function LinkAnalyticsBadge({
       >
         <Link
           href={`/${slug}/analytics?domain=${domain}&key=${key}${url ? `&url=${url}` : ""}&interval=${plan === "free" ? "30d" : plan === "pro" ? "1y" : "all"}`}
-          className={cn(
-            "block overflow-hidden w-fit rounded-full border border-neutral-200 bg-neutral-50 py-0.5 text-sm text-neutral-600 transition-colors",
-            variant === "loose" ? "hover:bg-neutral-100" : "hover:bg-white",
-          )}
+          className="block overflow-hidden w-fit rounded-full border border-neutral-200 bg-neutral-50 py-0.5 text-sm text-neutral-600 transition-colors hover:bg-neutral-100"
         >
           <div className="flex w-fit flex-col items-center px-1 sm:flex-row">
             <div className="flex w-fit flex-row items-center justify-center gap-1">

@@ -47,7 +47,6 @@ export const LinkCard = memo(({ link }: { link: ResponseLink }) => {
 });
 
 const LinkCardInner = memo(({ link }: { link: ResponseLink }) => {
-  const { variant } = useContext(CardList.Context);
   const { isMobile } = useMediaQuery();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -79,8 +78,7 @@ const LinkCardInner = memo(({ link }: { link: ResponseLink }) => {
         onClick={!isMobile ? () => router.push(editUrl) : undefined}
         outerClassName="overflow-hidden transition-all duration-200"
         innerClassName="p-0"
-        {...(variant === "loose" &&
-          link.folderId &&
+        {...(link.folderId &&
           ![defaultFolderId, searchParams.get("folderId")].includes(
             link.folderId,
           ) && {
