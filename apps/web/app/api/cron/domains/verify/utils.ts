@@ -49,7 +49,7 @@ export const handleDomainUpdates = async ({
       name: true,
       slug: true,
       sentEmails: true,
-      usage: true,
+      eventsUsage: true,
       users: {
         select: {
           user: {

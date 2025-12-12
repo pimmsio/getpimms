@@ -205,16 +205,20 @@ export const POST = withWorkspace(
             include: includeTags,
           }),
           // update workspace sales usage
+          // Sales: $10 = 1 event, so amount (in cents) / 1000 = events
           prisma.project.update({
             where: {
               id: workspace.id,
             },
             data: {
-              usage: {
-                increment: 1,
+              eventsUsage: {
+                increment: Math.floor(amount / 1000),
               },
               salesUsage: {
                 increment: amount,
+              },
+              totalEvents: {
+                increment: Math.floor(amount / 1000),
               },
             },
           }),

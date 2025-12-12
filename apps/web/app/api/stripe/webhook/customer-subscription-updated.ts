@@ -63,7 +63,7 @@ export async function customerSubscriptionUpdated(event: Stripe.Event) {
   const shouldDisableWebhooks = newPlan === "free" || newPlan === "pro";
   const shouldDeleteFolders = newPlan === "free" && workspace.foldersUsage > 0;
 
-  // If a workspace upgrades/downgrades their subscription, update their usage limit in the database.
+  // If a workspace upgrades/downgrades their subscription, update their events limit in the database.
   if (workspace.plan !== newPlan) {
     await Promise.allSettled([
       prisma.project.update({
@@ -72,7 +72,7 @@ export async function customerSubscriptionUpdated(event: Stripe.Event) {
         },
         data: {
           plan: newPlan,
-          usageLimit: plan.limits.clicks!,
+          eventsLimit: plan.limits.events!,
           linksLimit: plan.limits.links!,
           domainsLimit: plan.limits.domains!,
           aiLimit: plan.limits.ai!,

@@ -21,6 +21,7 @@ import { leadEventSchemaTB } from "@/lib/zod/schemas/leads";
 import { prisma } from "@dub/prisma";
 import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
 import { computeCustomerHotScore } from "@/lib/analytics/compute-customer-hot-score";
+import { calculateEvents } from "@/lib/utils/calculate-events";
 import { Customer } from "@dub/prisma/client";
 import { nanoid } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
@@ -253,6 +254,13 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
     },
   });
 
+  // Calculate total events: clicks (0) + leads (1 if clickEvent exists) + sales (amount / $10)
+  const totalSaleEvents = calculateEvents(
+    0, // no clicks being added here
+    clickEvent ? 1 : 0, // +1 lead if clickEvent exists
+    charge.amount_total! // sales amount in cents
+  );
+
   const [_sale, linkUpdated, workspace] = await Promise.all([
     recordSale(saleData),
 
@@ -285,11 +293,14 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
         id: customer.projectId,
       },
       data: {
-        usage: {
-          increment: clickEvent ? 2 : 1,
+        eventsUsage: {
+          increment: totalSaleEvents,
         },
         salesUsage: {
           increment: charge.amount_total!,
+        },
+        totalEvents: {
+          increment: totalSaleEvents,
         },
       },
     }),

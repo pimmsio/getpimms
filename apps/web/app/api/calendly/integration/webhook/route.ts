@@ -204,7 +204,13 @@ export const POST = async (req: Request) => {
           id: link.projectId,
         },
         data: {
-          usage: {
+          leadsUsage: {
+            increment: 1,
+          },
+          eventsUsage: {
+            increment: 1,
+          },
+          totalEvents: {
             increment: 1,
           },
         },

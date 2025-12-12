@@ -6,7 +6,7 @@ async function main() {
     select: {
       slug: true,
       plan: true,
-      usage: true,
+      eventsUsage: true,
       _count: {
         select: {
           domains: true,
@@ -14,11 +14,11 @@ async function main() {
       },
     },
     orderBy: {
-      usage: "desc",
+      eventsUsage: "desc",
     },
     take: 100,
   });
-  console.table(workspaces, ["slug", "plan", "usage", "_count"]);
+  console.table(workspaces, ["slug", "plan", "eventsUsage", "_count"]);
 }
 
 main();

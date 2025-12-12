@@ -54,6 +54,7 @@ export const GET = withSession(async ({ session }) => {
       WorkspaceSchema.parse({
         ...project,
         id: prefixWorkspaceId(project.id),
+        totalEvents: project.totalEvents ?? 0,
       }),
     ),
   );
@@ -160,6 +161,7 @@ export const POST = withSession(async ({ req, session }) => {
       WorkspaceSchema.parse({
         ...workspace,
         id: prefixWorkspaceId(workspace.id),
+        totalEvents: workspace.totalEvents ?? 0,
       }),
     );
   } catch (error) {
