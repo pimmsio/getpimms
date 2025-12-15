@@ -114,10 +114,10 @@ export default function AnalyticsProvider({
     tagIds: searchParams?.get("tagIds")?.split(","),
   })?.join(",");
 
-  // COMMENTED OUT: Folder filtering disabled
   // Filter out "unsorted" as it's a UI-only folder ID, not a real database ID
-  // const folderIdParam = searchParams?.get("folderId");
-  // const folderId = folderIdParam === "unsorted" ? undefined : folderIdParam ?? undefined;
+  // Only filter if folderId is explicitly set - if not set, show all links (not default folder)
+  const folderIdParam = searchParams?.get("folderId");
+  const folderId = folderIdParam === "unsorted" ? undefined : folderIdParam ?? undefined;
 
   const customerId = searchParams?.get("customerId") ?? undefined;
 
@@ -249,7 +249,7 @@ export default function AnalyticsProvider({
     : (domain && key) ||
         (domains && domains?.length > 50) ||
         adminPage ||
-        // folderId || // COMMENTED OUT: Folder filtering disabled
+        folderId ||
         tagIds
       ? undefined
       : "false";
@@ -275,7 +275,7 @@ export default function AnalyticsProvider({
       ...(tagIds && { tagIds }),
       ...(root && { root: root.toString() }),
       event: selectedTab,
-      // ...(folderId && { folderId }), // COMMENTED OUT: Folder filtering disabled
+      ...(folderId && { folderId }),
       ...(customerId && { customerId }),
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     }).toString();
@@ -288,7 +288,7 @@ export default function AnalyticsProvider({
     end,
     tagIds,
     selectedTab,
-    // folderId, // COMMENTED OUT: Folder filtering disabled
+    folderId,
     customerId,
   ]);
 

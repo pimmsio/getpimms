@@ -422,7 +422,8 @@ export const PROVIDERS: Record<string, Provider> = {
   PIMMS: {
     displayName: 'PIMMS',
     domains: [
-      'pim.ms', 
+      'pim.ms',
+      'fcksub.com',
       /^(app\.)?pim(ms)?\.io$/
     ],
     primaryDomain: 'pim.ms',

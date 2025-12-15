@@ -4,6 +4,7 @@ import {
   INTERVAL_DISPLAYS,
   VALID_ANALYTICS_FILTERS,
 } from "@/lib/analytics/constants";
+import { unsortedLinks } from "@/lib/folder/constants";
 import {
   getGroupDisplayNameFromDomains,
   validDateRangeForPlan,
@@ -12,6 +13,7 @@ import { getStartEndDates } from "@/lib/analytics/utils/get-start-end-dates";
 import { useAnalyticsUrl } from "@/lib/hooks/use-analytics-url";
 import useDomains from "@/lib/swr/use-domains";
 import useDomainsCount from "@/lib/swr/use-domains-count";
+import useFolder from "@/lib/swr/use-folder";
 import useFolders from "@/lib/swr/use-folders";
 import useFoldersCount from "@/lib/swr/use-folders-count";
 import useTags from "@/lib/swr/use-tags";
@@ -37,7 +39,7 @@ import {
   UTM_PARAMETERS,
   Popover,
 } from "@dub/ui";
-import { MousePointerClick, TrendingUp, DollarSign, ArrowUpDown, RefreshCw } from "lucide-react";
+import { MousePointerClick, TrendingUp, DollarSign, ArrowUpDown, RefreshCw, Folder } from "lucide-react";
 import {
   Hyperlink,
   LinkBroken,
@@ -71,6 +73,7 @@ import { useDebounce } from "use-debounce";
 import { WebhookErrorsWarning } from "../layout/sidebar/webhook-errors-warning";
 import { LinkIcon } from "../links/link-icon";
 import TagBadge from "../links/tag-badge";
+import { FolderIcon } from "../folders/folder-icon";
 import { AnalyticsContext } from "./analytics-provider";
 import {
   ColdScoreIcon,
@@ -165,11 +168,11 @@ export default function Toggle({
     enabled: tagsAsync,
   });
 
-  // COMMENTED OUT: Folder filtering disabled
-  // const selectedFolderId = searchParamsObj.folderId;
-  // const { folder: selectedFolder } = useFolder({
-  //   folderId: selectedFolderId,
-  // });
+  const selectedFolderId = searchParamsObj.folderId;
+  const { folder: selectedFolder } = useFolder({
+    folderId: selectedFolderId,
+    enabled: !!selectedFolderId,
+  });
 
   const selectedCustomerId = searchParamsObj.customerId;
   // const { data: selectedCustomer } = useCustomer({
@@ -246,7 +249,7 @@ export default function Toggle({
   const [requestedFilters, setRequestedFilters] = useState<string[]>([]);
 
   const activeFilters = useMemo(() => {
-    const { domain, key, root, /* folderId, */ ...params } = searchParamsObj; // COMMENTED OUT: folderId - Folder filtering disabled
+    const { domain, key, root, folderId, ...params } = searchParamsObj;
 
     // Handle special cases first
     const filters = [
@@ -309,15 +312,14 @@ export default function Toggle({
       // Handle root special case - convert string to boolean
       ...(root ? [{ key: "root", value: root === "true" }] : []),
       // Handle folderId special case
-      // COMMENTED OUT: Folder filtering disabled
-      // ...(folderId ? [{ key: "folderId", value: folderId }] : []),
+      ...(folderId ? [{ key: "folderId", value: folderId }] : []),
     ];
 
     // Handle all other filters dynamically
     VALID_ANALYTICS_FILTERS.forEach((filter) => {
       // Skip special cases we handled above
       if (
-        ["domain", "key", "tagId", "tagIds", "hotScore", "root", 
+        ["domain", "key", "tagId", "tagIds", "hotScore", "root", "folderId",
          "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
          "url", "country", "city", "device", "browser", "os", "referer"].includes(
           filter,
@@ -578,52 +580,69 @@ export default function Toggle({
               //       },
               //     ]
               //   : []),
-              // ...(flags?.linkFolders
-              //   ? [
-              //       {
-              //         key: "folderId",
-              //         icon: Folder,
-              //         label: "Folder",
-              //         shouldFilter: !foldersAsync,
-              //         getOptionIcon: (value, props) => {
-              //           const folderName = props.option?.label;
-              //           const folder = folders?.find(
-              //             ({ name }) => name === folderName,
-              //           );
+              ...(flags?.linkFolders
+                ? [
+                    {
+                      key: "folderId",
+                      icon: Folder,
+                      label: "Folder",
+                      shouldFilter: !foldersAsync,
+                      getOptionIcon: (value, props) => {
+                        const folderName = props.option?.label;
+                        // Check if it's the unsorted folder
+                        if (value === "unsorted") {
+                          return (
+                            <FolderIcon
+                              folder={unsortedLinks}
+                              shape="square"
+                              iconClassName="size-3"
+                            />
+                          );
+                        }
+                        const folder = folders?.find(
+                          ({ name }) => name === folderName,
+                        );
 
-              //           return folder ? (
-              //             <FolderIcon
-              //               folder={folder}
-              //               shape="square"
-              //               iconClassName="size-3"
-              //             />
-              //           ) : null;
-              //         },
-              //         options: loadingFolders
-              //           ? null
-              //           : [
-              //               ...(folders || []),
-              //               // Add currently filtered folder if not already in the list
-              //               ...(selectedFolder &&
-              //               !folders?.find((f) => f.id === selectedFolder.id)
-              //                 ? [selectedFolder]
-              //                 : []),
-              //             ]
-              //               .map((folder) => ({
-              //                 value: folder.id,
-              //                 icon: (
-              //                   <FolderIcon
-              //                     folder={folder}
-              //                     shape="square"
-              //                     iconClassName="size-3"
-              //                   />
-              //                 ),
-              //                 label: folder.name,
-              //               }))
-              //               .sort((a, b) => a.label.localeCompare(b.label)),
-              //       },
-              //     ]
-              //   : []),
+                        return folder ? (
+                          <FolderIcon
+                            folder={folder}
+                            shape="square"
+                            iconClassName="size-3"
+                          />
+                        ) : null;
+                      },
+                      options: loadingFolders
+                        ? null
+                        : [
+                            unsortedLinks,
+                            ...(folders || []),
+                            // Add currently filtered folder if not already in the list
+                            ...(selectedFolder &&
+                            selectedFolder.id !== "unsorted" &&
+                            !folders?.find((f) => f.id === selectedFolder.id)
+                              ? [selectedFolder]
+                              : []),
+                          ]
+                            .map((folder) => ({
+                              value: folder.id,
+                              icon: (
+                                <FolderIcon
+                                  folder={folder}
+                                  shape="square"
+                                  iconClassName="size-3"
+                                />
+                              ),
+                              label: folder.name,
+                            }))
+                            .sort((a, b) => {
+                              // Always put "unsorted" first
+                              if (a.value === "unsorted") return -1;
+                              if (b.value === "unsorted") return 1;
+                              return a.label.localeCompare(b.label);
+                            }),
+                    },
+                  ]
+                : []),
               {
                 key: "tagIds",
                 icon: Tag,
