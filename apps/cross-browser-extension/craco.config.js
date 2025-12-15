@@ -1,6 +1,4 @@
 const path = require('path');
-const { addPlugins } = require('@craco/craco');
-const CopyPlugin = require('copy-webpack-plugin');
 
 const resolveOwn = relativePath => path.resolve(__dirname, relativePath);
 
@@ -69,34 +67,8 @@ module.exports = {
         }),
       ];
 
-       addPlugins(webpackConfig, [
-        new CopyPlugin({
-          patterns: [
-            // Copy public files
-            {
-              from: resolveOwn('public'),
-              to: webpackConfig.output.path,
-              globOptions: {
-                ignore: ['**/index.html']
-              }
-            }
-            ]
-        })
-      ]);
-
-      // Ensure panel.css is available in dev build output (copy on rebuilds)
-      webpackConfig.plugins.push(
-        new CopyPlugin({
-          patterns: [
-            {
-              from: resolveOwn('public/panel.css'),
-              to: webpackConfig.output.path,
-              noErrorOnMissing: true,
-              force: true
-            }
-          ]
-        })
-      );
+      // File copying is now handled by build:copy script in package.json
+      // CopyPlugin removed due to webpack compatibility issues
 
       return webpackConfig;
     }

@@ -12,6 +12,7 @@
     "lint": "turbo lint",
     "clean": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "update:all": "pnpm up -r -i",
     "prettier-check": "prettier --check \"**/*.{ts,tsx,md}\"",
     "publish-cli": "turbo build --filter='@dub/cli' && cd packages/cli && npm publish && cd ../../",
     "publish-embed-core": "turbo build --filter='@dub/embed-core' && cd packages/embeds/core && npm publish && cd ../../../",
