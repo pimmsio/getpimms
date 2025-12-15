@@ -8,27 +8,12 @@ export const isValidUrl = (url: string) => {
 };
 
 export const getUrlFromString = (str: string) => {
-  // #region agent log
-  const inputStr = str;
-  // #endregion
-  if (isValidUrl(str)) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/6cdbc392-7dc8-4dc6-8f38-3f8b9abe8267',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'urls.ts:11',message:'getUrlFromString - already valid URL',data:{input:inputStr,output:str},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
-    return str;
-  }
+  if (isValidUrl(str)) return str;
   try {
     if (str.includes(".") && !str.includes(" ")) {
-      const result = new URL(`https://${str}`).toString();
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/6cdbc392-7dc8-4dc6-8f38-3f8b9abe8267',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'urls.ts:14',message:'getUrlFromString - added https://',data:{input:inputStr,output:result},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-      // #endregion
-      return result;
+      return new URL(`https://${str}`).toString();
     }
   } catch (_) {}
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/6cdbc392-7dc8-4dc6-8f38-3f8b9abe8267',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'urls.ts:17',message:'getUrlFromString - returned as-is',data:{input:inputStr,output:str},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-  // #endregion
   return str;
 };
 
@@ -99,32 +84,16 @@ export const constructURLFromUTMParams = (
 ) => {
   if (!url) return "";
   try {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/6cdbc392-7dc8-4dc6-8f38-3f8b9abe8267',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'urls.ts:87',message:'constructURLFromUTMParams entry',data:{inputUrl:url,utmParams},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
     const parsedUrl = getUrlFromString(url);
     const newURL = new URL(parsedUrl);
-    // #region agent log
-    const originalSearchParams = newURL.searchParams.toString();
-    fetch('http://127.0.0.1:7242/ingest/6cdbc392-7dc8-4dc6-8f38-3f8b9abe8267',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'urls.ts:89',message:'Before setting UTM params',data:{originalSearchParams,parsedUrl},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
     for (const [key, value] of Object.entries(utmParams)) {
       if (value === "") {
         newURL.searchParams.delete(key);
       } else {
-        const valueBeforeReplace = value;
-        const valueAfterReplace = value.replace("+", " ");
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/6cdbc392-7dc8-4dc6-8f38-3f8b9abe8267',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'urls.ts:93',message:'Setting UTM param with character replacement',data:{key,valueBeforeReplace,valueAfterReplace},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-        // #endregion
-        newURL.searchParams.set(key, valueAfterReplace);
+        newURL.searchParams.set(key, value.replace("+", " "));
       }
     }
-    const finalUrl = newURL.toString();
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/6cdbc392-7dc8-4dc6-8f38-3f8b9abe8267',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'urls.ts:96',message:'constructURLFromUTMParams exit',data:{finalUrl,originalSearchParams,finalSearchParams:newURL.searchParams.toString()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
-    return finalUrl;
+    return newURL.toString();
   } catch (e) {
     return "";
   }

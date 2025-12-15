@@ -2,7 +2,7 @@
 
 import { normalizeUtmValue, getParamsFromURL, getUrlFromString } from "@dub/utils";
 import { AlertCircle, X, Loader2 } from "lucide-react";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { LinkFormData } from "./link-builder-provider";
@@ -10,6 +10,9 @@ import { useUtmSectionContextOptional } from "./utm-section-context";
 import { saveUtmParameters } from "./save-utm-parameters";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { checkUtmParameterExists, UtmParameterType } from "@/lib/utils/utm-parameter-utils";
+import useSWR from "swr";
+import { fetcher } from "@dub/utils";
+import { UtmTemplateWithUserProps } from "@/lib/types";
 
 export function UtmDetectionBanner() {
   const { control, setValue } = useFormContext<LinkFormData>();
@@ -29,6 +32,15 @@ export function UtmDetectionBanner() {
   
   const utmSectionContext = useUtmSectionContextOptional();
   const { id: workspaceId } = useWorkspace();
+
+  // Fetch templates to check if UTMs match
+  const { data: templates } = useSWR<UtmTemplateWithUserProps[]>(
+    workspaceId ? `/api/utm?workspaceId=${workspaceId}` : null,
+    fetcher,
+    {
+      dedupingInterval: 60000,
+    },
+  );
 
   const [dismissedUrls, setDismissedUrls] = useState<Set<string>>(new Set());
   const [detectedUtms, setDetectedUtms] = useState<Record<string, string>>({});
@@ -58,66 +70,6 @@ export function UtmDetectionBanner() {
       return urlToClean;
     }
   }, []);
-
-  // Auto-clean URL when UTMs match form values
-  const autoCleanUrl = useCallback(() => {
-    const cleanUrl = cleanUrlFromUtms(url);
-    if (cleanUrl !== url) {
-      setValue("url", cleanUrl, { shouldDirty: false }); // Don't mark as dirty for auto-clean
-    }
-  }, [url, cleanUrlFromUtms, setValue]);
-
-  // Auto-extract UTMs when form is empty
-  const autoExtractUtms = useCallback(async (utmParams: Record<string, string>) => {
-    try {
-      // Clean the URL
-      const cleanUrl = cleanUrlFromUtms(url);
-      setValue("url", cleanUrl, { shouldDirty: true });
-
-      // Populate form fields with normalized values
-      Object.entries(utmParams).forEach(([key, value]) => {
-        const normalizedValue = normalizeUtmValue(value);
-        setValue(key as keyof LinkFormData, normalizedValue, {
-          shouldDirty: true,
-        });
-      });
-
-      // Expand the UTM section if it's collapsed
-      if (utmSectionContext) {
-        utmSectionContext.expandUtmSection();
-      }
-
-      // Save UTM parameters to the library (silently, no toast)
-      // But first check which ones don't exist to avoid 409 errors
-      if (workspaceId) {
-        try {
-          // Check each parameter for existence
-          const existenceChecks = await Promise.all(
-            Object.entries(utmParams).map(async ([key, value]) => {
-              const type = key.replace('utm_', '') as UtmParameterType;
-              const normalizedValue = normalizeUtmValue(value);
-              const exists = await checkUtmParameterExists(type, normalizedValue, workspaceId);
-              return { key, exists };
-            })
-          );
-          
-          // Only save parameters that don't exist
-          const newParams = Object.fromEntries(
-            Object.entries(utmParams).filter((_, idx) => !existenceChecks[idx].exists)
-          );
-          
-          if (Object.keys(newParams).length > 0) {
-            await saveUtmParameters(newParams, workspaceId);
-          }
-        } catch (error) {
-          console.error("Error checking/saving UTM parameters:", error);
-          // Continue even if saving fails - the parameters are already in the form
-        }
-      }
-    } catch (error) {
-      console.error("Failed to auto-extract UTMs:", error);
-    }
-  }, [url, cleanUrlFromUtms, setValue, utmSectionContext, workspaceId]);
 
   useEffect(() => {
     if (!url) {
@@ -178,32 +130,45 @@ export function UtmDetectionBanner() {
     // Check if form has any UTM values
     const formHasUtms = Object.values(formUtms).some((val) => val);
 
-    // Case 1: Form is empty - auto-extract silently
-    if (!formHasUtms) {
-      // Use async IIFE to handle async extraction
-      (async () => {
-        await autoExtractUtms(utmParams);
-      })();
+    // Check if all UTMs in URL match an existing template
+    let utmsMatchTemplate = false;
+    if (templates && Object.keys(utmParams).length > 0) {
+      utmsMatchTemplate = templates.some((template) => {
+        const utmKeys = [
+          "utm_source",
+          "utm_medium",
+          "utm_campaign",
+          "utm_term",
+          "utm_content",
+        ];
+
+        // Check if all detected UTMs match the template (after normalization)
+        return utmKeys.every((key) => {
+          const detectedValue = utmParams[key];
+          const templateValue = template[key as keyof typeof template] as string | null | undefined;
+
+          // If UTM is in URL but not in template, or vice versa, they don't match
+          if (!detectedValue && !templateValue) return true; // Both empty, match
+          if (!detectedValue || !templateValue) return false; // One empty, one not, no match
+
+          // Compare normalized values
+          return normalizeUtmValue(detectedValue) === normalizeUtmValue(templateValue);
+        });
+      });
+    }
+
+    // Don't show banner if:
+    // 1. Form already has UTMs (user has already extracted or set them)
+    // 2. All UTMs match an existing template
+    // 3. URL was dismissed
+    if (formHasUtms || utmsMatchTemplate) {
       setShowBanner(false);
       return;
     }
 
-    // Case 2: Check if URL UTMs match form UTMs
-    const utmsMatch = utmKeys.every((key) => {
-      const urlValue = normalizeUtmValue(utmParams[key] || "");
-      const formValue = formUtms[key as keyof typeof formUtms];
-      return urlValue === formValue;
-    });
-
-    if (utmsMatch) {
-      // Case 2a: UTMs match - just clean the URL silently
-      autoCleanUrl();
-      setShowBanner(false);
-    } else {
-      // Case 3: UTMs differ - show banner to ask user
-      setShowBanner(true);
-    }
-  }, [url, formUtmSource, formUtmMedium, formUtmCampaign, formUtmTerm, formUtmContent, dismissedUrls, autoExtractUtms, autoCleanUrl]);
+    // Show banner to propose extracting UTMs
+    setShowBanner(true);
+  }, [url, formUtmSource, formUtmMedium, formUtmCampaign, formUtmTerm, formUtmContent, dismissedUrls, templates]);
 
   const handleExtract = useCallback(async () => {
     setIsExtracting(true);
@@ -225,8 +190,7 @@ export function UtmDetectionBanner() {
         utmSectionContext.expandUtmSection();
       }
 
-      // Save UTM parameters to the library
-      // But first check which ones don't exist to avoid 409 errors
+      // Save UTM parameters to the library (only when user explicitly extracts)
       if (workspaceId) {
         try {
           // Check each parameter for existence
@@ -293,19 +257,12 @@ export function UtmDetectionBanner() {
     }
   }, [url, cleanUrlFromUtms, setValue, detectedUtms, utmSectionContext, workspaceId]);
 
-  const handleKeepInUrl = useCallback(() => {
-    // Clear any UTM form fields since user wants to keep them in URL
-    setValue("utm_source", "", { shouldDirty: true });
-    setValue("utm_medium", "", { shouldDirty: true });
-    setValue("utm_campaign", "", { shouldDirty: true });
-    setValue("utm_term", "", { shouldDirty: true });
-    setValue("utm_content", "", { shouldDirty: true });
-    
-    // Mark this URL as handled
+  const handleDiscard = useCallback(() => {
+    // User wants to keep UTMs in URL - don't touch anything
+    // Just mark this URL as dismissed
     setDismissedUrls((prev) => new Set(prev).add(url));
     setShowBanner(false);
-    toast.info("UTM parameters kept in URL");
-  }, [setValue, url]);
+  }, [url]);
 
   const handleDismiss = useCallback(() => {
     setDismissedUrls((prev) => new Set(prev).add(url));
@@ -322,7 +279,7 @@ export function UtmDetectionBanner() {
       <AlertCircle className="mt-0.5 size-4 shrink-0 text-blue-600" />
       <div className="flex-1">
         <p className="text-sm text-blue-900">
-          Your URL contains different UTM parameters than the form. Would you like to extract and replace them?
+          Your URL contains UTM parameters. Would you like to extract them to save in your library?
         </p>
         <div className="mt-2 flex gap-2">
           <button
@@ -332,15 +289,15 @@ export function UtmDetectionBanner() {
             className="flex items-center gap-1.5 rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isExtracting && <Loader2 className="size-3 animate-spin" />}
-            Extract & Replace
+            Extract
           </button>
           <button
             type="button"
-            onClick={handleKeepInUrl}
+            onClick={handleDiscard}
             disabled={isExtracting}
             className="rounded-md border border-blue-300 bg-white px-3 py-1 text-xs font-medium text-blue-900 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Keep in URL
+            Discard
           </button>
         </div>
       </div>
