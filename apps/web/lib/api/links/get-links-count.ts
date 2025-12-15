@@ -1,8 +1,12 @@
 import { combineTagIds } from "@/lib/api/tags/combine-tag-ids";
-import { INTERVAL_DATA } from "@/lib/analytics/constants";
 import z from "@/lib/zod";
 import { getLinksCountQuerySchema } from "@/lib/zod/schemas/links";
 import { prisma } from "@dub/prisma";
+import {
+  buildUtmFilter,
+  buildUrlFilter,
+  calculateDateRange,
+} from "./utils/filter-helpers";
 
 export async function getLinksCount({
   searchParams,
@@ -38,26 +42,10 @@ export async function getLinksCount({
 
   const combinedTagIds = combineTagIds({ tagId, tagIds });
 
-  console.log('🔍 [getLinksCount] Processing UTM filters:', {
-    utm_source,
-    utm_medium,
-    utm_campaign,
-    utm_term,
-    utm_content,
-    groupBy,
-  });
-
   // Calculate date range from interval or use explicit start/end dates
-  let startDate: Date | undefined;
-  let endDate: Date | undefined;
-
-  if (interval && INTERVAL_DATA[interval]) {
-    startDate = INTERVAL_DATA[interval].startDate;
-    endDate = new Date();
-  } else if (start || end) {
-    startDate = start;
-    endDate = end;
-  }
+  const dateRange = calculateDateRange(interval, start, end);
+  const startDate = dateRange?.startDate;
+  const endDate = dateRange?.endDate;
 
   const linksWhere = {
     projectId: workspaceId,
@@ -105,39 +93,29 @@ export async function getLinksCount({
     ...(tenantId && { tenantId }),
     ...(utm_source &&
       groupBy !== "utm_source" && {
-        utm_source: utm_source.includes(',')
-          ? { in: utm_source.split(',').filter(Boolean) }  // OR logic for multiple UTM sources
-          : utm_source  // Exact match for single UTM source
+        utm_source: buildUtmFilter(utm_source),
       }),
     ...(utm_medium &&
       groupBy !== "utm_medium" && {
-        utm_medium: utm_medium.includes(',')
-          ? { in: utm_medium.split(',').filter(Boolean) }  // OR logic for multiple UTM mediums
-          : utm_medium  // Exact match for single UTM medium
+        utm_medium: buildUtmFilter(utm_medium),
       }),
     ...(utm_campaign &&
       groupBy !== "utm_campaign" && {
-        utm_campaign: utm_campaign.includes(',')
-          ? { in: utm_campaign.split(',').filter(Boolean) }  // OR logic for multiple UTM campaigns
-          : utm_campaign  // Exact match for single UTM campaign
+        utm_campaign: buildUtmFilter(utm_campaign),
       }),
     ...(utm_term &&
       groupBy !== "utm_term" && {
-        utm_term: utm_term.includes(',')
-          ? { in: utm_term.split(',').filter(Boolean) }  // OR logic for multiple UTM terms
-          : utm_term  // Exact match for single UTM term
+        utm_term: buildUtmFilter(utm_term),
       }),
     ...(utm_content &&
       groupBy !== "utm_content" && {
-        utm_content: utm_content.includes(',')
-          ? { in: utm_content.split(',').filter(Boolean) }  // OR logic for multiple UTM contents
-          : utm_content  // Exact match for single UTM content
+        utm_content: buildUtmFilter(utm_content),
       }),
     ...(url &&
       groupBy !== "url" && {
-        url: url.includes(',')
-          ? { in: url.split(',').filter(Boolean) }  // OR logic for multiple URLs
-          : url  // Exact match for single URL
+        // Apply URL filter using normalized baseUrl (strip query, hash, trailing slash),
+        // to match getLinksForWorkspace and the Destination URL facet.
+        baseUrl: buildUrlFilter(url),
       }),
     ...(startDate &&
       endDate && {
@@ -147,8 +125,6 @@ export async function getLinksCount({
         },
       }),
   };
-
-  console.log('🔍 [getLinksCount] Built where clause:', JSON.stringify(linksWhere, null, 2));
 
   if (groupBy === "tagId") {
     return await prisma.linkTag.groupBy({

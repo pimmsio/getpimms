@@ -23,14 +23,13 @@ export function useLinkFilters() {
   const [debouncedSearch] = useDebounce(search, 500);
   const { searchParams } = useRouterStuff();
 
-  // Decide on the folderId to use
-  // COMMENTED OUT: Folder filtering disabled
-  // let folderId = searchParams.get("folderId");
-  // if (folderId) {
-  //   folderId = folderId === "unsorted" ? "" : folderId;
-  // } else {
-  //   folderId = defaultFolderId ?? "";
-  // }
+  // Decide on the folderId to use (for scoping filters like Destination URL)
+  let folderId = searchParams.get("folderId");
+  if (folderId) {
+    folderId = folderId === "unsorted" ? "" : folderId;
+  } else {
+    folderId = defaultFolderId ?? "";
+  }
 
   const { queryParams, searchParamsObj } = useRouterStuff();
 
@@ -77,6 +76,7 @@ export function useLinkFilters() {
   });
 
   const { options: urls } = useUrlValues({
+    folderId,
     enabled: true,
   });
 

@@ -28,14 +28,6 @@ export const GET = withWorkspace(
       url,
     } = params;
 
-    console.log('🔍 [API /links/count] Incoming UTM filters:', {
-      utm_source,
-      utm_medium,
-      utm_campaign,
-      utm_term,
-      utm_content,
-    });
-
     if (domain) {
       await getDomainOrThrow({ domain, workspace: workspace });
     }
