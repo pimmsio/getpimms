@@ -264,7 +264,7 @@ export default function AnalyticsProvider({
       }),
       {},
     );
-    return new URLSearchParams({
+    const result = new URLSearchParams({
       ...availableFilterParams,
       ...(workspaceId && { workspaceId }),
       ...(domain && { domain }),
@@ -279,6 +279,7 @@ export default function AnalyticsProvider({
       ...(customerId && { customerId }),
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     }).toString();
+    return result;
   }, [
     workspaceId,
     domain,

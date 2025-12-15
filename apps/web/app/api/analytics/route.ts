@@ -30,16 +30,6 @@ export const GET = withWorkspace(
 
     const parsedParams = analyticsQuerySchema.parse(searchParams);
 
-    console.log('🔍 [API /analytics] Incoming request with UTM filters:', {
-      utm_source: parsedParams.utm_source,
-      utm_medium: parsedParams.utm_medium,
-      utm_campaign: parsedParams.utm_campaign,
-      utm_term: parsedParams.utm_term,
-      utm_content: parsedParams.utm_content,
-      groupBy: parsedParams.groupBy,
-      event: parsedParams.event,
-    });
-
     let {
       event,
       groupBy,

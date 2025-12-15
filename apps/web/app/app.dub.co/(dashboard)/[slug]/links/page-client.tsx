@@ -59,15 +59,42 @@ function WorkspaceLinks() {
   const { id: workspaceId, slug } = useWorkspace();
   const { LinkBuilder, CreateLinkButton } = useLinkBuilder();
   const { AddEditTagModal, setShowAddEditTagModal } = useAddEditTagModal();
+  const { queryParams } = useRouterStuff();
+
+  // Remove analytics-specific params (domain, key, referer) when on links page
+  // These should only be preserved when navigating between analytics and conversions pages
+  useEffect(() => {
+    const domain = searchParams.get("domain");
+    const key = searchParams.get("key");
+    const referer = searchParams.get("referer");
+    
+    if (domain || key || referer) {
+      queryParams({
+        del: ["domain", "key", "referer"],
+        replace: true,
+        scroll: false,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const {
     filters,
+    regularFilters,
+    utmFilters,
     activeFilters,
-    onSelect,
+    activeRegularFilters,
+    activeUtmFilters,
+    onRegularFilterSelect,
+    onUtmFilterSelect,
     onRemove,
+    onRegularFilterRemove,
+    onUtmFilterRemove,
     onRemoveAll,
     setSearch,
+    setUtmSearch,
     setSelectedFilter,
+    setSelectedUtmFilter,
   } = useLinkFilters();
 
   const folderId = searchParams.get("folderId");
@@ -93,15 +120,15 @@ function WorkspaceLinks() {
               {/* Left side: Filter, Period, Create Link */}
               <div className="flex grow gap-x-3 max-md:w-full">
                 {!isMegaFolder && (
-                  <div className="grow basis-0 md:grow-0">
+                  <div className="flex grow basis-0 gap-2 md:grow-0">
                     <Filter.Select
-                      filters={filters}
-                      activeFilters={activeFilters}
-                      onSelect={onSelect}
-                      onRemove={onRemove}
+                      filters={regularFilters}
+                      activeFilters={activeRegularFilters}
+                      onSelect={onRegularFilterSelect}
+                      onRemove={onRegularFilterRemove}
                       onSearchChange={setSearch}
                       onSelectedFilterChange={setSelectedFilter}
-                      className="w-full h-10"
+                      className="w-full h-10 min-w-[100px]"
                       emptyState={{
                         tagIds: (
                           <div className="flex flex-col items-center gap-2 p-2 text-center text-sm">
@@ -147,6 +174,18 @@ function WorkspaceLinks() {
                         ),
                       }}
                     />
+                    <Filter.Select
+                      filters={utmFilters}
+                      activeFilters={activeUtmFilters}
+                      onSelect={onUtmFilterSelect}
+                      onRemove={onUtmFilterRemove}
+                      onSearchChange={setUtmSearch}
+                      onSelectedFilterChange={setSelectedUtmFilter}
+                      className="w-full h-10"
+                      hideIcon
+                    >
+                      By UTM
+                    </Filter.Select>
                   </div>
                 )}
                 

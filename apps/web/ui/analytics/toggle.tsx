@@ -83,6 +83,13 @@ import {
 import RefererIcon from "./referer-icon";
 import { ShareButton } from "./share-button";
 import { useAnalyticsFilterOption, useAnalyticsFilterOptionWithoutSelf } from "./utils";
+import { UTM_FILTER_KEYS, isUtmFilter } from "./utils/filter-utils";
+import { createRegularFilterHandlers } from "./utils/regular-filter-handlers";
+import { createUtmFilterHandlers } from "./utils/utm-filter-handlers";
+import {
+  buildActiveFilters,
+  separateActiveFilters,
+} from "./utils/active-filters";
 
 export default function Toggle({
   page = "analytics",
@@ -122,9 +129,15 @@ export default function Toggle({
   // const customersAsync =
   //   customersCount && customersCount > CUSTOMERS_MAX_PAGE_SIZE;
 
+  // Separate state for regular filters
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 500);
+
+  // Separate state for UTM filters
+  const [selectedUtmFilter, setSelectedUtmFilter] = useState<string | null>(null);
+  const [utmSearch, setUtmSearch] = useState("");
+  const [debouncedUtmSearch] = useDebounce(utmSearch, 500);
 
   const { tags, loading: loadingTags } = useTags({
     query: {
@@ -248,95 +261,50 @@ export default function Toggle({
 
   const [requestedFilters, setRequestedFilters] = useState<string[]>([]);
 
-  const activeFilters = useMemo(() => {
-    const { domain, key, root, folderId, ...params } = searchParamsObj;
+  // Build all active filters
+  const activeFilters = useMemo(
+    () =>
+      buildActiveFilters(searchParamsObj, {
+        selectedTagIds,
+        selectedHotScores,
+        selectedUtmSources,
+        selectedUtmMediums,
+        selectedUtmCampaigns,
+        selectedUtmTerms,
+        selectedUtmContents,
+        selectedUrls,
+        selectedCountries,
+        selectedCities,
+        selectedDevices,
+        selectedBrowsers,
+        selectedOs,
+        selectedReferers,
+      }),
+    [
+      searchParamsObj,
+      selectedTagIds,
+      selectedHotScores,
+      selectedUtmSources,
+      selectedUtmMediums,
+      selectedUtmCampaigns,
+      selectedUtmTerms,
+      selectedUtmContents,
+      selectedUrls,
+      selectedCountries,
+      selectedCities,
+      selectedDevices,
+      selectedBrowsers,
+      selectedOs,
+      selectedReferers,
+    ],
+  );
 
-    // Handle special cases first
-    const filters = [
-      // Handle domain/key special case
-      ...(domain && !key ? [{ key: "domain", value: domain }] : []),
-      ...(domain && key
-        ? [
-            {
-              key: "link",
-              value: linkConstructor({ domain, key, pretty: true }),
-            },
-          ]
-        : []),
-      // Handle tagIds special case
-      ...(selectedTagIds.length > 0
-        ? [{ key: "tagIds", value: selectedTagIds }]
-        : []),
-      // Handle hotScore special case
-      ...(selectedHotScores.length > 0
-        ? [{ key: "hotScore", value: selectedHotScores }]
-        : []),
-      // Handle UTM multi-select special cases
-      ...(selectedUtmSources.length > 0
-        ? [{ key: "utm_source", value: selectedUtmSources }]
-        : []),
-      ...(selectedUtmMediums.length > 0
-        ? [{ key: "utm_medium", value: selectedUtmMediums }]
-        : []),
-      ...(selectedUtmCampaigns.length > 0
-        ? [{ key: "utm_campaign", value: selectedUtmCampaigns }]
-        : []),
-      ...(selectedUtmTerms.length > 0
-        ? [{ key: "utm_term", value: selectedUtmTerms }]
-        : []),
-      ...(selectedUtmContents.length > 0
-        ? [{ key: "utm_content", value: selectedUtmContents }]
-        : []),
-      // Handle other multi-select filters
-      ...(selectedUrls.length > 0
-        ? [{ key: "url", value: selectedUrls }]
-        : []),
-      ...(selectedCountries.length > 0
-        ? [{ key: "country", value: selectedCountries }]
-        : []),
-      ...(selectedCities.length > 0
-        ? [{ key: "city", value: selectedCities }]
-        : []),
-      ...(selectedDevices.length > 0
-        ? [{ key: "device", value: selectedDevices }]
-        : []),
-      ...(selectedBrowsers.length > 0
-        ? [{ key: "browser", value: selectedBrowsers }]
-        : []),
-      ...(selectedOs.length > 0
-        ? [{ key: "os", value: selectedOs }]
-        : []),
-      ...(selectedReferers.length > 0
-        ? [{ key: "referer", value: selectedReferers }]
-        : []),
-      // Handle root special case - convert string to boolean
-      ...(root ? [{ key: "root", value: root === "true" }] : []),
-      // Handle folderId special case
-      ...(folderId ? [{ key: "folderId", value: folderId }] : []),
-    ];
-
-    // Handle all other filters dynamically
-    VALID_ANALYTICS_FILTERS.forEach((filter) => {
-      // Skip special cases we handled above
-      if (
-        ["domain", "key", "tagId", "tagIds", "hotScore", "root", "folderId",
-         "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
-         "url", "country", "city", "device", "browser", "os", "referer"].includes(
-          filter,
-        )
-      )
-        return;
-      // also skip date range filters and qr
-      if (["interval", "start", "end", "qr"].includes(filter)) return;
-
-      const value = params[filter];
-      if (value) {
-        filters.push({ key: filter, value });
-      }
-    });
-
-    return filters;
-  }, [searchParamsObj, selectedTagIds, selectedHotScores, selectedUtmSources, selectedUtmMediums, selectedUtmCampaigns, selectedUtmTerms, selectedUtmContents, selectedUrls, selectedCountries, selectedCities, selectedDevices, selectedBrowsers, selectedOs, selectedReferers]);
+  // Separate active filters for each dropdown
+  const { regularFilters: activeRegularFilters, utmFilters: activeUtmFilters } =
+    useMemo(
+      () => separateActiveFilters(activeFilters),
+      [activeFilters],
+    );
 
   const isRequested = useCallback(
     (key: string) =>
@@ -347,7 +315,8 @@ export default function Toggle({
 
   // Only fetch filter options when explicitly requested (filter opened or already active)
   // This prevents excessive Tinybird QPS on page load
-  const { data: links } = useAnalyticsFilterOption("top_links", {
+  // Exclude domain and key from the query so we see all links, not just the filtered one
+  const { data: links } = useAnalyticsFilterOptionWithoutSelf("top_links", ["domain", "key"], {
     cacheOnly: !isRequested("link"),
   });
   // Fetch filter options without applying the filter itself (so all options are visible for multi-select)
@@ -537,8 +506,10 @@ export default function Toggle({
         .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
   };
 
-  const filters: ComponentProps<typeof Filter.Select>["filters"] = useMemo(
-    () => [
+  // Regular filters (excluding UTM filters)
+  const regularFilters: ComponentProps<typeof Filter.Select>["filters"] = useMemo(
+    () => {
+      const filterArray = [
       // {
       //   key: "ai",
       //   icon: Magic,
@@ -676,6 +647,7 @@ export default function Toggle({
                       }))
                       .sort((a, b) => a.label.localeCompare(b.label)),
               },
+              LinkFilterItem,
               ...(page === "events"
                 ? [
                     {
@@ -737,7 +709,6 @@ export default function Toggle({
               //             ]),
               //       ],
               // },
-              // LinkFilterItem,
               // {
               //   key: "root",
               //   icon: Sliders,
@@ -827,26 +798,6 @@ export default function Toggle({
             })
             .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
       },
-      ...UTM_PARAMETERS.filter(({ key }) => key !== "ref").map(
-        ({ key, label, icon: Icon }) => ({
-          key,
-          icon: Icon,
-          label: `UTM ${label}`,
-          multiple: true,
-          shouldFilter: true,
-          getOptionIcon: (value) => (
-            <Icon display={value} className="h-4 w-4" />
-          ),
-          options:
-            utmData[key]
-              ?.map((dt) => ({
-                value: dt[key],
-                label: dt[key],
-                right: nFormatter(dt.count, { full: true }),
-              }))
-              .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
-        }),
-      ),
       // {
       //   key: "country",
       //   icon: FlagWavy,
@@ -991,7 +942,10 @@ export default function Toggle({
       //     })) ?? null,
       //   separatorAfter: true,
       // },
-    ],
+    ];
+
+      return filterArray;
+    },
     [
       selectedTab,
       dashboardProps,
@@ -1009,241 +963,147 @@ export default function Toggle({
       referers,
       refererUrls,
       urls,
-      utmData,
-      utmSources,
-      utmMediums,
-      utmCampaigns,
-      utmTerms,
-      utmContents,
       tagsAsync,
       loadingTags,
       searchParamsObj.tagIds,
       searchParamsObj.domain,
+      flags?.linkFolders,
+      folders,
+      loadingFolders,
+      selectedFolder,
     ],
+  );
+
+  // UTM filters only
+  const utmFilters: ComponentProps<typeof Filter.Select>["filters"] = useMemo(
+    () => {
+      return UTM_PARAMETERS.filter(({ key }) => key !== "ref").map(
+        ({ key, label, icon: Icon }) => ({
+          key,
+          icon: Icon,
+          label: `UTM ${label}`,
+          multiple: true,
+          shouldFilter: true,
+          getOptionIcon: (value) => (
+            <Icon display={value} className="h-4 w-4" />
+          ),
+          options:
+            utmData[key]
+              ?.map((dt) => ({
+                value: dt[key],
+                label: dt[key],
+                right: nFormatter(dt.count, { full: true }),
+              }))
+              .sort((a, b) => a.label.localeCompare(b.label)) ?? null,
+        }),
+      );
+    },
+    [utmData],
+  );
+
+  // Combined filters for Filter.List (to show all active filters)
+  const filters = useMemo(
+    () => [...regularFilters, ...utmFilters],
+    [regularFilters, utmFilters],
   );
 
   const { isMobile } = useMediaQuery();
 
+  // Create handlers using utility functions
+  const { handleSelect: handleRegularFilterSelect, handleRemove: handleRegularFilterRemove } =
+    useMemo(
+      () =>
+        createRegularFilterHandlers({
+          queryParams,
+          selectedTagIds,
+          selectedHotScores,
+          selectedUrls,
+          selectedCountries,
+          selectedCities,
+          selectedDevices,
+          selectedBrowsers,
+          selectedOs,
+          selectedReferers,
+          activeFilters,
+          setStreaming,
+        }),
+      [
+        queryParams,
+        selectedTagIds,
+        selectedHotScores,
+        selectedUrls,
+        selectedCountries,
+        selectedCities,
+        selectedDevices,
+        selectedBrowsers,
+        selectedOs,
+        selectedReferers,
+        activeFilters,
+        setStreaming,
+      ],
+    );
+
+  const { handleSelect: handleUtmFilterSelect, handleRemove: handleUtmFilterRemove } =
+    useMemo(
+      () =>
+        createUtmFilterHandlers({
+          queryParams,
+          selectedUtmSources,
+          selectedUtmMediums,
+          selectedUtmCampaigns,
+          selectedUtmTerms,
+          selectedUtmContents,
+        }),
+      [
+        queryParams,
+        selectedUtmSources,
+        selectedUtmMediums,
+        selectedUtmCampaigns,
+        selectedUtmTerms,
+        selectedUtmContents,
+      ],
+    );
+
+  // Combined handler for Filter.List (handles both regular and UTM filters)
+  const handleFilterRemove = (key: string, value: any) => {
+    if (isUtmFilter(key)) {
+      handleUtmFilterRemove(key, value);
+    } else {
+      handleRegularFilterRemove(key, value);
+    }
+  };
+
   const filterSelect = (
-    <Filter.Select
-      className="w-full md:w-fit"
-      filters={filters}
-      activeFilters={activeFilters}
-      onSearchChange={setSearch}
-      onSelectedFilterChange={setSelectedFilter}
-      onSelect={async (key, value) => {
-        if (key === "ai") {
-          setStreaming(true);
-          const prompt = value.replace("Ask AI ", "");
-          const { object } = await generateFilters(prompt);
-          for await (const partialObject of readStreamableValue(object)) {
-            if (partialObject) {
-              queryParams({
-                set: Object.fromEntries(
-                  Object.entries(partialObject).map(([key, value]) => [
-                    key,
-                    // Convert Dates to ISO strings
-                    value instanceof Date ? value.toISOString() : String(value),
-                  ]),
-                ),
-              });
-            }
-          }
-          posthog.capture("ai_filters_generated", {
-            prompt,
-            filters: activeFilters,
-          });
-          setStreaming(false);
-        } else {
-          queryParams({
-            set:
-              key === "link"
-                ? {
-                    domain: new URL(`https://${value}`).hostname,
-                    key:
-                      new URL(`https://${value}`).pathname.slice(1) || "_root",
-                  }
-                : key === "tagIds"
-                  ? {
-                      tagIds: selectedTagIds.concat(value).join(","),
-                    }
-                  : key === "hotScore"
-                    ? {
-                        hotScore: selectedHotScores.concat(value).join(","),
-                      }
-                    : key === "utm_source"
-                      ? {
-                          utm_source: selectedUtmSources.concat(value).join(","),
-                        }
-                      : key === "utm_medium"
-                        ? {
-                            utm_medium: selectedUtmMediums.concat(value).join(","),
-                          }
-                        : key === "utm_campaign"
-                          ? {
-                              utm_campaign: selectedUtmCampaigns.concat(value).join(","),
-                            }
-                          : key === "utm_term"
-                            ? {
-                                utm_term: selectedUtmTerms.concat(value).join(","),
-                              }
-                            : key === "utm_content"
-                              ? {
-                                  utm_content: selectedUtmContents.concat(value).join(","),
-                                }
-                              : key === "url"
-                                ? {
-                                    url: selectedUrls.concat(value).join(","),
-                                  }
-                                : key === "country"
-                                  ? {
-                                      country: selectedCountries.concat(value).join(","),
-                                    }
-                                  : key === "city"
-                                    ? {
-                                        city: selectedCities.concat(value).join(","),
-                                      }
-                                    : key === "device"
-                                      ? {
-                                          device: selectedDevices.concat(value).join(","),
-                                        }
-                                      : key === "browser"
-                                        ? {
-                                            browser: selectedBrowsers.concat(value).join(","),
-                                          }
-                                        : key === "os"
-                                          ? {
-                                              os: selectedOs.concat(value).join(","),
-                                            }
-                                          : key === "referer"
-                                            ? {
-                                                referer: selectedReferers.concat(value).join(","),
-                                              }
-                                            : {
-                                                [key]: value,
-                                              },
-            del: "page",
-            scroll: false,
-          });
+    <div className="flex w-full gap-2 md:w-fit">
+      <Filter.Select
+        className="w-full md:w-fit md:min-w-[100px]"
+        filters={regularFilters}
+        activeFilters={activeRegularFilters}
+        onSearchChange={setSearch}
+        onSelectedFilterChange={setSelectedFilter}
+        onSelect={handleRegularFilterSelect}
+        onRemove={handleRegularFilterRemove}
+        onOpenFilter={(key) =>
+          setRequestedFilters((rf) => (rf.includes(key) ? rf : [...rf, key]))
         }
-      }}
-      onRemove={(key, value) =>
-        queryParams(
-          key === "tagIds" &&
-            !(selectedTagIds.length === 1 && selectedTagIds[0] === value)
-            ? {
-                set: {
-                  tagIds: selectedTagIds.filter((id) => id !== value).join(","),
-                },
-                scroll: false,
-              }
-            : key === "utm_source" &&
-                !(selectedUtmSources.length === 1 && selectedUtmSources[0] === value)
-              ? {
-                  set: {
-                    utm_source: selectedUtmSources.filter((v) => v !== value).join(","),
-                  },
-                  scroll: false,
-                }
-              : key === "utm_medium" &&
-                  !(selectedUtmMediums.length === 1 && selectedUtmMediums[0] === value)
-                ? {
-                    set: {
-                      utm_medium: selectedUtmMediums.filter((v) => v !== value).join(","),
-                    },
-                    scroll: false,
-                  }
-                : key === "utm_campaign" &&
-                    !(selectedUtmCampaigns.length === 1 && selectedUtmCampaigns[0] === value)
-                  ? {
-                      set: {
-                        utm_campaign: selectedUtmCampaigns.filter((v) => v !== value).join(","),
-                      },
-                      scroll: false,
-                    }
-                  : key === "utm_term" &&
-                      !(selectedUtmTerms.length === 1 && selectedUtmTerms[0] === value)
-                    ? {
-                        set: {
-                          utm_term: selectedUtmTerms.filter((v) => v !== value).join(","),
-                        },
-                        scroll: false,
-                      }
-                    : key === "utm_content" &&
-                        !(selectedUtmContents.length === 1 && selectedUtmContents[0] === value)
-                      ? {
-                          set: {
-                            utm_content: selectedUtmContents.filter((v) => v !== value).join(","),
-                          },
-                          scroll: false,
-                        }
-                      : key === "url" &&
-                          !(selectedUrls.length === 1 && selectedUrls[0] === value)
-                        ? {
-                            set: {
-                              url: selectedUrls.filter((v) => v !== value).join(","),
-                            },
-                            scroll: false,
-                          }
-                        : key === "country" &&
-                            !(selectedCountries.length === 1 && selectedCountries[0] === value)
-                          ? {
-                              set: {
-                                country: selectedCountries.filter((v) => v !== value).join(","),
-                              },
-                              scroll: false,
-                            }
-                          : key === "city" &&
-                              !(selectedCities.length === 1 && selectedCities[0] === value)
-                            ? {
-                                set: {
-                                  city: selectedCities.filter((v) => v !== value).join(","),
-                                },
-                                scroll: false,
-                              }
-                            : key === "device" &&
-                                !(selectedDevices.length === 1 && selectedDevices[0] === value)
-                              ? {
-                                  set: {
-                                    device: selectedDevices.filter((v) => v !== value).join(","),
-                                  },
-                                  scroll: false,
-                                }
-                              : key === "browser" &&
-                                  !(selectedBrowsers.length === 1 && selectedBrowsers[0] === value)
-                                ? {
-                                    set: {
-                                      browser: selectedBrowsers.filter((v) => v !== value).join(","),
-                                    },
-                                    scroll: false,
-                                  }
-                                : key === "os" &&
-                                    !(selectedOs.length === 1 && selectedOs[0] === value)
-                                  ? {
-                                      set: {
-                                        os: selectedOs.filter((v) => v !== value).join(","),
-                                      },
-                                      scroll: false,
-                                    }
-                                  : key === "referer" &&
-                                      !(selectedReferers.length === 1 && selectedReferers[0] === value)
-                                    ? {
-                                        set: {
-                                          referer: selectedReferers.filter((v) => v !== value).join(","),
-                                        },
-                                        scroll: false,
-                                      }
-                                    : {
-                                        del: key === "link" ? ["domain", "key"] : key,
-                                        scroll: false,
-                                      },
-        )
-      }
-      onOpenFilter={(key) =>
-        setRequestedFilters((rf) => (rf.includes(key) ? rf : [...rf, key]))
-      }
-      askAI
-    />
+        askAI
+      />
+      <Filter.Select
+        className="w-full md:w-fit"
+        filters={utmFilters}
+        activeFilters={activeUtmFilters}
+        onSearchChange={setUtmSearch}
+        onSelectedFilterChange={setSelectedUtmFilter}
+        onSelect={handleUtmFilterSelect}
+        onRemove={handleUtmFilterRemove}
+        onOpenFilter={(key) =>
+          setRequestedFilters((rf) => (rf.includes(key) ? rf : [...rf, key]))
+        }
+        hideIcon
+      >
+        By UTM
+      </Filter.Select>
+    </div>
   );
 
   const dateRangePicker = (
@@ -1489,77 +1349,7 @@ export default function Toggle({
                 }))
               : []),
           ]}
-          onRemove={(key, value) =>
-            queryParams(
-              key === "tagIds" &&
-                !(selectedTagIds.length === 1 && selectedTagIds[0] === value)
-                ? {
-                    set: {
-                      tagIds: selectedTagIds
-                        .filter((id) => id !== value)
-                        .join(","),
-                    },
-                    scroll: false,
-                  }
-                : key === "hotScore" &&
-                    !(
-                      selectedHotScores.length === 1 &&
-                      selectedHotScores[0] === value
-                    )
-                  ? {
-                      set: {
-                        hotScore: selectedHotScores
-                          .filter((score) => score !== value)
-                          .join(","),
-                      },
-                      scroll: false,
-                    }
-                  : key === "utm_source" &&
-                      !(selectedUtmSources.length === 1 && selectedUtmSources[0] === value)
-                    ? {
-                        set: {
-                          utm_source: selectedUtmSources.filter((v) => v !== value).join(","),
-                        },
-                        scroll: false,
-                      }
-                    : key === "utm_medium" &&
-                        !(selectedUtmMediums.length === 1 && selectedUtmMediums[0] === value)
-                      ? {
-                          set: {
-                            utm_medium: selectedUtmMediums.filter((v) => v !== value).join(","),
-                          },
-                          scroll: false,
-                        }
-                      : key === "utm_campaign" &&
-                          !(selectedUtmCampaigns.length === 1 && selectedUtmCampaigns[0] === value)
-                        ? {
-                            set: {
-                              utm_campaign: selectedUtmCampaigns.filter((v) => v !== value).join(","),
-                            },
-                            scroll: false,
-                          }
-                        : key === "utm_term" &&
-                            !(selectedUtmTerms.length === 1 && selectedUtmTerms[0] === value)
-                          ? {
-                              set: {
-                                utm_term: selectedUtmTerms.filter((v) => v !== value).join(","),
-                              },
-                              scroll: false,
-                            }
-                          : key === "utm_content" &&
-                              !(selectedUtmContents.length === 1 && selectedUtmContents[0] === value)
-                            ? {
-                                set: {
-                                  utm_content: selectedUtmContents.filter((v) => v !== value).join(","),
-                                },
-                                scroll: false,
-                              }
-                            : {
-                                del: key === "link" ? ["domain", "key", "url"] : key,
-                                scroll: false,
-                              },
-            )
-          }
+          onRemove={handleFilterRemove}
           onRemoveAll={() =>
             queryParams({
               // Reset all filters except for date range

@@ -8,19 +8,27 @@ import useUtmValues from "@/lib/swr/use-utm-values";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { TagProps } from "@/lib/types";
 import { TAGS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/tags";
-import { Avatar, BlurImage, Globe, Link4, LinkLogo, Tag, User, useRouterStuff } from "@dub/ui";
-import { getApexDomain, getPrettyUrl, GOOGLE_FAVICON_URL } from "@dub/utils";
+import { Link4, LinkLogo, Tag, useRouterStuff, UTM_PARAMETERS } from "@dub/ui";
+import { getApexDomain } from "@dub/utils";
 import { useContext, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { LinksDisplayContext } from "./links-display-provider";
 import TagBadge from "./tag-badge";
-import { FolderIcon } from "lucide-react";
+import { isUtmFilter } from "../analytics/utils/filter-utils";
+import { separateActiveFilters } from "../analytics/utils/active-filters";
 
 export function useLinkFilters() {
   const { defaultFolderId } = useWorkspace();
+  // Separate state for regular filters
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 500);
+  
+  // Separate state for UTM filters
+  const [selectedUtmFilter, setSelectedUtmFilter] = useState<string | null>(null);
+  const [utmSearch, setUtmSearch] = useState("");
+  const [debouncedUtmSearch] = useDebounce(utmSearch, 500);
+  
   const { searchParams } = useRouterStuff();
 
   // Decide on the folderId to use (for scoping filters like Destination URL)
@@ -85,7 +93,8 @@ export function useLinkFilters() {
   //   enabled: selectedFilter === "folderId" || Boolean(searchParamsObj.folderId),
   // });
 
-  const filters = useMemo(() => {
+  // Regular filters (excluding UTM)
+  const regularFilters = useMemo(() => {
     return [
       {
         key: "tagIds",
@@ -111,47 +120,6 @@ export function useLinkFilters() {
             hideDuringSearch,
           })) ?? null,
       },
-      // {
-      //   key: "domain",
-      //   icon: Globe,
-      //   label: "Domain",
-      //   getOptionIcon: (value) => (
-      //     <BlurImage
-      //       src={`${GOOGLE_FAVICON_URL}${value}`}
-      //       alt={value}
-      //       className="h-4 w-4 rounded-full"
-      //       width={16}
-      //       height={16}
-      //     />
-      //   ),
-      //   options: domains.map(({ slug, count }) => ({
-      //     value: slug,
-      //     label: slug,
-      //     right: count,
-      //   })),
-      // },
-      // {
-      //   key: "userId",
-      //   icon: User,
-      //   label: "Creator",
-      //   options:
-      //     // @ts-expect-error
-      //     users?.map(({ id, name, email, image, count }) => ({
-      //       value: id,
-      //       label: name || email,
-      //       icon: (
-      //         <Avatar
-      //           user={{
-      //             id,
-      //             name,
-      //             image,
-      //           }}
-      //           className="h-4 w-4"
-      //         />
-      //       ),
-      //       right: count,
-      //     })) ?? null,
-      // },
       {
         key: "url",
         icon: Link4,
@@ -173,54 +141,39 @@ export function useLinkFilters() {
           right: count,
         })) ?? null,
       },
-      {
-        key: "utm_source",
-        icon: Tag,
-        label: "UTM Source",
-        multiple: true,
-        shouldFilter: true,
-        options: utmSources ?? null,
-      },
-      {
-        key: "utm_medium",
-        icon: Tag,
-        label: "UTM Medium",
-        multiple: true,
-        shouldFilter: true,
-        options: utmMediums ?? null,
-      },
-      {
-        key: "utm_campaign",
-        icon: Tag,
-        label: "UTM Campaign",
-        multiple: true,
-        shouldFilter: true,
-        options: utmCampaigns ?? null,
-      },
-      {
-        key: "utm_term",
-        icon: Tag,
-        label: "UTM Term",
-        multiple: true,
-        shouldFilter: true,
-        options: utmTerms ?? null,
-      },
-      {
-        key: "utm_content",
-        icon: Tag,
-        label: "UTM Content",
-        multiple: true,
-        shouldFilter: true,
-        options: utmContents ?? null,
-      },
-      // {
-      //   key: "folderId",
-      //   icon: FolderIcon,
-      //   label: "Folder",
-      //   options: folders ?? null,
-      // },
     ];
-  }, [/* folders, */ tags, urls, utmSources, utmMediums, utmCampaigns, utmTerms, utmContents, tagsAsync]); // COMMENTED OUT: folders - Folder filtering disabled
+  }, [tags, urls, tagsAsync]);
+
+  // UTM filters only
+  const utmFilters = useMemo(() => {
+    return UTM_PARAMETERS.filter(({ key }) => key !== "ref").map(
+      ({ key, label, icon: Icon }) => ({
+        key,
+        icon: Icon,
+        label: `UTM ${label}`,
+        multiple: true,
+        shouldFilter: true,
+        options:
+          key === "utm_source"
+            ? utmSources ?? null
+            : key === "utm_medium"
+              ? utmMediums ?? null
+              : key === "utm_campaign"
+                ? utmCampaigns ?? null
+                : key === "utm_term"
+                  ? utmTerms ?? null
+                  : key === "utm_content"
+                    ? utmContents ?? null
+                    : null,
+      }),
+    );
+  }, [utmSources, utmMediums, utmCampaigns, utmTerms, utmContents]);
+
+  // Combined filters for Filter.List
+  const filters = useMemo(
+    () => [...regularFilters, ...utmFilters],
+    [regularFilters, utmFilters],
+  );
 
   const selectedTagIds = useMemo(
     () => searchParamsObj["tagIds"]?.split(",")?.filter(Boolean) ?? [],
@@ -257,10 +210,10 @@ export function useLinkFilters() {
     [searchParamsObj],
   );
 
+  // Build all active filters
   const activeFilters = useMemo(() => {
-    const { domain, tagIds, userId, url, utm_source, utm_medium, utm_campaign, utm_term, utm_content } = searchParamsObj;
+    const { tagIds, userId, url, utm_source, utm_medium, utm_campaign, utm_term, utm_content } = searchParamsObj;
     return [
-      ...(domain ? [{ key: "domain", value: domain }] : []),
       ...(tagIds ? [{ key: "tagIds", value: selectedTagIds }] : []),
       ...(userId ? [{ key: "userId", value: userId }] : []),
       ...(url ? [{ key: "url", value: selectedUrls }] : []),
@@ -272,9 +225,23 @@ export function useLinkFilters() {
     ];
   }, [searchParamsObj, selectedTagIds, selectedUrls, selectedUtmSources, selectedUtmMediums, selectedUtmCampaigns, selectedUtmTerms, selectedUtmContents]);
 
-  const onSelect = (key: string, value: any) => {
+  // Separate active filters for each dropdown
+  const { regularFilters: activeRegularFilters, utmFilters: activeUtmFilters } =
+    useMemo(
+      () => separateActiveFilters(activeFilters),
+      [activeFilters],
+    );
+
+
+  const onRemoveAll = () => {
+    queryParams({
+      del: [/* "folderId", */ "tagIds", "userId", "url", "search", "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "start", "end", "interval"], // COMMENTED OUT: folderId - Folder filtering disabled
+    });
+  };
+
+  // Separate handlers for regular and UTM filters
+  const onRegularFilterSelect = (key: string, value: any) => {
     if (key === "tagIds") {
-      // Prevent duplicate values
       if (selectedTagIds.includes(value)) return;
       queryParams({
         set: {
@@ -283,7 +250,6 @@ export function useLinkFilters() {
         del: "page",
       });
     } else if (key === "url") {
-      // Prevent duplicate values
       if (selectedUrls.includes(value)) return;
       queryParams({
         set: {
@@ -291,8 +257,40 @@ export function useLinkFilters() {
         },
         del: "page",
       });
-    } else if (key === "utm_source") {
-      // Prevent duplicate values
+    } else {
+      queryParams({
+        set: {
+          [key]: value,
+        },
+        del: "page",
+      });
+    }
+  };
+
+  const onRegularFilterRemove = (key: string, value: any) => {
+    if (key === "tagIds" && !(selectedTagIds.length === 1 && selectedTagIds[0] === value)) {
+      queryParams({
+        set: {
+          tagIds: selectedTagIds.filter((id) => id !== value).join(","),
+        },
+        del: "page",
+      });
+    } else if (key === "url" && !(selectedUrls.length === 1 && selectedUrls[0] === value)) {
+      queryParams({
+        set: {
+          url: selectedUrls.filter((v) => v !== value).join(","),
+        },
+        del: "page",
+      });
+    } else {
+      queryParams({
+        del: [key, "page"],
+      });
+    }
+  };
+
+  const onUtmFilterSelect = (key: string, value: any) => {
+    if (key === "utm_source") {
       if (selectedUtmSources.includes(value)) return;
       queryParams({
         set: {
@@ -301,7 +299,6 @@ export function useLinkFilters() {
         del: "page",
       });
     } else if (key === "utm_medium") {
-      // Prevent duplicate values
       if (selectedUtmMediums.includes(value)) return;
       queryParams({
         set: {
@@ -310,7 +307,6 @@ export function useLinkFilters() {
         del: "page",
       });
     } else if (key === "utm_campaign") {
-      // Prevent duplicate values
       if (selectedUtmCampaigns.includes(value)) return;
       queryParams({
         set: {
@@ -319,7 +315,6 @@ export function useLinkFilters() {
         del: "page",
       });
     } else if (key === "utm_term") {
-      // Prevent duplicate values
       if (selectedUtmTerms.includes(value)) return;
       queryParams({
         set: {
@@ -328,7 +323,6 @@ export function useLinkFilters() {
         del: "page",
       });
     } else if (key === "utm_content") {
-      // Prevent duplicate values
       if (selectedUtmContents.includes(value)) return;
       queryParams({
         set: {
@@ -346,71 +340,36 @@ export function useLinkFilters() {
     }
   };
 
-  const onRemove = (key: string, value: any) => {
-    if (
-      key === "tagIds" &&
-      !(selectedTagIds.length === 1 && selectedTagIds[0] === value)
-    ) {
-      queryParams({
-        set: {
-          tagIds: selectedTagIds.filter((id) => id !== value).join(","),
-        },
-        del: "page",
-      });
-    } else if (
-      key === "url" &&
-      !(selectedUrls.length === 1 && selectedUrls[0] === value)
-    ) {
-      queryParams({
-        set: {
-          url: selectedUrls.filter((v) => v !== value).join(","),
-        },
-        del: "page",
-      });
-    } else if (
-      key === "utm_source" &&
-      !(selectedUtmSources.length === 1 && selectedUtmSources[0] === value)
-    ) {
+  const onUtmFilterRemove = (key: string, value: any) => {
+    if (key === "utm_source" && !(selectedUtmSources.length === 1 && selectedUtmSources[0] === value)) {
       queryParams({
         set: {
           utm_source: selectedUtmSources.filter((v) => v !== value).join(","),
         },
         del: "page",
       });
-    } else if (
-      key === "utm_medium" &&
-      !(selectedUtmMediums.length === 1 && selectedUtmMediums[0] === value)
-    ) {
+    } else if (key === "utm_medium" && !(selectedUtmMediums.length === 1 && selectedUtmMediums[0] === value)) {
       queryParams({
         set: {
           utm_medium: selectedUtmMediums.filter((v) => v !== value).join(","),
         },
         del: "page",
       });
-    } else if (
-      key === "utm_campaign" &&
-      !(selectedUtmCampaigns.length === 1 && selectedUtmCampaigns[0] === value)
-    ) {
+    } else if (key === "utm_campaign" && !(selectedUtmCampaigns.length === 1 && selectedUtmCampaigns[0] === value)) {
       queryParams({
         set: {
           utm_campaign: selectedUtmCampaigns.filter((v) => v !== value).join(","),
         },
         del: "page",
       });
-    } else if (
-      key === "utm_term" &&
-      !(selectedUtmTerms.length === 1 && selectedUtmTerms[0] === value)
-    ) {
+    } else if (key === "utm_term" && !(selectedUtmTerms.length === 1 && selectedUtmTerms[0] === value)) {
       queryParams({
         set: {
           utm_term: selectedUtmTerms.filter((v) => v !== value).join(","),
         },
         del: "page",
       });
-    } else if (
-      key === "utm_content" &&
-      !(selectedUtmContents.length === 1 && selectedUtmContents[0] === value)
-    ) {
+    } else if (key === "utm_content" && !(selectedUtmContents.length === 1 && selectedUtmContents[0] === value)) {
       queryParams({
         set: {
           utm_content: selectedUtmContents.filter((v) => v !== value).join(","),
@@ -424,20 +383,37 @@ export function useLinkFilters() {
     }
   };
 
-  const onRemoveAll = () => {
-    queryParams({
-      del: [/* "folderId", */ "tagIds", "domain", "userId", "url", "search", "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "start", "end", "interval"], // COMMENTED OUT: folderId - Folder filtering disabled
-    });
+  // Combined handler for Filter.List
+  const onRemove = (key: string, value: any) => {
+    if (isUtmFilter(key)) {
+      onUtmFilterRemove(key, value);
+    } else {
+      onRegularFilterRemove(key, value);
+    }
   };
 
   return {
+    // Filters
     filters,
+    regularFilters,
+    utmFilters,
+    // Active filters
     activeFilters,
-    onSelect,
+    activeRegularFilters,
+    activeUtmFilters,
+    // Handlers
+    onSelect: onRegularFilterSelect, // Keep for backward compatibility
+    onRegularFilterSelect,
+    onUtmFilterSelect,
     onRemove,
+    onRegularFilterRemove,
+    onUtmFilterRemove,
     onRemoveAll,
+    // State
     setSearch,
+    setUtmSearch,
     setSelectedFilter,
+    setSelectedUtmFilter,
   };
 }
 

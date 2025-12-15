@@ -113,7 +113,13 @@ export async function processLink<T extends Record<string, any>>({
 
   // if URL is defined, perform URL checks
   if (url) {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/6cdbc392-7dc8-4dc6-8f38-3f8b9abe8267',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'process-link.ts:115',message:'URL before getUrlFromString',data:{originalUrl:url},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
     url = getUrlFromString(url);
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/6cdbc392-7dc8-4dc6-8f38-3f8b9abe8267',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'process-link.ts:117',message:'URL after getUrlFromString',data:{normalizedUrl:url},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
     if (!isValidUrl(url)) {
       return {
         link: payload,
@@ -121,6 +127,14 @@ export async function processLink<T extends Record<string, any>>({
         code: "unprocessable_entity",
       };
     }
+    // #region agent log
+    const hasUtmInPayload = UTMTags.some((tag) => payload[tag]);
+    const utmPayloadValues = UTMTags.reduce((acc, tag) => {
+      if (payload[tag]) acc[tag] = payload[tag];
+      return acc;
+    }, {} as Record<string, string>);
+    fetch('http://127.0.0.1:7242/ingest/6cdbc392-7dc8-4dc6-8f38-3f8b9abe8267',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'process-link.ts:124',message:'UTM check before constructURLFromUTMParams',data:{hasUtmInPayload,utmPayloadValues,urlBeforeConstruct:url},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
     if (UTMTags.some((tag) => payload[tag])) {
       const utmParams = UTMTags.reduce((acc, tag) => {
         if (payload[tag]) {
@@ -128,7 +142,13 @@ export async function processLink<T extends Record<string, any>>({
         }
         return acc;
       }, {});
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/6cdbc392-7dc8-4dc6-8f38-3f8b9abe8267',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'process-link.ts:131',message:'About to call constructURLFromUTMParams',data:{urlBefore:url,utmParams},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+      // #endregion
       url = constructURLFromUTMParams(url, utmParams);
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/6cdbc392-7dc8-4dc6-8f38-3f8b9abe8267',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'process-link.ts:132',message:'URL after constructURLFromUTMParams',data:{urlAfter:url},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+      // #endregion
     }
     // only root domain links can have empty desintation URL
   } else if (key !== "_root") {

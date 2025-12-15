@@ -221,7 +221,41 @@ export const analyticsQuerySchema = z
         "Filter for root domains. If true, filter for domains only. If false, filter for links only. If undefined, return both.",
       ),
   })
-  .merge(utmTagsSchema);
+  .merge(
+    // For analytics queries, don't normalize UTM values - they should match raw values stored in click events
+    z.object({
+      utm_source: z
+        .string()
+        .trim()
+        .max(190)
+        .nullish()
+        .describe("The UTM source to filter analytics by."),
+      utm_medium: z
+        .string()
+        .trim()
+        .max(190)
+        .nullish()
+        .describe("The UTM medium to filter analytics by."),
+      utm_campaign: z
+        .string()
+        .trim()
+        .max(190)
+        .nullish()
+        .describe("The UTM campaign to filter analytics by."),
+      utm_term: z
+        .string()
+        .trim()
+        .max(190)
+        .nullish()
+        .describe("The UTM term to filter analytics by."),
+      utm_content: z
+        .string()
+        .trim()
+        .max(190)
+        .nullish()
+        .describe("The UTM content to filter analytics by."),
+    })
+  );
 
 // Analytics filter params for Tinybird endpoints
 export const analyticsFilterTB = z

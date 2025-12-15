@@ -35,6 +35,7 @@ type FilterSelectProps = {
   children?: ReactNode;
   emptyState?: ReactNode | Record<string, ReactNode>;
   className?: string;
+  hideIcon?: boolean;
 };
 
 export function FilterSelect({
@@ -49,6 +50,7 @@ export function FilterSelect({
   children,
   emptyState,
   className,
+  hideIcon = false,
 }: FilterSelectProps) {
   const { isMobile } = useMediaQuery();
 
@@ -300,20 +302,26 @@ export function FilterSelect({
       <button
         type="button"
         className={cn(
-          "group flex h-10 cursor-pointer appearance-none items-center gap-x-2.5 truncate rounded-full border px-4 text-sm font-medium outline-none transition-all duration-200",
+          "group flex h-10 cursor-pointer appearance-none items-center rounded-full border px-4 text-sm font-medium outline-none transition-all duration-200",
           "border-neutral-200 bg-white text-neutral-900 placeholder-neutral-400",
           "hover:border-neutral-300 hover:shadow-sm",
           "focus-visible:border-neutral-400 focus-visible:ring-2 focus-visible:ring-blue-500/10",
           "data-[state=open]:border-neutral-400 data-[state=open]:ring-2 data-[state=open]:ring-blue-500/10",
+          hideIcon ? "gap-x-2" : "gap-x-2.5",
           className,
         )}
+        style={{
+          minWidth: activeFilters?.length && !hideIcon ? '100px' : activeFilters?.length && hideIcon ? '85px' : undefined,
+        }}
       >
-        <ListFilter className="size-4 shrink-0 text-neutral-600" />
-        <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-left text-neutral-900">
+        {!hideIcon && (
+          <ListFilter className="size-4 shrink-0 text-neutral-600" />
+        )}
+        <span className="shrink-0 whitespace-nowrap text-left text-neutral-900">
           {children ?? "Filter"}
         </span>
         {activeFilters?.length ? (
-          <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[0.625rem] font-bold text-white shadow-sm">
+          <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[0.625rem] font-bold text-white shadow-sm ml-1">
             {activeFilters.length}
           </div>
         ) : (

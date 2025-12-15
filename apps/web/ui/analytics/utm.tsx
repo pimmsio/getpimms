@@ -5,7 +5,7 @@ import { SINGULAR_ANALYTICS_ENDPOINTS } from "@/lib/analytics/constants";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { AnalyticsCard } from "./analytics-card";
-import { useAnalyticsFilterOption } from "./utils";
+import { useAnalyticsFilterOption, useAnalyticsFilterOptionWithoutSelf } from "./utils";
 import { MetricsDisplay } from "./metrics-display";
 import { ListLoadingSkeleton, NoDataYetEmptyState } from "./components";
 import { useAnalyticsState, useAnalyticsDashboard } from "./hooks";
@@ -15,61 +15,84 @@ import { AnalyticsContext } from "./analytics-provider";
 type UTMViewMode = "combinations" | "source" | "medium" | "campaign";
 
 export default function UTM() {
-  const { queryParams } = useRouterStuff();
+  const { queryParams, searchParams } = useRouterStuff();
   const { slug } = useWorkspace();
   const { dashboardProps } = useAnalyticsDashboard();
   const { selectedTab } = useAnalyticsState();
   const [viewMode, setViewMode] = useState<UTMViewMode>("combinations");
 
-  // Fetch top_links data to extract UTM combinations
-  // This is the primary data source for the UTM component (1 API call)
-  const { data: topLinksData } = useAnalyticsFilterOption({ groupBy: "top_links" });
-  
-  // Only fetch specific UTM breakdown data when that view is selected
-  const { data: sourcesData } = useAnalyticsFilterOption({ groupBy: "utm_sources" }, {
-    cacheOnly: viewMode !== "source",
+  // Fetch UTM data from click events (not from link URLs)
+  // UTMs from short link URLs are stored in click events, not in link destination URLs
+  // Use useAnalyticsFilterOptionWithoutSelf to exclude UTM filters so we see all UTMs, not just filtered ones
+  const { data: sourcesData } = useAnalyticsFilterOptionWithoutSelf({ groupBy: "utm_sources" }, "utm_source", {
+    cacheOnly: viewMode !== "source" && viewMode !== "combinations",
   });
-  const { data: mediumsData } = useAnalyticsFilterOption({ groupBy: "utm_mediums" }, {
-    cacheOnly: viewMode !== "medium",
+  const { data: mediumsData } = useAnalyticsFilterOptionWithoutSelf({ groupBy: "utm_mediums" }, "utm_medium", {
+    cacheOnly: viewMode !== "medium" && viewMode !== "combinations",
   });
-  const { data: campaignsData } = useAnalyticsFilterOption({ groupBy: "utm_campaigns" }, {
-    cacheOnly: viewMode !== "campaign",
+  const { data: campaignsData } = useAnalyticsFilterOptionWithoutSelf({ groupBy: "utm_campaigns" }, "utm_campaign", {
+    cacheOnly: viewMode !== "campaign" && viewMode !== "combinations",
   });
-  
-  // Filter only links that have UTM parameters and extract UTM combinations
-  const utmCombinations = useMemo(() => {
-    if (!topLinksData) return null;
-    
-    const filtered = topLinksData
-      .map((link: any) => {
-        const params = new URLSearchParams(link.url?.split('?')[1] || '');
-        const utmParams: Record<string, string> = {};
-        
-        // Extract UTM parameters
-        ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'].forEach(key => {
-          const value = params.get(key);
-          if (value) utmParams[key] = value;
-        });
-        
-        // Only include if it has at least one UTM parameter
-        if (Object.keys(utmParams).length === 0) return null;
-        
-        return {
-          params: utmParams,
-          clicks: link.clicks || 0,
-          leads: link.leads || 0,
-          sales: link.sales || 0,
-          saleAmount: link.saleAmount || 0,
-        };
-      })
-      .filter((item): item is NonNullable<typeof item> => item !== null);
-    
-    // Sort using the utility function
-    return sortByMetric(filtered, selectedTab as "clicks" | "leads" | "sales");
-  }, [topLinksData, selectedTab]);
+  const { data: termsData } = useAnalyticsFilterOptionWithoutSelf({ groupBy: "utm_terms" }, "utm_term", {
+    cacheOnly: viewMode !== "combinations",
+  });
+  const { data: contentsData } = useAnalyticsFilterOptionWithoutSelf({ groupBy: "utm_contents" }, "utm_content", {
+    cacheOnly: viewMode !== "combinations",
+  });
 
-  const isLoading = !topLinksData;
-  const hasAnyData = utmCombinations && utmCombinations.length > 0;
+  // Build UTM combinations from individual UTM parameter data
+  // Since there's no endpoint for combinations, we create them from individual UTM values
+  // Each UTM parameter value represents a combination (even if it's just one parameter)
+  const utmCombinations = useMemo(() => {
+    if (viewMode !== "combinations") return null;
+
+    // For combinations view, show each UTM source as a combination
+    // This is a simplified approach - a full implementation would require a backend endpoint
+    // that groups by all UTM parameters together
+    if (!sourcesData || sourcesData.length === 0) return null;
+    
+    const combinations = sourcesData.map((source: any) => {
+      const params: Record<string, string> = {};
+      if (source.utm_source) params.utm_source = source.utm_source;
+      
+      // Try to find matching medium and campaign for this source
+      // This is a simplified approach - ideally we'd have a backend endpoint for true combinations
+      const matchingMedium = mediumsData?.find((m: any) => 
+        m.utm_medium && source.utm_source
+      );
+      const matchingCampaign = campaignsData?.find((c: any) => 
+        c.utm_campaign && source.utm_source
+      );
+      
+      // For now, just show the source as the primary combination
+      // A proper fix would require a backend endpoint that groups by all UTM params
+      return {
+        params,
+        clicks: source.clicks || 0,
+        leads: source.leads || 0,
+        sales: source.sales || 0,
+        saleAmount: source.saleAmount || 0,
+      };
+    }).filter((item: any) => Object.keys(item.params).length > 0);
+
+    // Sort using the utility function
+    return sortByMetric(combinations, selectedTab as "clicks" | "leads" | "sales");
+  }, [sourcesData, mediumsData, campaignsData, termsData, contentsData, selectedTab, viewMode]);
+
+  const isLoading = viewMode === "combinations" 
+    ? !sourcesData 
+    : viewMode === "source" 
+      ? !sourcesData 
+      : viewMode === "medium" 
+        ? !mediumsData 
+        : !campaignsData;
+  const hasAnyData = viewMode === "combinations"
+    ? utmCombinations && utmCombinations.length > 0
+    : viewMode === "source"
+      ? sourcesData && sourcesData.length > 0
+      : viewMode === "medium"
+        ? mediumsData && mediumsData.length > 0
+        : campaignsData && campaignsData.length > 0;
 
   const viewModeOptions = [
     { value: "combinations", label: "All" },
@@ -119,6 +142,7 @@ export default function UTM() {
                     combo={combo}
                     idx={idx}
                     selectedTab={selectedTab}
+                    queryParams={queryParams}
                   />
                 ))}
               </div>
@@ -234,14 +258,24 @@ function UTMBreakdownView({
   );
 }
 
-function UTMCombinationItem({ combo, idx, selectedTab }: { combo: any; idx: number; selectedTab: "clicks" | "leads" | "sales" }) {
+function UTMCombinationItem({ combo, idx, selectedTab, queryParams }: { combo: any; idx: number; selectedTab: "clicks" | "leads" | "sales"; queryParams: any }) {
   const utmEntries = Object.entries(combo.params);
   const gradientColors = ['from-neutral-300 to-neutral-400', 'from-neutral-300 to-neutral-400', 'from-neutral-300 to-neutral-400'];
   const isTopThree = idx < 3;
 
+  // Build filter params from UTM combination
+  const filterParams: Record<string, string> = {};
+  utmEntries.forEach(([key, value]) => {
+    filterParams[key] = String(value);
+  });
+
   return (
-    <div 
-      className={`group relative rounded-xl border transition-all p-3.5 ${
+    <a
+      href={queryParams({
+        set: filterParams,
+        getNewPath: true,
+      }) as string}
+      className={`group relative rounded-xl border transition-all p-3.5 block ${
         isTopThree 
           ? 'border-brand-primary-200 bg-gradient-to-br from-brand-primary-50/50 via-white to-brand-primary-100/30 hover:shadow-md hover:border-brand-primary-300' 
           : 'border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm'
@@ -283,7 +317,7 @@ function UTMCombinationItem({ combo, idx, selectedTab }: { combo: any; idx: numb
         </div>
 
       </div>
-    </div>
+    </a>
   );
 }
 

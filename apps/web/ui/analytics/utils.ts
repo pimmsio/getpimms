@@ -85,14 +85,14 @@ export function useAnalyticsFilterOption(
  * not just the ones that match the current filter
  *
  * @param groupByOrParams Either a groupBy option or a query parameter object including groupBy
- * @param excludeFilter The filter parameter to exclude from the query (e.g., 'url', 'referer')
+ * @param excludeFilter The filter parameter(s) to exclude from the query (e.g., 'url', 'referer', or ['domain', 'key'])
  * @param options Additional options
  */
 export function useAnalyticsFilterOptionWithoutSelf(
   groupByOrParams:
     | AnalyticsGroupByOptions
     | ({ groupBy: AnalyticsGroupByOptions } & Record<string, any>),
-  excludeFilter: string,
+  excludeFilter: string | string[],
   options?: { cacheOnly?: boolean },
 ): AnalyticsFilterResult {
   const { cache } = useSWRConfig();

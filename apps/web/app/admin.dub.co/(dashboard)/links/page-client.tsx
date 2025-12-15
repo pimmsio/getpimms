@@ -38,12 +38,21 @@ function AdminLinks() {
 
   const {
     filters,
+    regularFilters,
+    utmFilters,
     activeFilters,
-    onSelect,
+    activeRegularFilters,
+    activeUtmFilters,
+    onRegularFilterSelect,
+    onUtmFilterSelect,
     onRemove,
+    onRegularFilterRemove,
+    onUtmFilterRemove,
     onRemoveAll,
     setSearch,
+    setUtmSearch,
     setSelectedFilter,
+    setSelectedUtmFilter,
   } = useLinkFilters();
 
   return (
@@ -60,16 +69,28 @@ function AdminLinks() {
               </div>
             </div>
             <div className="flex w-full gap-2 md:w-auto">
-              <div className="grow basis-0 md:grow-0">
+              <div className="flex grow basis-0 gap-2 md:grow-0">
                 <Filter.Select
-                  filters={filters}
-                  activeFilters={activeFilters}
-                  onSelect={onSelect}
-                  onRemove={onRemove}
+                  filters={regularFilters}
+                  activeFilters={activeRegularFilters}
+                  onSelect={onRegularFilterSelect}
+                  onRemove={onRegularFilterRemove}
                   onSearchChange={setSearch}
                   onSelectedFilterChange={setSelectedFilter}
-                  className="w-full"
+                  className="w-full min-w-[100px]"
                 />
+                <Filter.Select
+                  filters={utmFilters}
+                  activeFilters={activeUtmFilters}
+                  onSelect={onUtmFilterSelect}
+                  onRemove={onUtmFilterRemove}
+                  onSearchChange={setUtmSearch}
+                  onSelectedFilterChange={setSelectedUtmFilter}
+                  className="w-full"
+                  hideIcon
+                >
+                  By UTM
+                </Filter.Select>
               </div>
               <div className="flex items-center gap-2 md:w-fit">
                 <LinkDisplay />

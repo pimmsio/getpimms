@@ -34,16 +34,6 @@ export const getAnalytics = async (params: AnalyticsFilters) => {
     dataAvailableFrom,
   } = params;
 
-  console.log('🔍 [getAnalytics] Processing analytics with UTM filters:', {
-    utm_source: params.utm_source,
-    utm_medium: params.utm_medium,
-    utm_campaign: params.utm_campaign,
-    utm_term: params.utm_term,
-    utm_content: params.utm_content,
-    groupBy,
-    event,
-  });
-
   const tagIds = combineTagIds(params);
 
   // get all-time clicks count if:
@@ -128,15 +118,6 @@ export const getAnalytics = async (params: AnalyticsFilters) => {
     country,
     region,
   };
-
-  console.log('🔍 [getAnalytics] Calling Tinybird pipe:', {
-    pipe: `v2_${UTM_TAGS_PLURAL_LIST.includes(groupBy) ? "utms" : groupBy}`,
-    utm_source: pipeParams.utm_source,
-    utm_medium: pipeParams.utm_medium,
-    utm_campaign: pipeParams.utm_campaign,
-    utm_term: pipeParams.utm_term,
-    utm_content: pipeParams.utm_content,
-  });
 
   const response = await pipe(pipeParams);
 
