@@ -654,37 +654,45 @@ async function checkRedirectRestrictions({
 > {
   // Follow redirect chain
   const redirectResult = await followRedirectChain(url);
+
+  // Check if the original URL is from a whitelisted domain (e.g., wa.me, youtu.be, bit.ly)
+  // If it is, allow multiple redirects regardless of plan or redirect count
+  const isOriginalUrlWhitelisted = await isDomainWhitelisted(url);
   
   // Handle redirect following errors
+  // IMPORTANT: Check whitelist BEFORE rejecting for too many redirects
+  // Whitelisted domains should be allowed regardless of redirect count
   if (!redirectResult.success) {
     console.error("Error following redirect chain:", redirectResult.error);
     
-    // If too many redirects, reject the link
+    // If too many redirects, check whitelist first before rejecting
     if (redirectResult.tooManyRedirects) {
-      await sendTooManyRedirectsEmail({
-        url,
-        redirectCount: redirectResult.urls.length - 1,
-        redirectChain: redirectResult.urls,
-        userId,
-        workspaceId,
-      });
-      
-      await log({
-        message: `Link rejected due to too many redirects → ${url} (${redirectResult.urls.length - 1} redirects)`,
-        type: "links",
-        mention: true,
-      });
-      
-      return {
-        error: `Invalid destination URL: This link has too many redirects (maximum ${MAX_REDIRECTS} allowed).`,
-        code: "unprocessable_entity",
-      };
+      // If the domain is whitelisted, allow it despite too many redirects
+      if (isOriginalUrlWhitelisted) {
+        // Continue processing - don't reject whitelisted domains
+      } else {
+        // Not whitelisted - reject for too many redirects
+        await sendTooManyRedirectsEmail({
+          url,
+          redirectCount: redirectResult.urls.length - 1,
+          redirectChain: redirectResult.urls,
+          userId,
+          workspaceId,
+        });
+        
+        await log({
+          message: `Link rejected due to too many redirects → ${url} (${redirectResult.urls.length - 1} redirects)`,
+          type: "links",
+          mention: true,
+        });
+        
+        return {
+          error: `Invalid destination URL: This link has too many redirects (maximum ${MAX_REDIRECTS} allowed).`,
+          code: "unprocessable_entity",
+        };
+      }
     }
   }
-
-  // Check if the original URL is from a whitelisted domain (e.g., wa.me, youtu.be, bit.ly)
-  // If it is, allow multiple redirects regardless of plan
-  const isOriginalUrlWhitelisted = await isDomainWhitelisted(url);
   
   // Free users cannot create links with redirects, UNLESS the original URL is whitelisted
   if (

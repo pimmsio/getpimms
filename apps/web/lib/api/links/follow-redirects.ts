@@ -103,7 +103,8 @@ export async function followRedirectChain(
     }
 
     // Check if we hit the redirect limit
-    if (redirectCount >= maxRedirects) {
+    // Use > instead of >= to allow exactly MAX_REDIRECTS redirects (e.g., 3 redirects should be allowed when MAX_REDIRECTS=3)
+    if (redirectCount > maxRedirects) {
       return {
         success: false,
         urls,

@@ -2,7 +2,7 @@ import {
   LinkFormData,
   useLinkBuilderContext,
 } from "@/ui/links/link-builder/link-builder-provider";
-import { fetcher, getUrlWithoutUTMParams, truncate } from "@dub/utils";
+import { fetcher, getDomainWithoutWWW, getUrlWithoutUTMParams, truncate } from "@dub/utils";
 import { useEffect, useRef } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { mutate } from "swr";
@@ -31,8 +31,9 @@ export function useMetatags({ enabled = true }: { enabled?: boolean } = {}) {
   const isDiscardingRef = useRef<boolean>(false);
 
   // Track previous values to detect changes
-  const prevValuesRef = useRef<{ url: string; doIndex: boolean }>({
+  const prevValuesRef = useRef<{ url: string; domain: string | null; doIndex: boolean }>({
     url: "",
+    domain: null,
     doIndex: false,
   });
   const hasInitialized = useRef<boolean>(false);
@@ -121,7 +122,8 @@ export function useMetatags({ enabled = true }: { enabled?: boolean } = {}) {
     // Skip if we're discarding
     if (isDiscardingRef.current) {
       // Update prevValuesRef to current values and clear discard flag
-      prevValuesRef.current = { url: debouncedUrl, doIndex };
+      const currentDomain = debouncedUrl ? (getDomainWithoutWWW(debouncedUrl) ?? null) : null;
+      prevValuesRef.current = { url: debouncedUrl, domain: currentDomain, doIndex };
       isDiscardingRef.current = false;
       setGeneratingMetatags(false);
       return;
@@ -129,30 +131,51 @@ export function useMetatags({ enabled = true }: { enabled?: boolean } = {}) {
 
     // Check what actually changed (only URL for this useEffect)
     const urlChanged = prevValuesRef.current.url !== debouncedUrl;
+    const currentDomain = debouncedUrl ? (getDomainWithoutWWW(debouncedUrl) ?? null) : null;
+    const prevDomain = prevValuesRef.current.domain;
+    const domainChanged = prevDomain !== currentDomain;
     const isNewLink = !props && !duplicateProps;
 
     // Determine if we should auto-fetch (only for URL changes)
     let shouldAutoFetch = false;
-    
+
     if (isNewLink) {
       // New links: fetch if URL exists
       shouldAutoFetch = debouncedUrl.length > 0;
     } else {
-          // Existing links: 
-    // - Don't fetch on first render IF metadata exists (show saved values)
-    // - Auto-fetch if metadata is missing (null/empty) OR URL changed after initialization
-    if (!hasInitialized.current) {
-      hasInitialized.current = true;
-      // Auto-fetch if metadata is missing (null or empty)
-      const hasMetadata = title || description || image;
-      shouldAutoFetch = !hasMetadata && debouncedUrl.length > 0;
-    } else {
-      shouldAutoFetch = urlChanged;
-    }
+      // Existing links (including duplicates):
+      // - Don't fetch on first render IF metadata exists (show saved values)
+      // - Auto-fetch if metadata is missing OR if domain changed (different site = different preview)
+      if (!hasInitialized.current) {
+        hasInitialized.current = true;
+        // Auto-fetch if metadata is missing (null or empty)
+        const hasMetadata = title || description || image;
+        shouldAutoFetch = !hasMetadata && debouncedUrl.length > 0;
+        // Store initial domain
+        prevValuesRef.current.domain = currentDomain;
+      } else {
+        // After initialization:
+        // - Always refresh if domain changed (different site = different preview)
+        // - Keep existing metadata if same domain (even if path changed) - user can refresh manually
+        // - Only auto-refresh if metadata is missing
+        const hasMetadata = title || description || image;
+        if (domainChanged && urlChanged) {
+          // Domain changed - always refresh (different site)
+          shouldAutoFetch = debouncedUrl.length > 0;
+        } else if (urlChanged && !domainChanged) {
+          // URL changed but same domain - keep existing metadata, don't auto-refresh
+          // User can use refresh button if they want to update
+          shouldAutoFetch = false;
+        } else if (!hasMetadata && debouncedUrl.length > 0) {
+          // No URL change but metadata missing - fetch it
+          shouldAutoFetch = true;
+        }
+      }
     }
 
-    // Update previous URL AFTER the decision (doIndex handled in separate useEffect)
+    // Update previous URL and domain AFTER the decision (doIndex handled in separate useEffect)
     prevValuesRef.current.url = debouncedUrl;
+    prevValuesRef.current.domain = currentDomain;
 
     if (enabled !== false && shouldAutoFetch) {
       try {

@@ -12,6 +12,7 @@ import {
   LoadingCircle,
   NucleoPhoto,
   Pen2,
+  Refresh2,
   Twitter,
 } from "@dub/ui/icons";
 import { cn, getDomainWithoutWWW, resizeImage, SHORT_DOMAIN } from "@dub/utils";
@@ -30,6 +31,7 @@ import ReactTextareaAutosize from "react-textarea-autosize";
 import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
 import { useLinkBuilderKeyboardShortcut } from "./use-link-builder-keyboard-shortcut";
+import { useMetatags } from "./use-metatags";
 
 const tabs = ["default", "x", "linkedin", "facebook"] as const;
 type Tab = (typeof tabs)[number];
@@ -77,6 +79,7 @@ export const LinkPreview = memo(() => {
   }, [password, debouncedUrl]);
 
   const { OGModal, setShowOGModal } = useOGModal();
+  const { generatingMetatags, refreshMetadata } = useMetatags();
 
   useLinkBuilderKeyboardShortcut("l", () => setShowOGModal(true));
 
@@ -100,6 +103,19 @@ export const LinkPreview = memo(() => {
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-medium text-neutral-700">
             Custom preview is {proxy ? "enabled" : "disabled"}
+            {url && !doIndex && (
+              <button
+                type="button"
+                onClick={() => refreshMetadata({ shouldDirty: true })}
+                disabled={generatingMetatags}
+                className={cn(
+                  "ml-2 text-xs font-normal text-neutral-500 underline-offset-2 hover:text-neutral-700 hover:underline",
+                  generatingMetatags && "cursor-not-allowed opacity-50",
+                )}
+              >
+                {generatingMetatags ? "refreshing..." : "(refresh now)"}
+              </button>
+            )}
           </h2>
           {/* <InfoTooltip
             content={
@@ -156,13 +172,25 @@ export const LinkPreview = memo(() => {
         })}
       </div> */}
       <div className="relative z-0 mt-2">
-        <Button
-          type="button"
-          variant="secondary"
-          icon={<Pen2 className="mx-px size-4" />}
-          className={cn("absolute right-2 top-2 z-10 h-8 w-fit px-1.5", doIndex && "hidden")}
-          onClick={() => setShowOGModal(true)}
-        />
+        <div className={cn("absolute right-2 top-2 z-10 flex gap-1", doIndex && "hidden")}>
+          <Button
+            type="button"
+            variant="secondary"
+            icon={<Refresh2 className={cn("size-4", generatingMetatags && "animate-spin")} />}
+            className="h-8 w-fit px-1.5"
+            onClick={() => refreshMetadata({ shouldDirty: true })}
+            disabled={!url || generatingMetatags}
+            title="Refresh preview from URL"
+          />
+          <Button
+            type="button"
+            variant="secondary"
+            icon={<Pen2 className="mx-px size-4" />}
+            className="h-8 w-fit px-1.5"
+            onClick={() => setShowOGModal(true)}
+            title="Edit preview"
+          />
+        </div>
         <OGPreview
           title={title}
           description={description}
