@@ -1,6 +1,7 @@
 import z from "@/lib/zod";
 import { getLinksQuerySchemaExtended } from "@/lib/zod/schemas/links";
 import { prisma } from "@dub/prisma";
+import { Prisma } from "@dub/prisma/client";
 import { combineTagIds } from "../tags/combine-tag-ids";
 import { encodeKeyIfCaseSensitive } from "./case-sensitivity";
 import {
@@ -181,6 +182,9 @@ export async function getLinksForWorkspace({
 
   const includeClause = {
     tags: {
+      orderBy: {
+        createdAt: Prisma.SortOrder.asc,
+      },
       include: {
         tag: {
           select: {

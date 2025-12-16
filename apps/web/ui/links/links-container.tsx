@@ -13,7 +13,7 @@ import {
   useRouterStuff,
 } from "@dub/ui";
 import { CursorRays, Hyperlink } from "@dub/ui/icons";
-import { cn } from "@dub/utils";
+import { cn, getParamsFromURL } from "@dub/utils";
 import { useSearchParams } from "next/navigation";
 import {
   createContext,
@@ -35,6 +35,15 @@ import Link from "next/link";
 export type ResponseLink = ExpandedLinkProps & {
   user: UserProps;
 };
+
+type UtmKey = "utm_source" | "utm_medium" | "utm_campaign" | "utm_term" | "utm_content";
+const UTM_KEYS: UtmKey[] = [
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_term",
+  "utm_content",
+];
 
 export default function LinksContainer({
   CreateLinkButton,
@@ -192,6 +201,31 @@ function LinksList({
     );
   }, [groupedData, expandedGroups, links]);
 
+  const utmVisibility = useMemo(() => {
+    const visible: Record<UtmKey, boolean> = {
+      utm_source: false,
+      utm_medium: false,
+      utm_campaign: false,
+      utm_term: false,
+      utm_content: false,
+    };
+
+    const list = (flatLinks || []) as any[];
+    for (const l of list) {
+      // Only compute from actual links; grouped headers aren't part of flatLinks
+      const urlParams = l?.url ? getParamsFromURL(l.url) : null;
+      for (const key of UTM_KEYS) {
+        const val = l?.[key] ?? (urlParams ? urlParams[key] : null);
+        if (val) visible[key] = true;
+      }
+    }
+
+    const visibleUtmKeys = UTM_KEYS.filter((k) => visible[k]);
+    const showTagsColumn = (flatLinks || []).some((l: any) => (l?.tags?.length || 0) > 0);
+
+    return { visibleUtmKeys, showTagsColumn };
+  }, [flatLinks]);
+
   // Calculate total links count when grouping
   const totalLinksCount = useMemo(() => {
     if (!groupedData) return count;
@@ -304,7 +338,7 @@ function LinksList({
                     {expandedGroups.has(group.groupValue) && (
                       <CardList loading={loading}>
                         {group.links.map((link) => (
-                          <LinkCard key={link.id} link={link} />
+                          <LinkCard key={link.id} link={link} utmVisibility={utmVisibility} />
                         ))}
                       </CardList>
                     )}
@@ -319,7 +353,9 @@ function LinksList({
               >
                 {links?.length
                   ? // Link cards
-                    links.map((link) => <LinkCard key={link.id} link={link} />)
+                    links.map((link) => (
+                      <LinkCard key={link.id} link={link} utmVisibility={utmVisibility} />
+                    ))
                   : // Initial loading placeholder cards (no skeleton animation)
                     Array.from({ length: 8 }).map((_, idx) => (
                       <CardList.Card

@@ -18,12 +18,20 @@ import {
   useRef,
   useState,
 } from "react";
+import { LinkAnalyticsBadge } from "./link-analytics-badge";
 import { LinkDetailsColumn } from "./link-details-column";
 import { LinkTests } from "./link-tests";
+import { LinkUtmColumns } from "./link-utm-columns";
 import { LinkCell } from "../shared/link-cell";
 import { ResponseLink } from "./links-container";
 import Link from "next/link";
 import { FolderIcon } from "../folders/folder-icon";
+
+type UtmKey = "utm_source" | "utm_medium" | "utm_campaign" | "utm_term" | "utm_content";
+type UtmVisibility = {
+  visibleUtmKeys: UtmKey[];
+  showTagsColumn: boolean;
+};
 
 export const LinkCardContext = createContext<{
   showTests: boolean;
@@ -37,16 +45,30 @@ export function useLinkCardContext() {
   return context;
 }
 
-export const LinkCard = memo(({ link }: { link: ResponseLink }) => {
+export const LinkCard = memo(
+  ({
+    link,
+    utmVisibility,
+  }: {
+    link: ResponseLink;
+    utmVisibility?: UtmVisibility;
+  }) => {
   const [showTests, setShowTests] = useState(false);
   return (
     <LinkCardContext.Provider value={{ showTests, setShowTests }}>
-      <LinkCardInner link={link} />
+      <LinkCardInner link={link} utmVisibility={utmVisibility} />
     </LinkCardContext.Provider>
   );
 });
 
-const LinkCardInner = memo(({ link }: { link: ResponseLink }) => {
+const LinkCardInner = memo(
+  ({
+    link,
+    utmVisibility,
+  }: {
+    link: ResponseLink;
+    utmVisibility?: UtmVisibility;
+  }) => {
   const { isMobile } = useMediaQuery();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -115,17 +137,36 @@ const LinkCardInner = memo(({ link }: { link: ResponseLink }) => {
             ),
           })}
       >
-        <div className="flex min-w-0 items-center gap-3 px-2 py-1.5 sm:px-5 sm:py-3 text-sm overflow-hidden">
-          <div ref={ref} className="min-w-0 flex-1 overflow-hidden">
-            <LinkCell 
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-3 overflow-hidden px-2 py-1.5 text-sm sm:px-5 sm:py-3">
+          <div ref={ref} className="min-w-0 overflow-hidden">
+            <LinkCell
               link={link}
               variant="links-page"
-              showCopyButton={true}
+              showCopyButton={false}
               showBadges={true}
-              className="max-w-[100%]"
+              className="min-w-0 max-w-full"
             />
+
+            {/* Responsive priority: Part 1 first, then UTMs row, then Analytics row (until xl) */}
+            <div className="mt-2 hidden min-w-0 flex-col gap-2 xl:hidden">
+              {(utmVisibility?.visibleUtmKeys?.length || utmVisibility?.showTagsColumn) ? (
+                <div className="w-full overflow-x-auto">
+                  <LinkUtmColumns
+                    link={link}
+                    tags={link.tags}
+                    visibleUtmKeys={utmVisibility?.visibleUtmKeys}
+                    showTagsColumn={utmVisibility?.showTagsColumn}
+                  />
+                </div>
+              ) : null}
+              <div className="flex min-w-0 justify-end">
+                <LinkAnalyticsBadge link={link} />
+              </div>
+            </div>
           </div>
-          <LinkDetailsColumn link={link} />
+          <div className="shrink-0">
+            <LinkDetailsColumn link={link} utmVisibility={utmVisibility} />
+          </div>
         </div>
         <LinkTests link={link} />
       </CardList.Card>

@@ -28,6 +28,7 @@ import { UrlDecompositionTooltip } from "./url-decomposition-tooltip";
 import { UrlDisplayWithUtm } from "./url-display-with-utm";
 
 interface LinkData {
+  id?: string;
   domain: string;
   key: string;
   url: string;
@@ -113,6 +114,9 @@ export function LinkCell({
         return false;
     }
   };
+
+  const shouldShowLine2 =
+    hasPropertyValue(line2Property1) || hasPropertyValue(line2Property2);
 
   // Helper function to render a property value
   const renderProperty = (
@@ -236,7 +240,7 @@ export function LinkCell({
   try {
     const selection = useLinkSelection();
     isSelectMode = selection.isSelectMode;
-    isSelected = selection.selectedLinkIds.includes(link.id);
+    isSelected = link.id ? selection.selectedLinkIds.includes(link.id) : false;
     handleLinkSelection = selection.handleLinkSelection;
   } catch (e) {
     // LinkSelectionProvider not available - selection features disabled
@@ -257,7 +261,7 @@ export function LinkCell({
         role="checkbox"
         aria-checked={isSelected}
         data-checked={isSelected}
-        onClick={(e) => handleLinkSelection?.(link.id, e)}
+        onClick={(e) => link.id && handleLinkSelection?.(link.id, e)}
         className={cn(
           "group relative flex shrink-0 items-center justify-center outline-none w-9 h-9 sm:w-10 sm:h-10",
           isSelectMode && "flex",
@@ -335,36 +339,41 @@ export function LinkCell({
           </div>
         )}
 
-        {/* Line 2 Property 1 */}
-        <div className="flex items-center gap-2">
-          <ArrowTurnRight2 className="h-3 w-3 shrink-0 text-neutral-400" />
-          <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-            {hasPropertyValue(line2Property1) && (
-              <div className="min-w-0 sm:max-w-[50%] shrink-0 overflow-hidden">
-                {renderProperty(line2Property1)}
+        {/* Line 2 (hide entirely if both values are missing) */}
+        {shouldShowLine2 && (
+          <>
+            {/* Line 2 Property 1 */}
+            <div className="flex items-center gap-2">
+              <ArrowTurnRight2 className="h-3 w-3 shrink-0 text-neutral-400" />
+              <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
+                {hasPropertyValue(line2Property1) && (
+                  <div className="min-w-0 sm:max-w-[50%] shrink-0 overflow-hidden">
+                    {renderProperty(line2Property1)}
+                  </div>
+                )}
+                {/* Only show separator if both properties exist - desktop only */}
+                {hasPropertyValue(line2Property1) && hasPropertyValue(line2Property2) && (
+                  <div className="hidden sm:block shrink-0 text-neutral-300">•</div>
+                )}
+                {/* Line 2 Property 2 - desktop: inline, mobile: hidden (shown on separate line below) */}
+                {hasPropertyValue(line2Property2) && (
+                  <div className="hidden sm:block min-w-0 max-w-[50%] shrink overflow-hidden">
+                    {renderProperty(line2Property2)}
+                  </div>
+                )}
               </div>
-            )}
-            {/* Only show separator if both properties exist - desktop only */}
-            {hasPropertyValue(line2Property1) && hasPropertyValue(line2Property2) && (
-              <div className="hidden sm:block shrink-0 text-neutral-300">•</div>
-            )}
-            {/* Line 2 Property 2 - desktop: inline, mobile: hidden (shown on separate line below) */}
-            {hasPropertyValue(line2Property2) && (
-              <div className="hidden sm:block min-w-0 max-w-[50%] shrink overflow-hidden">
-                {renderProperty(line2Property2)}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Line 2 Property 2 - mobile only, full width */}
-        {hasPropertyValue(line2Property2) && (
-          <div className="flex items-center gap-2 sm:hidden">
-            <ArrowTurnRight2 className="h-3 w-3 shrink-0 text-neutral-400" />
-            <div className="flex min-w-0 flex-1 items-center overflow-hidden">
-              {renderProperty(line2Property2)}
             </div>
-          </div>
+
+            {/* Line 2 Property 2 - mobile only, full width */}
+            {hasPropertyValue(line2Property2) && (
+              <div className="flex items-center gap-2 sm:hidden">
+                <ArrowTurnRight2 className="h-3 w-3 shrink-0 text-neutral-400" />
+                <div className="flex min-w-0 flex-1 items-center overflow-hidden">
+                  {renderProperty(line2Property2)}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
