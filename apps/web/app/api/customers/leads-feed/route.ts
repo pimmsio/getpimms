@@ -26,6 +26,11 @@ const querySchema = eventsQuerySchema
     externalId: true,
     folderId: true,
     tagIds: true,
+    utm_source: true,
+    utm_medium: true,
+    utm_campaign: true,
+    utm_term: true,
+    utm_content: true,
   })
   .and(
     z.object({
@@ -35,6 +40,14 @@ const querySchema = eventsQuerySchema
         .transform((v) => v === "1" || v === "true"),
     }),
   );
+
+const parseCsv = (value: string | null | undefined) =>
+  value
+    ? value
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : [];
 
 /*
   GET /api/customers/leads-feed
@@ -57,7 +70,33 @@ export const GET = withWorkspace(async ({ workspace, session, searchParams }) =>
       folderId,
       tagIds,
       hotOnly,
+      utm_source,
+      utm_medium,
+      utm_campaign,
+      utm_term,
+      utm_content,
     } = parsed;
+
+    const utmSource = parseCsv(utm_source ?? undefined);
+    const utmMedium = parseCsv(utm_medium ?? undefined);
+    const utmCampaign = parseCsv(utm_campaign ?? undefined);
+    const utmTerm = parseCsv(utm_term ?? undefined);
+    const utmContent = parseCsv(utm_content ?? undefined);
+
+    const linkUtmWhere =
+      utmSource.length ||
+      utmMedium.length ||
+      utmCampaign.length ||
+      utmTerm.length ||
+      utmContent.length
+        ? {
+            ...(utmSource.length ? { utm_source: { in: utmSource } } : {}),
+            ...(utmMedium.length ? { utm_medium: { in: utmMedium } } : {}),
+            ...(utmCampaign.length ? { utm_campaign: { in: utmCampaign } } : {}),
+            ...(utmTerm.length ? { utm_term: { in: utmTerm } } : {}),
+            ...(utmContent.length ? { utm_content: { in: utmContent } } : {}),
+          }
+        : null;
 
     if (domain) {
       await getDomainOrThrow({ workspace, domain });
@@ -116,6 +155,14 @@ export const GET = withWorkspace(async ({ workspace, session, searchParams }) =>
       ...(tagIds && tagIds.length > 0
         ? { link: { tags: { some: { tagId: { in: tagIds } } } } }
         : {}),
+      ...(linkUtmWhere
+        ? {
+            OR: [
+              { link: linkUtmWhere },
+              { lastActivityLink: linkUtmWhere },
+            ],
+          }
+        : {}),
       // Future: handle mega folders precisely
       ...(selectedFolder?.type === "mega" ? {} : {}),
     } as const;
@@ -150,6 +197,25 @@ export const GET = withWorkspace(async ({ workspace, session, searchParams }) =>
               key: true,
               url: true,
               shortLink: true,
+              utm_source: true,
+              utm_medium: true,
+              utm_campaign: true,
+              utm_term: true,
+              utm_content: true,
+              tags: {
+                select: {
+                  tag: {
+                    select: {
+                      id: true,
+                      name: true,
+                      color: true,
+                    },
+                  },
+                },
+                orderBy: {
+                  createdAt: "asc",
+                },
+              },
             },
           },
           lastActivityLink: {
@@ -159,6 +225,25 @@ export const GET = withWorkspace(async ({ workspace, session, searchParams }) =>
               key: true,
               url: true,
               shortLink: true,
+              utm_source: true,
+              utm_medium: true,
+              utm_campaign: true,
+              utm_term: true,
+              utm_content: true,
+              tags: {
+                select: {
+                  tag: {
+                    select: {
+                      id: true,
+                      name: true,
+                      color: true,
+                    },
+                  },
+                },
+                orderBy: {
+                  createdAt: "asc",
+                },
+              },
             },
           },
         },
@@ -167,7 +252,23 @@ export const GET = withWorkspace(async ({ workspace, session, searchParams }) =>
         take: limit,
       }),
     ]);
-    return NextResponse.json({ total, customers });
+
+    const normalizeLink = (l: any) =>
+      l
+        ? {
+            ...l,
+            tags: (l.tags ?? []).map((t: any) => t.tag),
+          }
+        : null;
+
+    return NextResponse.json({
+      total,
+      customers: customers.map((c: any) => ({
+        ...c,
+        link: normalizeLink(c.link),
+        lastActivityLink: normalizeLink(c.lastActivityLink),
+      })),
+    });
   } catch (error) {
     return handleAndReturnErrorResponse(error);
   }

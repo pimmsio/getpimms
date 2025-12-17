@@ -4,9 +4,9 @@ import usePartnerProfile from "@/lib/swr/use-partner-profile";
 import useProgramEnrollments from "@/lib/swr/use-program-enrollments";
 import { PartnerProps, ProgramProps } from "@/lib/types";
 import { BlurImage, Popover, useScrollProgress } from "@dub/ui";
-import { Check2, Gear } from "@dub/ui/icons";
+import { Check2 } from "@dub/ui/icons";
 import { cn, OG_AVATAR_URL } from "@dub/utils";
-import { ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown, Settings2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import {
@@ -20,7 +20,7 @@ import {
 const LINKS = [
   {
     name: "Settings",
-    icon: Gear,
+    icon: Settings2,
     href: "/settings",
   },
   // {

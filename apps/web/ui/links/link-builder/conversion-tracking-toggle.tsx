@@ -1,7 +1,6 @@
 import useWorkspace from "@/lib/swr/use-workspace";
 import { LinkFormData } from "@/ui/links/link-builder/link-builder-provider";
 import {
-  CrownSmall,
   FlaskSmall,
   InfoTooltip,
   Switch,
@@ -16,10 +15,10 @@ const isNew =
   new Date().getTime() - new Date("2025-01-13").getTime() < 30 * 86_400_000;
 
 export const ConversionTrackingToggle = memo(() => {
-  const { slug, plan } = useWorkspace();
+  useWorkspace(); // keep workspace hydrated for the surrounding link builder UI
   const { control, setValue } = useFormContext<LinkFormData>();
 
-  const conversionsEnabled = !!plan && plan !== "free";
+  const conversionsEnabled = true;
 
   const [trackConversion, testVariants] = useWatch({
     control,
@@ -60,22 +59,14 @@ export const ConversionTrackingToggle = memo(() => {
         disabledTooltip={
           trackConversion && testVariants ? (
             <TooltipContent title="Conversion tracking must be enabled to use A/B testing." />
-          ) : conversionsEnabled ? undefined : (
-            <TooltipContent
-              title="Conversion tracking is only available on Starter plans and above."
-              cta="Upgrade to Starter"
-              href={`/${slug}/upgrade`}
-            />
-          )
+          ) : undefined
         }
         thumbIcon={
           trackConversion && testVariants ? (
             <span className="flex size-full items-center justify-center">
               <FlaskSmall className="size-2 text-blue-500" />
             </span>
-          ) : conversionsEnabled ? undefined : (
-            <CrownSmall className="size-full text-neutral-500" />
-          )
+          ) : undefined
         }
       />
     </label>

@@ -47,7 +47,7 @@ export function LinkBuilderProvider({
   children,
   ...rest
 }: PropsWithChildren<LinkBuilderProps>) {
-  const { plan, conversionEnabled } = rest.workspace || {};
+  const { conversionEnabled } = rest.workspace || {};
 
   const [generatingMetatags, setGeneratingMetatags] = useState(
     Boolean(rest.props),
@@ -57,9 +57,7 @@ export function LinkBuilderProvider({
     defaultValues: rest.props ||
       rest.duplicateProps || {
         ...DEFAULT_LINK_PROPS,
-        trackConversion:
-          (plan && plan !== "free" && plan !== "starter" && conversionEnabled) ||
-          false,
+        trackConversion: conversionEnabled ?? false,
       },
   });
 

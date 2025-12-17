@@ -14,23 +14,26 @@ import { SidebarNav, SidebarNavAreas } from "./sidebar-nav";
 import { Usage } from "./usage";
 import { WorkspaceDropdown } from "./workspace-dropdown";
 import {
+  Activity,
+  CreditCard,
+  Gift,
+  KeyRound,
+  Plug,
+  Settings2,
+  Shield,
+  Users,
+  Webhook,
+} from "lucide-react";
+import {
   PimmsAffiliateIcon,
   PimmsAnalyticsIcon,
-  PimmsCardIcon,
   PimmsFlameIcon,
-  PimmsGiftIcon,
   PimmsGlobeIcon,
-  PimmsKeyIcon,
   PimmsLinksIcon,
-  PimmsPlugIcon,
   PimmsReportIcon,
-  PimmsSettingsIcon,
-  PimmsShieldIcon,
   PimmsTemplatesIcon,
   PimmsTodayIcon,
   PimmsUtmParamsIcon,
-  PimmsUsersIcon,
-  PimmsWebhookIcon,
 } from "./icons/pimms-sidebar-icons";
 // import { ReferralButton } from "./referral-button";
 
@@ -98,12 +101,12 @@ const NAV_AREAS: SidebarNavAreas<{
           {
             name: "UTM parameters",
             icon: PimmsUtmParamsIcon,
-            href: `/${slug}/settings/library/parameters`,
+            href: `/${slug}/settings/utm/parameters`,
           },
           {
             name: "UTM templates",
             icon: PimmsTemplatesIcon,
-            href: `/${slug}/settings/library/utm`,
+            href: `/${slug}/settings/utm/templates`,
           },
           {
             name: "Custom domains",
@@ -165,28 +168,28 @@ const NAV_AREAS: SidebarNavAreas<{
         items: [
           {
             name: "General",
-            icon: PimmsSettingsIcon,
+            icon: Settings2,
             href: `/${slug}/settings`,
             exact: true,
           },
           {
             name: "Tracking",
-            icon: PimmsAnalyticsIcon,
+            icon: Activity,
             href: `/${slug}/settings/analytics`,
           },
           {
             name: "People",
-            icon: PimmsUsersIcon,
+            icon: Users,
             href: `/${slug}/settings/people`,
           },
           {
             name: "Billing",
-            icon: PimmsCardIcon,
+            icon: CreditCard,
             href: `/${slug}/settings/billing`,
           },
           {
             name: "Integrations",
-            icon: PimmsPlugIcon,
+            icon: Plug,
             href: `/${slug}/settings/integrations`,
           },
           // {
@@ -201,7 +204,7 @@ const NAV_AREAS: SidebarNavAreas<{
         items: [
           {
             name: "API Keys",
-            icon: PimmsKeyIcon,
+            icon: KeyRound,
             href: `/${slug}/settings/tokens`,
           },
           // {
@@ -211,7 +214,7 @@ const NAV_AREAS: SidebarNavAreas<{
           // },
           {
             name: "Webhooks",
-            icon: PimmsWebhookIcon,
+            icon: Webhook,
             href: `/${slug}/settings/webhooks`,
           },
         ],
@@ -239,18 +242,18 @@ const NAV_AREAS: SidebarNavAreas<{
         items: [
           {
             name: "General",
-            icon: PimmsSettingsIcon,
+            icon: Settings2,
             href: "/account/settings",
             exact: true,
           },
           {
             name: "Security",
-            icon: PimmsShieldIcon,
+            icon: Shield,
             href: "/account/settings/security",
           },
           {
             name: "Referrals",
-            icon: PimmsGiftIcon,
+            icon: Gift,
             href: "/account/settings/referrals",
           },
         ],
@@ -274,8 +277,15 @@ export function AppSidebarNav({
   // const { programs } = usePrograms();
 
   const currentArea = useMemo(() => {
+    const isCustomizePath =
+      !!slug &&
+      (pathname.startsWith(`/${slug}/settings/utm`) ||
+        pathname.startsWith(`/${slug}/settings/domains`));
+
     return pathname.startsWith("/account/settings")
       ? "userSettings"
+      : isCustomizePath
+        ? "default"
       : pathname.startsWith(`/${slug}/settings`)
         ? "workspaceSettings"
         : "default";

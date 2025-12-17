@@ -7,6 +7,7 @@ import { PartnerProgramDropdown } from "./partner-program-dropdown";
 import { PayoutStats } from "./payout-stats";
 import { ProgramHelpSupport } from "./program-help-support";
 import { SidebarNav, SidebarNavAreas } from "./sidebar-nav";
+import { CreditCard, Settings2, Shield, User, Users } from "lucide-react";
 import {
   PimmsAnalyticsIcon,
   PimmsGaugeIcon,
@@ -14,11 +15,7 @@ import {
   PimmsGridIcon,
   PimmsLinksIcon,
   PimmsMoneyIcon,
-  PimmsSettingsIcon,
-  PimmsShieldIcon,
   PimmsStoreIcon,
-  PimmsUserIcon,
-  PimmsUsersIcon,
 } from "./icons/pimms-sidebar-icons";
 
 const NAV_AREAS: SidebarNavAreas<{
@@ -46,7 +43,7 @@ const NAV_AREAS: SidebarNavAreas<{
           },
           {
             name: "Settings",
-            icon: PimmsSettingsIcon,
+            icon: Settings2,
             href: "/settings",
           },
         ],
@@ -99,18 +96,18 @@ const NAV_AREAS: SidebarNavAreas<{
         items: [
           {
             name: "Profile",
-            icon: PimmsUserIcon,
+            icon: User,
             href: "/settings",
             exact: true,
           },
           {
             name: "Payouts",
-            icon: PimmsMoneyIcon,
+            icon: CreditCard,
             href: "/settings/payouts",
           },
           {
             name: "People",
-            icon: PimmsUsersIcon,
+            icon: Users,
             href: "/settings/people",
           },
         ],
@@ -128,13 +125,13 @@ const NAV_AREAS: SidebarNavAreas<{
         items: [
           {
             name: "General",
-            icon: PimmsSettingsIcon,
+            icon: Settings2,
             href: "/account/settings",
             exact: true,
           },
           {
             name: "Security",
-            icon: PimmsShieldIcon,
+            icon: Shield,
             href: "/account/settings/security",
           },
         ],

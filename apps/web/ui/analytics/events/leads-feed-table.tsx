@@ -2,6 +2,8 @@
 
 import { editQueryString } from "@/lib/analytics/utils";
 import useWorkspace from "@/lib/swr/use-workspace";
+import { LinkCell } from "@/ui/shared/link-cell";
+import { UtmKey, UtmTagsRow } from "@/ui/shared/utm-tags-row";
 import {
   Button,
   EmptyState,
@@ -11,7 +13,7 @@ import {
   useRouterStuff,
   useTable,
 } from "@dub/ui";
-import { cn, fetcher, getPrettyUrl, OG_AVATAR_URL, timeAgo } from "@dub/utils";
+import { cn, fetcher, getParamsFromURL, nFormatter, OG_AVATAR_URL, timeAgo } from "@dub/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { ChevronRight, ClipboardCopy, Download, Flame } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -25,6 +27,20 @@ import {
   downloadLeadsAsCSV,
 } from "./leads-export";
 
+type LeadLink = {
+  id: string;
+  domain: string;
+  key: string;
+  url: string;
+  shortLink: string;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  utm_term: string | null;
+  utm_content: string | null;
+  tags: { id: string; name: string; color: string }[];
+};
+
 type LeadsFeedCustomer = {
   id: string;
   name: string | null;
@@ -35,20 +51,8 @@ type LeadsFeedCustomer = {
   lastEventAt: string | null;
   lastActivityType: "click" | "lead" | "sale" | null;
   totalClicks: number;
-  link: null | {
-    id: string;
-    domain: string;
-    key: string;
-    url: string;
-    shortLink: string;
-  };
-  lastActivityLink?: null | {
-    id: string;
-    domain: string;
-    key: string;
-    url: string;
-    shortLink: string;
-  };
+  link: LeadLink | null;
+  lastActivityLink?: LeadLink | null;
 };
 
 type LeadsFeedResponse = {
@@ -57,7 +61,7 @@ type LeadsFeedResponse = {
 };
 
 export default function LeadsFeedTable() {
-  const { searchParams, queryParams } = useRouterStuff();
+  const { searchParams } = useRouterStuff();
   const { queryString: originalQueryString } = useContext(AnalyticsContext);
   const { slug } = useWorkspace();
   const router = useRouter();
@@ -65,6 +69,14 @@ export default function LeadsFeedTable() {
   const hotOnly = searchParams.get("hotOnly") === "1";
 
   const { pagination, setPagination } = usePagination();
+
+  const UTM_KEYS: UtmKey[] = [
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "utm_term",
+    "utm_content",
+  ];
 
   const queryString = useMemo(
     () =>
@@ -87,7 +99,35 @@ export default function LeadsFeedTable() {
 
   const [copying, setCopying] = useState(false);
 
-  const columns = useMemo<ColumnDef<LeadsFeedCustomer, any>[]>(
+  const utmVisibility = useMemo(() => {
+    const visible: Record<UtmKey, boolean> = {
+      utm_source: false,
+      utm_medium: false,
+      utm_campaign: false,
+      utm_term: false,
+      utm_content: false,
+    };
+
+    let showTagsColumn = false;
+
+    for (const c of customers) {
+      const l = c.lastActivityLink || c.link;
+      if (!l) continue;
+
+      if ((l.tags?.length || 0) > 0) showTagsColumn = true;
+
+      const urlParams = l.url ? getParamsFromURL(l.url) : null;
+      for (const key of UTM_KEYS) {
+        const val = (l as any)?.[key] ?? (urlParams ? (urlParams as any)[key] : null);
+        if (val) visible[key] = true;
+      }
+    }
+
+    const visibleUtmKeys = UTM_KEYS.filter((k) => visible[k]);
+    return { visibleUtmKeys, showTagsColumn };
+  }, [customers]);
+
+  const columns = useMemo<ColumnDef<LeadsFeedCustomer, unknown>[]>(
     () => [
       {
         id: "hotScore",
@@ -200,24 +240,37 @@ export default function LeadsFeedTable() {
       {
         id: "triggeredLink",
         header: "Link",
-        minSize: 280,
-        size: 320,
+        minSize: 320,
+        size: 420,
         cell: ({ row }) => {
           const link = row.original.lastActivityLink || row.original.link;
           if (!link) return <span className="text-neutral-400">-</span>;
 
-          const short =
-            link.key === "_root" ? `${link.domain}` : `${link.domain}/${link.key}`;
-          const dest = link.url ? getPrettyUrl(link.url) : "";
-
           return (
-            <div className="flex min-w-0 flex-col gap-0.5 px-4 py-2">
-              <div className="truncate text-sm font-medium text-neutral-900" title={short}>
-                {short}
-              </div>
-              <div className="truncate text-xs text-neutral-500" title={link.url}>
-                {dest}
-              </div>
+            <div className="flex min-w-0 flex-col gap-1 px-4 py-2">
+              <LinkCell
+                link={{
+                  domain: link.domain,
+                  key: link.key,
+                  url: link.url,
+                }}
+                variant="table"
+                showCopyButton={false}
+                className="min-w-0 flex-1 max-w-[360px]"
+              />
+              <UtmTagsRow
+                url={link.url}
+                utm={{
+                  utm_source: link.utm_source,
+                  utm_medium: link.utm_medium,
+                  utm_campaign: link.utm_campaign,
+                  utm_term: link.utm_term,
+                  utm_content: link.utm_content,
+                }}
+                tags={link.tags}
+                visibleUtmKeys={utmVisibility.visibleUtmKeys}
+                showTagsColumn={utmVisibility.showTagsColumn}
+              />
             </div>
           );
         },
@@ -230,12 +283,12 @@ export default function LeadsFeedTable() {
         size: 90,
         cell: ({ row }) => (
           <div className="text-right text-sm font-medium tabular-nums text-neutral-800">
-            {row.original.totalClicks ?? 0}
+            {nFormatter(row.original.totalClicks ?? 0)}
           </div>
         ),
       },
     ],
-    [],
+    [utmVisibility.visibleUtmKeys, utmVisibility.showTagsColumn],
   );
 
   const { table, ...tableProps } = useTable({

@@ -85,7 +85,7 @@ function OnboardingButtonInner({
       },
       {
         display: "Create one UTM template",
-        cta: `/${slug}/settings/library/utm`,
+        cta: `/${slug}/settings/utm/templates`,
         checked: utmTemplates && utmTemplates.length > 0,
       },
       {
