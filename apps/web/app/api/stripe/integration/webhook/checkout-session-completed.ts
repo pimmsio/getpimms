@@ -139,6 +139,8 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
       stripeCustomerId,
       clickId: clickEvent.click_id,
       linkId: clickEvent.link_id,
+      lastActivityLinkId: clickEvent.link_id,
+      lastActivityType: "lead",
       country: clickEvent.country,
       clickedAt: new Date(clickEvent.timestamp + "Z"),
       anonymousId,
@@ -328,6 +330,9 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
         data: {
           hotScore: await computeCustomerHotScore(customer.id, workspace.id),
           lastHotScoreAt: new Date(),
+          lastEventAt: new Date(),
+          lastActivityLinkId: linkId,
+          lastActivityType: "sale",
         },
       });
       

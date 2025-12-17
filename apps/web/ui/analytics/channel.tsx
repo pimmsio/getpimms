@@ -10,7 +10,11 @@ import { MetricsDisplay } from "./metrics-display";
 import { RANK_COLORS } from "./lib";
 import { groupReferrerAnalytics, getReferrerDisplayName, isGroupedReferrer, getDomainsForReferrerGroup } from "@/lib/analytics/utils";
 
-export default function Channel() {
+export default function Channel({
+  dragHandleProps,
+}: {
+  dragHandleProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
+}) {
   const { queryParams, searchParams } = useRouterStuff();
   const { selectedTab } = useContext(AnalyticsContext);
 
@@ -55,6 +59,7 @@ export default function Channel() {
       onSelectTab={() => {}}
       expandLimit={5}
       hasMore={(sortedReferersData?.length ?? 0) > 5}
+      dragHandleProps={dragHandleProps}
     >
       {({ limit, setShowModal, isModal }) => (
         <>

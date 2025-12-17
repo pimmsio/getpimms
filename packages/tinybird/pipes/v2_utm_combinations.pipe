@@ -1,0 +1,242 @@
+TOKEN "v2_utm_combinations_endpoint_read_0000" READ
+
+NODE workspace_links
+SQL >
+
+    %
+    SELECT link_id
+    from dub_links_metadata_latest FINAL
+    WHERE
+        deleted == 0
+        {% if defined(workspaceId) %} AND workspace_id = {{ workspaceId }} {% end %}
+        {% if defined(programId) %} AND program_id = {{ programId }} {% end %}
+        {% if defined(partnerId) %} AND partner_id = {{ partnerId }} {% end %}
+        {% if defined(tenantId) %} AND tenant_id = {{ tenantId }} {% end %}
+        {% if defined(folderId) %} AND folder_id = {{ folderId }} {% end %}
+        {% if defined(domain) %} AND domain IN {{ Array(domain, 'String') }} {% end %}
+        {% if defined(tagIds) %} AND arrayIntersect(tag_ids, {{ Array(tagIds, 'String') }}) != [] {% end %}
+        {% if defined(root) %}
+            {% if Boolean(root) == 1 %} AND key = '_root' {% else %} AND key != '_root' {% end %}
+        {% end %}
+
+
+NODE combos_clicks
+SQL >
+
+    %
+    WITH
+      extractURLParameter(url, 'utm_source') as utm_source,
+      extractURLParameter(url, 'utm_medium') as utm_medium,
+      extractURLParameter(url, 'utm_campaign') as utm_campaign,
+      extractURLParameter(url, 'utm_term') as utm_term,
+      extractURLParameter(url, 'utm_content') as utm_content
+    SELECT
+      nullIf(utm_source, '') as utm_source,
+      nullIf(utm_medium, '') as utm_medium,
+      nullIf(utm_campaign, '') as utm_campaign,
+      nullIf(utm_term, '') as utm_term,
+      nullIf(utm_content, '') as utm_content,
+      count(*) as clicks
+    FROM
+      dub_click_events_mv
+      {% if not defined(linkId) and (defined(workspaceId) or defined(partnerId) or defined(programId)) %}
+        PREWHERE link_id in (SELECT link_id from workspace_links)
+      {% end %}
+    WHERE
+      url != ''
+      {% if defined(linkId) %} AND link_id = {{ String(linkId) }} {% end %}
+      {% if defined(qr) %} AND qr = {{ Boolean(qr) }} {% end %}
+      {% if defined(continent) %} AND continent = {{ continent }} {% end %}
+      {% if defined(country) %} AND country IN splitByChar(',', {{ String(country) }}) {% end %}
+      {% if defined(region) %} AND region = {{ region }} {% end %}
+      {% if defined(city) %} AND city IN splitByChar(',', {{ String(city) }}) {% end %}
+      {% if defined(device) %} AND device IN splitByChar(',', {{ String(device) }}) {% end %}
+      {% if defined(browser) %} AND browser IN splitByChar(',', {{ String(browser) }}) {% end %}
+      {% if defined(os) %} AND os IN splitByChar(',', {{ String(os) }}) {% end %}
+      {% if defined(referer) %} AND referer IN splitByChar(',', {{ referer }}) {% end %}
+      {% if defined(refererUrl) %} AND splitByString('?', referer_url)[1] = {{ refererUrl }} {% end %}
+      {% if defined(utm_source) %} AND extractURLParameter(url, 'utm_source') IN splitByChar(',', {{ String(utm_source) }}) {% end %}
+      {% if defined(utm_medium) %} AND extractURLParameter(url, 'utm_medium') IN splitByChar(',', {{ String(utm_medium) }}) {% end %}
+      {% if defined(utm_campaign) %} AND extractURLParameter(url, 'utm_campaign') IN splitByChar(',', {{ String(utm_campaign) }}) {% end %}
+      {% if defined(utm_term) %} AND extractURLParameter(url, 'utm_term') IN splitByChar(',', {{ String(utm_term) }}) {% end %}
+      {% if defined(utm_content) %} AND extractURLParameter(url, 'utm_content') IN splitByChar(',', {{ String(utm_content) }}) {% end %}
+      {% if defined(url) %} AND url IN splitByChar(',', {{ String(url) }}) {% end %}
+      {% if defined(start) %} AND timestamp >= {{ DateTime64(start) }} {% end %}
+      {% if defined(end) %} AND timestamp <= {{ DateTime64(end) }} {% end %}
+    GROUP BY utm_source, utm_medium, utm_campaign, utm_term, utm_content
+    HAVING (utm_source != '' OR utm_medium != '' OR utm_campaign != '' OR utm_term != '' OR utm_content != '')
+    ORDER BY clicks DESC
+    LIMIT 5000
+
+
+NODE combos_leads
+SQL >
+
+    %
+    WITH
+      extractURLParameter(url, 'utm_source') as utm_source,
+      extractURLParameter(url, 'utm_medium') as utm_medium,
+      extractURLParameter(url, 'utm_campaign') as utm_campaign,
+      extractURLParameter(url, 'utm_term') as utm_term,
+      extractURLParameter(url, 'utm_content') as utm_content
+    SELECT
+      nullIf(utm_source, '') as utm_source,
+      nullIf(utm_medium, '') as utm_medium,
+      nullIf(utm_campaign, '') as utm_campaign,
+      nullIf(utm_term, '') as utm_term,
+      nullIf(utm_content, '') as utm_content,
+      count(*) as leads
+    FROM
+      dub_lead_events_mv
+      {% if not defined(linkId) and (defined(workspaceId) or defined(partnerId) or defined(programId)) %}
+        PREWHERE link_id in (SELECT link_id from workspace_links)
+      {% end %}
+    WHERE
+      url != ''
+      {% if defined(linkId) %} AND link_id = {{ String(linkId) }} {% end %}
+      {% if defined(qr) %} AND qr = {{ Boolean(qr) }} {% end %}
+      {% if defined(continent) %} AND continent = {{ continent }} {% end %}
+      {% if defined(country) %} AND country IN splitByChar(',', {{ String(country) }}) {% end %}
+      {% if defined(region) %} AND region = {{ region }} {% end %}
+      {% if defined(city) %} AND city IN splitByChar(',', {{ String(city) }}) {% end %}
+      {% if defined(device) %} AND device IN splitByChar(',', {{ String(device) }}) {% end %}
+      {% if defined(browser) %} AND browser IN splitByChar(',', {{ String(browser) }}) {% end %}
+      {% if defined(os) %} AND os IN splitByChar(',', {{ String(os) }}) {% end %}
+      {% if defined(referer) %} AND referer IN splitByChar(',', {{ referer }}) {% end %}
+      {% if defined(refererUrl) %} AND splitByString('?', referer_url)[1] = {{ refererUrl }} {% end %}
+      {% if defined(utm_source) %} AND extractURLParameter(url, 'utm_source') IN splitByChar(',', {{ String(utm_source) }}) {% end %}
+      {% if defined(utm_medium) %} AND extractURLParameter(url, 'utm_medium') IN splitByChar(',', {{ String(utm_medium) }}) {% end %}
+      {% if defined(utm_campaign) %} AND extractURLParameter(url, 'utm_campaign') IN splitByChar(',', {{ String(utm_campaign) }}) {% end %}
+      {% if defined(utm_term) %} AND extractURLParameter(url, 'utm_term') IN splitByChar(',', {{ String(utm_term) }}) {% end %}
+      {% if defined(utm_content) %} AND extractURLParameter(url, 'utm_content') IN splitByChar(',', {{ String(utm_content) }}) {% end %}
+      {% if defined(url) %} AND url IN splitByChar(',', {{ String(url) }}) {% end %}
+      {% if defined(start) %} AND timestamp >= {{ DateTime64(start) }} {% end %}
+      {% if defined(end) %} AND timestamp <= {{ DateTime64(end) }} {% end %}
+    GROUP BY utm_source, utm_medium, utm_campaign, utm_term, utm_content
+    HAVING (utm_source != '' OR utm_medium != '' OR utm_campaign != '' OR utm_term != '' OR utm_content != '')
+    ORDER BY leads DESC
+    LIMIT 5000
+
+
+NODE combos_sales
+SQL >
+
+    %
+    WITH
+      extractURLParameter(url, 'utm_source') as utm_source,
+      extractURLParameter(url, 'utm_medium') as utm_medium,
+      extractURLParameter(url, 'utm_campaign') as utm_campaign,
+      extractURLParameter(url, 'utm_term') as utm_term,
+      extractURLParameter(url, 'utm_content') as utm_content
+    SELECT
+      nullIf(utm_source, '') as utm_source,
+      nullIf(utm_medium, '') as utm_medium,
+      nullIf(utm_campaign, '') as utm_campaign,
+      nullIf(utm_term, '') as utm_term,
+      nullIf(utm_content, '') as utm_content,
+      count(*) as sales,
+      sum(amount) as saleAmount
+    FROM
+      dub_sale_events_mv
+      {% if not defined(linkId) and (defined(workspaceId) or defined(partnerId) or defined(programId)) %}
+        PREWHERE link_id in (SELECT link_id from workspace_links)
+      {% end %}
+    WHERE
+      url != ''
+      {% if defined(linkId) %} AND link_id = {{ String(linkId) }} {% end %}
+      {% if defined(qr) %} AND qr = {{ Boolean(qr) }} {% end %}
+      {% if defined(continent) %} AND continent = {{ continent }} {% end %}
+      {% if defined(country) %} AND country IN splitByChar(',', {{ String(country) }}) {% end %}
+      {% if defined(region) %} AND region = {{ region }} {% end %}
+      {% if defined(city) %} AND city IN splitByChar(',', {{ String(city) }}) {% end %}
+      {% if defined(device) %} AND device IN splitByChar(',', {{ String(device) }}) {% end %}
+      {% if defined(browser) %} AND browser IN splitByChar(',', {{ String(browser) }}) {% end %}
+      {% if defined(os) %} AND os IN splitByChar(',', {{ String(os) }}) {% end %}
+      {% if defined(referer) %} AND referer IN splitByChar(',', {{ referer }}) {% end %}
+      {% if defined(refererUrl) %} AND splitByString('?', referer_url)[1] = {{ refererUrl }} {% end %}
+      {% if defined(utm_source) %} AND extractURLParameter(url, 'utm_source') IN splitByChar(',', {{ String(utm_source) }}) {% end %}
+      {% if defined(utm_medium) %} AND extractURLParameter(url, 'utm_medium') IN splitByChar(',', {{ String(utm_medium) }}) {% end %}
+      {% if defined(utm_campaign) %} AND extractURLParameter(url, 'utm_campaign') IN splitByChar(',', {{ String(utm_campaign) }}) {% end %}
+      {% if defined(utm_term) %} AND extractURLParameter(url, 'utm_term') IN splitByChar(',', {{ String(utm_term) }}) {% end %}
+      {% if defined(utm_content) %} AND extractURLParameter(url, 'utm_content') IN splitByChar(',', {{ String(utm_content) }}) {% end %}
+      {% if defined(url) %} AND url IN splitByChar(',', {{ String(url) }}) {% end %}
+      {% if defined(start) %} AND timestamp >= {{ DateTime64(start) }} {% end %}
+      {% if defined(end) %} AND timestamp <= {{ DateTime64(end) }} {% end %}
+    GROUP BY utm_source, utm_medium, utm_campaign, utm_term, utm_content
+    HAVING (utm_source != '' OR utm_medium != '' OR utm_campaign != '' OR utm_term != '' OR utm_content != '')
+    ORDER BY sales DESC
+    LIMIT 5000
+
+
+NODE combos_composite
+SQL >
+
+    WITH
+      -- Completeness: number of UTM fields present (actionability)
+      toUInt8(coalesce(c.utm_source, '') != '') +
+      toUInt8(coalesce(c.utm_medium, '') != '') +
+      toUInt8(coalesce(c.utm_campaign, '') != '') +
+      toUInt8(coalesce(c.utm_term, '') != '') +
+      toUInt8(coalesce(c.utm_content, '') != '') as completeness,
+
+      -- Specificity: prefer the canonical hierarchy source > medium > campaign > term > content
+      -- This breaks ties where completeness is equal but the filled dimensions differ.
+      toUInt8(coalesce(c.utm_source, '') != '') * 16 +
+      toUInt8(coalesce(c.utm_medium, '') != '') * 8 +
+      toUInt8(coalesce(c.utm_campaign, '') != '') * 4 +
+      toUInt8(coalesce(c.utm_term, '') != '') * 2 +
+      toUInt8(coalesce(c.utm_content, '') != '') * 1 as specificity,
+
+      -- Primary sort metric (user preference): clicks | leads | sales | saleAmount
+      {% if defined(sortMetric) and sortMetric == 'leads' %} coalesce(l.leads, 0)
+      {% elif defined(sortMetric) and sortMetric == 'sales' %} coalesce(s.sales, 0)
+      {% elif defined(sortMetric) and sortMetric == 'saleAmount' %} coalesce(s.saleAmount, 0)
+      {% else %} c.clicks
+      {% end %} as sort_value
+    SELECT
+      c.utm_source as utm_source,
+      c.utm_medium as utm_medium,
+      c.utm_campaign as utm_campaign,
+      c.utm_term as utm_term,
+      c.utm_content as utm_content,
+      c.clicks as clicks,
+      coalesce(l.leads, 0) as leads,
+      coalesce(s.sales, 0) as sales,
+      coalesce(s.saleAmount, 0) as saleAmount,
+      completeness
+    FROM (SELECT * FROM combos_clicks) AS c
+    LEFT JOIN (SELECT * FROM combos_leads) AS l
+      ON c.utm_source <=> l.utm_source
+      AND c.utm_medium <=> l.utm_medium
+      AND c.utm_campaign <=> l.utm_campaign
+      AND c.utm_term <=> l.utm_term
+      AND c.utm_content <=> l.utm_content
+    LEFT JOIN (SELECT * FROM combos_sales) AS s
+      ON c.utm_source <=> s.utm_source
+      AND c.utm_medium <=> s.utm_medium
+      AND c.utm_campaign <=> s.utm_campaign
+      AND c.utm_term <=> s.utm_term
+      AND c.utm_content <=> s.utm_content
+    ORDER BY
+      sort_value DESC,
+      completeness DESC,
+      specificity DESC,
+      coalesce(c.utm_source, '') ASC,
+      coalesce(c.utm_medium, '') ASC,
+      coalesce(c.utm_campaign, '') ASC,
+      coalesce(c.utm_term, '') ASC,
+      coalesce(c.utm_content, '') ASC
+    LIMIT 5000
+
+
+NODE endpoint
+SQL >
+
+    %
+    SELECT utm_source, utm_medium, utm_campaign, utm_term, utm_content, clicks, leads, sales, saleAmount
+    FROM
+      {% if eventType == 'clicks' %} combos_clicks
+      {% elif eventType == 'leads' %} combos_leads
+      {% elif eventType == 'sales' %} combos_sales
+      {% else %} combos_composite
+      {% end %}

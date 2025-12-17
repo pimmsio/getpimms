@@ -8,7 +8,11 @@ import { LocationLoadingSkeleton, NoDataYetEmptyState } from "./components";
 import { useMultipleSortedAnalytics, useAnalyticsState } from "./hooks";
 import { hasAnyData, RANK_COLORS } from "./lib";
 
-export default function Locations() {
+export default function Locations({
+  dragHandleProps,
+}: {
+  dragHandleProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
+}) {
   const { queryParams } = useRouterStuff();
   const { selectedTab } = useAnalyticsState();
 
@@ -28,6 +32,7 @@ export default function Locations() {
       expandLimit={5}
       hasMore={false}
       className="h-[600px]"
+      dragHandleProps={dragHandleProps}
     >
       {({ setShowModal, isModal, modalSection }) => (
         <>

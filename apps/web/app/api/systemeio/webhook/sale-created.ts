@@ -65,6 +65,8 @@ export async function customSaleCreated(req: Request, body: any) {
     projectId: workspaceId,
     clickId,
     linkId,
+    lastActivityLinkId: linkId,
+    lastActivityType: "sale",
     country: clickData.country,
     clickedAt: new Date(clickData.timestamp + "Z"),
     anonymousId,
@@ -198,6 +200,9 @@ export async function customSaleCreated(req: Request, body: any) {
         data: {
           hotScore: await computeCustomerHotScore(customer.id, workspaceId),
           lastHotScoreAt: new Date(),
+          lastEventAt: new Date(),
+          lastActivityLinkId: linkId,
+          lastActivityType: "sale",
         },
       });
 

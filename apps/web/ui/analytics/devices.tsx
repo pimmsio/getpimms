@@ -9,7 +9,11 @@ import { useMultipleSortedAnalytics } from "./hooks";
 import { hasAnyData as checkHasAnyData, RANK_COLORS } from "./lib";
 import { useAnalyticsState } from "./hooks";
 
-export default function Devices() {
+export default function Devices({
+  dragHandleProps,
+}: {
+  dragHandleProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
+}) {
   const { queryParams } = useRouterStuff();
   const { selectedTab } = useAnalyticsState();
 
@@ -31,6 +35,7 @@ export default function Devices() {
       expandLimit={5}
       hasMore={false}
       className="h-[600px]"
+      dragHandleProps={dragHandleProps}
     >
       {({ setShowModal, isModal, modalSection }) => (
         <>

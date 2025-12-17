@@ -72,6 +72,12 @@ export const analyticsQuerySchema = z
   .object({
     event: analyticsEvents,
     groupBy: analyticsGroupBy,
+    sortMetric: z
+      .enum(["clicks", "leads", "sales", "saleAmount"])
+      .optional()
+      .describe(
+        "Optional secondary sort metric for list endpoints (used for deterministic ordering and top-N selection).",
+      ),
     domain: z
       .string()
       .optional()
@@ -266,6 +272,7 @@ export const analyticsFilterTB = z
       .optional()
       .transform((v) => (v ? prefixWorkspaceId(v) : undefined)),
     customerId: z.string().optional(),
+    sortMetric: z.enum(["clicks", "leads", "sales", "saleAmount"]).optional(),
     root: z.boolean().optional(),
     qr: z.boolean().optional(),
     start: z.string(),

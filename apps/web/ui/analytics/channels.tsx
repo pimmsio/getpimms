@@ -9,7 +9,11 @@ import { useAnalyticsFilterOption } from "./utils";
 import { PieChartLoadingSkeleton, NoDataYetEmptyState } from "./components";
 import { useAnalyticsState } from "./hooks";
 
-export default function Channels() {
+export default function Channels({
+  dragHandleProps,
+}: {
+  dragHandleProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
+}) {
   const { selectedTab, saleUnit } = useAnalyticsState();
 
   const { data: rawData } = useAnalyticsFilterOption({ groupBy: "referers" });
@@ -27,6 +31,7 @@ export default function Channels() {
       onSelectTab={() => {}}
       expandLimit={5}
       hasMore={false}
+      dragHandleProps={dragHandleProps}
     >
       {() => (
         <>

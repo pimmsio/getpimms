@@ -46,6 +46,8 @@ export async function createShopifyLead({
       clickedAt: new Date(timestamp + "Z"),
       clickId,
       linkId,
+      lastActivityLinkId: linkId,
+      lastActivityType: "lead",
       country,
       anonymousId,
       totalClicks,
@@ -99,6 +101,9 @@ export async function createShopifyLead({
         data: {
           hotScore: await computeCustomerHotScore(customer.id, workspaceId),
           lastHotScoreAt: new Date(),
+          lastEventAt: new Date(),
+          lastActivityLinkId: linkId,
+          lastActivityType: "lead",
         },
       });
 

@@ -21,6 +21,8 @@ import { redis } from "../upstash";
 import { webhookCache } from "../webhook/cache";
 import { sendWebhooks } from "../webhook/qstash";
 import { transformClickEventData } from "../webhook/transform";
+import { qstash } from "../cron";
+import { APP_DOMAIN_WITH_NGROK } from "@dub/utils";
 
 /**
  * Recording clicks with geo, ua, referer and timestamp data
@@ -186,14 +188,43 @@ export async function recordClick({
         )
       : null,
     
-    // Increment customer click count and update last event if customer exists with this anonymousId
-    anonymousId
+    // Increment customer click count and update last event + last activity fields
+    anonymousId && workspaceId
       ? conn.execute(
-          "UPDATE Customer SET totalClicks = totalClicks + 1, lastEventAt = NOW() WHERE anonymousId = ?",
-          [anonymousId],
+          "UPDATE Customer SET totalClicks = totalClicks + 1, lastEventAt = NOW(), lastActivityLinkId = ?, lastActivityType = 'click' WHERE anonymousId = ? AND projectId = ?",
+          [linkId, anonymousId, workspaceId],
         )
       : null,
   ]);
+
+  // If we can identify a known customer, enqueue a hot score recompute (async)
+  // This keeps Score fresh when new click events happen.
+  if (process.env.QSTASH_TOKEN && workspaceId && anonymousId) {
+    try {
+      const customers = await conn.execute(
+        "SELECT id FROM Customer WHERE projectId = ? AND anonymousId = ? LIMIT 25",
+        [workspaceId, anonymousId],
+      );
+
+      const customerIds = (customers.rows as any[])
+        .map((r) => r.id as string)
+        .filter(Boolean);
+
+      if (customerIds.length > 0) {
+        await Promise.allSettled(
+          customerIds.map((customerId) =>
+            qstash.publishJSON({
+              url: `${APP_DOMAIN_WITH_NGROK}/api/cron/customers/recompute-hot-score`,
+              method: "POST",
+              body: { workspaceId, customerId },
+            }),
+          ),
+        );
+      }
+    } catch (e) {
+      console.error("Failed to enqueue hot score recompute on click:", e);
+    }
+  }
 
   const workspace =
     workspaceRows.status === "fulfilled" &&

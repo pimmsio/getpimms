@@ -221,7 +221,11 @@ export const POST = withWorkspace(
 
           prisma.customer.update({
             where: { id: customer.id },
-            data: { lastEventAt: new Date() },
+            data: {
+              lastEventAt: new Date(),
+              lastActivityLinkId: clickData.link_id,
+              lastActivityType: "sale",
+            },
           }),
 
           logConversionEvent({

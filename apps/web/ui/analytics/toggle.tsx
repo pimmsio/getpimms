@@ -359,26 +359,47 @@ export default function Toggle({
   });
   
   // Fetch UTM data eagerly so search/filter works when dropdown opens
-  // Data is cached for 60 seconds to avoid excessive API calls
-  const { data: utmSourcesData } = useAnalyticsFilterOption("utm_sources", {
-    cacheOnly: false, // Fetch eagerly
-  });
+  // Use *WithoutSelf* so options are not restricted by the current UTM filter,
+  // enabling multi-select (OR) behavior like on the links table.
+  const { data: utmSourcesData } = useAnalyticsFilterOptionWithoutSelf(
+    "utm_sources",
+    "utm_source",
+    {
+      cacheOnly: false,
+    },
+  );
   
-  const { data: utmMediumsData } = useAnalyticsFilterOption("utm_mediums", {
-    cacheOnly: false,
-  });
+  const { data: utmMediumsData } = useAnalyticsFilterOptionWithoutSelf(
+    "utm_mediums",
+    "utm_medium",
+    {
+      cacheOnly: false,
+    },
+  );
   
-  const { data: utmCampaignsData } = useAnalyticsFilterOption("utm_campaigns", {
-    cacheOnly: false,
-  });
+  const { data: utmCampaignsData } = useAnalyticsFilterOptionWithoutSelf(
+    "utm_campaigns",
+    "utm_campaign",
+    {
+      cacheOnly: false,
+    },
+  );
   
-  const { data: utmTermsData } = useAnalyticsFilterOption("utm_terms", {
-    cacheOnly: false,
-  });
+  const { data: utmTermsData } = useAnalyticsFilterOptionWithoutSelf(
+    "utm_terms",
+    "utm_term",
+    {
+      cacheOnly: false,
+    },
+  );
   
-  const { data: utmContentsData } = useAnalyticsFilterOption("utm_contents", {
-    cacheOnly: false,
-  });
+  const { data: utmContentsData } = useAnalyticsFilterOptionWithoutSelf(
+    "utm_contents",
+    "utm_content",
+    {
+      cacheOnly: false,
+    },
+  );
 
   // Transform UTM data to match expected format
   const utmSources = useMemo(

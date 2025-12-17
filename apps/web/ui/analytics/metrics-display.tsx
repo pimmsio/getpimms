@@ -29,37 +29,29 @@ export function MetricsDisplay({
         {nFormatter(clicks, { full: true })}
       </span>
 
-      {(leads !== undefined && leads > 0) || (sales !== undefined && sales > 0) ? (
-        <>
-          <span className="text-neutral-300">|</span>
-          <span
-            className={cn(
-              "font-medium transition-colors",
-              primaryMetric === "leads"
-                ? "text-yellow-600 font-semibold"
-                : "text-neutral-500"
-            )}
-          >
-            {nFormatter(leads || 0, { full: true })}
-          </span>
-        </>
-      ) : null}
+      <span className="text-neutral-300">|</span>
+      <span
+        className={cn(
+          "font-medium transition-colors",
+          primaryMetric === "leads"
+            ? "text-yellow-600 font-semibold"
+            : "text-neutral-500",
+        )}
+      >
+        {nFormatter(leads ?? 0, { full: true })}
+      </span>
 
-      {sales !== undefined && sales > 0 ? (
-        <>
-          <span className="text-neutral-300">|</span>
-          <span
-            className={cn(
-              "font-medium transition-colors",
-              primaryMetric === "sales"
-                ? "text-green-600 font-semibold"
-                : "text-neutral-500"
-            )}
-          >
-            ${nFormatter((saleAmount || 0) / 100, { full: true })}
-          </span>
-        </>
-      ) : null}
+      <span className="text-neutral-300">|</span>
+      <span
+        className={cn(
+          "font-medium transition-colors",
+          primaryMetric === "sales"
+            ? "text-green-600 font-semibold"
+            : "text-neutral-500",
+        )}
+      >
+        ${nFormatter((saleAmount ?? 0) / 100, { full: true })}
+      </span>
     </div>
   );
 }

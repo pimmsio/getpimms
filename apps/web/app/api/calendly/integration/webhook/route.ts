@@ -157,13 +157,19 @@ export const POST = async (req: Request) => {
           projectId: workspaceId,
           clickId: clickData.click_id,
           linkId: clickData.link_id,
+          lastActivityLinkId: clickData.link_id,
+          lastActivityType: "lead",
           country: clickData.country,
           clickedAt: new Date(clickData.timestamp + "Z"),
           anonymousId,
           totalClicks,
           lastEventAt: new Date(),
         },
-        update: {}, // no updates needed if the customer exists
+        update: {
+          lastEventAt: new Date(),
+          lastActivityLinkId: clickData.link_id,
+          lastActivityType: "lead",
+        },
       });
     };
 

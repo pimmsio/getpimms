@@ -124,6 +124,14 @@ export async function invoicePaid(event: Stripe.Event) {
         },
       },
     }),
+    prisma.customer.update({
+      where: { id: customer.id },
+      data: {
+        lastEventAt: new Date(),
+        lastActivityLinkId: linkId,
+        lastActivityType: "sale",
+      },
+    }),
   ]);
 
   // for program links

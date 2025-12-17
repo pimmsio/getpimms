@@ -30,9 +30,12 @@ export const GET = withWorkspace(async ({ workspace, params, session }) => {
     );
   }
 
-  // Live recompute hot score when accessing customer details (max once per day)
-  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  const shouldRecomputeScore = !customer.lastHotScoreAt || new Date(customer.lastHotScoreAt) < oneDayAgo;
+  // Live recompute hot score when accessing customer details if stale relative to latest activity
+  // (Score decays over time and should be fresh after new events.)
+  const shouldRecomputeScore =
+    !customer.lastHotScoreAt ||
+    (customer.lastEventAt &&
+      new Date(customer.lastHotScoreAt) < new Date(customer.lastEventAt));
 
   if (shouldRecomputeScore) {
     const newHotScore = await computeCustomerHotScore(customer.id, workspace.id);

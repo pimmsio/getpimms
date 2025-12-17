@@ -272,7 +272,7 @@ function Metric({
   const toneClassName =
     tone === "clicks"
       ? "bg-blue-50 text-blue-800"
-      : tone === "leads"
+      : tone === "revenue"
         ? "bg-emerald-50 text-emerald-800"
         : "bg-amber-50 text-amber-900";
 

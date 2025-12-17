@@ -6,7 +6,11 @@ import { MetricsDisplay } from "./metrics-display";
 import { useSortedAnalytics, useAnalyticsState } from "./hooks";
 import { RANK_COLORS, LOGO_SIZE_CLASS_NAME, LINK_LOGO_IMAGE_PROPS } from "./lib";
 
-export default function TopLinks() {
+export default function TopLinks({
+  dragHandleProps,
+}: {
+  dragHandleProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
+}) {
   const { queryParams } = useRouterStuff();
   const { selectedTab } = useAnalyticsState();
 
@@ -19,6 +23,7 @@ export default function TopLinks() {
       hasMore={(sortedData?.length ?? 0) > 5}
       selectedTabId="links"
       onSelectTab={() => {}}
+      dragHandleProps={dragHandleProps}
     >
       {({ limit, setShowModal, isModal }) =>
         sortedData ? (

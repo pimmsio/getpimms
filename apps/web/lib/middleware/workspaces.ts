@@ -26,7 +26,7 @@ export default async function WorkspacesMiddleware(
     }
     return NextResponse.redirect(
       new URL(
-        `/${defaultWorkspace}${redirectPath || "/links"}${searchParamsString}`,
+        `/${defaultWorkspace}${redirectPath || "/today"}${searchParamsString}`,
         req.url,
       ),
     );

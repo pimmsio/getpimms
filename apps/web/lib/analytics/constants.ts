@@ -153,6 +153,7 @@ export const VALID_ANALYTICS_ENDPOINTS = [
   "channels", // New endpoint for channel analytics
   "top_links",
   "top_urls",
+  "utm_combinations",
   "utm_sources",
   "utm_mediums",
   "utm_campaigns",

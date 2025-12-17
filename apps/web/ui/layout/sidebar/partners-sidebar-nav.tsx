@@ -1,27 +1,25 @@
 "use client";
 
 import { useRouterStuff } from "@dub/ui";
-import {
-  CircleDollar,
-  ColorPalette2,
-  Gauge6,
-  Gear,
-  Gear2,
-  GridIcon,
-  MoneyBills2,
-  ShieldCheck,
-  User,
-  Users,
-} from "@dub/ui/icons";
-import { Store } from "lucide-react";
 import { useParams, usePathname } from "next/navigation";
 import { ReactNode, useMemo } from "react";
-import { Hyperlink } from "./icons/hyperlink";
-import { LinesY } from "./icons/lines-y";
 import { PartnerProgramDropdown } from "./partner-program-dropdown";
 import { PayoutStats } from "./payout-stats";
 import { ProgramHelpSupport } from "./program-help-support";
 import { SidebarNav, SidebarNavAreas } from "./sidebar-nav";
+import {
+  PimmsAnalyticsIcon,
+  PimmsGaugeIcon,
+  PimmsGlobeIcon,
+  PimmsGridIcon,
+  PimmsLinksIcon,
+  PimmsMoneyIcon,
+  PimmsSettingsIcon,
+  PimmsShieldIcon,
+  PimmsStoreIcon,
+  PimmsUserIcon,
+  PimmsUsersIcon,
+} from "./icons/pimms-sidebar-icons";
 
 const NAV_AREAS: SidebarNavAreas<{
   programSlug?: string;
@@ -37,18 +35,18 @@ const NAV_AREAS: SidebarNavAreas<{
         items: [
           {
             name: "Programs",
-            icon: GridIcon,
+            icon: PimmsGridIcon,
             href: "/programs",
             exact: true,
           },
           {
             name: "Marketplace",
-            icon: Store,
+            icon: PimmsStoreIcon,
             href: "/marketplace",
           },
           {
             name: "Settings",
-            icon: Gear,
+            icon: PimmsSettingsIcon,
             href: "/settings",
           },
         ],
@@ -63,28 +61,28 @@ const NAV_AREAS: SidebarNavAreas<{
         items: [
           {
             name: "Overview",
-            icon: Gauge6,
+            icon: PimmsGaugeIcon,
             href: `/programs/${programSlug}`,
             exact: true,
           },
           {
             name: "Earnings",
-            icon: CircleDollar,
+            icon: PimmsMoneyIcon,
             href: `/programs/${programSlug}/earnings${queryString}`,
           },
           {
             name: "Links",
-            icon: Hyperlink,
+            icon: PimmsLinksIcon,
             href: `/programs/${programSlug}/links`,
           },
           {
             name: "Analytics",
-            icon: LinesY,
+            icon: PimmsAnalyticsIcon,
             href: `/programs/${programSlug}/analytics`,
           },
           {
             name: "Resources",
-            icon: ColorPalette2,
+            icon: PimmsGlobeIcon,
             href: `/programs/${programSlug}/resources`,
           },
         ],
@@ -101,18 +99,18 @@ const NAV_AREAS: SidebarNavAreas<{
         items: [
           {
             name: "Profile",
-            icon: User,
+            icon: PimmsUserIcon,
             href: "/settings",
             exact: true,
           },
           {
             name: "Payouts",
-            icon: MoneyBills2,
+            icon: PimmsMoneyIcon,
             href: "/settings/payouts",
           },
           {
             name: "People",
-            icon: Users,
+            icon: PimmsUsersIcon,
             href: "/settings/people",
           },
         ],
@@ -130,13 +128,13 @@ const NAV_AREAS: SidebarNavAreas<{
         items: [
           {
             name: "General",
-            icon: Gear2,
+            icon: PimmsSettingsIcon,
             href: "/account/settings",
             exact: true,
           },
           {
             name: "Security",
-            icon: ShieldCheck,
+            icon: PimmsShieldIcon,
             href: "/account/settings/security",
           },
         ],

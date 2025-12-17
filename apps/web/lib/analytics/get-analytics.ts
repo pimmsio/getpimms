@@ -119,7 +119,22 @@ export const getAnalytics = async (params: AnalyticsFilters) => {
     region,
   };
 
-  const response = await pipe(pipeParams);
+  let response;
+  try {
+    response = await pipe(pipeParams);
+  } catch (err: any) {
+    const message = String(err?.message ?? "");
+    // In local dev / misconfigured Tinybird projects, new pipes may not exist yet.
+    // Don't fail the whole analytics page for optional UI cards.
+    if (
+      groupBy === "utm_combinations" &&
+      message.includes("v2_utm_combinations") &&
+      message.toLowerCase().includes("does not exist")
+    ) {
+      return [];
+    }
+    throw err;
+  }
 
   if (groupBy === "count") {
     // Return the count value for deprecated endpoints

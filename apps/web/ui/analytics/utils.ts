@@ -36,6 +36,7 @@ export function useAnalyticsFilterOption(
       ? { groupBy: groupByOrParams }
       : groupByOrParams),
     event: "composite", // Always fetch all metrics for mixed bars
+    sortMetric: selectedTab === "sales" ? "saleAmount" : selectedTab,
   })}`;
 
   // Check cache for this exact endpoint
@@ -109,6 +110,7 @@ export function useAnalyticsFilterOptionWithoutSelf(
       ? { groupBy: groupByOrParams }
       : groupByOrParams),
     event: "composite", // Always fetch all metrics for mixed bars
+    sortMetric: selectedTab === "sales" ? "saleAmount" : selectedTab,
   }, excludeFilter)}`;
 
   // Check cache for this exact endpoint

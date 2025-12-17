@@ -91,8 +91,8 @@ export default function EventsTable({
           header: "Score",
           accessorKey: "customer",
           enableHiding: false,
-          minSize: 70,
-          size: 70,
+          minSize: 90,
+          size: 90,
           maxSize: 120,
           cell: ({ getValue }) => {
             const customer = getValue();
@@ -145,7 +145,7 @@ export default function EventsTable({
                       </div>
                       <div className="text-xs text-neutral-400">
                         {lastUpdated
-                          ? `Updated ${timeAgo(new Date(lastUpdated))} ago`
+                          ? `Updated ${timeAgo(new Date(lastUpdated), { withAgo: true })}`
                           : "Not computed yet"}
                       </div>
                       <div className="text-xs text-neutral-500 mt-1">
@@ -163,7 +163,12 @@ export default function EventsTable({
                   )}
                   onClick={handleScoreClick}
                 >
-                  <HotScoreIcon className="w-6 h-6" />
+                  <div className="flex items-center gap-2">
+                    <HotScoreIcon className="w-6 h-6" />
+                    <span className="text-sm font-semibold tabular-nums text-neutral-900">
+                      {hotScore}
+                    </span>
+                  </div>
                 </div>
               </Tooltip>
             );
@@ -238,7 +243,7 @@ export default function EventsTable({
                   {eventName}
                 </div>
                 <div className="text-xs text-neutral-500">
-                  {timeAgo(new Date(timestamp))} ago
+                  {timeAgo(new Date(timestamp), { withAgo: true })}
                 </div>
               </div>
             );

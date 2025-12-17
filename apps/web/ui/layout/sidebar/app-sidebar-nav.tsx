@@ -3,20 +3,6 @@
 import { useAnalyticsUrl } from "@/lib/hooks/use-analytics-url";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { useRouterStuff } from "@dub/ui";
-import {
-  ChartLine,
-  ConnectedDots,
-  ConnectedDots4,
-  Gear2,
-  Gift,
-  Globe,
-  Key,
-  ShieldCheck,
-  Tags,
-  Users6,
-  Webhook,
-} from "@dub/ui/icons";
-import { IdCard, Link, Settings, Table, WalletCards } from "lucide-react";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useParams, usePathname } from "next/navigation";
@@ -27,6 +13,25 @@ import { SettingsLink } from "./settings-link";
 import { SidebarNav, SidebarNavAreas } from "./sidebar-nav";
 import { Usage } from "./usage";
 import { WorkspaceDropdown } from "./workspace-dropdown";
+import {
+  PimmsAffiliateIcon,
+  PimmsAnalyticsIcon,
+  PimmsCardIcon,
+  PimmsFlameIcon,
+  PimmsGiftIcon,
+  PimmsGlobeIcon,
+  PimmsKeyIcon,
+  PimmsLinksIcon,
+  PimmsPlugIcon,
+  PimmsReportIcon,
+  PimmsSettingsIcon,
+  PimmsShieldIcon,
+  PimmsTemplatesIcon,
+  PimmsTodayIcon,
+  PimmsUtmParamsIcon,
+  PimmsUsersIcon,
+  PimmsWebhookIcon,
+} from "./icons/pimms-sidebar-icons";
 // import { ReferralButton } from "./referral-button";
 
 const NAV_AREAS: SidebarNavAreas<{
@@ -59,30 +64,51 @@ const NAV_AREAS: SidebarNavAreas<{
       {
         items: [
           {
+            name: "Today",
+            icon: PimmsTodayIcon,
+            href: `/${slug}/today`,
+            exact: true,
+          },
+          {
             name: "Links",
-            icon: Link,
+            icon: PimmsLinksIcon,
             href: `/${slug}/links${pathname === `/${slug}/links` ? "" : queryString}`,
             exact: true,
           },
           {
             name: "Analytics",
-            icon: ChartLine,
+            icon: PimmsAnalyticsIcon,
             href: buildAnalyticsUrl(`/${slug}/analytics`),
           },
           {
-            name: "Leads",
-            icon: IdCard,
+            name: "Lead Signals",
+            icon: PimmsFlameIcon,
             href: buildAnalyticsUrl(`/${slug}/conversions`, { event: "leads" }),
           },
           {
             name: "Reporting",
-            icon: Table,
+            icon: PimmsReportIcon,
             href: buildAnalyticsUrl(`/${slug}/insights`),
           },
+        ],
+      },
+      {
+        name: "Customize",
+        items: [
           {
-            name: "Templates",
-            icon: Tags,
-            href: `/${slug}/settings/library`,
+            name: "UTM parameters",
+            icon: PimmsUtmParamsIcon,
+            href: `/${slug}/settings/library/parameters`,
+          },
+          {
+            name: "UTM templates",
+            icon: PimmsTemplatesIcon,
+            href: `/${slug}/settings/library/utm`,
+          },
+          {
+            name: "Custom domains",
+            icon: PimmsGlobeIcon,
+            href: `/${slug}/settings/domains`,
           },
         ],
       },
@@ -92,7 +118,7 @@ const NAV_AREAS: SidebarNavAreas<{
               items: [
                 {
                   name: "Affiliate",
-                  icon: ConnectedDots4,
+                  icon: PimmsAffiliateIcon,
                   href: `/${slug}/programs/${programs[0].id}`,
                   items: [
                     {
@@ -139,38 +165,28 @@ const NAV_AREAS: SidebarNavAreas<{
         items: [
           {
             name: "General",
-            icon: Settings,
+            icon: PimmsSettingsIcon,
             href: `/${slug}/settings`,
             exact: true,
           },
           {
-            name: "Domains",
-            icon: Globe,
-            href: `/${slug}/settings/domains`,
-          },
-          {
-            name: "Library",
-            icon: Tags,
-            href: `/${slug}/settings/library`,
-          },
-          {
             name: "Tracking",
-            icon: ChartLine,
+            icon: PimmsAnalyticsIcon,
             href: `/${slug}/settings/analytics`,
           },
           {
             name: "People",
-            icon: Users6,
+            icon: PimmsUsersIcon,
             href: `/${slug}/settings/people`,
           },
           {
             name: "Billing",
-            icon: WalletCards,
+            icon: PimmsCardIcon,
             href: `/${slug}/settings/billing`,
           },
           {
             name: "Integrations",
-            icon: ConnectedDots,
+            icon: PimmsPlugIcon,
             href: `/${slug}/settings/integrations`,
           },
           // {
@@ -185,7 +201,7 @@ const NAV_AREAS: SidebarNavAreas<{
         items: [
           {
             name: "API Keys",
-            icon: Key,
+            icon: PimmsKeyIcon,
             href: `/${slug}/settings/tokens`,
           },
           // {
@@ -195,7 +211,7 @@ const NAV_AREAS: SidebarNavAreas<{
           // },
           {
             name: "Webhooks",
-            icon: Webhook,
+            icon: PimmsWebhookIcon,
             href: `/${slug}/settings/webhooks`,
           },
         ],
@@ -223,18 +239,18 @@ const NAV_AREAS: SidebarNavAreas<{
         items: [
           {
             name: "General",
-            icon: Gear2,
+            icon: PimmsSettingsIcon,
             href: "/account/settings",
             exact: true,
           },
           {
             name: "Security",
-            icon: ShieldCheck,
+            icon: PimmsShieldIcon,
             href: "/account/settings/security",
           },
           {
             name: "Referrals",
-            icon: Gift,
+            icon: PimmsGiftIcon,
             href: "/account/settings/referrals",
           },
         ],

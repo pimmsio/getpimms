@@ -1,273 +1,418 @@
 import useWorkspace from "@/lib/swr/use-workspace";
-import { Button, useRouterStuff, ToggleGroup, UTM_PARAMETERS } from "@dub/ui";
-import { ExternalLink, Megaphone, TrendingUp } from "lucide-react";
+import { useRouterStuff, ToggleGroup, UTM_PARAMETERS } from "@dub/ui";
+import { TrendingUp } from "lucide-react";
 import { SINGULAR_ANALYTICS_ENDPOINTS } from "@/lib/analytics/constants";
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import { AnalyticsCard } from "./analytics-card";
-import { useAnalyticsFilterOption, useAnalyticsFilterOptionWithoutSelf } from "./utils";
+import { useAnalyticsFilterOption } from "./utils";
 import { MetricsDisplay } from "./metrics-display";
-import { ListLoadingSkeleton, NoDataYetEmptyState } from "./components";
 import { useAnalyticsState, useAnalyticsDashboard } from "./hooks";
-import { sortByMetric, RANK_COLORS } from "./lib";
-import { AnalyticsContext } from "./analytics-provider";
+import { getMetricValue, sortByMetric, RANK_COLORS } from "./lib";
 
-type UTMViewMode = "combinations" | "source" | "medium" | "campaign";
+type UTMBreakdownMode = "campaign" | "source" | "medium";
+type UtmTuple = {
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  utm_term: string | null;
+  utm_content: string | null;
+};
 
-export default function UTM() {
-  const { queryParams, searchParams } = useRouterStuff();
+export default function UTM({
+  dragHandleProps,
+}: {
+  dragHandleProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
+}) {
+  const { queryParams } = useRouterStuff();
   const { slug } = useWorkspace();
   const { dashboardProps } = useAnalyticsDashboard();
   const { selectedTab } = useAnalyticsState();
-  const [viewMode, setViewMode] = useState<UTMViewMode>("combinations");
+  const [breakdownMode, setBreakdownMode] =
+    useState<UTMBreakdownMode>("campaign");
 
-  // Fetch UTM data from click events (not from link URLs)
-  // UTMs from short link URLs are stored in click events, not in link destination URLs
-  // Use useAnalyticsFilterOptionWithoutSelf to exclude UTM filters so we see all UTMs, not just filtered ones
-  const { data: sourcesData } = useAnalyticsFilterOptionWithoutSelf({ groupBy: "utm_sources" }, "utm_source", {
-    cacheOnly: viewMode !== "source" && viewMode !== "combinations",
-  });
-  const { data: mediumsData } = useAnalyticsFilterOptionWithoutSelf({ groupBy: "utm_mediums" }, "utm_medium", {
-    cacheOnly: viewMode !== "medium" && viewMode !== "combinations",
-  });
-  const { data: campaignsData } = useAnalyticsFilterOptionWithoutSelf({ groupBy: "utm_campaigns" }, "utm_campaign", {
-    cacheOnly: viewMode !== "campaign" && viewMode !== "combinations",
-  });
-  const { data: termsData } = useAnalyticsFilterOptionWithoutSelf({ groupBy: "utm_terms" }, "utm_term", {
-    cacheOnly: viewMode !== "combinations",
-  });
-  const { data: contentsData } = useAnalyticsFilterOptionWithoutSelf({ groupBy: "utm_contents" }, "utm_content", {
-    cacheOnly: viewMode !== "combinations",
-  });
+  // UTM analytics should respect the currently applied filters.
+  // (We only exclude "self" for dropdown option lists in the filter bar, not for the card itself.)
+  const { data: combinationsData } = useAnalyticsFilterOption(
+    { groupBy: "utm_combinations" as any },
+  );
 
-  // Build UTM combinations from individual UTM parameter data
-  // Since there's no endpoint for combinations, we create them from individual UTM values
-  // Each UTM parameter value represents a combination (even if it's just one parameter)
+  const { data: sourcesData } = useAnalyticsFilterOption(
+    { groupBy: "utm_sources" },
+    { cacheOnly: breakdownMode !== "source" },
+  );
+  const { data: mediumsData } = useAnalyticsFilterOption(
+    { groupBy: "utm_mediums" },
+    { cacheOnly: breakdownMode !== "medium" },
+  );
+  const { data: campaignsData } = useAnalyticsFilterOption(
+    { groupBy: "utm_campaigns" },
+    { cacheOnly: breakdownMode !== "campaign" },
+  );
+
   const utmCombinations = useMemo(() => {
-    if (viewMode !== "combinations") return null;
+    if (!combinationsData || combinationsData.length === 0) return null;
 
-    // For combinations view, show each UTM source as a combination
-    // This is a simplified approach - a full implementation would require a backend endpoint
-    // that groups by all UTM parameters together
-    if (!sourcesData || sourcesData.length === 0) return null;
-    
-    const combinations = sourcesData.map((source: any) => {
+    const combinations = (combinationsData as any[]).map((row) => {
+      const tuple = {
+        utm_source: row.utm_source ?? null,
+        utm_medium: row.utm_medium ?? null,
+        utm_campaign: row.utm_campaign ?? null,
+        utm_term: row.utm_term ?? null,
+        utm_content: row.utm_content ?? null,
+      } as UtmTuple;
+
       const params: Record<string, string> = {};
-      if (source.utm_source) params.utm_source = source.utm_source;
-      
-      // Try to find matching medium and campaign for this source
-      // This is a simplified approach - ideally we'd have a backend endpoint for true combinations
-      const matchingMedium = mediumsData?.find((m: any) => 
-        m.utm_medium && source.utm_source
-      );
-      const matchingCampaign = campaignsData?.find((c: any) => 
-        c.utm_campaign && source.utm_source
-      );
-      
-      // For now, just show the source as the primary combination
-      // A proper fix would require a backend endpoint that groups by all UTM params
+      if (row.utm_source) params.utm_source = row.utm_source;
+      if (row.utm_medium) params.utm_medium = row.utm_medium;
+      if (row.utm_campaign) params.utm_campaign = row.utm_campaign;
+      if (row.utm_term) params.utm_term = row.utm_term;
+      if (row.utm_content) params.utm_content = row.utm_content;
+
       return {
+        tuple,
         params,
-        clicks: source.clicks || 0,
-        leads: source.leads || 0,
-        sales: source.sales || 0,
-        saleAmount: source.saleAmount || 0,
+        clicks: row.clicks || 0,
+        leads: row.leads || 0,
+        sales: row.sales || 0,
+        saleAmount: row.saleAmount || 0,
       };
-    }).filter((item: any) => Object.keys(item.params).length > 0);
+    });
 
-    // Sort using the utility function
-    return sortByMetric(combinations, selectedTab as "clicks" | "leads" | "sales");
-  }, [sourcesData, mediumsData, campaignsData, termsData, contentsData, selectedTab, viewMode]);
+    // Primary sort: user-selected metric (saleAmount for sales tab)
+    // Secondary: completeness (more UTM fields filled)
+    // Tertiary: specificity (prefer source>medium>campaign>term>content when completeness ties)
+    // Tertiary: stable tuple ordering
+    const metricSorted = sortByMetric(
+      combinations,
+      selectedTab as "clicks" | "leads" | "sales",
+    );
 
-  const isLoading = viewMode === "combinations" 
-    ? !sourcesData 
-    : viewMode === "source" 
-      ? !sourcesData 
-      : viewMode === "medium" 
-        ? !mediumsData 
-        : !campaignsData;
-  const hasAnyData = viewMode === "combinations"
-    ? utmCombinations && utmCombinations.length > 0
-    : viewMode === "source"
-      ? sourcesData && sourcesData.length > 0
-      : viewMode === "medium"
-        ? mediumsData && mediumsData.length > 0
-        : campaignsData && campaignsData.length > 0;
+    return metricSorted.sort((a, b) => {
+      const present = (v: unknown) => v !== null && v !== undefined && v !== "";
 
-  const viewModeOptions = [
-    { value: "combinations", label: "All" },
-    { value: "source", label: "Source" },
-    { value: "medium", label: "Medium" },
-    { value: "campaign", label: "Campaign" },
-  ];
+      const aCompleteness =
+        (present(a.tuple.utm_source) ? 1 : 0) +
+        (present(a.tuple.utm_medium) ? 1 : 0) +
+        (present(a.tuple.utm_campaign) ? 1 : 0) +
+        (present(a.tuple.utm_term) ? 1 : 0) +
+        (present(a.tuple.utm_content) ? 1 : 0);
+      const bCompleteness =
+        (present(b.tuple.utm_source) ? 1 : 0) +
+        (present(b.tuple.utm_medium) ? 1 : 0) +
+        (present(b.tuple.utm_campaign) ? 1 : 0) +
+        (present(b.tuple.utm_term) ? 1 : 0) +
+        (present(b.tuple.utm_content) ? 1 : 0);
+      if (bCompleteness !== aCompleteness) return bCompleteness - aCompleteness;
+
+      const aSpecificity =
+        (present(a.tuple.utm_source) ? 16 : 0) +
+        (present(a.tuple.utm_medium) ? 8 : 0) +
+        (present(a.tuple.utm_campaign) ? 4 : 0) +
+        (present(a.tuple.utm_term) ? 2 : 0) +
+        (present(a.tuple.utm_content) ? 1 : 0);
+      const bSpecificity =
+        (present(b.tuple.utm_source) ? 16 : 0) +
+        (present(b.tuple.utm_medium) ? 8 : 0) +
+        (present(b.tuple.utm_campaign) ? 4 : 0) +
+        (present(b.tuple.utm_term) ? 2 : 0) +
+        (present(b.tuple.utm_content) ? 1 : 0);
+      if (bSpecificity !== aSpecificity) return bSpecificity - aSpecificity;
+
+      const tuple = (item: any) =>
+        [
+          item.tuple.utm_source ?? "",
+          item.tuple.utm_medium ?? "",
+          item.tuple.utm_campaign ?? "",
+          item.tuple.utm_term ?? "",
+          item.tuple.utm_content ?? "",
+        ].join("\u0000");
+
+      return tuple(a).localeCompare(tuple(b));
+    });
+  }, [combinationsData, selectedTab]);
+
+  const breakdownData =
+    breakdownMode === "source"
+      ? sourcesData
+      : breakdownMode === "medium"
+        ? mediumsData
+        : campaignsData;
+
+  const sortedBreakdown = useMemo(() => {
+    if (!breakdownData || breakdownData.length === 0) return null;
+    return sortByMetric(breakdownData as any[], selectedTab as any);
+  }, [breakdownData, selectedTab]);
+
+  const hasAnyData =
+    (utmCombinations && utmCombinations.length > 0) ||
+    (sortedBreakdown && sortedBreakdown.length > 0);
 
   return (
     <AnalyticsCard
       tabs={[
-        { 
-          id: "utms", 
-          label: "UTM Campaign", 
-          icon: TrendingUp
-        },
+        { id: "utms", label: "UTM", icon: TrendingUp },
       ]}
       selectedTabId="utms"
       onSelectTab={() => {}}
       expandLimit={5}
-      hasMore={(utmCombinations?.length ?? 0) > 5}
       className="h-auto"
-      headerActions={
-        <ToggleGroup
-          options={viewModeOptions}
-          selected={viewMode}
-          selectAction={(value) => setViewMode(value as UTMViewMode)}
-          className="h-7"
-          optionClassName="text-xs px-2.5"
-        />
-      }
+      dragHandleProps={dragHandleProps}
     >
-      {({ limit, setShowModal, isModal }) => (
-        <>
-          {isLoading ? (
-            <div className="px-4 py-4">
-              <ListLoadingSkeleton count={3} />
-            </div>
-          ) : !hasAnyData ? (
-            <UTMEmptyState slug={slug} dashboardProps={dashboardProps} />
-          ) : viewMode === "combinations" ? (
-            <div className="flex flex-col px-4 py-3">
-              <div className="space-y-2.5">
-                {utmCombinations?.slice(0, isModal ? undefined : (limit || 5)).map((combo: any, idx: number) => (
-                  <UTMCombinationItem
-                    key={idx}
-                    combo={combo}
-                    idx={idx}
-                    selectedTab={selectedTab}
-                    queryParams={queryParams}
-                  />
-                ))}
+      {({ limit, setShowModal, isModal, modalSection }) => {
+        // Modal content shows either combinations or the breakdown list.
+        if (isModal) {
+          if (modalSection === "breakdown") {
+            return (
+              <div className="px-5 py-4">
+                <BreakdownColumn
+                  mode={breakdownMode}
+                  setMode={setBreakdownMode}
+                  data={sortedBreakdown}
+                  selectedTab={selectedTab}
+                  queryParams={queryParams}
+                  limit={undefined}
+                />
               </div>
-              
-              {!isModal && (utmCombinations?.length ?? 0) > (limit || 5) && (
-                <button
-                  onClick={() => setShowModal(true)}
-                  className="mt-4 w-full rounded-lg border border-brand-primary-200 bg-brand-primary-50 py-2.5 text-sm text-brand-primary-700 hover:bg-brand-primary-100 hover:border-brand-primary-300 font-semibold transition-all shadow-sm"
-                >
-                  View all {utmCombinations?.length} combinations →
-                </button>
+            );
+          }
+
+          return (
+            <div className="px-5 py-4">
+              <CombinationsColumn
+                data={utmCombinations}
+                selectedTab={selectedTab}
+                queryParams={queryParams}
+                limit={undefined}
+              />
+            </div>
+          );
+        }
+
+        if (!hasAnyData) {
+          return <UTMEmptyState slug={slug} dashboardProps={dashboardProps} />;
+        }
+
+        return (
+          <div className="grid grid-cols-1 lg:grid-cols-3">
+            <div className="lg:col-span-2 border-b border-neutral-100 lg:border-b-0 lg:border-r lg:border-neutral-100">
+              <CombinationsColumn
+                data={utmCombinations}
+                selectedTab={selectedTab}
+                queryParams={queryParams}
+                limit={limit ?? 5}
+              />
+              {(utmCombinations?.length ?? 0) > (limit ?? 5) && (
+                <div className="px-4 pb-3">
+                  <button
+                    onClick={() => setShowModal(true, "combos")}
+                    className="mt-2 w-full rounded-lg border border-neutral-200 bg-neutral-50 py-2 text-xs text-neutral-700 hover:bg-neutral-100 hover:border-neutral-300 font-medium transition-all"
+                  >
+                    View all {utmCombinations?.length} combinations →
+                  </button>
+                </div>
               )}
             </div>
-          ) : (
-            <UTMBreakdownView
-              viewMode={viewMode}
-              sourcesData={sourcesData}
-              mediumsData={mediumsData}
-              campaignsData={campaignsData}
-              selectedTab={selectedTab}
-              queryParams={queryParams}
-              setShowModal={setShowModal}
-              isModal={isModal}
-            />
-          )}
-        </>
-      )}
+
+            <div className="lg:col-span-1">
+              <BreakdownColumn
+                mode={breakdownMode}
+                setMode={setBreakdownMode}
+                data={sortedBreakdown}
+                selectedTab={selectedTab}
+                queryParams={queryParams}
+                limit={6}
+              />
+              {(sortedBreakdown?.length ?? 0) > 6 && (
+                <div className="px-4 pb-3">
+                  <button
+                    onClick={() => setShowModal(true, "breakdown")}
+                    className="mt-2 w-full rounded-lg border border-neutral-200 bg-neutral-50 py-2 text-xs text-neutral-700 hover:bg-neutral-100 hover:border-neutral-300 font-medium transition-all"
+                  >
+                    View all {sortedBreakdown?.length} →
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      }}
     </AnalyticsCard>
   );
 }
 
-function UTMBreakdownView({
-  viewMode,
-  sourcesData,
-  mediumsData,
-  campaignsData,
+function CombinationsColumn({
+  data,
   selectedTab,
   queryParams,
-  setShowModal,
-  isModal,
+  limit,
 }: {
-  viewMode: UTMViewMode;
-  sourcesData: any;
-  mediumsData: any;
-  campaignsData: any;
+  data: any[] | null;
   selectedTab: "clicks" | "leads" | "sales";
   queryParams: any;
-  setShowModal: (show: boolean) => void;
-  isModal?: boolean;
+  limit?: number;
 }) {
-  const data = viewMode === "source" ? sourcesData : viewMode === "medium" ? mediumsData : campaignsData;
-  const paramKey = viewMode === "source" ? "utm_source" : viewMode === "medium" ? "utm_medium" : "utm_campaign";
-  const singularName = SINGULAR_ANALYTICS_ENDPOINTS[`${paramKey}s` as keyof typeof SINGULAR_ANALYTICS_ENDPOINTS];
-  const { icon: Icon } = UTM_PARAMETERS.find((p) => p.key === paramKey)!;
-
-  // Sort data by selected metric using utility function
-  const sortedData = useMemo(() => {
-    if (!data) return null;
-    return sortByMetric(data, selectedTab as "clicks" | "leads" | "sales");
-  }, [data, selectedTab]);
-
-  if (!sortedData || sortedData.length === 0) {
-    return (
-      <div className="flex h-[380px] items-center justify-center px-4 text-center">
-        <p className="text-sm text-neutral-600">No {viewMode} data available</p>
-      </div>
-    );
-  }
+  const shown = limit ? data?.slice(0, limit) : data;
+  const maxValue = Math.max(
+    ...(data?.map((d) => getMetricValue(d, selectedTab as any) || 0) ?? [0]),
+  );
 
   return (
     <div className="flex flex-col px-4 py-3">
-      <div className="space-y-2">
-        {sortedData.slice(0, 8).map((item: any, idx: number) => (
-          <a
-            key={idx}
-            href={queryParams({
-              set: { [singularName]: item[singularName] },
-              getNewPath: true,
-            }) as string}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-neutral-50 transition-all group border border-transparent hover:border-neutral-200"
-          >
-            {idx < 3 && (
-              <div className={`flex h-6 w-6 items-center justify-center rounded-full ${RANK_COLORS[idx]} text-xs font-bold flex-shrink-0 shadow-sm`}>
-                {idx + 1}
-              </div>
-            )}
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-100 flex-shrink-0">
-              <Icon className="h-4 w-4 text-neutral-600" />
-            </div>
-            <span className="flex-1 text-sm font-medium text-neutral-900 truncate min-w-0">
-              {item[singularName] || "(not set)"}
-            </span>
-            <MetricsDisplay
-              clicks={item.clicks || 0}
-              leads={item.leads}
-              sales={item.sales}
-              saleAmount={item.saleAmount}
-              primaryMetric={selectedTab}
-            />
-          </a>
-        ))}
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-xs font-medium text-neutral-500">Top combinations</p>
       </div>
-      
-      {!isModal && sortedData.length > 8 && (
-        <button
-          onClick={() => setShowModal(true)}
-          className="mt-4 w-full rounded-lg border border-brand-primary-200 bg-brand-primary-50 py-2 text-xs text-brand-primary-700 hover:bg-brand-primary-100 hover:border-brand-primary-300 font-semibold transition-all"
-        >
-          View all {sortedData.length} →
-        </button>
+
+      {shown && shown.length > 0 ? (
+        <div className="space-y-2">
+          {shown.map((combo: any, idx: number) => {
+            const value = getMetricValue(combo, selectedTab as any) || 0;
+            const barWidth = maxValue > 0 ? (value / maxValue) * 100 : 0;
+
+            return (
+              <UTMCombinationRow
+                key={idx}
+                combo={combo}
+                idx={idx}
+                selectedTab={selectedTab}
+                queryParams={queryParams}
+                barWidth={barWidth}
+              />
+            );
+          })}
+        </div>
+      ) : (
+        <div className="py-10 text-center">
+          <p className="text-xs text-neutral-500">No combinations yet</p>
+        </div>
       )}
     </div>
   );
 }
 
-function UTMCombinationItem({ combo, idx, selectedTab, queryParams }: { combo: any; idx: number; selectedTab: "clicks" | "leads" | "sales"; queryParams: any }) {
-  const utmEntries = Object.entries(combo.params);
-  const gradientColors = ['from-neutral-300 to-neutral-400', 'from-neutral-300 to-neutral-400', 'from-neutral-300 to-neutral-400'];
-  const isTopThree = idx < 3;
+function BreakdownColumn({
+  mode,
+  setMode,
+  data,
+  selectedTab,
+  queryParams,
+  limit,
+}: {
+  mode: UTMBreakdownMode;
+  setMode: (mode: UTMBreakdownMode) => void;
+  data: any[] | null;
+  selectedTab: "clicks" | "leads" | "sales";
+  queryParams: any;
+  limit?: number;
+}) {
+  const options = [
+    { value: "campaign", label: "Campaign" },
+    { value: "source", label: "Source" },
+    { value: "medium", label: "Medium" },
+  ];
 
+  const paramKey =
+    mode === "source" ? "utm_source" : mode === "medium" ? "utm_medium" : "utm_campaign";
+  const singularName =
+    SINGULAR_ANALYTICS_ENDPOINTS[`${paramKey}s` as keyof typeof SINGULAR_ANALYTICS_ENDPOINTS];
+  const { icon: Icon } = UTM_PARAMETERS.find((p) => p.key === paramKey)!;
+
+  const shown = limit ? data?.slice(0, limit) : data;
+  const maxValue = Math.max(
+    ...(data?.map((d) => getMetricValue(d, selectedTab as any) || 0) ?? [0]),
+  );
+
+  return (
+    <div className="flex flex-col px-4 py-3">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-xs font-medium text-neutral-500">By UTM</p>
+        <ToggleGroup
+          options={options}
+          selected={mode}
+          selectAction={(value) => setMode(value as UTMBreakdownMode)}
+          className="flex items-center gap-0.5 rounded border border-neutral-200 bg-neutral-100 p-0.5"
+          optionClassName="h-7 flex flex-1 items-center justify-center rounded px-2 text-[11px] font-medium"
+          indicatorClassName="bg-white shadow-sm"
+        />
+      </div>
+
+      {shown && shown.length > 0 ? (
+        <div className="space-y-2">
+          {shown.map((item: any, idx: number) => {
+            const value = getMetricValue(item, selectedTab as any) || 0;
+            const barWidth = maxValue > 0 ? (value / maxValue) * 100 : 0;
+
+            return (
+              <a
+                key={idx}
+                href={queryParams({
+                  set: { [singularName]: item[singularName] },
+                  getNewPath: true,
+                }) as string}
+                className="relative flex items-center gap-3 rounded-lg px-3 py-1.5 hover:bg-neutral-50 transition-all group border border-transparent hover:border-neutral-200 overflow-hidden"
+              >
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-blue-100/30 to-transparent group-hover:from-blue-100/60 transition-all"
+                  style={{ width: `${barWidth}%` }}
+                />
+                {idx < 3 && (
+                  <div
+                    className={`relative flex h-6 w-6 items-center justify-center rounded-full ${RANK_COLORS[idx]} text-xs font-bold flex-shrink-0 shadow-sm`}
+                  >
+                    {idx + 1}
+                  </div>
+                )}
+                <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-neutral-100 flex-shrink-0">
+                  <Icon className="h-4 w-4 text-neutral-600" />
+                </div>
+                <div className="relative flex-1 min-w-0">
+                  <p className="text-sm font-medium text-neutral-900 truncate">
+                    {item[singularName] || "(not set)"}
+                  </p>
+                </div>
+                <MetricsDisplay
+                  clicks={item.clicks || 0}
+                  leads={item.leads}
+                  sales={item.sales}
+                  saleAmount={item.saleAmount}
+                  primaryMetric={selectedTab}
+                  className="relative text-xs"
+                />
+              </a>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="py-10 text-center">
+          <p className="text-xs text-neutral-500">No data yet</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function UTMCombinationRow({
+  combo,
+  idx,
+  selectedTab,
+  queryParams,
+  barWidth,
+}: {
+  combo: any;
+  idx: number;
+  selectedTab: "clicks" | "leads" | "sales";
+  queryParams: any;
+  barWidth: number;
+}) {
   // Build filter params from UTM combination
   const filterParams: Record<string, string> = {};
-  utmEntries.forEach(([key, value]) => {
+  Object.entries(combo.params).forEach(([key, value]) => {
     filterParams[key] = String(value);
   });
+
+  const tuple: UtmTuple = combo.tuple;
+  const fmt = (v: string | null) => (v && v.trim() ? v : "—");
+  const leftTitle = `${fmt(tuple.utm_source)} / ${fmt(tuple.utm_medium)} / ${fmt(tuple.utm_campaign)}`;
+  const leftSubtitle = `term: ${fmt(tuple.utm_term)}  •  content: ${fmt(tuple.utm_content)}`;
 
   return (
     <a
@@ -275,82 +420,46 @@ function UTMCombinationItem({ combo, idx, selectedTab, queryParams }: { combo: a
         set: filterParams,
         getNewPath: true,
       }) as string}
-      className={`group relative rounded-xl border transition-all p-3.5 block ${
-        isTopThree 
-          ? 'border-brand-primary-200 bg-gradient-to-br from-brand-primary-50/50 via-white to-brand-primary-100/30 hover:shadow-md hover:border-brand-primary-300' 
-          : 'border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm'
-      }`}
+      className="relative flex items-center gap-3 rounded-lg px-3 py-1.5 hover:bg-neutral-50 transition-all group border border-transparent hover:border-neutral-200 overflow-hidden"
     >
-      <div className="flex items-start gap-3">
-        {/* Ranking badge for top 3 */}
-        {isTopThree && (
-          <div className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${gradientColors[idx]} text-xs font-bold text-white shadow-sm`}>
-            {idx + 1}
-          </div>
-        )}
-        
-        <div className="flex-1 min-w-0">
-          {/* UTM parameters */}
-          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-2 mb-2">
-            {utmEntries.map(([key, value], paramIdx) => (
-              <div key={paramIdx} className="flex items-center">
-                <span className="text-xs text-neutral-500 font-mono">{key.replace('utm_', '')}=</span>
-                <span className="ml-1 rounded-md bg-brand-primary-600 px-2 py-0.5 text-xs font-semibold text-white">
-                  {String(value)}
-                </span>
-                {paramIdx < utmEntries.length - 1 && (
-                  <span className="mx-1.5 text-xs text-neutral-400 font-medium">&</span>
-                )}
-              </div>
-            ))}
-          </div>
-          
-          {/* Metrics */}
-                      <MetricsDisplay
-                        clicks={combo.clicks || 0}
-                        leads={combo.leads}
-                        sales={combo.sales}
-                        saleAmount={combo.saleAmount}
-                        primaryMetric={selectedTab}
-                        className="text-xs"
-                      />
+      <div
+        className="absolute inset-0 bg-gradient-to-r from-blue-100/30 to-transparent group-hover:from-blue-100/60 transition-all"
+        style={{ width: `${barWidth}%` }}
+      />
+      {idx < 3 && (
+        <div
+          className={`relative flex h-6 w-6 items-center justify-center rounded-full ${RANK_COLORS[idx]} text-xs font-bold flex-shrink-0 shadow-sm`}
+        >
+          {idx + 1}
         </div>
-
+      )}
+      <div className="relative flex-1 min-w-0">
+        <p className="text-sm font-medium text-neutral-900 truncate">{leftTitle}</p>
+        <p className="text-xs text-neutral-500 truncate font-mono">{leftSubtitle}</p>
       </div>
+      <MetricsDisplay
+        clicks={combo.clicks || 0}
+        leads={combo.leads}
+        sales={combo.sales}
+        saleAmount={combo.saleAmount}
+        primaryMetric={selectedTab}
+        className="relative text-xs"
+      />
     </a>
   );
 }
 
 function UTMEmptyState({ slug, dashboardProps }: { slug?: string; dashboardProps?: any }) {
   return (
-    <div className="flex h-[380px] flex-col items-center justify-center px-6 text-center">
-      <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-primary-500/10 to-brand-primary-100/10 ring-1 ring-brand-primary-600/20 animate-pulse">
-        <TrendingUp className="h-7 w-7 text-brand-primary-600" />
+    <div className="flex h-[220px] flex-col items-center justify-center gap-3 px-4 text-center">
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-neutral-100 to-neutral-50 ring-1 ring-neutral-200/50">
+        <TrendingUp className="h-6 w-6 text-neutral-600" />
       </div>
-      
-      <h3 className="mb-2 text-base font-semibold text-neutral-900">
-        Track Your Best Campaigns
-      </h3>
-      
-      <p className="mb-6 max-w-md text-sm text-neutral-600 leading-relaxed">
-        See which UTM combinations drive the most clicks, conversions, and revenue
-      </p>
-      
-      <div className="mb-6 rounded-xl border border-brand-primary-200 bg-gradient-to-br from-brand-primary-50 to-brand-primary-100 p-4 max-w-lg shadow-sm">
-        <div className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-2 font-mono text-xs">
-          <span className="text-neutral-500">source=</span>
-          <span className="rounded-md bg-brand-primary-600 px-2 py-0.5 font-semibold text-white">google</span>
-          <span className="text-neutral-400 font-medium">&</span>
-          <span className="text-neutral-500">medium=</span>
-          <span className="rounded-md bg-brand-primary-600 px-2 py-0.5 font-semibold text-white">cpc</span>
-          <span className="text-neutral-400 font-medium">&</span>
-          <span className="text-neutral-500">campaign=</span>
-          <span className="rounded-md bg-brand-primary-600 px-2 py-0.5 font-semibold text-white">summer-sale</span>
-        </div>
-        <div className="mt-3 flex items-center justify-center gap-1 text-xs text-brand-primary-600 font-medium">
-          <TrendingUp className="h-3 w-3" />
-          1,247 clicks
-        </div>
+      <div>
+        <p className="text-sm font-semibold text-neutral-900">No UTM data yet</p>
+        <p className="mt-1.5 text-xs text-neutral-500 leading-relaxed max-w-xs">
+          Add UTM parameters to your links to see top combinations and campaign performance.
+        </p>
       </div>
     </div>
   );

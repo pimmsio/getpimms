@@ -479,4 +479,30 @@ export const analyticsResponse = {
         .default(0),
     })
     .openapi({ ref: "AnalyticsUTMContents" }),
+
+  utm_combinations: z
+    .object({
+      utm_source: z.string().nullable().describe("The UTM source").default(null),
+      utm_medium: z.string().nullable().describe("The UTM medium").default(null),
+      utm_campaign: z.string().nullable().describe("The UTM campaign").default(null),
+      utm_term: z.string().nullable().describe("The UTM term").default(null),
+      utm_content: z.string().nullable().describe("The UTM content").default(null),
+      clicks: z
+        .number()
+        .describe("The number of clicks for this UTM combination")
+        .default(0),
+      leads: z
+        .number()
+        .describe("The number of leads for this UTM combination")
+        .default(0),
+      sales: z
+        .number()
+        .describe("The number of sales for this UTM combination")
+        .default(0),
+      saleAmount: z
+        .number()
+        .describe("The total amount of sales for this UTM combination, in cents")
+        .default(0),
+    })
+    .openapi({ ref: "AnalyticsUTMCombinations" }),
 } as const;

@@ -167,8 +167,26 @@ export const POST = withWorkspace(
             anonymousId,
             totalClicks,
             lastEventAt: new Date(),
+            lastActivityLinkId: clickData.link_id,
+            lastActivityType: "lead",
           },
-          update: {}, // no updates needed if the customer exists
+          update: {
+            // keep activity fresh for "latest activity" sorting
+            lastEventAt: new Date(),
+            // keep latest known attribution
+            clickId: clickData.click_id,
+            linkId: clickData.link_id,
+            lastActivityLinkId: clickData.link_id,
+            lastActivityType: "lead",
+            country: clickData.country,
+            // keep identity/click stats aligned
+            anonymousId,
+            totalClicks,
+            // fill missing profile data without overwriting existing
+            ...(customerEmail ? { email: customerEmail } : {}),
+            ...(customerAvatar ? { avatar: customerAvatar } : {}),
+            ...(customerName ? { name: customerName } : {}),
+          },
         });
       };
 

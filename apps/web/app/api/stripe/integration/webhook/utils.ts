@@ -60,6 +60,8 @@ export async function createNewCustomer(event: Stripe.Event) {
       projectId: workspaceId,
       linkId,
       clickId,
+      lastActivityLinkId: linkId,
+      lastActivityType: "lead",
       clickedAt: new Date(clickData.timestamp + "Z"),
       country: clickData.country,
       anonymousId,

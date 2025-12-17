@@ -8,7 +8,11 @@ import { useAnalyticsFilterOption } from "./utils";
 import { useAnalyticsState } from "./hooks";
 import { RANK_COLORS, LOGO_SIZE_CLASS_NAME, LINK_LOGO_IMAGE_PROPS } from "./lib";
 
-export default function DestinationUrls() {
+export default function DestinationUrls({
+  dragHandleProps,
+}: {
+  dragHandleProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
+}) {
   const { queryParams } = useRouterStuff();
   const { selectedTab } = useAnalyticsState();
 
@@ -61,6 +65,7 @@ export default function DestinationUrls() {
       onSelectTab={() => {}} // No tab switching
       expandLimit={5}
       hasMore={(groupedData?.length ?? 0) > 8}
+      dragHandleProps={dragHandleProps}
     >
       {({ limit, setShowModal, isModal }) => (
         <>
