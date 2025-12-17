@@ -1,17 +1,27 @@
 "use client";
 
 import useLinkInsights from "@/lib/swr/use-link-insights";
-import { TagColorProps } from "@/lib/types";
-import { AnalyticsContext } from "@/ui/analytics/analytics-provider";
 import EmptyState from "@/ui/shared/empty-state";
-import { LinkCell } from "@/ui/shared/link-cell";
-import { UtmBadge } from "@/ui/links/utm-badge";
-import TagBadge from "@/ui/links/tag-badge";
-import { getParamsFromURL, nFormatter } from "@dub/utils";
+import {
+  LinksRow,
+  LinksRowMetricPills,
+  LinksRowSkeleton,
+} from "@/ui/shared/links-row";
+import { TableHeader } from "@/ui/shared/table-header";
+import { TableLinkCellContent, TableUtmCellContent } from "@/ui/shared/table-link-cell";
+import { 
+  TABLE_HEADER_CLASS,
+  TABLE_LINK_HEADER_CLASS,
+  TABLE_LINK_CELL_CLASS,
+  TABLE_UTM_CELL_CLASS,
+  TABLE_CONTAINER_CLASS,
+  TABLE_CLASS
+} from "@/ui/shared/table-styles";
+import { cn, currencyFormatter, nFormatter } from "@dub/utils";
 import NumberFlow from "@number-flow/react";
 import { endOfDay, format, isAfter, startOfDay } from "date-fns";
 import { BarChart } from "lucide-react";
-import React, { ReactNode, useContext, useMemo } from "react";
+import React, { ReactNode, useMemo } from "react";
 
 export type LinkInsight = {
   link: string;
@@ -41,10 +51,6 @@ export type LinkInsight = {
     sales: number;
     saleAmount: number;
   }>;
-};
-
-type ColumnMeta = {
-  filterParams?: (args: Pick<any, "getValue">) => Record<string, any>;
 };
 
 export default function InsightsTable({
@@ -172,13 +178,10 @@ export default function InsightsTable({
       leads: totalLeads,
       sales: totalSales,
       revenue: totalAmount / 100,
-      ctr:
-        totalClicks > 0 ? ((totalLeads / totalClicks) * 100).toFixed(1) : "0.0",
-      leadToSale:
-        totalLeads > 0 ? ((totalSales / totalLeads) * 100).toFixed(1) : "0.0",
-      aov: totalSales > 0 ? (totalAmount / 100 / totalSales).toFixed(0) : "0",
-      rpc:
-        totalClicks > 0 ? (totalAmount / 100 / totalClicks).toFixed(2) : "0.00",
+      ctr: totalClicks > 0 ? (totalLeads / totalClicks) * 100 : 0,
+      leadToSale: totalLeads > 0 ? (totalSales / totalLeads) * 100 : 0,
+      aov: totalSales > 0 ? totalAmount / 100 / totalSales : 0,
+      rpc: totalClicks > 0 ? totalAmount / 100 / totalClicks : 0,
       periodTotals: periodColumns.map((period) => {
         return transformedData.reduce(
           (acc, link) => {
@@ -207,16 +210,8 @@ export default function InsightsTable({
     };
   }, [transformedData, periodColumns]);
 
-  // Empty state handling
-  if (!transformedData || transformedData.length === 0) {
-    if (isLoading) {
-      return (
-        <div className="flex h-[400px] w-full items-center justify-center">
-          <div className="text-gray-500">Loading...</div>
-        </div>
-      );
-    }
-
+  const showEmpty = !isLoading && (!transformedData || transformedData.length === 0);
+  if (showEmpty) {
     return (
       <EmptyState
         icon={BarChart}
@@ -227,332 +222,220 @@ export default function InsightsTable({
   }
 
   return (
-    <div className="space-y-4">
-      {/* Controls */}
-      {/* <div className="flex items-center justify-end">
-        <div className="flex items-center gap-2">
-          <LinkInsightsExportButton />
-        </div>
-      </div> */}
+    <GridInsightsTable
+      data={transformedData}
+      loading={isLoading}
+      periodColumns={periodColumns}
+      totals={totals}
+    />
+  );
+}
 
-      <div className="relative">
-        <style jsx global>{`
-          @media (min-width: 768px) {
-            .insights-table td:first-child {
-              position: sticky !important;
-              left: 0 !important;
-              z-index: 20 !important;
-              background: white !important;
-              border-right: 2px solid #e5e7eb !important;
-              box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05) !important;
-            }
-            .insights-table th:first-child {
-              z-index: 21 !important;
-            }
+// NOTE: Metrics + skeleton are standardized in `@/ui/shared/links-row`.
 
-            /* Totals row sticky */
-            .insights-table tr.totals-row td:first-child {
-              background: #f3f4f6 !important;
-              border-right: 2px solid #d1d5db !important;
-              z-index: 22 !important;
-            }
-          }
+function GridInsightsTable({
+  data,
+  loading,
+  periodColumns,
+  totals,
+}: {
+  data: LinkInsight[];
+  loading: boolean;
+  periodColumns: { date: Date; label: string; data: { start: string } }[];
+  totals: null | {
+    clicks: number;
+    leads: number;
+    sales: number;
+    revenue: number;
+    ctr: number;
+    leadToSale: number;
+    aov: number;
+    rpc: number;
+    periodTotals: { clicks: number; leads: number; saleAmount: number }[];
+  };
+}) {
+  const rows = data.length ? data : Array.from({ length: 8 }).map((_, idx) => ({ __skeleton: true, id: `s-${idx}` })) as any[];
 
-          @media (max-width: 767px) {
-            .insights-table th:first-child,
-            .insights-table td:first-child {
-              position: static !important;
-              border-right: none !important;
-              box-shadow: none !important;
-            }
-          }
-
-          /* Totals row styling */
-          .insights-table tr.totals-row {
+  return (
+    <div className="relative">
+      <style jsx global>{`
+        @media (min-width: 768px) {
+          .insights-table td:first-child {
             position: sticky !important;
-            bottom: 0 !important;
-            z-index: 15 !important;
-            box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1) !important;
+            left: 0 !important;
+            z-index: 20 !important;
+            background: white !important;
+            border-right: 1px solid #e5e7eb !important;
           }
-        `}</style>
+          .insights-table th:first-child {
+            z-index: 21 !important;
+          }
+          .insights-table tr.totals-row td:first-child {
+            background: #f8fafc !important;
+            z-index: 22 !important;
+          }
+        }
+        .insights-table tr.totals-row {
+          position: sticky !important;
+          bottom: 0 !important;
+          z-index: 15 !important;
+          box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.06) !important;
+        }
+      `}</style>
 
-        {/* Custom table with merged headers */}
-        <div className="overflow-x-auto rounded-lg border border-gray-200">
-          <table className="insights-table min-w-full divide-y divide-gray-200">
-            {/* Double header row */}
-            <thead className="bg-gray-50">
-              {/* First header row - Period labels */}
-              <tr>
-                <th
-                  rowSpan={2}
-                  className="bg-gray-50 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 md:sticky md:left-0 md:z-10"
-                >
-                  Link
-                </th>
-                <th
-                  rowSpan={2}
-                  className="px-2 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                >
-                  Tags
-                </th>
-                <th
-                  rowSpan={2}
-                  className="px-2 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500"
-                >
-                  Clics
-                </th>
-                <th
-                  rowSpan={2}
-                  className="px-2 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500"
-                >
-                  Leads
-                </th>
-                <th
-                  rowSpan={2}
-                  className="px-2 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500"
-                >
-                  Ventes
-                </th>
-                <th
-                  rowSpan={2}
-                  className="px-2 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500"
-                >
-                  RPC
-                </th>
-                <th
-                  rowSpan={2}
-                  className="px-2 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500"
-                >
-                  CVR
-                </th>
-                <th
-                  rowSpan={2}
-                  className="px-2 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500"
-                >
-                  Closed
-                </th>
-                <th
-                  rowSpan={2}
-                  className="px-2 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500"
-                >
-                  AOV
-                </th>
+      <div className={TABLE_CONTAINER_CLASS}>
+        <table className={`insights-table ${TABLE_CLASS}`}>
+          <thead className="bg-neutral-50">
+            <tr>
+              <th
+                rowSpan={2}
+                className={TABLE_LINK_HEADER_CLASS}
+              >
+                <TableHeader>Link</TableHeader>
+              </th>
+              <th
+                rowSpan={2}
+                className={TABLE_HEADER_CLASS}
+              >
+                <TableHeader>UTM / Tags</TableHeader>
+              </th>
+              <th
+                rowSpan={2}
+                className={TABLE_HEADER_CLASS}
+              >
+                <TableHeader>Metrics</TableHeader>
+              </th>
 
-                {/* Period headers - merged across 3 columns each */}
-                {periodColumns.map((period, index) => (
-                  <th
-                    key={index}
-                    colSpan={3}
-                    className="border-l-2 border-blue-200 bg-blue-50 px-2 py-2 text-center text-xs font-semibold text-blue-700"
-                  >
-                    {period.label}
+              {periodColumns.map((period, index) => (
+                <th
+                  key={index}
+                  colSpan={3}
+                  className="border-l border-neutral-200 bg-neutral-50 px-3 py-2 text-center text-[11px] font-semibold text-neutral-700"
+                >
+                  {period.label}
+                </th>
+              ))}
+            </tr>
+            <tr>
+              {periodColumns.map((_, index) => (
+                <React.Fragment key={index}>
+                  <th className="border-l border-neutral-200 bg-neutral-50 px-3 py-2 text-center text-[10px] font-medium text-neutral-500">
+                    CLK
                   </th>
-                ))}
-              </tr>
+                  <th className="bg-neutral-50 px-3 py-2 text-center text-[10px] font-medium text-neutral-500">
+                    LEAD
+                  </th>
+                  <th className="bg-neutral-50 px-3 py-2 text-center text-[10px] font-medium text-neutral-500">
+                    REV
+                  </th>
+                </React.Fragment>
+              ))}
+            </tr>
+          </thead>
 
-              {/* Second header row - sub-headers for each period */}
-              <tr>
-                {/* Sub-headers for each period */}
-                {periodColumns.map((period, index) => (
-                  <React.Fragment key={index}>
-                    <th className="border-l-2 border-blue-200 bg-blue-50 px-2 py-2 text-center text-xs font-medium text-gray-600">
-                      Clics
-                    </th>
-                    <th className="bg-blue-50 px-2 py-2 text-center text-xs font-medium text-gray-600">
-                      Leads
-                    </th>
-                    <th className="bg-blue-50 px-2 py-2 text-center text-xs font-medium text-gray-600">
-                      Ventes
-                    </th>
-                  </React.Fragment>
-                ))}
-              </tr>
-            </thead>
+          <tbody className="divide-y divide-neutral-200 bg-white">
+            {rows.map((row: any) => {
+              const isSkeleton = !!row.__skeleton;
+              const link = row as LinkInsight;
 
-            {/* Table body */}
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {transformedData.map((link, linkIndex) => (
-                <tr
-                  key={`${link.domain}-${link.key}`}
-                  className="hover:bg-gray-50"
-                >
-                  {/* Link column */}
-                  <td className="bg-white px-2 py-3 sm:px-4 md:sticky md:left-0 md:z-10 w-[200px] md:w-[400px]">
-                    <div className="space-y-2">
-                      <LinkCell
-                        link={link}
-                        variant="table"
-                        showCopyButton={false}
-                        className="max-w-[200px] md:max-w-[400px]"
+              return (
+                <tr key={isSkeleton ? row.id : `${link.domain}-${link.key}`} className="hover:bg-neutral-50/50">
+                  <td className={TABLE_LINK_CELL_CLASS}>
+                    <TableLinkCellContent
+                      link={{
+                        domain: link.domain,
+                        key: link.key,
+                        url: link.url,
+                        title: link.title,
+                        description: link.description,
+                        createdAt: link.createdAt,
+                      }}
+                      tags={link.tags || []}
+                      isSkeleton={isSkeleton}
+                    />
+                  </td>
+
+                  <td className={TABLE_UTM_CELL_CLASS}>
+                    <TableUtmCellContent
+                      link={{
+                        url: link.url,
+                        utm_source: link.utmSource ?? null,
+                        utm_medium: link.utmMedium ?? null,
+                        utm_campaign: link.utmCampaign ?? null,
+                      }}
+                      tags={link.tags || []}
+                      isSkeleton={isSkeleton}
+                    />
+                  </td>
+
+                  <td className={TABLE_UTM_CELL_CLASS}>
+                    {isSkeleton ? (
+                      <div className="flex items-center gap-2">
+                        <div className="h-8 w-[46px] animate-pulse rounded bg-neutral-200" />
+                        <div className="h-8 w-[46px] animate-pulse rounded bg-neutral-200" />
+                        <div className="h-8 w-[46px] animate-pulse rounded bg-neutral-200" />
+                      </div>
+                    ) : (
+                      <LinksRowMetricPills
+                        metrics={{
+                          clicks: link.clicks,
+                          leads: link.leads,
+                          revenue: link.saleAmount / 100,
+                        }}
                       />
-                      
-                      {/* UTM parameters row */}
-                      {(() => {
-                        // Get UTM values from link or URL params
-                        let utmSource = link.utmSource;
-                        let utmMedium = link.utmMedium;
-                        let utmCampaign = link.utmCampaign;
-                        
-                        if (!utmSource && !utmMedium && !utmCampaign && link.url) {
-                          const urlParams = getParamsFromURL(link.url);
-                          utmSource = urlParams.utm_source || null;
-                          utmMedium = urlParams.utm_medium || null;
-                          utmCampaign = urlParams.utm_campaign || null;
-                        }
-                        
-                        const hasUtms = utmSource || utmMedium || utmCampaign;
-                        
-                        if (!hasUtms) return null;
-                        
-                        return (
-                          <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden flex-wrap">
-                            {/* UTM Parameters */}
-                            {utmSource && <UtmBadge type="source" value={utmSource} />}
-                            {utmMedium && <UtmBadge type="medium" value={utmMedium} />}
-                            {utmCampaign && <UtmBadge type="campaign" value={utmCampaign} />}
-                          </div>
-                        );
-                      })()}
-                    </div>
+                    )}
                   </td>
 
-                  {/* Tags column */}
-                  <td className="px-2 py-3">
-                    <div className="flex flex-wrap gap-1.5">
-                      {link.tags?.map((tag) => (
-                        <TagBadge
-                          key={tag.id}
-                          name={tag.name}
-                          color={tag.color as TagColorProps}
-                          withIcon
-                        />
-                      ))}
-                    </div>
-                  </td>
-
-                  {/* Metric columns */}
-                  <td className="px-2 py-3 text-center">
-                    <div
-                      className={`text-sm font-medium ${link.clicks === 0 ? "text-gray-400" : ""}`}
-                    >
-                      {nFormatter(link.clicks)}
-                    </div>
-                  </td>
-                  <td className="px-2 py-3 text-center">
-                    <div
-                      className={`text-sm font-medium ${link.leads === 0 ? "text-gray-400" : ""}`}
-                    >
-                      {nFormatter(link.leads)}
-                    </div>
-                  </td>
-                  <td className="px-2 py-3 text-center">
-                    <div
-                      className={`text-sm font-medium ${(link.saleAmount || 0) === 0 ? "text-gray-400" : ""}`}
-                    >
-                      €{nFormatter(link.saleAmount / 100)}
-                    </div>
-                  </td>
-                  <td className="px-2 py-3 text-center">
-                    <div
-                      className={`text-sm font-medium ${link.clicks === 0 || (link.saleAmount || 0) === 0 ? "text-gray-400" : ""}`}
-                    >
-                      €
-                      {link.clicks > 0
-                        ? (link.saleAmount / 100 / link.clicks).toFixed(1)
-                        : "0.0"}
-                    </div>
-                  </td>
-                  <td className="px-2 py-3 text-center">
-                    <div
-                      className={`text-sm font-medium ${link.clicks === 0 || link.leads === 0 ? "text-gray-400" : ""}`}
-                    >
-                      {link.clicks > 0
-                        ? ((link.leads / link.clicks) * 100).toFixed(0)
-                        : "0"}
-                      %
-                    </div>
-                  </td>
-                  <td className="px-2 py-3 text-center">
-                    <div
-                      className={`text-sm font-medium ${link.leads === 0 || link.sales === 0 ? "text-gray-400" : ""}`}
-                    >
-                      {link.leads > 0
-                        ? ((link.sales / link.leads) * 100).toFixed(0)
-                        : "0"}
-                      %
-                    </div>
-                  </td>
-                  <td className="px-2 py-3 text-center">
-                    <div
-                      className={`text-sm font-medium ${link.sales === 0 || (link.saleAmount || 0) === 0 ? "text-gray-400" : ""}`}
-                    >
-                      €
-                      {link.sales > 0
-                        ? (link.saleAmount / 100 / link.sales).toFixed(0)
-                        : "0"}
-                    </div>
-                  </td>
-
-                  {/* Period columns - 3 separate columns per period */}
                   {periodColumns.map((period, periodIndex) => {
-                    // Find the period data for this link - exact match with API data
-                    const periodData = link.timeseriesData?.find(
-                      (ts) => ts.start === period.data.start,
-                    );
+                    if (isSkeleton) {
+                      return (
+                        <React.Fragment key={periodIndex}>
+                          <td className="border-l border-neutral-200 px-3 py-2 text-center">
+                            <div className="mx-auto h-4 w-10 animate-pulse rounded bg-neutral-200" />
+                          </td>
+                          <td className="px-3 py-2 text-center">
+                            <div className="mx-auto h-4 w-10 animate-pulse rounded bg-neutral-200" />
+                          </td>
+                          <td className="px-3 py-2 text-center">
+                            <div className="mx-auto h-4 w-12 animate-pulse rounded bg-neutral-200" />
+                          </td>
+                        </React.Fragment>
+                      );
+                    }
 
-                    const isGrayedOut = isAfter(
-                      startOfDay(new Date(link.createdAt)),
-                      endOfDay(period.date),
-                    );
+                    const periodData = link.timeseriesData?.find((ts) => ts.start === period.data.start);
+                    const isGrayedOut = isAfter(startOfDay(new Date(link.createdAt)), endOfDay(period.date));
 
                     return (
                       <React.Fragment key={periodIndex}>
-                        {/* Clicks column */}
-                        <td
-                          className={`border-l-2 border-blue-200 px-2 py-3 text-center ${isGrayedOut ? "opacity-30" : ""}`}
-                        >
+                        <td className={cn("border-l border-neutral-200 px-3 py-2 text-center", isGrayedOut && "opacity-30")}>
                           {isGrayedOut ? (
-                            <span className="text-gray-300">-</span>
+                            <span className="text-neutral-300 text-sm">—</span>
                           ) : (
                             <NumberFlow
                               value={periodData?.clicks || 0}
-                              className={`text-sm font-medium tabular-nums ${(periodData?.clicks || 0) === 0 ? "text-gray-400" : ""}`}
+                              className={cn("text-sm font-semibold tabular-nums", (periodData?.clicks || 0) === 0 && "text-neutral-400")}
                               format={{ notation: "compact" }}
                             />
                           )}
                         </td>
-
-                        {/* Leads column */}
-                        <td
-                          className={`px-2 py-3 text-center ${isGrayedOut ? "opacity-30" : ""}`}
-                        >
+                        <td className={cn("px-3 py-2 text-center", isGrayedOut && "opacity-30")}>
                           {isGrayedOut ? (
-                            <span className="text-gray-300">-</span>
+                            <span className="text-neutral-300 text-sm">—</span>
                           ) : (
                             <NumberFlow
                               value={periodData?.leads || 0}
-                              className={`text-sm font-medium tabular-nums ${(periodData?.leads || 0) === 0 ? "text-gray-400" : ""}`}
+                              className={cn("text-sm font-semibold tabular-nums", (periodData?.leads || 0) === 0 && "text-neutral-400")}
                               format={{ notation: "compact" }}
                             />
                           )}
                         </td>
-
-                        {/* Sales column */}
-                        <td
-                          className={`px-2 py-3 text-center ${isGrayedOut ? "opacity-30" : ""}`}
-                        >
+                        <td className={cn("px-3 py-2 text-center", isGrayedOut && "opacity-30")}>
                           {isGrayedOut ? (
-                            <span className="text-gray-300">-</span>
+                            <span className="text-neutral-300 text-sm">—</span>
                           ) : (
-                            <span
-                              className={`text-sm font-medium tabular-nums ${(periodData?.saleAmount || 0) === 0 ? "text-gray-400" : ""}`}
-                            >
-                              €
-                              {nFormatter(
-                                periodData?.saleAmount
-                                  ? periodData.saleAmount / 100
-                                  : 0,
-                              )}
+                            <span className={cn("text-sm font-semibold tabular-nums", (periodData?.saleAmount || 0) === 0 && "text-neutral-400")}>
+                              {currencyFormatter((periodData?.saleAmount || 0) / 100, { maximumFractionDigits: 0 })}
                             </span>
                           )}
                         </td>
@@ -560,104 +443,52 @@ export default function InsightsTable({
                     );
                   })}
                 </tr>
-              ))}
+              );
+            })}
 
-              {/* Totals row */}
-              {totals && (
-                <tr className="totals-row border-t-2 border-gray-400 bg-gray-100 font-semibold">
-                  {/* Link column total */}
-                  <td className="border-r-2 border-gray-300 bg-gray-100 px-4 py-3 text-left md:sticky md:left-0 md:z-10">
-                    <div className="text-sm font-semibold text-gray-900">
-                      Total ({transformedData.length} links)
-                    </div>
-                  </td>
+            {!loading && totals && (
+              <tr className="totals-row border-t border-neutral-300 bg-neutral-50 font-semibold">
+                <td className="bg-neutral-50 px-2 py-2 text-left md:sticky md:left-0 md:z-10 sm:px-5 min-w-[450px] w-[450px]">
+                  <div className="text-sm font-semibold text-neutral-900">
+                    Total ({data.length} links)
+                  </div>
+                </td>
+                <td className="bg-neutral-50 px-3 py-2"></td>
+                <td className="bg-neutral-50 px-3 py-2">
+                  <LinksRowMetricPills
+                    metrics={{
+                      clicks: totals.clicks,
+                      leads: totals.leads,
+                      revenue: totals.revenue,
+                    }}
+                  />
+                </td>
 
-                  {/* Tags column - empty in totals */}
-                  <td className="bg-gray-100 px-2 py-3"></td>
-
-                  {/* Metric totals */}
-                  <td className="bg-gray-100 px-2 py-3 text-center">
-                    <div
-                      className={`text-sm font-semibold ${totals.clicks === 0 ? "text-gray-400" : ""}`}
-                    >
-                      {nFormatter(totals.clicks)}
-                    </div>
-                  </td>
-                  <td className="bg-gray-100 px-2 py-3 text-center">
-                    <div
-                      className={`text-sm font-semibold ${totals.leads === 0 ? "text-gray-400" : ""}`}
-                    >
-                      {nFormatter(totals.leads)}
-                    </div>
-                  </td>
-                  <td className="bg-gray-100 px-2 py-3 text-center">
-                    <div
-                      className={`text-sm font-semibold ${totals.revenue === 0 ? "text-gray-400" : ""}`}
-                    >
-                      €{nFormatter(totals.revenue)}
-                    </div>
-                  </td>
-                  <td className="bg-gray-100 px-2 py-3 text-center">
-                    <div
-                      className={`text-sm font-semibold ${totals.rpc === "0.0" ? "text-gray-400" : ""}`}
-                    >
-                      €{totals.rpc}
-                    </div>
-                  </td>
-                  <td className="bg-gray-100 px-2 py-3 text-center">
-                    <div
-                      className={`text-sm font-semibold ${totals.ctr === "0" ? "text-gray-400" : ""}`}
-                    >
-                      {totals.ctr}%
-                    </div>
-                  </td>
-                  <td className="bg-gray-100 px-2 py-3 text-center">
-                    <div
-                      className={`text-sm font-semibold ${totals.leadToSale === "0" ? "text-gray-400" : ""}`}
-                    >
-                      {totals.leadToSale}%
-                    </div>
-                  </td>
-                  <td className="bg-gray-100 px-2 py-3 text-center">
-                    <div
-                      className={`text-sm font-semibold ${totals.aov === "0" ? "text-gray-400" : ""}`}
-                    >
-                      €{totals.aov}
-                    </div>
-                  </td>
-
-                  {/* Period totals - 3 columns per period */}
-                  {totals.periodTotals.map((periodTotal, index) => (
-                    <React.Fragment key={index}>
-                      <td className="border-l-2 border-blue-300 bg-gray-100 px-2 py-3 text-center">
-                        <div
-                          className={`text-sm font-semibold ${periodTotal.clicks === 0 ? "text-gray-400" : ""}`}
-                        >
-                          {nFormatter(periodTotal.clicks)}
-                        </div>
-                      </td>
-                      <td className="bg-gray-100 px-2 py-3 text-center">
-                        <div
-                          className={`text-sm font-semibold ${periodTotal.leads === 0 ? "text-gray-400" : ""}`}
-                        >
-                          {nFormatter(periodTotal.leads)}
-                        </div>
-                      </td>
-                      <td className="bg-gray-100 px-2 py-3 text-center">
-                        <div
-                          className={`text-sm font-semibold ${periodTotal.saleAmount === 0 ? "text-gray-400" : ""}`}
-                        >
-                          €{nFormatter(periodTotal.saleAmount / 100)}
-                        </div>
-                      </td>
-                    </React.Fragment>
-                  ))}
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                {totals.periodTotals.map((pt, idx) => (
+                  <React.Fragment key={idx}>
+                    <td className="border-l border-neutral-200 bg-neutral-50 px-3 py-2 text-center">
+                      <div className={cn("text-sm font-semibold tabular-nums", pt.clicks === 0 && "text-neutral-400")}>
+                        {nFormatter(pt.clicks)}
+                      </div>
+                    </td>
+                    <td className="bg-neutral-50 px-3 py-2 text-center">
+                      <div className={cn("text-sm font-semibold tabular-nums", pt.leads === 0 && "text-neutral-400")}>
+                        {nFormatter(pt.leads)}
+                      </div>
+                    </td>
+                    <td className="bg-neutral-50 px-3 py-2 text-center">
+                      <div className={cn("text-sm font-semibold tabular-nums", pt.saleAmount === 0 && "text-neutral-400")}>
+                        {currencyFormatter(pt.saleAmount / 100, { maximumFractionDigits: 0 })}
+                      </div>
+                    </td>
+                  </React.Fragment>
+                ))}
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );
 }
+

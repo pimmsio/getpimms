@@ -1,7 +1,6 @@
 import { Tooltip, useRouterStuff } from "@dub/ui";
 import { cn, getParamsFromURL } from "@dub/utils";
 import { useMemo } from "react";
-import { ResponseLink } from "./links-container";
 
 type UtmKey = "utm_source" | "utm_medium" | "utm_campaign" | "utm_term" | "utm_content";
 
@@ -19,7 +18,14 @@ export function LinkUtmColumns({
   visibleUtmKeys,
   showTagsColumn,
 }: {
-  link: ResponseLink;
+  link: {
+    url?: string | null;
+    utm_source?: string | null;
+    utm_medium?: string | null;
+    utm_campaign?: string | null;
+    utm_term?: string | null;
+    utm_content?: string | null;
+  };
   tags?: { id: string; name: string; color: string }[];
   visibleUtmKeys?: UtmKey[];
   showTagsColumn?: boolean;

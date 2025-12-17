@@ -2,14 +2,16 @@
 
 import useWorkspace from "@/lib/swr/use-workspace";
 import { useLinkBuilder } from "@/ui/modals/link-builder";
-import { BlurImage, CardList } from "@dub/ui";
+import { BlurImage, CardList, Table, useTable } from "@dub/ui";
 import { LoadingSpinner } from "@dub/ui/icons";
-import { cn, fetcher } from "@dub/utils";
+import { cn, fetcher, timeAgo, formatDate, COUNTRIES } from "@dub/utils";
 import {
   BookOpen,
   ChevronRight,
   LineChart,
+  Flame,
 } from "lucide-react";
+import { SingleFlameIcon } from "@/ui/analytics/events/hot-score-icons";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useMemo } from "react";
@@ -207,21 +209,11 @@ export default function TodayClient() {
           Re-enable once the videos + onboarding content are ready.
         */}
 
-        {/* 2) Metrics (Today / 7d / 30d) */}
+        {/* Metrics */}
         <div className="mt-4 rounded-xl border border-neutral-200 bg-white shadow-sm">
           <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3">
-            <div className="flex items-center gap-2">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-neutral-50">
-                <LineChart className="size-4 text-neutral-700" />
-              </div>
-              <div>
-                <div className="text-sm font-semibold text-neutral-900">
-                  Metrics
-                </div>
-                <div className="text-xs text-neutral-500">
-                  Today, last 7 days, last 30 days
-                </div>
-              </div>
+            <div className="text-sm font-semibold text-neutral-900">
+              Metrics
             </div>
             <Link
               href={`/${slug}/analytics`}
@@ -246,7 +238,7 @@ export default function TodayClient() {
                 cvr={todayCvr}
               />
               <IntervalMetrics
-                label="Last 7 days"
+                label="7d"
                 loading={last7dLoading}
                 error={Boolean(last7dError)}
                 clicks={last7dClicks}
@@ -255,7 +247,7 @@ export default function TodayClient() {
                 cvr={last7dCvr}
               />
               <IntervalMetrics
-                label="Last 30 days"
+                label="30d"
                 loading={last30dLoading}
                 error={Boolean(last30dError)}
                 clicks={last30dClicks}
@@ -267,20 +259,13 @@ export default function TodayClient() {
           </div>
         </div>
 
-        {/* 3) Latest guides */}
+        {/* Lead Signal Activity */}
+        <LeadSignalActivitySection slug={slug} />
+
+        {/* Latest guides */}
         <div className="mt-4 rounded-xl border border-neutral-200 bg-white shadow-sm">
           <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3">
-            <div className="flex items-center gap-2">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-neutral-50">
-                <BookOpen className="size-4 text-neutral-700" />
-              </div>
-              <div>
-                <div className="text-sm font-semibold text-neutral-900">Latest guides</div>
-                <div className="text-xs text-neutral-500">
-                  Set up conversion tracking on your website or via integrations
-                </div>
-              </div>
-            </div>
+            <div className="text-sm font-semibold text-neutral-900">Latest guides</div>
             <a
               href="https://pimms.io/guides"
               target="_blank"
@@ -381,6 +366,202 @@ function Metric({
   );
 }
 
+function LeadSignalActivitySection({ slug }: { slug?: string }) {
+  const { id: workspaceId } = useWorkspace();
+
+  const leadsFeedQuery = useMemo(() => {
+    if (!workspaceId) return null;
+    const qs = new URLSearchParams({
+      workspaceId,
+      interval: "7d",
+      limit: "5",
+      page: "1",
+    });
+    return `/api/customers/leads-feed?${qs.toString()}`;
+  }, [workspaceId]);
+
+  const { data: leadsData, isLoading } = useSWR<any>(
+    leadsFeedQuery,
+    fetcher,
+    {
+      keepPreviousData: true,
+      revalidateOnFocus: false,
+    },
+  );
+
+  const leads = (leadsData?.customers?.slice(0, 5) || []) as Array<{
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    hotScore?: number | null;
+    lastEventAt?: string | null;
+    totalClicks?: number | null;
+    createdAt?: string | null;
+    country?: string | null;
+  }>;
+
+  const columns = useMemo(() => [
+      {
+        id: "customer",
+        header: "Customer",
+        cell: ({ row }: { row: any }) => {
+          const lead = row.original as {
+            id: string;
+            name?: string | null;
+            email?: string | null;
+            lastEventAt?: string | null;
+            hotScore?: number | null;
+            country?: string | null;
+          };
+          const display = lead.name || lead.email || "Anonymous";
+          const email = lead.email;
+          const lastActivity = lead.lastEventAt
+            ? timeAgo(new Date(lead.lastEventAt), { withAgo: true })
+            : "-";
+          const score = lead.hotScore || 0;
+          const country = lead.country;
+
+          return (
+            <Link
+              href={`/${slug}/customers/${lead.id}`}
+              className="flex items-center gap-3 group"
+            >
+              <div className="flex items-center gap-2 shrink-0">
+                <SingleFlameIcon className="h-5 w-5" score={score} />
+                <span className="text-xs font-semibold tabular-nums text-neutral-900">
+                  {score}
+                </span>
+              </div>
+              <div className="h-6 w-px bg-neutral-200 shrink-0" />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <div className="truncate text-sm font-medium text-neutral-900 group-hover:text-blue-600">
+                    {lead.name || "Anonymous"}
+                  </div>
+                  {country && country !== "Unknown" && (
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <img
+                        alt={country}
+                        src={`https://hatscripts.github.io/circle-flags/flags/${country.toLowerCase()}.svg`}
+                        className="size-3.5 shrink-0"
+                      />
+                      <span className="text-xs text-neutral-500">
+                        {COUNTRIES[country] ?? country}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {email && lead.name && (
+                  <div className="truncate text-xs text-neutral-500" title={email}>
+                    {email}
+                  </div>
+                )}
+                {!email && (
+                  <div className="text-xs text-neutral-500">{lastActivity}</div>
+                )}
+              </div>
+            </Link>
+          );
+        },
+      },
+      {
+        id: "touchpoints",
+        header: "Touchpoints",
+        cell: ({ row }: { row: any }) => {
+          const lead = row.original as {
+            id: string;
+            totalClicks?: number | null;
+          };
+          const touchpoints = lead.totalClicks;
+          const customerId = lead.id;
+
+          if (touchpoints === undefined || touchpoints === null) {
+            return <span className="text-neutral-400">-</span>;
+          }
+
+          return (
+            <div className="flex items-center justify-end gap-2">
+              <div className="text-xs font-medium text-neutral-700">
+                {touchpoints}
+              </div>
+              {customerId && (
+                <Link
+                  href={`/${slug}/customers/${customerId}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex shrink-0 items-center gap-1 text-xs font-medium text-blue-600 transition-transform group-hover:translate-x-1 whitespace-nowrap"
+                >
+                  <span>See timeline</span>
+                  <ChevronRight className="size-3" />
+                </Link>
+              )}
+            </div>
+          );
+        },
+      },
+      {
+        id: "created",
+        header: "Created",
+        minSize: 80,
+        size: 80,
+        maxSize: 100,
+        cell: ({ row }: { row: any }) => {
+          const lead = row.original as { createdAt?: string | null };
+          const createdAt = lead.createdAt;
+          if (!createdAt) {
+            return <span className="text-xs text-neutral-400">-</span>;
+          }
+          return (
+            <div className="text-xs text-neutral-700">
+              {formatDate(createdAt, {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </div>
+          );
+        },
+      },
+    ], [slug]);
+
+  const { table, ...tableProps } = useTable({
+    data: leads,
+    columns,
+  });
+
+  if (!slug) return null;
+  
+  return (
+    <div className="mt-4">
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-sm font-semibold text-neutral-900">
+          Last Lead Signals
+        </div>
+        <Link
+          href={`/${slug}/conversions?interval=7d`}
+          className={cn(
+            "inline-flex h-8 items-center justify-center rounded-lg border border-neutral-200 bg-white px-2.5 text-xs font-semibold text-neutral-800 hover:bg-neutral-50",
+          )}
+        >
+          View all
+          <ChevronRight className="ml-1 size-3 text-neutral-500" />
+        </Link>
+      </div>
+
+      {isLoading ? (
+        <div className="flex items-center justify-center py-6 rounded border border-neutral-200 bg-white">
+          <LoadingSpinner />
+        </div>
+      ) : leads.length === 0 ? (
+        <div className="py-6 text-center text-sm text-neutral-500 rounded border border-neutral-200 bg-white">
+          No lead signals
+        </div>
+      ) : (
+        <Table {...tableProps} table={table} />
+      )}
+    </div>
+  );
+}
+
 function IntervalMetrics({
   label,
   loading,
@@ -399,22 +580,17 @@ function IntervalMetrics({
   cvr: number;
 }) {
   return (
-    <div className="rounded-xl border border-neutral-100 bg-neutral-50 p-3">
-      <div className="flex items-center justify-between">
-        <div className="text-xs font-semibold text-neutral-700">{label}</div>
-        <div className="text-[11px] font-medium text-neutral-500">
-          {cvr > 0 ? `CVR ${cvr.toFixed(1)}%` : " "}
-        </div>
-      </div>
+    <div className="rounded-lg border border-neutral-100 bg-neutral-50 p-3">
+      <div className="text-xs font-semibold text-neutral-700 mb-2">{label}</div>
 
       {loading ? (
         <div className="flex items-center justify-center py-6">
           <LoadingSpinner />
         </div>
       ) : error ? (
-        <div className="py-6 text-center text-sm text-neutral-600">Unavailable.</div>
+        <div className="py-6 text-center text-sm text-neutral-600">—</div>
       ) : (
-        <div className="mt-2 grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-2">
           <Metric label="Clicks" value={clicks} />
           <Metric label="Leads" value={leads} />
           <Metric label="Revenue" value={revenue} prefix="$" decimals={2} />

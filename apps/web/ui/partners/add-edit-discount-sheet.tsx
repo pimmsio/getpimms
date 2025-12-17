@@ -226,7 +226,7 @@ function DiscountSheetContent({
                       )}
                       aria-hidden={!isRecurring}
                       {...{
-                        inert: !isRecurring,
+                        ...(!isRecurring ? { inert: true } : {}),
                       }}
                     >
                       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">

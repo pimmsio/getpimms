@@ -10,7 +10,7 @@ import useListIntegrations from "@/lib/swr/use-list-integrations";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { ClickEvent, LeadEvent, SaleEvent } from "@/lib/types";
 import EmptyState from "@/ui/shared/empty-state";
-import { LinkCell } from "@/ui/shared/link-cell";
+import { LinksRow, LinksRowSkeleton } from "@/ui/shared/links-row";
 import {
   LinkLogo,
   Table,
@@ -27,6 +27,7 @@ import {
   COUNTRIES,
   currencyFormatter,
   fetcher,
+  formatDate,
   OG_AVATAR_URL,
   REGIONS,
   timeAgo,
@@ -45,7 +46,7 @@ import EditColumnsButton from "./edit-columns-button";
 import { EventsContext } from "./events-provider";
 import { EXAMPLE_EVENTS_DATA } from "./example-data";
 import FilterButton from "./filter-button";
-import { getHotScoreIcon, getHotScoreLabel } from "./hot-score-icons";
+import { getHotScoreLabel, SingleFlameIcon } from "./hot-score-icons";
 import { RowMenuButton } from "./row-menu-button";
 import {
   conversionColumns,
@@ -82,13 +83,70 @@ export default function EventsTable({
   const sortBy = searchParams.get("sortBy") || "timestamp";
   const sortOrder = searchParams.get("sortOrder") === "asc" ? "asc" : "desc";
 
+  const skeletonRows = useMemo(
+    () =>
+      Array.from({ length: 8 }).map((_, idx) => ({
+        __skeleton: true as const,
+        event: "lead",
+        timestamp: new Date().toISOString(),
+        eventName: "Lead",
+        customer: {
+          __skeleton: true as const,
+          id: `s-${idx}`,
+          name: null,
+          email: null,
+          avatar: null,
+          hotScore: 0,
+          lastHotScoreAt: null,
+        },
+        click: {
+          country: "US",
+          city: "—",
+          region: "—",
+          continent: "NA",
+          device: "Desktop",
+          browser: "Chrome",
+          os: "macOS",
+          referer: "(direct)",
+          refererUrl: "(direct)",
+        },
+        link: {
+          __skeleton: true as const,
+          domain: "pim.ms",
+          key: "—",
+          url: "https://example.com",
+          tags: [],
+        },
+        sale: { amount: 0, invoiceId: "" },
+      })) as any[],
+    [],
+  );
+
   const columns = useMemo<ColumnDef<EventDatum, any>[]>(
     () =>
       [
         // Hot Score (first column)
         {
           id: "hotScore",
-          header: "Score",
+          header: () => (
+            <Tooltip
+              content={
+                <div className="max-w-xs px-2 py-1 text-left text-sm text-neutral-600">
+                  <div className="font-semibold text-neutral-800 mb-1">Hot Score</div>
+                  <div className="text-xs">
+                    Lead hotness score (0-100) based on click engagement, velocity, activity streaks, and conversions.
+                  </div>
+                  <div className="text-xs mt-2">
+                    <div>Cold (0-33): Low engagement</div>
+                    <div>Warm (34-66): Moderate engagement</div>
+                    <div>Hot (67-100): High engagement</div>
+                  </div>
+                </div>
+              }
+            >
+              <span>Score</span>
+            </Tooltip>
+          ),
           accessorKey: "customer",
           enableHiding: false,
           minSize: 90,
@@ -96,9 +154,15 @@ export default function EventsTable({
           maxSize: 120,
           cell: ({ getValue }) => {
             const customer = getValue();
+            if ((customer as any)?.__skeleton) {
+              return (
+                <div className="flex w-full items-center justify-center">
+                  <div className="h-6 w-14 animate-pulse rounded bg-neutral-200" />
+                </div>
+              );
+            }
             const hotScore = customer.hotScore ?? 0;
             const lastUpdated = customer.lastHotScoreAt;
-            const HotScoreIcon = getHotScoreIcon(hotScore);
             const scoreLabel = getHotScoreLabel(hotScore);
             const scoreLabelLower = scoreLabel.toLowerCase();
 
@@ -157,15 +221,15 @@ export default function EventsTable({
               >
                 <div 
                   className={cn(
-                    "flex w-full justify-center cursor-pointer rounded-md p-1 transition-colors",
+                    "flex w-full justify-center cursor-pointer rounded-lg p-2 transition-all",
                     "hover:bg-neutral-100",
                     isSelected && "bg-blue-50 ring-1 ring-blue-200"
                   )}
                   onClick={handleScoreClick}
                 >
-                  <div className="flex items-center gap-2">
-                    <HotScoreIcon className="w-6 h-6" />
-                    <span className="text-sm font-semibold tabular-nums text-neutral-900">
+                  <div className="flex items-center gap-1.5">
+                    <SingleFlameIcon className="w-5 h-5" score={hotScore} />
+                    <span className="text-sm font-bold tabular-nums text-neutral-900">
                       {hotScore}
                     </span>
                   </div>
@@ -186,6 +250,13 @@ export default function EventsTable({
           maxSize: 400,
           cell: ({ getValue }) => {
             const customer = getValue();
+            if ((customer as any)?.__skeleton) {
+              return (
+                <div className="px-4 py-3">
+                  <LinksRowSkeleton showUtmRow={false} showMetrics={false} />
+                </div>
+              );
+            }
             const display = customer.name || customer.email || "Anonymous";
             return (
               <div className="flex w-full items-center justify-between gap-4 px-4 py-3">
@@ -196,11 +267,11 @@ export default function EventsTable({
                       customer.avatar ||
                       `${OG_AVATAR_URL}${customer.id}&name=${encodeURIComponent(customer.name || customer.email || "")}`
                     }
-                    className="size-10 shrink-0 rounded-full"
+                    className="size-9 shrink-0 rounded-full border border-neutral-200"
                   />
                   <div className="min-w-0 flex-1">
                     <div
-                      className="truncate text-sm font-medium text-neutral-900"
+                      className="truncate text-sm font-semibold text-neutral-900"
                       title={display}
                     >
                       {customer.name || "Anonymous"}
@@ -215,8 +286,7 @@ export default function EventsTable({
                     )}
                   </div>
                 </div>
-                <div className="flex shrink-0 items-center gap-1.5 text-sm font-medium text-blue-600 transition-transform group-hover:translate-x-1">
-                  <span>View</span>
+                <div className="flex shrink-0 items-center gap-1 text-xs font-medium text-neutral-400 transition-colors group-hover:text-blue-600">
                   <ChevronRight className="size-4" />
                 </div>
               </div>
@@ -226,18 +296,36 @@ export default function EventsTable({
         // Last conversion (merged event + date)
         {
           id: "lastEvent",
-          header: "Last event",
+          header: () => (
+            <Tooltip
+              content={
+                <div className="max-w-xs px-2 py-1 text-left text-sm text-neutral-600">
+                  Most recent conversion event (lead or sale) from this customer
+                </div>
+              }
+            >
+              <span>Last event</span>
+            </Tooltip>
+          ),
           enableHiding: false,
-          minSize: 140,
-          size: 140,
-          maxSize: 180,
+          minSize: 80,
+          size: 90,
+          maxSize: 120,
           cell: ({ row }) => {
+            if ((row.original as any).__skeleton) {
+              return (
+                <div className="flex flex-col gap-1">
+                  <div className="h-4 w-24 animate-pulse rounded bg-neutral-200" />
+                  <div className="h-3 w-20 animate-pulse rounded bg-neutral-200" />
+                </div>
+              );
+            }
             const eventName = row.original.eventName || "Conversion";
             const timestamp = row.original.timestamp;
             return (
-              <div className="flex flex-col gap-0.5">
+              <div className="flex flex-col gap-1">
                 <div
-                  className="truncate text-sm font-medium text-neutral-900"
+                  className="truncate text-sm font-semibold text-neutral-900"
                   title={eventName}
                 >
                   {eventName}
@@ -265,17 +353,159 @@ export default function EventsTable({
           },
           cell: ({ getValue }) => {
             const link = getValue();
+            if ((link as any)?.__skeleton) {
+              return (
+                <div className="px-4 py-3">
+                  <LinksRowSkeleton showMetrics={false} />
+                </div>
+              );
+            }
             return (
-              <LinkCell
-                link={{
-                  domain: link.domain,
-                  key: link.key,
-                  url: link.url,
-                }}
-                variant="table"
-                showCopyButton={false}
-                className="min-w-0 flex-1 max-w-[280px]"
-              />
+              <div className="px-4 py-3">
+                <LinksRow
+                  link={{
+                    domain: link.domain,
+                    key: link.key,
+                    url: link.url,
+                    utm_source: link.utm_source,
+                    utm_medium: link.utm_medium,
+                    utm_campaign: link.utm_campaign,
+                    utm_term: link.utm_term,
+                    utm_content: link.utm_content,
+                  }}
+                  tags={link.tags}
+                />
+              </div>
+            );
+          },
+        },
+        {
+          id: "touchpoints",
+          header: () => (
+            <Tooltip
+              content={
+                <div className="max-w-xs px-2 py-1 text-left text-sm text-neutral-600">
+                  Total number of times this customer has clicked on your links
+                </div>
+              }
+            >
+              <span>Touchpoints</span>
+            </Tooltip>
+          ),
+          accessorKey: "customer",
+          enableHiding: true,
+          minSize: 120,
+          size: 140,
+          maxSize: 160,
+          cell: ({ getValue, row }) => {
+            const customer = getValue();
+            if ((customer as any)?.__skeleton) {
+              return (
+                <div className="h-4 w-12 animate-pulse rounded bg-neutral-200" />
+              );
+            }
+            // Only show if we have the data
+            const touchpoints = (customer as any)?.totalClicks;
+            const customerId = customer?.id;
+            if (touchpoints === undefined || touchpoints === null) {
+              return <span className="text-neutral-400">-</span>;
+            }
+            return (
+              <div className="flex items-center justify-between gap-2">
+                <div className="text-sm font-medium text-neutral-700">
+                  {touchpoints}
+                </div>
+                {customerId && (row.original as any).event !== "click" && (
+                  <Link
+                    href={`/${slug}/customers/${customerId}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex shrink-0 items-center gap-1.5 pr-1 text-sm font-medium text-blue-600 transition-transform group-hover:translate-x-1 whitespace-nowrap"
+                  >
+                    <span>See timeline</span>
+                    <ChevronRight className="size-4" />
+                  </Link>
+                )}
+              </div>
+            );
+          },
+        },
+        {
+          id: "customerCountry",
+          header: "Country",
+          accessorKey: "customer",
+          enableHiding: true,
+          minSize: 100,
+          size: 100,
+          maxSize: 120,
+          meta: {
+            filterParams: ({ getValue }) => {
+              const customer = getValue();
+              const country = (customer as any)?.country;
+              return country ? { country } : {};
+            },
+          },
+          cell: ({ getValue }) => {
+            const customer = getValue();
+            if ((customer as any)?.__skeleton) {
+              return (
+                <div className="h-4 w-20 animate-pulse rounded bg-neutral-200" />
+              );
+            }
+            const country = (customer as any)?.country;
+            if (!country || country === "Unknown") {
+              return (
+                <div className="flex items-center gap-3">
+                  <Globe className="size-4 shrink-0" />
+                  <span className="truncate text-neutral-400">-</span>
+                </div>
+              );
+            }
+            return (
+              <div
+                className="flex items-center gap-3"
+                title={COUNTRIES[country] ?? country}
+              >
+                <img
+                  alt={country}
+                  src={`https://hatscripts.github.io/circle-flags/flags/${country.toLowerCase()}.svg`}
+                  className="size-4 shrink-0"
+                />
+                <span className="truncate text-xs">
+                  {COUNTRIES[country] ?? country}
+                </span>
+              </div>
+            );
+          },
+        },
+        {
+          id: "created",
+          header: "Created",
+          accessorKey: "customer",
+          enableHiding: true,
+          minSize: 120,
+          size: 120,
+          maxSize: 150,
+          cell: ({ getValue }) => {
+            const customer = getValue();
+            if ((customer as any)?.__skeleton) {
+              return (
+                <div className="h-4 w-20 animate-pulse rounded bg-neutral-200" />
+              );
+            }
+            // Try to get createdAt from customer, fallback to event timestamp
+            const createdAt = (customer as any)?.createdAt;
+            if (!createdAt) {
+              // Fallback to event timestamp if customer createdAt not available
+              return <span className="text-neutral-400">-</span>;
+            }
+            return (
+              <div className="text-sm text-neutral-700">
+                {formatDate(createdAt, {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </div>
             );
           },
         },
@@ -283,6 +513,9 @@ export default function EventsTable({
           id: "country",
           header: "Country",
           accessorKey: "click.country",
+          minSize: 100,
+          size: 100,
+          maxSize: 120,
           meta: {
             filterParams: ({ getValue }) => ({ country: getValue() }),
           },
@@ -300,7 +533,7 @@ export default function EventsTable({
                   className="size-4 shrink-0"
                 />
               )}
-              <span className="truncate">
+              <span className="truncate text-xs">
                 {COUNTRIES[getValue()] ?? getValue()}
               </span>
             </div>
@@ -425,6 +658,9 @@ export default function EventsTable({
           id: "referer",
           header: "Referer",
           accessorKey: "click.referer",
+          minSize: 100,
+          size: 100,
+          maxSize: 120,
           meta: {
             filterParams: ({ getValue }) => ({ referer: getValue() }),
           },
@@ -440,7 +676,7 @@ export default function EventsTable({
                   className="size-4 shrink-0 sm:size-4"
                 />
               )}
-              <span className="truncate">
+              <span className="truncate text-xs">
                 {getReferrerDisplayName(getValue())}
               </span>
             </div>
@@ -499,6 +735,13 @@ export default function EventsTable({
           size: 120,
           maxSize: 140,
           cell: ({ row }) => {
+            if ((row.original as any).__skeleton) {
+              return (
+                <div className="flex justify-end">
+                  <div className="h-4 w-16 animate-pulse rounded bg-neutral-200" />
+                </div>
+              );
+            }
             const event = row.original;
             const eventAmount = event.sale?.amount || 0;
 
@@ -506,14 +749,16 @@ export default function EventsTable({
               <div className="text-right">
                 <div
                   className={cn(
-                    "text-sm font-medium",
-                    eventAmount > 0 ? "text-green-700" : "text-neutral-500",
+                    "text-sm font-semibold",
+                    eventAmount > 0 ? "text-green-700" : "text-neutral-400",
                   )}
                 >
-                  {currencyFormatter(eventAmount / 100, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                  {eventAmount > 0
+                    ? currencyFormatter(eventAmount / 100, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })
+                    : "-"}
                 </div>
               </div>
             );
@@ -537,11 +782,14 @@ export default function EventsTable({
         // Date
         {
           id: "timestamp",
-          header: "Date",
+          header: "Time",
           accessorFn: (d: { timestamp: string }) => new Date(d.timestamp),
-          enableHiding: false,
+          enableHiding: true,
           minSize: 100,
-          cell: ({ getValue }) => (
+          cell: ({ row, getValue }) =>
+            (row.original as any).__skeleton ? (
+              <div className="h-4 w-20 animate-pulse rounded bg-neutral-200" />
+            ) : (
             <Tooltip
               content={
                 <div onClick={(e) => e.stopPropagation()}>
@@ -577,21 +825,29 @@ export default function EventsTable({
           size: 43,
           maxSize: 43,
           header: ({ table }) => <EditColumnsButton table={table} />,
-          cell: ({ row }) => <RowMenuButton row={row} />,
+          cell: ({ row }) =>
+            (row.original as any).__skeleton ? (
+              <div className="h-8 w-8 animate-pulse rounded bg-neutral-200" />
+            ) : (
+              <RowMenuButton row={row} />
+            ),
         },
       ]
         .filter(
-          (c) =>
-            c.id === "menu" ||
-            (conversionColumns.all as readonly string[]).includes(c.id),
+          (c) => {
+            return c.id === "menu" || (conversionColumns.all as readonly string[]).includes(c.id);
+          },
         )
-        .map((col) => ({
-          ...col,
-          enableResizing: true,
-          size: col.size || Math.max(200, col.minSize || 100),
-          minSize: col.minSize || 100,
-          maxSize: col.maxSize || 1000,
-        })),
+        .map((col) => {
+          const finalSize = col.size || Math.max(200, col.minSize || 100);
+          return {
+            ...col,
+            enableResizing: true,
+            size: finalSize,
+            minSize: col.minSize || 100,
+            maxSize: col.maxSize || 1000,
+          };
+        }),
     [],
   );
 
@@ -646,6 +902,7 @@ export default function EventsTable({
 
   const showEmptyState = isEmptyData && !isLoading && !integrationsLoading;
   const showDemo = demo && !isLoading && !integrationsLoading;
+  const showSkeleton = !requiresUpgrade && isLoading && (!data || data.length === 0);
 
   // Filter data based on hot score
   const filteredData = useMemo(() => {
@@ -667,18 +924,20 @@ export default function EventsTable({
   }, [data, hotScoreFilter]);
 
   const { table, ...tableProps } = useTable({
-    data: (showDemo
-      ? EXAMPLE_EVENTS_DATA["leads"]
-      : showEmptyState || !filteredData
-        ? []
-        : filteredData) as EventDatum[],
-    loading: isLoading,
+    data: (showSkeleton
+      ? (skeletonRows as any)
+      : showDemo
+        ? EXAMPLE_EVENTS_DATA["leads"]
+        : showEmptyState || !filteredData
+          ? []
+          : filteredData) as EventDatum[],
+    loading: false,
     error: error && !requiresUpgrade ? "Failed to fetch events." : undefined,
     columns,
     enableColumnResizing: true,
     pagination,
     onPaginationChange: setPagination,
-    rowCount: requiresUpgrade ? 0 : filteredData?.length ?? 0,
+    rowCount: showSkeleton ? skeletonRows.length : requiresUpgrade ? 0 : filteredData?.length ?? 0,
     columnVisibility: columnVisibility,
     onColumnVisibilityChange: (args) => setColumnVisibility(args),
     sortableColumns: ["timestamp"],
@@ -693,6 +952,7 @@ export default function EventsTable({
       }),
     columnPinning: { right: ["menu"] },
     onRowClick: (row) => {
+      if ((row.original as any).__skeleton) return;
       const event = row.original;
       if (event.event !== "click" && event.customer) {
         router.push(`/${slug}/customers/${event.customer.id}`);
@@ -706,9 +966,11 @@ export default function EventsTable({
     },
     tdClassName: (columnId) =>
       cn(
-        "cursor-pointer transition-colors group-hover:bg-blue-50/50",
-        columnId === "customer" ? "p-0" : "px-4 py-2",
-        columnId === "saleAmount" ? "text-right" : "",
+        "cursor-pointer transition-colors",
+        columnId === "customer" ? "p-0" : "px-4 py-3",
+        columnId === "saleAmount" || columnId === "created" ? "text-right" : "",
+        columnId === "hotScore" ? "text-center" : "",
+        "group-hover:bg-neutral-50/50",
       ),
     emptyState: (
       <EmptyState

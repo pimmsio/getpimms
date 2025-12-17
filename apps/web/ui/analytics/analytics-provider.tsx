@@ -138,8 +138,12 @@ export default function AnalyticsProvider({
     };
   }, [searchParams?.get("start"), searchParams?.get("end")]);
 
+  // Use 7d as default for events/conversions page, otherwise use standard default
+  const isEventsPage = pathname?.includes("/conversions");
   const defaultInterval = partnerPage
     ? DUB_PARTNERS_ANALYTICS_INTERVAL
+    : isEventsPage
+    ? "7d"
     : DUB_LINKS_ANALYTICS_INTERVAL;
 
   // Only set interval if start and end are not provided

@@ -89,6 +89,7 @@ export const CustomerSchema = z.object({
   lastHotScoreAt: z.date().nullish().describe("When the hot score was last calculated."),
   lastEventAt: z.date().nullish().describe("Last event timestamp (click/lead/sale)."),
   createdAt: z.date().describe("The date the customer was created."),
+  conversions: z.number().optional().describe("Number of conversion events (leads + sales) for this customer in the current query."),
 });
 
 // An extended schema that includes the customer's link, partner, and discount.

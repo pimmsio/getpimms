@@ -103,6 +103,15 @@ export const getEvents = async (params: EventsFilters) => {
 
   response = { data: combinedData };
 
+  // Compute conversion counts per customer from events data
+  const conversionsCountMap = new Map<string, number>();
+  for (const evt of combinedData) {
+    if (evt.event === "lead" || evt.event === "sale") {
+      const currentCount = conversionsCountMap.get(evt.customer_id) || 0;
+      conversionsCountMap.set(evt.customer_id, currentCount + 1);
+    }
+  }
+
   const [linksMap, customersMap] = await Promise.all([
     getLinksMap(response.data.map((d) => d.link_id)),
     getCustomersMap(
@@ -146,14 +155,20 @@ export const getEvents = async (params: EventsFilters) => {
           ? {
               eventId: evt.event_id,
               eventName: evt.event_name,
-              customer: customersMap[evt.customer_id] ?? {
-                id: evt.customer_id,
-                name: "Deleted Customer",
-                email: "deleted@customer.com",
-                avatar: `${OG_AVATAR_URL}${evt.customer_id}&name=${encodeURIComponent("Deleted Customer")}`,
-                externalId: evt.customer_id,
-                createdAt: new Date("1970-01-01"),
-              },
+              customer: customersMap[evt.customer_id]
+                ? {
+                    ...customersMap[evt.customer_id],
+                    conversions: conversionsCountMap.get(evt.customer_id) || 0,
+                  }
+                : {
+                    id: evt.customer_id,
+                    name: "Deleted Customer",
+                    email: "deleted@customer.com",
+                    avatar: `${OG_AVATAR_URL}${evt.customer_id}&name=${encodeURIComponent("Deleted Customer")}`,
+                    externalId: evt.customer_id,
+                    createdAt: new Date("1970-01-01"),
+                    conversions: conversionsCountMap.get(evt.customer_id) || 0,
+                  },
               // Always include sale info for unified schema
               sale: {
                 amount: evt.event === "sale" ? evt.saleAmount : 0,

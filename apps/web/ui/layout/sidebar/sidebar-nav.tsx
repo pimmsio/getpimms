@@ -69,7 +69,7 @@ export function SidebarNav<T extends Record<any, any>>({
                     : "pointer-events-none absolute opacity-0",
                 )}
                 aria-hidden={area !== currentArea ? true : undefined}
-                {...{ inert: area !== currentArea ? true : undefined }}
+                {...(area !== currentArea ? { inert: true } : {})}
               >
                 {title && backHref && (
                   <div className="py group -my-1 -ml-1 flex items-center gap-2 py-2 pr-1 text-sm font-medium text-neutral-900">
@@ -275,7 +275,7 @@ export function Area({
             ),
       )}
       aria-hidden={!visible ? "true" : undefined}
-      {...{ inert: !visible ? true : undefined }}
+      {...(!visible ? { inert: true } : {})}
     >
       {children}
     </div>

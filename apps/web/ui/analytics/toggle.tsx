@@ -79,7 +79,9 @@ import {
   ColdScoreIcon,
   HotScoreIcon,
   WarmScoreIcon,
+  SingleFlameIcon,
 } from "./events/hot-score-icons";
+import useHotLeads from "../../lib/swr/use-hot-leads";
 import RefererIcon from "./referer-icon";
 import { ShareButton } from "./share-button";
 import { useAnalyticsFilterOption, useAnalyticsFilterOptionWithoutSelf } from "./utils";
@@ -1287,6 +1289,7 @@ export default function Toggle({
                 })}
               >
                 {isMobile ? filterSelect : dateRangePicker}
+                {page === "events" && <HotLeadsFilter />}
                 {showConversions && (page === "analytics" || page === "links") && (
                   <>
                     <SortSelector />
@@ -1389,6 +1392,71 @@ export default function Toggle({
         />
       </div>
     </>
+  );
+}
+
+function HotLeadsFilter() {
+  const { searchParams, queryParams } = useRouterStuff();
+  const { data: hotLeadsData } = useHotLeads();
+  const hotOnly = searchParams.get("hotOnly") === "1";
+  const selectedHotScores = useMemo(
+    () => searchParams.get("hotScore")?.split(",")?.filter(Boolean) ?? [],
+    [searchParams.get("hotScore")],
+  );
+  // Check if both warm and hot are selected, or if hotOnly is enabled
+  const hasWarmHotFilter = hotOnly || 
+    (selectedHotScores.includes("warm") && selectedHotScores.includes("hot")) ||
+    (selectedHotScores.length === 2 && selectedHotScores.includes("warm") && selectedHotScores.includes("hot"));
+  
+  // Calculate total touch points from warm + hot leads
+  const warmCount = hotLeadsData?.warm ?? 0;
+  const hotCount = hotLeadsData?.hot ?? 0;
+  const totalWarmHot = warmCount + hotCount;
+  const buttonText = totalWarmHot > 0 ? `${totalWarmHot}` : "Hot";
+
+  return (
+    <Button
+      variant={hasWarmHotFilter ? "primary" : "secondary"}
+      className={cn(
+        "h-9 w-auto rounded-full px-3 gap-1.5",
+        hasWarmHotFilter && "bg-blue-600 hover:bg-blue-700 border-blue-600 text-white",
+        !hasWarmHotFilter && "border-neutral-200 hover:border-blue-300",
+      )}
+      icon={
+        <div className="flex items-center gap-0.5">
+          {/* Orange flame for warm */}
+          <SingleFlameIcon 
+            className="h-4 w-4 shrink-0" 
+            score={50}
+          />
+          {/* Red flame for hot */}
+          <SingleFlameIcon 
+            className="h-4 w-4 shrink-0" 
+            score={67}
+          />
+        </div>
+      }
+      text={buttonText}
+      onClick={() => {
+        if (hasWarmHotFilter) {
+          // Remove filter
+          queryParams({
+            del: ["hotOnly", "hotScore"],
+            set: { page: "1" },
+            scroll: false,
+          });
+        } else {
+          // Set filter for warm + hot (scores 34-100)
+          queryParams({
+            set: { 
+              hotScore: "warm,hot",
+              page: "1" 
+            },
+            scroll: false,
+          });
+        }
+      }}
+    />
   );
 }
 

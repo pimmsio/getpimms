@@ -45,7 +45,9 @@ function InsightsTableContainer() {
       upgradeOverlay={
         <EmptyState
           icon={selectedTab === "sales" ? CoinsIcon : TargetIcon}
-          title={selectedTab === "sales" ? "Real-time Sales tracking" : "Real-time Leads tracking"}
+          title={
+            selectedTab === "sales" ? "Real-time Sales tracking" : "Real-time Leads tracking"
+          }
           description={`Want to see your ${selectedTab === "sales" ? "sales" : "leads"} in realtime ?`}
           learnMore="https://pimms.io/guides/how-to-track-conversions-on-vibe-coding-ai-no-code-sites"
           buttonText="Upgrade to Pro"
