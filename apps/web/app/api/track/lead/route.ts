@@ -5,7 +5,6 @@ import { includeTags } from "@/lib/api/links/include-tags";
 import { parseRequestBody } from "@/lib/api/utils";
 import { withWorkspace } from "@/lib/auth";
 import { generateRandomName } from "@/lib/names";
-import { createPartnerCommission } from "@/lib/partners/create-partner-commission";
 import { getClickEvent, recordLead, recordLeadSync } from "@/lib/tinybird";
 import { logConversionEvent } from "@/lib/tinybird/log-conversion-events";
 import { redis } from "@/lib/upstash";
@@ -294,18 +293,6 @@ export const POST = withWorkspace(
               body: JSON.stringify(body),
             }),
           ]);
-
-          if (link.programId && link.partnerId) {
-            await createPartnerCommission({
-              event: "lead",
-              programId: link.programId,
-              partnerId: link.partnerId,
-              linkId: link.id,
-              eventId: leadEventId,
-              customerId: customer?.id,
-              quantity: eventQuantity ?? 1,
-            });
-          }
 
           // update customer hot score
           if (customer) {

@@ -76,7 +76,7 @@ export const DestinationUrlInput = forwardRef<
           </div>
           {right}
         </div>
-        <div className="relative mt-2 flex rounded shadow-sm">
+      <div className="relative mt-2 flex rounded">
           <input
             ref={ref}
             name="url"

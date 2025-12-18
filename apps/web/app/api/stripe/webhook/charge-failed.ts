@@ -22,18 +22,6 @@ export async function chargeFailed(event: Stripe.Event) {
     },
   });
 
-  // Mark the payouts as pending again
-  await prisma.payout.updateMany({
-    where: {
-      invoiceId,
-    },
-    data: {
-      status: "pending",
-      userId: null,
-      invoiceId: null,
-    },
-  });
-
   // TODO:
   // Send an email to the program owner about the failure
 }

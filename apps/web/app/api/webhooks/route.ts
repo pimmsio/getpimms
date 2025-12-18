@@ -16,7 +16,7 @@ import { sendEmail } from "@dub/email";
 import { WebhookAdded } from "@dub/email/templates/webhook-added";
 import { prisma } from "@dub/prisma";
 import { WebhookReceiver } from "@dub/prisma/client";
-import { ZAPIER_INTEGRATION_ID } from "@dub/utils/src/constants";
+import { ZAPIER_INTEGRATION_ID } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
 import { NextResponse } from "next/server";
 

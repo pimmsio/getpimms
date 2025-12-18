@@ -5,10 +5,12 @@ import { ComponentProps, forwardRef } from "react";
 
 const triggerStyles = cva(
   [
-    "group peer flex cursor-pointer appearance-none items-center gap-x-2 truncate rounded-full border px-3 h-10 outline-none transition-all text-sm",
-    "bg-white border-neutral-200 text-neutral-900 placeholder-neutral-400 transition-all",
+    "group peer flex h-10 cursor-pointer appearance-none items-center gap-x-2 truncate rounded-md border px-3 text-sm font-medium outline-none transition-colors",
+    "bg-white border-neutral-200 text-neutral-700 placeholder-neutral-400",
     "disabled:pointer-events-none disabled:bg-neutral-100 disabled:text-neutral-400",
-    "focus-visible:border-neutral-500 data-[state=open]:border-neutral-500 data-[state=open]:ring-4 data-[state=open]:ring-transparent",
+    "hover:border-neutral-300 hover:bg-neutral-50 active:bg-neutral-100",
+    "focus-visible:ring-2 focus-visible:ring-neutral-300",
+    "data-[state=open]:ring-2 data-[state=open]:ring-neutral-300",
     //" aria-[invalid=true]:ring-2 aria-[invalid=true]:ring-red-200 aria-[invalid=true]:border-red-500 invalid:ring-2 invalid:ring-red-200 invalid:border-red-500",
   ],
   {

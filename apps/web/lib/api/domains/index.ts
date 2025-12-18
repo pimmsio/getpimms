@@ -4,4 +4,5 @@ export * from "./get-domain-response";
 export * from "./mark-domain-deleted";
 export * from "./remove-domain-vercel";
 export * from "./utils";
+export * from "./validation";
 export * from "./verify-domain";

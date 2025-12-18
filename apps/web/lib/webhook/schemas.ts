@@ -2,7 +2,6 @@ import z from "@/lib/zod";
 import { clickEventSchema } from "../zod/schemas/clicks";
 import { CustomerSchema } from "../zod/schemas/customers";
 import { linkEventSchema } from "../zod/schemas/links";
-import { EnrolledPartnerSchema } from "../zod/schemas/partners";
 import { WEBHOOK_TRIGGERS } from "./constants";
 
 const webhookSaleSchema = z.object({
@@ -99,30 +98,6 @@ export const webhookEventSchema = z
         description: "Triggered when a sale is created.",
       }),
 
-    z
-      .object({
-        id: z.string(),
-        event: z.literal("partner.created"),
-        createdAt: z.string(),
-        data: EnrolledPartnerSchema,
-      })
-      .openapi({
-        ref: "PartnerCreatedEvent",
-        description: "Triggered when a partner is created.",
-        deprecated: true,
-      }),
-
-    z
-      .object({
-        id: z.string(),
-        event: z.literal("partner.enrolled"),
-        createdAt: z.string(),
-        data: EnrolledPartnerSchema,
-      })
-      .openapi({
-        ref: "PartnerEnrolledEvent",
-        description: "Triggered when a partner is enrolled.",
-      }),
   ])
   .openapi({
     ref: "WebhookEvent",

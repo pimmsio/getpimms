@@ -3,6 +3,7 @@ import { cn } from "@dub/utils";
 import { useState } from "react";
 import { ThreeDots } from "../shared/icons";
 import ExportButton from "./export-button";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 
 export default function AnalyticsOptions() {
   const [openPopover, setOpenPopover] = useState(false);
@@ -18,16 +19,9 @@ export default function AnalyticsOptions() {
       openPopover={openPopover}
       setOpenPopover={setOpenPopover}
     >
-      <button
-        onClick={() => setOpenPopover(!openPopover)}
-        className={cn(
-          "flex h-10 items-center rounded border px-1.5 outline-none transition-all",
-          "border-neutral-200 bg-white text-neutral-900 placeholder-neutral-400",
-          "focus-visible:border-neutral-500 data-[state=open]:border-neutral-500 data-[state=open]:ring-4 data-[state=open]:ring-transparent",
-        )}
-      >
+      <AppIconButton type="button" onClick={() => setOpenPopover(!openPopover)} className="h-10 w-10">
         <ThreeDots className="h-5 w-5 text-neutral-500" />
-      </button>
+      </AppIconButton>
     </Popover>
   );
 }

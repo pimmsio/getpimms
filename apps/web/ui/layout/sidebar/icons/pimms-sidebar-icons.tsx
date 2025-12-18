@@ -5,7 +5,10 @@ type HoverableSvgProps = { "data-hovered"?: boolean } & SVGProps<SVGSVGElement>;
 
 // Icons in this file are kept as local components so we can control sizing/hover behavior.
 
-function useHoverWiggle(hovered: boolean | undefined, ref: React.RefObject<SVGSVGElement>) {
+function useHoverWiggle(
+  hovered: boolean | undefined,
+  ref: React.RefObject<SVGSVGElement | null>,
+) {
   useEffect(() => {
     if (!hovered || !ref.current) return;
     ref.current.animate(
@@ -20,7 +23,10 @@ function useHoverWiggle(hovered: boolean | undefined, ref: React.RefObject<SVGSV
   }, [hovered, ref]);
 }
 
-function useHoverSpin(hovered: boolean | undefined, ref: React.RefObject<SVGSVGElement>) {
+function useHoverSpin(
+  hovered: boolean | undefined,
+  ref: React.RefObject<SVGSVGElement | null>,
+) {
   useEffect(() => {
     if (!hovered || !ref.current) return;
     ref.current.animate([{ transform: "rotate(0deg)" }, { transform: "rotate(180deg)" }], {

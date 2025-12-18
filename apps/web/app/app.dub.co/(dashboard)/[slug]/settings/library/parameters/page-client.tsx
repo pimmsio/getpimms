@@ -8,7 +8,10 @@ import useUtmCampaigns, {
 import useUtmTerms, { useUtmTermsCount } from "@/lib/swr/use-utm-terms";
 import useUtmContents, { useUtmContentsCount } from "@/lib/swr/use-utm-contents";
 import useWorkspace from "@/lib/swr/use-workspace";
-import { AnimatedSizeContainer, Button, Tooltip } from "@dub/ui";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
+import { text } from "@/ui/design/tokens";
+import { AnimatedSizeContainer, Tooltip } from "@dub/ui";
 import {
   Flag6,
   GlobePointer,
@@ -19,7 +22,7 @@ import {
   SatelliteDish,
   Trash,
 } from "@dub/ui/icons";
-import { normalizeUtmValue } from "@dub/utils";
+import { cn, normalizeUtmValue } from "@dub/utils";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -57,17 +60,15 @@ export default function WorkspaceUtmParametersClient() {
 
   return (
     <div className="grid gap-6">
-      <div className="rounded-lg border border-neutral-200 bg-white">
-        <div className="border-b border-neutral-200 px-6 py-4">
-          <h2 className="text-lg font-semibold text-neutral-900">
-            UTM Parameters
-          </h2>
-          <p className="mt-1 text-sm text-neutral-600">
+      <div className="overflow-hidden rounded-lg bg-neutral-50/60">
+        <div className="flex flex-col items-start gap-1 px-4 py-3">
+          <h2 className={cn(text.pageTitle, "text-lg")}>UTM Parameters</h2>
+          <p className={cn(text.pageDescription, "text-sm")}>
             Manage your UTM parameter values to streamline campaign tracking
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-px bg-neutral-200 md:grid-cols-5">
+        <div className="grid grid-cols-1 divide-y divide-neutral-100 rounded-md bg-white md:grid-cols-5 md:divide-x md:divide-y-0">
           <ParameterColumn
             type="source"
             icon={GlobePointer}
@@ -167,11 +168,7 @@ function ParameterColumn({
       if (res.ok) {
         toast.success(`Successfully added ${title.toLowerCase()}!`);
         setNewValue("");
-        
-        // Use bound mutate function from the hook
-        console.log(`[UTM Parameters] Revalidating cache after add...`);
         await mutateCache(undefined, { revalidate: true });
-        console.log(`[UTM Parameters] Cache revalidation complete`);
       } else {
         const { error } = await res.json();
         toast.error(error.message);
@@ -184,41 +181,29 @@ function ParameterColumn({
   };
 
   const handleDelete = async (id: string) => {
-    console.log(`[UTM Parameters] Delete clicked for ${type}:`, id);
-    console.log(`[UTM Parameters] Setting deletingId to:`, id);
     setDeletingId(id);
 
     try {
       const apiUrl = `/api/${apiEndpoint}/${id}?workspaceId=${workspaceId}`;
-      console.log(`[UTM Parameters] Deleting from:`, apiUrl);
-      
       const res = await fetch(apiUrl, { method: "DELETE" });
-      console.log(`[UTM Parameters] Delete response status:`, res.status);
 
       if (res.ok) {
         toast.success(`Successfully deleted ${title.toLowerCase()}!`);
-        
-        // Use bound mutate function from the hook
-        console.log(`[UTM Parameters] Revalidating cache after delete...`);
         await mutateCache(undefined, { revalidate: true });
-        console.log(`[UTM Parameters] Cache revalidation complete`);
       } else {
         const { error } = await res.json();
-        console.error(`[UTM Parameters] Delete error:`, error);
         toast.error(error.message);
       }
     } catch (error) {
-      console.error(`[UTM Parameters] Delete exception:`, error);
       toast.error(`Failed to delete ${title.toLowerCase()}`);
     } finally {
-      console.log(`[UTM Parameters] Clearing deletingId`);
       setDeletingId(null);
     }
   };
 
   return (
     <div className="flex flex-col bg-white">
-      <div className="border-b border-neutral-200 px-4 py-3">
+      <div className="px-4 py-3">
         <div className="flex items-center gap-2">
           <Icon className="size-4 text-neutral-600" />
           <h3 className="font-medium text-neutral-900">{title}</h3>
@@ -236,22 +221,22 @@ function ParameterColumn({
               value={newValue}
               onChange={(e) => setNewValue(e.target.value)}
               placeholder={`Add ${title.toLowerCase()}...`}
-              className="block w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0"
+              className="app-input h-9"
               disabled={isAdding}
             />
-            <Button
+            <AppButton
               type="submit"
               variant="secondary"
-              className="h-auto px-2 py-1.5"
+              size="sm"
+              className="h-9 px-2"
               disabled={isAdding || !newValue.trim()}
-              icon={
-                isAdding ? (
-                  <LoadingSpinner className="size-4" />
-                ) : (
-                  <Plus className="size-4" />
-                )
-              }
-            />
+            >
+              {isAdding ? (
+                <LoadingSpinner className="size-4" />
+              ) : (
+                <Plus className="size-4" />
+              )}
+            </AppButton>
           </div>
         </form>
 
@@ -270,21 +255,22 @@ function ParameterColumn({
                   {param.name}
                 </span>
                 <Tooltip content="Delete">
-                  <button
+                  <AppIconButton
                     onClick={() => handleDelete(param.id)}
                     disabled={deletingId === param.id}
-                    className={`transition-opacity text-neutral-400 hover:text-red-600 disabled:cursor-not-allowed ${
+                    className={cn(
+                      "h-7 w-7 text-neutral-400 hover:text-red-600 disabled:cursor-not-allowed",
                       deletingId === param.id
                         ? "opacity-100"
-                        : "opacity-0 group-hover:opacity-100"
-                    }`}
+                        : "opacity-0 group-hover:opacity-100",
+                    )}
                   >
                     {deletingId === param.id ? (
                       <LoadingSpinner className="size-4" />
                     ) : (
                       <Trash className="size-4" />
                     )}
-                  </button>
+                  </AppIconButton>
                 </Tooltip>
               </div>
             ))

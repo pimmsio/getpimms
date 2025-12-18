@@ -10,9 +10,9 @@ export const runtime = "edge";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { domain: string; file: SupportedWellKnownFiles } },
+  { params }: { params: Promise<{ domain: string; file: SupportedWellKnownFiles }> },
 ) {
-  const { domain, file } = params;
+  const { domain, file } = await params;
 
   if (!supportedWellKnownFiles.includes(file)) {
     return NextResponse.json({ error: "File not supported" }, { status: 400 });

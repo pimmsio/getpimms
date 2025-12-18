@@ -24,6 +24,16 @@ export default function Locations({
 
   const hasData = hasAnyData(sortedCountriesData, sortedCitiesData);
 
+  const totalCountryClicks =
+    sortedCountriesData?.reduce((sum, d) => sum + (d.clicks || 0), 0) || 0;
+  const totalCountryLeads =
+    sortedCountriesData?.reduce((sum, d) => sum + (d.leads || 0), 0) || 0;
+
+  const totalCityClicks =
+    sortedCitiesData?.reduce((sum, d) => sum + (d.clicks || 0), 0) || 0;
+  const totalCityLeads =
+    sortedCitiesData?.reduce((sum, d) => sum + (d.leads || 0), 0) || 0;
+
   return (
     <AnalyticsCard
       tabs={[{ id: "locations", label: "Locations", icon: MapPosition }]}
@@ -78,10 +88,10 @@ export default function Locations({
                           set: { country: item.country },
                           getNewPath: true,
                         }) as string}
-                        className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 hover:bg-neutral-50 transition-all group border border-transparent hover:border-neutral-200"
+                        className="app-row group"
                       >
                         {idx < 3 && (
-                          <div className={`flex h-5 w-5 items-center justify-center rounded-full ${RANK_COLORS[idx]} text-[10px] font-bold flex-shrink-0 shadow-sm`}>
+                          <div className={`flex h-5 w-5 items-center justify-center rounded-md ${RANK_COLORS[idx]} text-[10px] font-bold flex-shrink-0`}>
                             {idx + 1}
                           </div>
                         )}
@@ -98,6 +108,8 @@ export default function Locations({
                           leads={item.leads}
                           sales={item.sales}
                           saleAmount={item.saleAmount}
+                          totalClicks={totalCountryClicks}
+                          totalLeads={totalCountryLeads}
                           primaryMetric={selectedTab}
                           className="text-xs"
                         />
@@ -109,7 +121,7 @@ export default function Locations({
                 {!isModal && sortedCountriesData && sortedCountriesData.length > 5 && (
                   <button
                     onClick={() => setShowModal(true, "countries")}
-                    className="mt-3 w-full rounded-lg border border-neutral-200 bg-neutral-50 py-1.5 text-xs text-neutral-700 hover:bg-neutral-100 hover:border-neutral-300 font-medium transition-all"
+                    className="app-btn-muted mt-3 w-full"
                   >
                     View all {sortedCountriesData.length} countries →
                   </button>
@@ -131,7 +143,7 @@ export default function Locations({
                           set: { city: item.city },
                           getNewPath: true,
                         }) as string}
-                        className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 hover:bg-neutral-50 transition-all group border border-transparent hover:border-neutral-200"
+                        className="app-row group"
                       >
                         <img
                           alt={item.country}
@@ -146,6 +158,8 @@ export default function Locations({
                           leads={item.leads}
                           sales={item.sales}
                           saleAmount={item.saleAmount}
+                          totalClicks={totalCityClicks}
+                          totalLeads={totalCityLeads}
                           primaryMetric={selectedTab}
                           className="text-xs"
                         />
@@ -156,7 +170,7 @@ export default function Locations({
                   {!isModal && sortedCitiesData && sortedCitiesData.length > 5 && (
                     <button
                       onClick={() => setShowModal(true, "cities")}
-                      className="mt-3 w-full rounded-lg border border-neutral-200 bg-neutral-50 py-1.5 text-xs text-neutral-700 hover:bg-neutral-100 hover:border-neutral-300 font-medium transition-all"
+                      className="app-btn-muted mt-3 w-full"
                     >
                       View all {sortedCitiesData.length} cities →
                     </button>

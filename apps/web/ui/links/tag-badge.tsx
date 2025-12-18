@@ -33,7 +33,7 @@ export default function TagBadge({
         color === "blue" && "border-blue-300 bg-blue-100 text-blue-600",
         color === "purple" && "border-purple-300 bg-purple-100 text-purple-600",
         color === "brown" && "border-brown-300 bg-brown-100 text-brown-600",
-        onClick && "cursor-pointer transition-all hover:opacity-80 hover:shadow-sm",
+        onClick && "cursor-pointer transition-all hover:opacity-80",
         className,
       )}
     >

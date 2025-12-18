@@ -27,6 +27,21 @@ export default function Devices({
 
   const hasAnyData = checkHasAnyData(sortedDevicesData, sortedBrowsersData, sortedOsData);
 
+  const totals = {
+    devices: {
+      clicks: sortedDevicesData?.reduce((sum, d) => sum + (d.clicks || 0), 0) || 0,
+      leads: sortedDevicesData?.reduce((sum, d) => sum + (d.leads || 0), 0) || 0,
+    },
+    browsers: {
+      clicks: sortedBrowsersData?.reduce((sum, d) => sum + (d.clicks || 0), 0) || 0,
+      leads: sortedBrowsersData?.reduce((sum, d) => sum + (d.leads || 0), 0) || 0,
+    },
+    os: {
+      clicks: sortedOsData?.reduce((sum, d) => sum + (d.clicks || 0), 0) || 0,
+      leads: sortedOsData?.reduce((sum, d) => sum + (d.leads || 0), 0) || 0,
+    },
+  };
+
   return (
     <AnalyticsCard
       tabs={[{ id: "devices", label: "Devices & Tech", icon: MobilePhone }]}
@@ -58,6 +73,8 @@ export default function Devices({
                   type="devices"
               queryParams={queryParams}
               selectedTab={selectedTab as "clicks" | "leads" | "sales"}
+              totalClicks={totals.devices.clicks}
+              totalLeads={totals.devices.leads}
               onViewAll={() => setShowModal(true, "devices")}
               isModal={isModal}
                 />
@@ -72,6 +89,8 @@ export default function Devices({
                   type="browsers"
                   queryParams={queryParams}
                   selectedTab={selectedTab as "clicks" | "leads" | "sales"}
+                  totalClicks={totals.browsers.clicks}
+                  totalLeads={totals.browsers.leads}
                   onViewAll={() => setShowModal(true, "browsers")}
                   isModal={isModal}
                 />
@@ -86,6 +105,8 @@ export default function Devices({
                   type="os"
                   queryParams={queryParams}
                   selectedTab={selectedTab as "clicks" | "leads" | "sales"}
+                  totalClicks={totals.os.clicks}
+                  totalLeads={totals.os.leads}
                   onViewAll={() => setShowModal(true, "os")}
                   isModal={isModal}
                 />
@@ -105,6 +126,8 @@ function DeviceSection({
   type,
   queryParams,
   selectedTab,
+  totalClicks,
+  totalLeads,
   onViewAll,
   isModal,
 }: {
@@ -114,6 +137,8 @@ function DeviceSection({
   type: "devices" | "browsers" | "os";
   queryParams: any;
   selectedTab: "clicks" | "leads" | "sales";
+  totalClicks: number;
+  totalLeads: number;
   onViewAll: () => void;
   isModal?: boolean;
 }) {
@@ -136,14 +161,14 @@ function DeviceSection({
                 set: { [singularName]: value },
                 getNewPath: true,
               }) as string}
-              className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 hover:bg-neutral-50 transition-all group border border-transparent hover:border-neutral-200"
+              className="app-row group"
             >
               {idx < 3 && (
-                <div className={`flex h-5 w-5 items-center justify-center rounded-full ${RANK_COLORS[idx]} text-[10px] font-bold flex-shrink-0 shadow-sm`}>
+                <div className={`flex h-5 w-5 items-center justify-center rounded-md ${RANK_COLORS[idx]} text-[10px] font-bold flex-shrink-0`}>
                   {idx + 1}
                 </div>
               )}
-              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-100 flex-shrink-0">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-neutral-100 flex-shrink-0">
                 <DeviceIcon
                   display={value}
                   tab={type}
@@ -158,6 +183,8 @@ function DeviceSection({
                 leads={item.leads}
                 sales={item.sales}
                 saleAmount={item.saleAmount}
+                totalClicks={totalClicks}
+                totalLeads={totalLeads}
                 primaryMetric={selectedTab}
                 className="text-xs"
               />
@@ -169,7 +196,7 @@ function DeviceSection({
       {!isModal && totalCount > 5 && (
         <button
           onClick={onViewAll}
-          className="mt-3 w-full rounded-lg border border-neutral-200 bg-neutral-50 py-1.5 text-xs text-neutral-700 hover:bg-neutral-100 hover:border-neutral-300 font-medium transition-all"
+          className="app-btn-muted mt-3 w-full"
         >
           View all {totalCount} →
         </button>

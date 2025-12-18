@@ -4,7 +4,7 @@ import {
   LinkDraft,
   useLinkDrafts,
 } from "@/ui/modals/link-builder/use-link-drafts";
-import { AnimatedSizeContainer, Button, Popover, useMediaQuery } from "@dub/ui";
+import { AnimatedSizeContainer, Popover, useMediaQuery } from "@dub/ui";
 import { CircleCheck, CircleInfo, LoadingCircle, Xmark } from "@dub/ui/icons";
 import { cn, nanoid, punycode, timeAgo, truncate } from "@dub/utils";
 import { ChevronDown } from "lucide-react";
@@ -19,6 +19,7 @@ import {
 import { useFormContext } from "react-hook-form";
 import { toast } from "sonner";
 import { useDebouncedCallback } from "use-debounce";
+import { AppButton } from "@/ui/components/controls/app-button";
 
 export type DraftControlsHandle = {
   onSubmitSuccessful: () => void;
@@ -144,16 +145,18 @@ export const DraftControls = forwardRef<
       openPopover={openPopover}
       setOpenPopover={setOpenPopover}
     >
-      <Button
+      <AppButton
         type="button"
-        variant="outline"
+        variant="secondary"
+        size="sm"
         className={cn(
           "hidden sm:block animate-fade-in group h-7 w-fit text-sm transition-colors data-[state=open]:bg-neutral-100",
           isDirty && hasSaved
             ? "pl-3 pr-4 text-neutral-400 hover:text-neutral-600"
             : "pl-4 pr-3 text-neutral-500 hover:text-neutral-700",
         )}
-        text={
+      >
+        {
           isDirty && hasSaved ? (
             <div className="flex items-center justify-end gap-2">
               {isSavePending ? (
@@ -170,7 +173,7 @@ export const DraftControls = forwardRef<
             </div>
           ) : null
         }
-      />
+      </AppButton>
     </Popover>
   ) : null;
 });

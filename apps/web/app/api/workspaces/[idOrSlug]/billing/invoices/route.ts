@@ -45,7 +45,6 @@ const subscriptionInvoices = async (stripeId: string) => {
     return [];
   }
 };
-
 const payoutInvoices = async (workspaceId: string) => {
   const invoices = await prisma.invoice.findMany({
     where: {
@@ -74,3 +73,4 @@ const payoutInvoices = async (workspaceId: string) => {
     };
   });
 };
+

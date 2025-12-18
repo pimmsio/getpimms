@@ -1,6 +1,8 @@
 "use client";
 
-import { Button } from "@dub/ui";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { AppInput } from "@/ui/components/controls/app-input";
+import { AppTextarea } from "@/ui/components/controls/app-textarea";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { useOnboardingProgress } from "@/lib/onboarding/use-onboarding-progress";
 import { useSearchParams } from "next/navigation";
@@ -88,7 +90,7 @@ export function UtmConversionForm() {
               type="checkbox"
               checked={utmData.planToUse}
               onChange={() => handleUtmChange("planToUse")}
-              className="h-4 w-4 rounded border-neutral-300 text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4 rounded border-neutral-300 text-brand-primary focus:ring-2 focus:ring-neutral-300"
             />
             <span className="text-sm text-neutral-700">
               I plan to use UTM parameters
@@ -99,7 +101,7 @@ export function UtmConversionForm() {
               type="checkbox"
               checked={utmData.alreadyHasPlan}
               onChange={() => handleUtmChange("alreadyHasPlan")}
-              className="h-4 w-4 rounded border-neutral-300 text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4 rounded border-neutral-300 text-brand-primary focus:ring-2 focus:ring-neutral-300"
             />
             <span className="text-sm text-neutral-700">
               I already have a UTM plan
@@ -110,7 +112,7 @@ export function UtmConversionForm() {
               type="checkbox"
               checked={utmData.wantsBulkUtm}
               onChange={() => handleUtmChange("wantsBulkUtm")}
-              className="h-4 w-4 rounded border-neutral-300 text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4 rounded border-neutral-300 text-brand-primary focus:ring-2 focus:ring-neutral-300"
             />
             <span className="text-sm text-neutral-700">
               I want to trigger bulk UTM plan
@@ -121,7 +123,7 @@ export function UtmConversionForm() {
               type="checkbox"
               checked={utmData.wantsTemplates}
               onChange={() => handleUtmChange("wantsTemplates")}
-              className="h-4 w-4 rounded border-neutral-300 text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4 rounded border-neutral-300 text-brand-primary focus:ring-2 focus:ring-neutral-300"
             />
             <span className="text-sm text-neutral-700">
               I want to use UTM templates
@@ -132,7 +134,7 @@ export function UtmConversionForm() {
               type="checkbox"
               checked={utmData.wantsEnforceParams}
               onChange={() => handleUtmChange("wantsEnforceParams")}
-              className="h-4 w-4 rounded border-neutral-300 text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4 rounded border-neutral-300 text-brand-primary focus:ring-2 focus:ring-neutral-300"
             />
             <span className="text-sm text-neutral-700">
               I want to use UTM enforce params
@@ -159,7 +161,7 @@ export function UtmConversionForm() {
                       type="checkbox"
                       checked={conversionData.contentToTrack.includes(option)}
                       onChange={() => handleConversionTrackChange(option)}
-                      className="h-4 w-4 rounded border-neutral-300 text-blue-600 focus:ring-blue-500"
+                      className="h-4 w-4 rounded border-neutral-300 text-brand-primary focus:ring-2 focus:ring-neutral-300"
                     />
                     <span className="text-sm text-neutral-700">{option}</span>
                   </label>
@@ -171,7 +173,7 @@ export function UtmConversionForm() {
             <label className="block text-sm font-medium text-neutral-700 mb-2">
               Website platform
             </label>
-            <input
+            <AppInput
               type="text"
               value={conversionData.websitePlatform}
               onChange={(e) =>
@@ -181,14 +183,14 @@ export function UtmConversionForm() {
                 }))
               }
               placeholder="e.g., WordPress, Shopify, Webflow..."
-              className="block w-full rounded-lg border border-neutral-300 px-4 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0"
+              className="max-w-none"
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
               Other content (calendars, forms, etc.)
             </label>
-            <textarea
+            <AppTextarea
               value={conversionData.otherContent}
               onChange={(e) =>
                 setConversionData((prev) => ({
@@ -197,19 +199,16 @@ export function UtmConversionForm() {
                 }))
               }
               placeholder="e.g., Calendly, Typeform, Google Forms..."
-              className="block w-full rounded-lg border border-neutral-300 px-4 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0"
+              className="min-h-[96px]"
               rows={3}
             />
           </div>
         </div>
       </div>
 
-      <Button
-        type="submit"
-        text="Continue →"
-        loading={isSubmitting || isLoading}
-        className="w-full bg-blue-600 hover:bg-blue-700"
-      />
+      <AppButton type="submit" variant="primary" loading={isSubmitting || isLoading} className="w-full">
+        Continue →
+      </AppButton>
     </form>
   );
 }

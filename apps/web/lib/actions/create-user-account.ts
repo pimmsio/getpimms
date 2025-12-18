@@ -2,7 +2,6 @@
 
 import { ratelimit } from "@/lib/upstash";
 import { prisma } from "@dub/prisma";
-import { flattenValidationErrors } from "next-safe-action";
 import { createId } from "../api/create-id";
 import { getIP } from "../api/utils";
 import { hashPassword } from "../auth/password";
@@ -17,15 +16,12 @@ const schema = signUpSchema.extend({
 
 // Register a new user using email and password
 export const createUserAccountAction = actionClient
-  .schema(schema, {
-    handleValidationErrorsShape: (ve) =>
-      flattenValidationErrors(ve).fieldErrors,
-  })
+  .schema(schema)
   .use(throwIfAuthenticated)
   .action(async ({ parsedInput }) => {
     const { email, password, code } = parsedInput;
 
-    const { success } = await ratelimit(2, "1 m").limit(`signup:${getIP()}`);
+    const { success } = await ratelimit(2, "1 m").limit(`signup:${await getIP()}`);
 
     if (!success) {
       throw new Error("Too many requests. Please try again later.");

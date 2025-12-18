@@ -1,10 +1,6 @@
 import { getLinkViaEdge } from "@/lib/planetscale";
 import { BlurImage } from "@dub/ui";
-import {
-  getGoogleFavicon,
-  constructMetadata,
-  getApexDomain,
-} from "@dub/utils";
+import { constructMetadata, getApexDomain, getGoogleFavicon } from "@dub/utils";
 import { unescape } from "html-escaper";
 import { notFound, redirect } from "next/navigation";
 
@@ -13,10 +9,10 @@ export const runtime = "edge";
 export async function generateMetadata({
   params,
 }: {
-  params: { domain: string; key: string };
+  params: Promise<{ domain: string; key: string }>;
 }) {
-  const domain = params.domain;
-  const key = decodeURIComponent(params.key); // key can potentially be encoded
+  const { domain, key: rawKey } = await params;
+  const key = decodeURIComponent(rawKey); // key can potentially be encoded
 
   const data = await getLinkViaEdge({ domain, key });
 
@@ -39,10 +35,10 @@ export async function generateMetadata({
 export default async function ProxyPage({
   params,
 }: {
-  params: { domain: string; key: string };
+  params: Promise<{ domain: string; key: string }>;
 }) {
-  const domain = params.domain;
-  const key = decodeURIComponent(params.key);
+  const { domain, key: rawKey } = await params;
+  const key = decodeURIComponent(rawKey);
 
   const data = await getLinkViaEdge({ domain, key });
 

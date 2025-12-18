@@ -1,8 +1,6 @@
 import { computeCustomerHotScore } from "@/lib/analytics/compute-customer-hot-score";
 import { createId } from "@/lib/api/create-id";
 import { includeTags } from "@/lib/api/links/include-tags";
-import { notifyPartnerSale } from "@/lib/api/partners/notify-partner-sale";
-import { createPartnerCommission } from "@/lib/partners/create-partner-commission";
 import { recordLead, recordSale } from "@/lib/tinybird";
 import { redis } from "@/lib/upstash";
 import {
@@ -17,7 +15,10 @@ import {
   transformLeadEventData,
   transformSaleEventData,
 } from "@/lib/webhook/transform";
-import { getUntrustedWorkspaceIdFromUrl, WebhookError } from "@/lib/webhook/utils";
+import {
+  getUntrustedWorkspaceIdFromUrl,
+  WebhookError,
+} from "@/lib/webhook/utils";
 import { prisma } from "@dub/prisma";
 import { nanoid } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
@@ -48,7 +49,7 @@ export async function customSaleCreated(req: Request, body: any) {
   await findWorkspace(workspaceId);
 
   let customer;
-  let existingCustomer = await prisma.customer.findFirst({
+  const existingCustomer = await prisma.customer.findFirst({
     where: {
       projectId: workspaceId,
       OR: [{ externalId }, { email: customerEmail }],
@@ -152,25 +153,6 @@ export async function customSaleCreated(req: Request, body: any) {
     }),
   ]);
 
-  if (link.programId && link.partnerId) {
-    const commission = await createPartnerCommission({
-      event: "sale",
-      programId: link.programId,
-      partnerId: link.partnerId,
-      linkId,
-      eventId,
-      customerId: customer.id,
-      amount,
-      quantity: 1,
-      invoiceId,
-      currency,
-    });
-
-    if (commission) {
-      waitUntil(notifyPartnerSale({ link, commission }));
-    }
-  }
-
   console.log("DEBUG saleData timestamp fields:", {
     clickedAt: customer.clickedAt,
     createdAt: customer.createdAt,
@@ -243,7 +225,7 @@ const getClickId = async (body: any, untrustedWorkspaceId: string) => {
         hasPimmsId: false,
       },
     });
-    
+
     throw new WebhookError("Missing pimms_id, skipping...", 200);
   }
 

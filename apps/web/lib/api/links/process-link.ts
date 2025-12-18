@@ -64,7 +64,6 @@ export async function processLink<T extends Record<string, any>>({
   skipKeyChecks = false, // only skip when key doesn't change (e.g. when editing a link)
   skipExternalIdChecks = false, // only skip when externalId doesn't change (e.g. when editing a link)
   skipFolderChecks = false, // only skip for update / upsert links
-  skipProgramChecks = false, // only skip for when program is already validated
 }: {
   payload: NewLinkProps & T;
   workspace?: Pick<WorkspaceProps, "id" | "plan">;
@@ -73,7 +72,6 @@ export async function processLink<T extends Record<string, any>>({
   skipKeyChecks?: boolean;
   skipExternalIdChecks?: boolean;
   skipFolderChecks?: boolean;
-  skipProgramChecks?: boolean;
 }): Promise<
   | {
       link: NewLinkProps & T;
@@ -99,9 +97,6 @@ export async function processLink<T extends Record<string, any>>({
     tagNames,
     folderId,
     externalId,
-    tenantId,
-    partnerId,
-    programId,
     webhookIds,
     testVariants,
   } = payload;
@@ -110,7 +105,6 @@ export async function processLink<T extends Record<string, any>>({
   let testCompletedAt: string | Date | null | undefined =
     payload.testCompletedAt;
 
-  let defaultProgramFolderId: string | null = null;
   const tagIds = combineTagIds(payload);
 
   // Store original URL before processing to check if it had UTMs
@@ -504,41 +498,6 @@ export async function processLink<T extends Record<string, any>>({
       }
     }
 
-    // Program validity checks
-    if (programId && !skipProgramChecks) {
-      const program = await prisma.program.findUnique({
-        where: { id: programId },
-        select: {
-          workspaceId: true,
-          defaultFolderId: true,
-          ...(!partnerId && tenantId
-            ? {
-                partners: {
-                  where: {
-                    tenantId,
-                  },
-                },
-              }
-            : {}),
-        },
-      });
-
-      if (!program || program.workspaceId !== workspace?.id) {
-        return {
-          link: payload,
-          error: "Program not found.",
-          code: "not_found",
-        };
-      }
-
-      if (!partnerId) {
-        partnerId =
-          program?.partners?.length > 0 ? program.partners[0].partnerId : null;
-      }
-
-      defaultProgramFolderId = program.defaultFolderId;
-    }
-
     // Webhook validity checks
     if (webhookIds && webhookIds.length > 0) {
       if (!workspace || workspace.plan === "free" || workspace.plan === "starter") {
@@ -628,6 +587,10 @@ export async function processLink<T extends Record<string, any>>({
   delete payload["shortLink"];
   delete payload["qrCode"];
   delete payload["prefix"];
+  // partner/program/referral features removed; prevent setting these fields on newly created/updated links
+  delete payload["tenantId"];
+  delete payload["partnerId"];
+  delete payload["programId"];
   UTMTags.forEach((tag) => {
     delete payload[tag];
   });
@@ -643,8 +606,6 @@ export async function processLink<T extends Record<string, any>>({
       expiredUrl,
       testVariants,
       testCompletedAt,
-      // partnerId derived from payload or program enrollment
-      partnerId: partnerId || null,
       // make sure projectId is set to the current workspace
       projectId: workspace?.id || null,
       // if userId is passed, set it (we don't change the userId if it's already set, e.g. when editing a link)
@@ -654,7 +615,7 @@ export async function processLink<T extends Record<string, any>>({
       ...(webhookIds && {
         webhookIds,
       }),
-      folderId: folderId || defaultProgramFolderId,
+      folderId,
     },
     error: null,
   };

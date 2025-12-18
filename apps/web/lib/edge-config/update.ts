@@ -1,4 +1,4 @@
-import { get } from "@vercel/edge-config";
+import { edgeConfigGet } from "./safe-get";
 
 export const updateConfig = async ({
   key,
@@ -21,7 +21,7 @@ export const updateConfig = async ({
     return;
   }
 
-  const existingData = (await get(key)) as string[];
+  const existingData = (await edgeConfigGet<string[]>(key)) ?? [];
   const newData = Array.from(new Set([...existingData, value]));
 
   return await fetch(

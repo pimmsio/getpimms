@@ -7,7 +7,7 @@ const buttonClassName = cn(
   "flex h-8 sm:h-9 items-center justify-center gap-1 sm:gap-1.5 whitespace-nowrap rounded-lg border border-neutral-200 bg-white px-2 sm:px-3.5 text-sm font-medium text-neutral-700",
   "outline-none transition-all duration-200",
   "hover:bg-neutral-50 hover:border-neutral-300 hover:shadow-sm",
-  "focus-visible:border-neutral-400 focus-visible:ring-2 focus-visible:ring-blue-500/20",
+  "focus-visible:border-neutral-300 focus-visible:ring-2 focus-visible:ring-neutral-300",
   "disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white disabled:hover:border-neutral-200 disabled:hover:shadow-none",
 );
 

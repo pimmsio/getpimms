@@ -1,4 +1,4 @@
-import { get } from "@vercel/edge-config";
+import { edgeConfigGet } from "./safe-get";
 
 /**
  * Check if a domain is in the whitelist (for allowing redirects on free plan)
@@ -12,7 +12,8 @@ export const isWhitelistedDomain = async (
   }
 
   try {
-    const whitelistedDomains = await get<string[]>("whitelistedDomains");
+    const whitelistedDomains =
+      (await edgeConfigGet<string[]>("whitelistedDomains")) ?? [];
     
     if (!whitelistedDomains || whitelistedDomains.length === 0) {
       return false;

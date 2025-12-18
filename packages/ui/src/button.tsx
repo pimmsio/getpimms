@@ -8,10 +8,10 @@ export const buttonVariants = cva("transition-all", {
   variants: {
     variant: {
       primary:
-        "bg-brand-primary border-none text-white font-semibold text-md transition duration-500 hover:bg-brand-primary-hover",
+        "bg-brand-primary border-none text-white font-semibold transition-colors hover:bg-brand-primary-hover",
       secondary: cn(
-        "border-neutral-200 bg-white text-neutral-900 hover:bg-neutral-50 focus-visible:border-neutral-500 outline-none",
-        "data-[state=open]:border-neutral-500 data-[state=open]:ring-0",
+        "border-neutral-200 bg-white text-neutral-900 hover:bg-neutral-50",
+        "data-[state=open]:border-neutral-300",
       ),
       outline: "border-transparent text-neutral-600 hover:bg-neutral-100",
       success:
@@ -62,7 +62,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         <Tooltip content={disabledTooltip}>
           <div
             className={cn(
-              "flex h-10 w-full rounded cursor-not-allowed items-center justify-center gap-x-2 border border-neutral-200 bg-neutral-100 px-4 text-sm text-neutral-400 transition-all focus:outline-none",
+              "flex h-10 w-full cursor-not-allowed items-center justify-center gap-x-2 rounded-lg border border-neutral-200 bg-neutral-100 px-4 text-sm text-neutral-400",
               {
                 "border-transparent bg-transparent":
                   variant?.endsWith("outline"),
@@ -105,9 +105,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         // if onClick is passed, it's a "button" type, otherwise it's being used in a form, hence "submit"
         type={props.onClick ? "button" : "submit"}
         className={cn(
-          "group flex rounded-lg h-10 w-full items-center justify-center gap-2 whitespace-nowrap border border-neutral-200 px-4 text-sm",
+          "group flex h-10 w-full cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-neutral-200 px-3 text-sm font-semibold",
           props.disabled || loading
-            ? "cursor-not-allowed border-neutral-200 bg-neutral-100 text-neutral-400 outline-none"
+            ? "cursor-not-allowed border-neutral-200 bg-neutral-100 text-neutral-400"
             : buttonVariants({ variant }),
           className,
         )}

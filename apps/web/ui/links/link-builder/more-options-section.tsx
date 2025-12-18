@@ -70,8 +70,8 @@ export function MoreOptionsSection() {
           type="button"
           onClick={toggleExpanded}
           className={cn(
-            "group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 transition-all hover:border-neutral-300 hover:bg-neutral-50",
-            isExpanded && "border-neutral-300 bg-neutral-50",
+            "group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 transition-all hover:border-neutral-300",
+            isExpanded && "border-neutral-300",
           )}
         >
           <div className="flex items-center justify-between">
@@ -104,7 +104,7 @@ export function MoreOptionsSection() {
             <button
               type="button"
               onClick={() => setShowTargetingModal(true)}
-              className="group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-left transition-all hover:border-neutral-300 hover:bg-neutral-50"
+              className="group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-left transition-all hover:border-neutral-300"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3">
@@ -129,7 +129,7 @@ export function MoreOptionsSection() {
                         App Stores
                       </div>
                       {targetingEnabled && (
-                        <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                        <span className="inline-flex items-center rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
                           Active
                         </span>
                       )}
@@ -150,7 +150,7 @@ export function MoreOptionsSection() {
               <button
                 type="button"
                 onClick={() => setShowABTestingModal(true)}
-                className="group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-left transition-all hover:border-neutral-300 hover:bg-neutral-50"
+                className="group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-left transition-all hover:border-neutral-300"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">
@@ -177,7 +177,7 @@ export function MoreOptionsSection() {
                           A/B Testing
                         </div>
                         {abTestingEnabled && (
-                          <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
+                          <span className="inline-flex items-center rounded-md border border-purple-200 bg-purple-50 px-2 py-0.5 text-xs font-medium text-purple-700">
                             Active
                           </span>
                         )}
@@ -198,7 +198,7 @@ export function MoreOptionsSection() {
             <button
               type="button"
               onClick={() => setShowPasswordModal(true)}
-              className="group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-left transition-all hover:border-neutral-300 hover:bg-neutral-50"
+              className="group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-left transition-all hover:border-neutral-300"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3">
@@ -223,7 +223,7 @@ export function MoreOptionsSection() {
                         Password Protection
                       </div>
                       {passwordEnabled && (
-                        <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+                        <span className="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
                           Active
                         </span>
                       )}
@@ -243,7 +243,7 @@ export function MoreOptionsSection() {
             <button
               type="button"
               onClick={() => setShowExpirationModal(true)}
-              className="group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-left transition-all hover:border-neutral-300 hover:bg-neutral-50"
+              className="group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-left transition-all hover:border-neutral-300"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3">
@@ -270,7 +270,7 @@ export function MoreOptionsSection() {
                         Link Expiration
                       </div>
                       {expirationEnabled && (
-                        <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                        <span className="inline-flex items-center rounded-md border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
                           Active
                         </span>
                       )}

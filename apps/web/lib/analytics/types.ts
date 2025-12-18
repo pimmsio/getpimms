@@ -3,7 +3,6 @@ import {
   analyticsQuerySchema,
   eventsQuerySchema,
 } from "../zod/schemas/analytics";
-import { getPartnerEarningsTimeseriesSchema } from "../zod/schemas/partner-profile";
 import {
   ANALYTICS_SALE_UNIT,
   ANALYTICS_VIEWS,
@@ -47,36 +46,3 @@ export type EventsFilters = z.infer<typeof eventsQuerySchema> & {
   folderIds?: string[];
   isMegaFolder?: boolean;
 };
-
-const partnerAnalyticsSchema = analyticsQuerySchema
-  .pick({
-    event: true,
-    interval: true,
-    start: true,
-    end: true,
-    groupBy: true,
-    linkId: true,
-  })
-  .partial();
-
-export type PartnerAnalyticsFilters = z.infer<typeof partnerAnalyticsSchema>;
-export type PartnerEarningsTimeseriesFilters = z.infer<
-  typeof getPartnerEarningsTimeseriesSchema
->;
-
-const partnerEventsSchema = eventsQuerySchema
-  .pick({
-    event: true,
-    interval: true,
-    start: true,
-    end: true,
-    // groupBy: true,
-    page: true,
-    limit: true,
-    order: true,
-    sortOrder: true,
-    sortBy: true,
-  })
-  .partial();
-
-export type PartnerEventsFilters = z.infer<typeof partnerEventsSchema>;

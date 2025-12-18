@@ -3,27 +3,30 @@ import DirectLinkRedirect from "@/ui/links/direct-link-redirect";
 
 export const runtime = "edge";
 
-export default function DirectlinkPage({
+export default async function DirectlinkPage({
   params,
   searchParams,
 }: {
-  params: { url: string };
-  searchParams: { os?: string; browser?: string };
+  params: Promise<{ url: string }>;
+  searchParams: Promise<{ os?: string; browser?: string }>;
 }) {
   console.log('Runtime:', (globalThis as any).EdgeRuntime ? 'edge' : 'node');
 
-  // First decode the full URL parameter from the route
-  const url = decodeURIComponent(params.url);
+  const { url: encodedUrl } = await params;
+  const { os } = await searchParams;
 
-  const os = searchParams.os as "ios" | "android" | undefined;
+  // First decode the full URL parameter from the route
+  const url = decodeURIComponent(encodedUrl);
+
+  const osParam = os as "ios" | "android" | undefined;
 
   // get direct link uri scheme
-  const directLink = getDirectLink(url, os);
+  const directLink = getDirectLink(url, osParam);
 
   console.log("direct link", {
     directLink,
     url,
-    os,
+    os: osParam,
   });
 
   return <DirectLinkRedirect directLink={directLink} url={url} />;

@@ -31,6 +31,13 @@ export interface AnalyticsListItemProps {
     saleAmount?: number;
   };
   /**
+   * Totals for the current card/list (used for hover %)
+   */
+  totals?: {
+    clicks: number;
+    leads: number;
+  };
+  /**
    * Currently selected metric tab
    */
   primaryMetric: "clicks" | "leads" | "sales";
@@ -57,7 +64,7 @@ function RankBadge({ rank }: { rank: number }) {
 
   return (
     <div
-      className={`flex h-5 w-5 items-center justify-center rounded-full ${RANK_COLORS[rank - 1]} text-[10px] font-bold flex-shrink-0 shadow-sm`}
+      className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-md ${RANK_COLORS[rank - 1]} text-[10px] font-bold`}
     >
       {rank}
     </div>
@@ -90,7 +97,7 @@ function ItemIcon({
   // If icon is a React component
   if (React.isValidElement(icon)) {
     return (
-      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-100 flex-shrink-0">
+      <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md bg-neutral-100">
         {React.cloneElement(icon as React.ReactElement<any>, {
           className: iconClassName,
         })}
@@ -109,6 +116,7 @@ export function AnalyticsListItem({
   rank,
   label,
   metrics,
+  totals,
   primaryMetric,
   href,
   onClick,
@@ -125,7 +133,7 @@ export function AnalyticsListItem({
   return (
     <Component
       {...props}
-      className={`flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 hover:bg-neutral-50 transition-all group border border-transparent hover:border-neutral-200 ${className}`}
+      className={`app-row group ${className}`}
     >
       {rank && <RankBadge rank={rank} />}
       <ItemIcon icon={icon} iconClassName={iconClassName} />
@@ -137,6 +145,8 @@ export function AnalyticsListItem({
         leads={metrics.leads}
         sales={metrics.sales}
         saleAmount={metrics.saleAmount}
+        totalClicks={totals?.clicks}
+        totalLeads={totals?.leads}
         primaryMetric={primaryMetric}
         className="text-xs"
       />
@@ -170,7 +180,7 @@ export function AnalyticsListSection({
       {!isModal && onViewAll && totalCount && totalCount > 5 && (
         <button
           onClick={onViewAll}
-          className="mt-3 w-full rounded-lg border border-neutral-200 bg-neutral-50 py-1.5 text-xs text-neutral-700 hover:bg-neutral-100 hover:border-neutral-300 font-medium transition-all"
+          className="app-btn-muted mt-3 w-full"
         >
           View all {totalCount} →
         </button>

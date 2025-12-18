@@ -1,48 +1,38 @@
 "use client";
 
-import { NavWordmark, Button, LayoutSidebar } from "@dub/ui";
+import { NavWordmark } from "@dub/ui";
 import { cn } from "@dub/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { 
-  BarChart3, 
-  Link2, 
-  Target, 
-  Users,
-  X
-} from "lucide-react";
+import { LayoutSidebar } from "@dub/ui";
+import { X } from "lucide-react";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 
 const adminNavItems = [
   {
     name: "Dashboard",
     href: "/",
-    icon: BarChart3,
   },
   {
     name: "Links",
     href: "/links",
-    icon: Link2,
   },
   {
     name: "Links Report",
     href: "/links-report",
-    icon: BarChart3,
   },
   {
     name: "User Reports",
     href: "/user-reports",
-    icon: Users,
   },
   {
     name: "Analytics",
     href: "/analytics",
-    icon: BarChart3,
   },
   {
     name: "Leads",
     href: "/leads",
-    icon: Target,
   },
 ];
 
@@ -65,25 +55,25 @@ export default function AdminSidebar() {
   return (
     <>
       {/* Mobile menu button */}
-      <div className="sticky top-0 z-50 bg-white border-b border-neutral-200 p-4 md:hidden">
+      <div className="sticky top-0 z-50 border-b border-neutral-100 bg-white/95 p-4 backdrop-blur md:hidden">
         <div className="flex items-center justify-between">
           <Link href="/">
             <NavWordmark className="h-6" />
           </Link>
-          <Button
+          <AppIconButton
             type="button"
-            variant="outline"
             onClick={() => setIsOpen(true)}
-            icon={<LayoutSidebar className="size-4 text-neutral-600" />}
-            className="h-auto w-fit p-2 border border-neutral-600 rounded-full"
-          />
+            className="app-icon-btn"
+          >
+            <LayoutSidebar className="size-4 text-neutral-600" />
+          </AppIconButton>
         </div>
       </div>
 
       {/* Sidebar backdrop */}
       <div
         className={cn(
-          "fixed left-0 top-0 z-50 h-dvh w-screen md:sticky md:z-auto md:w-full md:bg-zinc-100",
+          "fixed left-0 top-0 z-50 h-dvh w-screen bg-neutral-50 md:sticky md:z-auto md:w-full",
           isOpen
             ? ""
             : "bg-transparent max-md:pointer-events-none",
@@ -98,7 +88,7 @@ export default function AdminSidebar() {
         {/* Sidebar */}
         <div
           className={cn(
-            "relative h-[calc(100%-20px)] sm:h-[calc(100vh-20px)] top-[10px] left-[10px] w-[220px] border border-zinc-300 bg-white shadow-sm md:border-0 md:shadow-none md:bg-transparent rounded-3xl max-w-full transition-transform md:translate-x-0",
+            "relative left-[10px] top-[10px] h-[calc(100%-20px)] w-[220px] max-w-full rounded-3xl bg-white md:bg-transparent sm:h-[calc(100vh-20px)] transition-transform md:translate-x-0",
             !isOpen && "-translate-x-[calc(100%+20px)]",
           )}
         >
@@ -108,13 +98,13 @@ export default function AdminSidebar() {
               <Link href="/" className="flex items-center">
                 <NavWordmark className="h-6" />
               </Link>
-              <Button
+              <AppIconButton
                 type="button"
-                variant="ghost"
                 onClick={() => setIsOpen(false)}
-                icon={<X className="size-4" />}
-                className="md:hidden h-auto w-fit p-1 rounded-full"
-              />
+                className="app-icon-btn md:hidden"
+              >
+                <X className="size-4" />
+              </AppIconButton>
             </div>
 
             {/* Admin Badge */}
@@ -128,7 +118,6 @@ export default function AdminSidebar() {
             <div className="flex-1 space-y-1">
               {adminNavItems.map((item) => {
                 const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
-                const Icon = item.icon;
                 
                 return (
                   <Link
@@ -141,7 +130,6 @@ export default function AdminSidebar() {
                         : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
                     )}
                   >
-                    <Icon className="size-4" />
                     {item.name}
                   </Link>
                 );
@@ -149,7 +137,7 @@ export default function AdminSidebar() {
             </div>
 
             {/* Footer */}
-            <div className="pt-6 border-t border-neutral-200">
+            <div className="border-t border-neutral-100 pt-6">
               <div className="text-xs text-neutral-500 text-center">
                 PIMMS Admin v1.0
               </div>

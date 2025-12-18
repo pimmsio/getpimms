@@ -34,7 +34,7 @@ import { motion } from "framer-motion";
 import { Archive, ChevronDown, FolderInput, QrCode } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, type RefObject } from "react";
 import { toast } from "sonner";
 import { mutate } from "swr";
 import useSWRImmutable from "swr/immutable";
@@ -57,7 +57,9 @@ export default function DomainCard({ props }: { props: DomainProps }) {
   const { id: workspaceId, slug } = useWorkspace();
 
   const domainRef = useRef<HTMLDivElement>(null);
-  const isVisible = useInViewport(domainRef, { defaultValue: true });
+  const isVisible = useInViewport(domainRef as unknown as RefObject<Element>, {
+    defaultValue: true,
+  });
 
   const { data, isValidating, mutate } = useSWRImmutable<{
     status: DomainVerificationStatusProps;
@@ -98,7 +100,7 @@ export default function DomainCard({ props }: { props: DomainProps }) {
     <>
       <div
         ref={domainRef}
-        className="hover:drop-shadow-card-hover group rounded border border-neutral-100 bg-white transition-[filter]"
+        className="group rounded border border-neutral-100 bg-white transition-colors hover:bg-neutral-50/40"
         onPointerEnter={() => setGroupHover(true)}
         onPointerLeave={() => setGroupHover(false)}
       >

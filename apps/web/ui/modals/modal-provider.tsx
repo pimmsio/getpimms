@@ -26,10 +26,7 @@ import {
 import { toast } from "sonner";
 import { useAddEditTagModal } from "./add-edit-tag-modal";
 import { useImportRebrandlyModal } from "./import-rebrandly-modal";
-import { useImportRewardfulModal } from "./import-rewardful-modal";
 import { useLinkBuilder } from "./link-builder";
-import { useProgramWelcomeModal } from "./program-welcome-modal";
-import { useWelcomeModal } from "./welcome-modal";
 
 export const ModalContext = createContext<{
   setShowAddWorkspaceModal: Dispatch<SetStateAction<boolean>>;
@@ -40,7 +37,6 @@ export const ModalContext = createContext<{
   setShowImportShortModal: Dispatch<SetStateAction<boolean>>;
   setShowImportRebrandlyModal: Dispatch<SetStateAction<boolean>>;
   setShowImportCsvModal: Dispatch<SetStateAction<boolean>>;
-  setShowImportRewardfulModal: Dispatch<SetStateAction<boolean>>;
 }>({
   setShowAddWorkspaceModal: () => {},
   setShowAddEditDomainModal: () => {},
@@ -50,7 +46,6 @@ export const ModalContext = createContext<{
   setShowImportShortModal: () => {},
   setShowImportRebrandlyModal: () => {},
   setShowImportCsvModal: () => {},
-  setShowImportRewardfulModal: () => {},
 });
 
 export function ModalProvider({ children }: { children: ReactNode }) {
@@ -98,12 +93,14 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
   const { setShowImportRebrandlyModal, ImportRebrandlyModal } =
     useImportRebrandlyModal();
   const { setShowImportCsvModal, ImportCsvModal } = useImportCsvModal();
-  const { setShowImportRewardfulModal, ImportRewardfulModal } =
-    useImportRewardfulModal();
 
-  const [hashes, setHashes] = useCookies<SimpleLinkProps[]>("hashes__pimms", [], {
-    domain: !!process.env.NEXT_PUBLIC_VERCEL_URL ? ".pimms.io" : undefined,
-  });
+  const [hashes, setHashes] = useCookies<SimpleLinkProps[]>(
+    "hashes__pimms",
+    [],
+    {
+      domain: !!process.env.NEXT_PUBLIC_VERCEL_URL ? ".pimms.io" : undefined,
+    },
+  );
 
   const { id: workspaceId, error } = useWorkspace();
 
@@ -129,14 +126,14 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
         },
       );
     }
-  }, [hashes, workspaceId]);
+  }, [hashes, workspaceId, setHashes]);
 
   // handle invite and oauth modals
   useEffect(() => {
     if (error && (error.status === 409 || error.status === 410)) {
       setShowAcceptInviteModal(true);
     }
-  }, [error]);
+  }, [error, setShowAcceptInviteModal]);
 
   // handle ?newWorkspace and ?newLink query params
   useEffect(() => {
@@ -146,7 +143,7 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
     if (searchParams.has("newLink")) {
       setShowLinkBuilder(true);
     }
-  }, []);
+  }, [searchParams, setShowAddWorkspaceModal, setShowLinkBuilder]);
 
   const { data: session, update } = useSession();
   const { workspaces } = useWorkspaces();
@@ -169,7 +166,7 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
         }),
       }).then(() => update());
     }
-  }, [session]);
+  }, [session, update, workspaces]);
 
   return (
     <ModalContext.Provider
@@ -182,7 +179,6 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
         setShowImportShortModal,
         setShowImportRebrandlyModal,
         setShowImportCsvModal,
-        setShowImportRewardfulModal,
       }}
     >
       <AddWorkspaceModal />
@@ -194,7 +190,6 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
       <ImportShortModal />
       <ImportRebrandlyModal />
       <ImportCsvModal />
-      <ImportRewardfulModal />
       {children}
     </ModalContext.Provider>
   );

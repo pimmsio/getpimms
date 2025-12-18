@@ -1,5 +1,6 @@
 import useWorkspace from "@/lib/swr/use-workspace";
-import { Button, Download, TooltipContent } from "@dub/ui";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { Download, TooltipContent } from "@dub/ui";
 import { useContext } from "react";
 import { toast } from "sonner";
 import { EventsContext } from "./events-provider";
@@ -8,7 +9,8 @@ export default function ExportButton({ onClick }: { onClick?: () => void }) {
   const { exportQueryString } = useContext(EventsContext);
   const { slug, plan } = useWorkspace();
 
-  const needsHigherPlan = plan === "free" || plan === "starter" || plan === "pro";
+  const needsHigherPlan =
+    plan === "free" || plan === "starter" || plan === "pro";
 
   async function exportData() {
     const response = await fetch(`/api/events/export?${exportQueryString}`, {
@@ -31,28 +33,33 @@ export default function ExportButton({ onClick }: { onClick?: () => void }) {
   }
 
   return (
-    <Button
-      variant="outline"
-      icon={<Download className="h-4 w-4 shrink-0" />}
-      className="h-9 justify-start px-2 text-black"
-      text="Download as CSV"
-      disabledTooltip={
-        needsHigherPlan && (
+    <div>
+      <AppButton
+        type="button"
+        variant="secondary"
+        size="sm"
+        className="w-full justify-start"
+        onClick={() => {
+          toast.promise(exportData(), {
+            loading: "Exporting file...",
+            success: "Exported successfully",
+            error: (error) => error,
+          });
+          onClick?.();
+        }}
+      >
+        <Download className="mr-2 h-4 w-4 shrink-0 text-neutral-500" />
+        Download as CSV
+      </AppButton>
+      {needsHigherPlan ? (
+        <div className="mt-2">
           <TooltipContent
             title="Upgrade to our Business Plan to enable CSV downloads for events in your workspace."
             cta="Upgrade to Business"
             href={`/${slug}/upgrade`}
           />
-        )
-      }
-      onClick={() => {
-        toast.promise(exportData(), {
-          loading: "Exporting file...",
-          success: "Exported successfully",
-          error: (error) => error,
-        });
-        onClick?.();
-      }}
-    />
+        </div>
+      ) : null}
+    </div>
   );
 }

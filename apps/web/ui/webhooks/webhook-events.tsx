@@ -25,8 +25,8 @@ const WebhookEvent = ({ event }: { event: WebhookEventProps }) => {
   const [requestBody, setRequestBody] = useState<string>("");
 
   useEffect(() => {
-    import("shiki").then(({ getHighlighter }) => {
-      getHighlighter({
+    import("shiki").then(({ createHighlighter }) => {
+      createHighlighter({
         themes: ["min-light"],
         langs: ["json"],
       }).then(setHighlighter);

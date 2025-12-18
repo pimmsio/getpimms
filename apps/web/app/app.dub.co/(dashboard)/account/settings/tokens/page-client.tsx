@@ -50,23 +50,24 @@ export default function TokensPageClient() {
         </AlertDescription>
       </Alert>
 
-      <div className="rounded border border-neutral-100 bg-white">
-        <div className="flex flex-col space-y-3 p-5 sm:p-10">
-          <h2 className="text-xl font-medium">Your API Keys</h2>
-          <p className="text-sm text-neutral-500">
+      <div className="mt-8">
+        <div className="border-b border-neutral-100 pb-3">
+          <h2 className="text-sm font-semibold text-neutral-900">Your API Keys</h2>
+          <p className="mt-1 text-sm text-neutral-500">
             These API keys allow other apps to access your account. Use it with
-            caution – do not share your API key with others, or expose it in the
-            browser or other client-side code
+            caution – do not share your API key with others, or expose it in the
+            browser or other client-side code.
           </p>
         </div>
+
         {isLoading || !tokens ? (
-          <div className="flex flex-col items-center justify-center space-y-4 pb-20 pt-10">
+          <div className="flex flex-col items-center justify-center space-y-4 py-10">
             <LoadingSpinner className="h-6 w-6 text-neutral-500" />
             <p className="text-sm text-neutral-500">Fetching API keys...</p>
           </div>
         ) : tokens.length > 0 ? (
-          <div>
-            <div className="grid grid-cols-5 border-b border-neutral-100 px-5 py-2 text-sm font-medium text-neutral-500 sm:px-10">
+          <div className="mt-4 overflow-hidden rounded-lg border border-neutral-100 bg-white">
+            <div className="grid grid-cols-5 border-b border-neutral-100 bg-neutral-50 px-5 py-2 text-sm font-medium text-neutral-500">
               <div className="col-span-3">Name</div>
               <div>Key</div>
               <div className="text-center">Last used</div>
@@ -78,7 +79,7 @@ export default function TokensPageClient() {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center space-y-4 pb-20 pt-10">
+          <div className="flex flex-col items-center justify-center space-y-4 py-10">
             <FolderOpen className="h-6 w-6 text-neutral-500" />
             <p className="text-sm text-neutral-500">
               No API keys found. Create one above.

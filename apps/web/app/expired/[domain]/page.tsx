@@ -25,9 +25,10 @@ const UTM_PARAMS = {
 export default async function ExpiredLinkPage({
   params,
 }: {
-  params: { domain: string };
+  params: Promise<{ domain: string }>;
 }) {
-  const domainEdge = await getDomainViaEdge(params.domain);
+  const { domain } = await params;
+  const domainEdge = await getDomainViaEdge(domain);
 
   if (domainEdge?.expiredUrl) {
     redirect(domainEdge.expiredUrl);
@@ -73,9 +74,9 @@ export default async function ExpiredLinkPage({
             </ButtonLink>
             <ButtonLink
               variant="secondary"
-              href={createHref("/", params.domain, {
+              href={createHref("/", domain, {
                 ...UTM_PARAMS,
-                utm_campaign: params.domain,
+                utm_campaign: domain,
                 utm_content: "Learn more",
               })}
             >
@@ -84,10 +85,10 @@ export default async function ExpiredLinkPage({
           </div>
         </Hero>
         <div className="mt-20">
-          <FeaturesSection domain={params.domain} utmParams={UTM_PARAMS} />
+          <FeaturesSection domain={domain} utmParams={UTM_PARAMS} />
         </div>
         {/* <div className="mt-32">
-          <CTA domain={params.domain} utmParams={UTM_PARAMS} />
+          <CTA domain={domain} utmParams={UTM_PARAMS} />
         </div> */}
       </div>
       <Footer className="max-w-screen-lg border-0 bg-transparent lg:px-4 xl:px-0" />

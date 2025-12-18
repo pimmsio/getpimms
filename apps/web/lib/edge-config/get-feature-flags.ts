@@ -1,6 +1,6 @@
-import { get } from "@vercel/edge-config";
 import { prefixWorkspaceId } from "../api/workspace-id";
 import { BetaFeatures } from "../types";
+import { edgeConfigGet } from "./safe-get";
 
 type BetaFeaturesRecord = Record<BetaFeatures, string[]>;
 
@@ -33,7 +33,7 @@ export const getFeatureFlags = async ({
   let betaFeatures: BetaFeaturesRecord | undefined = undefined;
 
   try {
-    betaFeatures = await get("betaFeatures");
+    betaFeatures = (await edgeConfigGet<BetaFeaturesRecord>("betaFeatures")) ?? undefined;
   } catch (e) {
     console.error(`Error getting beta features: ${e}`);
   }

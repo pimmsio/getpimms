@@ -8,11 +8,16 @@ import AnalyticsClient from "../analytics/client";
 export default function WorkspaceAnalyticsConversions() {
   return (
     <Suspense fallback={<LayoutLoader />}>
-      <PageContent title="Leads">
+      <PageContent
+        title="Leads"
+        headerPlacement="content"
+      >
         <AnalyticsClient eventsPage>
-          <EventsProvider>
-            <Events />
-          </EventsProvider>
+          <div className="px-3 py-4 pb-16 lg:px-10">
+            <EventsProvider>
+              <Events />
+            </EventsProvider>
+          </div>
         </AnalyticsClient>
       </PageContent>
     </Suspense>

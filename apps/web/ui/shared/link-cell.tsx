@@ -263,12 +263,19 @@ export function LinkCell({
         data-checked={isSelected}
         onClick={(e) => link.id && handleLinkSelection?.(link.id, e)}
         className={cn(
-          "group relative flex shrink-0 items-center justify-center outline-none w-9 h-9 sm:w-10 sm:h-10",
+          "group relative flex h-9 w-9 shrink-0 items-center justify-center outline-none sm:h-10 sm:w-10",
           isSelectMode && "flex",
         )}
       >
         {/* Link logo background circle */}
-        <div className="absolute inset-0 shrink-0 rounded-full border border-neutral-100 bg-gradient-to-t from-neutral-100 opacity-100" />
+        <div
+          className={cn(
+            "absolute inset-1 shrink-0 rounded-full border transition-colors duration-150",
+            isSelectMode || isSelected
+              ? "border-neutral-200 bg-white"
+              : "border-transparent bg-transparent",
+          )}
+        />
         <div
           className={cn(
             "relative transition-[padding,transform]",
@@ -278,7 +285,7 @@ export function LinkCell({
           <LinkLogo
             apexDomain={getApexDomain(url)}
             className={cn(
-              "size-6 rounded-full shrink-0 transition-opacity sm:size-8",
+              "size-6 shrink-0 rounded-full transition-opacity sm:size-7",
               isSelectMode && "opacity-0",
             )}
           />
@@ -286,20 +293,16 @@ export function LinkCell({
         {/* Checkbox overlay */}
         <div
           className={cn(
-            "pointer-events-none absolute inset-0 flex items-center justify-center rounded-full border border-neutral-400 bg-white ring-0 ring-black/5",
-            isSelectMode
-              ? "opacity-100 ring"
-              : "opacity-0 transition-all duration-150 group-hover:opacity-100 group-hover:ring group-focus-visible:opacity-100 group-focus-visible:ring",
-            "group-data-[checked=true]:opacity-100 group-data-[checked=true]:ring",
+            "pointer-events-none absolute inset-1 flex items-center justify-center rounded-full border border-neutral-300 bg-white",
+            isSelectMode || isSelected ? "opacity-100" : "opacity-0",
           )}
         >
           <div
             className={cn(
-              "rounded-full bg-neutral-800 p-0.5",
               "scale-90 opacity-0 transition-[transform,opacity] duration-100 group-data-[checked=true]:scale-100 group-data-[checked=true]:opacity-100",
             )}
           >
-            <Check2 className="size-3 text-white" />
+            <Check2 className="size-4 text-neutral-900" />
           </div>
         </div>
       </button>

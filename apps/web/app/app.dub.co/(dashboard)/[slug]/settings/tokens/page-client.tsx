@@ -9,9 +9,8 @@ import { useDeleteTokenModal } from "@/ui/modals/delete-token-modal";
 import { useTokenCreatedModal } from "@/ui/modals/token-created-modal";
 import { AnimatedEmptyState } from "@/ui/shared/animated-empty-state";
 import { Delete } from "@/ui/shared/icons";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 import {
-  Button,
-  buttonVariants,
   Dots,
   Icon,
   Key,
@@ -26,6 +25,7 @@ import { cn, fetcher, OG_AVATAR_URL, timeAgo } from "@dub/utils";
 import { Command } from "cmdk";
 import { useState } from "react";
 import useSWR from "swr";
+import { text } from "@/ui/design/tokens";
 
 export default function TokensPageClient() {
   const { id: workspaceId, role } = useWorkspace();
@@ -186,10 +186,8 @@ export default function TokensPageClient() {
       <TokenCreatedModal />
       <AddEditTokenModal />
 
-      <h1 className="text-2xl font-semibold tracking-tight text-black">
-        Secret keys
-      </h1>
-      <p className="mb-2 mt-2 text-base text-neutral-600">
+      <div className={text.pageTitle}>Secret keys</div>
+      <p className={cn("mb-2 mt-2", text.pageDescription)}>
         These API keys allow other apps to access your workspace.
         {/* <a
           href="https://dub.co/docs/api-reference/tokens"
@@ -236,6 +234,12 @@ function RowMenuButton({
     token,
   });
 
+  const disabledTooltip = clientAccessCheck({
+    action: "tokens.write",
+    role,
+    customPermissionDescription: "update or delete API keys",
+  }).error;
+
   return (
     <>
       <DeleteTokenModal />
@@ -261,19 +265,14 @@ function RowMenuButton({
         }
         align="end"
       >
-        <Button
+        <AppIconButton
           type="button"
-          className="h-8 whitespace-nowrap px-2"
-          variant="outline"
-          icon={<Dots className="h-4 w-4 shrink-0" />}
-          disabledTooltip={
-            clientAccessCheck({
-              action: "tokens.write",
-              role,
-              customPermissionDescription: "update or delete API keys",
-            }).error
-          }
-        />
+          className="h-8 w-8"
+          disabled={!!disabledTooltip}
+          title={typeof disabledTooltip === "string" ? disabledTooltip : undefined}
+        >
+          <Dots className="h-4 w-4 shrink-0" />
+        </AppIconButton>
       </Popover>
     </>
   );
@@ -293,17 +292,17 @@ function MenuItem({
   return (
     <Command.Item
       className={cn(
-        "flex cursor-pointer select-none items-center gap-2 whitespace-nowrap rounded p-2 text-sm text-neutral-600",
+        "flex cursor-pointer select-none items-center gap-2 whitespace-nowrap rounded-lg p-2 text-sm font-medium",
         danger
-          ? buttonVariants({ variant: "danger-outline" })
-          : "text-neutral-500 data-[selected=true]:bg-neutral-100",
+          ? "text-red-600 data-[selected=true]:bg-red-50 hover:bg-red-50"
+          : "text-neutral-700 data-[selected=true]:bg-neutral-100 hover:bg-neutral-50",
       )}
       onSelect={onSelect}
     >
       <IconComp
         className={cn(
           "size-4 shrink-0",
-          danger ? "hover:bg-red-600 hover:text-white" : "text-neutral-500",
+          danger ? "text-red-600" : "text-neutral-600",
         )}
       />
       {label}

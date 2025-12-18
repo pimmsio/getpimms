@@ -93,7 +93,11 @@ export const GET = withWorkspace(
 
     const zipData = await zip.generateAsync({ type: "nodebuffer" });
 
-    return new Response(zipData, {
+    // Next's route handlers use the Web `Response` type, which expects a `BodyInit`.
+    // Convert Node's Buffer into a `Uint8Array` to keep both runtime and types happy.
+    const zipBody = new Uint8Array(zipData);
+
+    return new Response(zipBody, {
       headers: {
         "Content-Type": "application/zip",
         "Content-Disposition": "attachment; filename=analytics_export.zip",

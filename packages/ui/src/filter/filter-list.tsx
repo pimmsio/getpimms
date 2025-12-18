@@ -133,7 +133,7 @@ export function FilterList({
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -4, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="flex items-center rounded-lg border border-neutral-200 bg-gradient-to-b from-white to-neutral-50/50 text-sm text-black shadow-sm hover:shadow transition-shadow"
+                  className="flex items-center rounded-lg border border-neutral-200 bg-white text-sm text-black"
                 >
                   {/* Filter */}
                   <div className="flex items-center gap-2.5 px-3 py-2 max-w-[140px] truncate text-xs sm:text-sm font-medium text-neutral-700">
@@ -177,7 +177,7 @@ export function FilterList({
                             </span>
                           )}
                           {extraCount > 0 && (
-                            <span className="shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+                            <span className="shrink-0 rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[10px] font-semibold text-neutral-700">
                               +{extraCount}
                             </span>
                           )}
@@ -206,7 +206,7 @@ export function FilterList({
         {activeFilters?.length !== 0 && (
           <button
             type="button"
-            className="group mt-px flex items-center gap-2 whitespace-nowrap rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm font-medium text-neutral-600 ring-inset transition-all hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/20 shadow-sm"
+            className="group mt-px flex items-center gap-2 whitespace-nowrap rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm font-medium text-neutral-600 ring-inset transition-colors hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300"
             onClick={onRemoveAll}
           >
             Clear all

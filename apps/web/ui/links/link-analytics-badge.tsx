@@ -1,7 +1,6 @@
 import { useCheckFolderPermission } from "@/lib/swr/use-folder-permissions";
 import useWorkspace from "@/lib/swr/use-workspace";
 import {
-  Button,
   CardList,
   CopyButton,
   CursorRays,
@@ -23,6 +22,7 @@ import Link from "next/link";
 import { useContext, useMemo, useState } from "react";
 import { useShareDashboardModal } from "../modals/share-dashboard-modal";
 import { ResponseLink } from "./links-container";
+import { AppButton } from "@/ui/components/controls/app-button";
 
 export function LinkAnalyticsBadge({
   link,
@@ -79,7 +79,7 @@ export function LinkAnalyticsBadge({
   return isMobile ? (
     <Link
       href={`/${slug}/analytics?domain=${domain}&key=${key}`}
-      className="flex items-center gap-1 rounded border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-sm text-neutral-800"
+      className="flex items-center gap-1 rounded-lg border border-neutral-200 bg-white px-2 py-0.5 text-sm text-neutral-800"
     >
       <CursorRays className="h-4 w-4 text-neutral-600" />
       {nFormatter(link.clicks)}
@@ -119,21 +119,24 @@ export function LinkAnalyticsBadge({
 
             {sharingEnabled && (
               <div className="inline-flex items-start justify-start gap-2">
-                <Button
-                  text={link.dashboardId ? "Edit sharing" : "Share dashboard"}
-                  className="h-7 w-full px-2"
+                <AppButton
+                  size="sm"
+                  variant="secondary"
+                  className="h-7 w-full px-2 text-xs"
                   onClick={() => {
                     setShowShareDashboardModal(true);
                     setModalShowCount((c) => c + 1);
                   }}
                   disabled={!canManageLink}
-                />
+                >
+                  {link.dashboardId ? "Edit sharing" : "Share dashboard"}
+                </AppButton>
 
                 {link.dashboardId && (
                   <CopyButton
                     value={`${APP_DOMAIN}/share/${link.dashboardId}`}
                     variant="neutral"
-                    className="h-7 items-center justify-center rounded border border-neutral-200 bg-white p-1.5 hover:bg-neutral-50 active:bg-neutral-100"
+                    className="h-7 items-center justify-center rounded border border-neutral-200 bg-white p-1.5 hover:border-neutral-300"
                   />
                 )}
               </div>
@@ -143,7 +146,7 @@ export function LinkAnalyticsBadge({
       >
         <Link
           href={`/${slug}/analytics?domain=${domain}&key=${key}${url ? `&url=${url}` : ""}&interval=${plan === "free" ? "30d" : plan === "pro" ? "1y" : "all"}`}
-          className="block overflow-hidden w-fit rounded-full border border-neutral-200 bg-neutral-50 py-0.5 text-sm text-neutral-600 transition-colors hover:bg-neutral-100"
+          className="block w-fit overflow-hidden rounded-lg border border-neutral-200 bg-white py-0.5 text-sm text-neutral-600 transition-colors hover:border-neutral-300"
         >
           <div className="flex w-fit flex-col items-center px-1 sm:flex-row">
             <div className="flex w-fit flex-row items-center justify-center gap-1">

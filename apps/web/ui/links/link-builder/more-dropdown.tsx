@@ -1,4 +1,6 @@
 import useWorkspace from "@/lib/swr/use-workspace";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 import { useABTestingModal } from "@/ui/modals/link-builder/ab-testing-modal";
 import { useAdvancedModal } from "@/ui/modals/link-builder/advanced-modal";
 import { useExpirationModal } from "@/ui/modals/link-builder/expiration-modal";
@@ -6,7 +8,7 @@ import { usePasswordModal } from "@/ui/modals/link-builder/password-modal";
 import { useTargetingModal } from "@/ui/modals/link-builder/targeting-modal";
 import { useWebhooksModal } from "@/ui/modals/link-builder/webhooks-modal";
 import { ProBadgeTooltip } from "@/ui/shared/pro-badge-tooltip";
-import { Button, Popover, SimpleTooltipContent, useMediaQuery } from "@dub/ui";
+import { Popover, SimpleTooltipContent, useMediaQuery } from "@dub/ui";
 import { Dots } from "@dub/ui/icons";
 import { cn } from "@dub/utils";
 import { useMemo, useState } from "react";
@@ -79,9 +81,10 @@ export function MoreDropdown() {
                   : data[option.key];
 
               return (
-                <Button
+                <AppButton
                   type="button"
-                  variant="outline"
+                  variant="secondary"
+                  size="sm"
                   key={option.key}
                   onClick={() => {
                     setOpenPopover(false);
@@ -94,47 +97,45 @@ export function MoreDropdown() {
                       });
                   }}
                   className="h-9 w-full justify-start px-2 text-sm text-neutral-700"
-                  textWrapperClassName="grow"
-                  text={
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-1">
-                        <option.icon
-                          className={cn(
-                            "mr-1 size-4 text-neutral-950",
-                            enabled && "text-blue-500",
-                          )}
+                >
+                  <div className="flex w-full items-center justify-between gap-2">
+                    <div className="flex items-center gap-1">
+                      <option.icon
+                        className={cn(
+                          "mr-1 size-4 text-neutral-950",
+                          enabled && "text-neutral-900",
+                        )}
+                      />
+                      {option.badgeLabel?.(data) ?? (
+                        <>
+                          {option.type === "modal"
+                            ? enabled ||
+                              ("add" in option && option.add === false)
+                              ? ""
+                              : "Add "
+                            : enabled
+                              ? "Remove "
+                              : "Add "}
+                          {option.label}
+                        </>
+                      )}
+                      {option.description && option.learnMoreUrl && (
+                        <ProBadgeTooltip
+                          content={
+                            <SimpleTooltipContent
+                              title={option.description}
+                              cta="Learn more."
+                              href={option.learnMoreUrl}
+                            />
+                          }
                         />
-                        {option.badgeLabel?.(data) ?? (
-                          <>
-                            {option.type === "modal"
-                              ? enabled ||
-                                ("add" in option && option.add === false)
-                                ? ""
-                                : "Add "
-                              : enabled
-                                ? "Remove "
-                                : "Add "}
-                            {option.label}
-                          </>
-                        )}
-                        {option.description && option.learnMoreUrl && (
-                          <ProBadgeTooltip
-                            content={
-                              <SimpleTooltipContent
-                                title={option.description}
-                                cta="Learn more."
-                                href={option.learnMoreUrl}
-                              />
-                            }
-                          />
-                        )}
-                      </div>
-                      <kbd className="hidden size-6 cursor-default items-center justify-center rounded border border-neutral-200 font-sans text-xs text-neutral-800 sm:flex">
-                        {option.shortcutKey.toUpperCase()}
-                      </kbd>
+                      )}
                     </div>
-                  }
-                />
+                    <kbd className="hidden size-6 cursor-default items-center justify-center rounded border border-neutral-100 bg-white font-sans text-xs text-neutral-700 sm:flex">
+                      {option.shortcutKey.toUpperCase()}
+                    </kbd>
+                  </div>
+                </AppButton>
               );
             })}
           </div>
@@ -142,11 +143,9 @@ export function MoreDropdown() {
         openPopover={openPopover}
         setOpenPopover={setOpenPopover}
       >
-        <Button
-          variant="secondary"
-          icon={<Dots className="size-4" />}
-          className="h-8 w-fit px-2"
-        />
+        <AppIconButton type="button" className="h-8 w-8">
+          <Dots className="size-4" />
+        </AppIconButton>
       </Popover>
     </>
   );

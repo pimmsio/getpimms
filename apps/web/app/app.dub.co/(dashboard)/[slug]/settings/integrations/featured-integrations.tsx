@@ -60,7 +60,7 @@ export function FeaturedIntegrations({
                       className="group relative block"
                     >
                       {/* Image */}
-                      <div className="overflow-hidden rounded border border-neutral-100 bg-white">
+                      <div className="overflow-hidden rounded-xl bg-white">
                         <BlurImage
                           src={integration.screenshots![0]}
                           alt={`Screenshot of ${integration.name}`}
@@ -71,12 +71,12 @@ export function FeaturedIntegrations({
                       </div>
 
                       {/* Category badge */}
-                      <div className="absolute left-4 top-4 rounded bg-white px-2 py-1 text-[0.625rem] font-semibold uppercase text-neutral-800 shadow-[0_2px_2px_0_#00000014]">
+                      <div className="absolute left-4 top-4 rounded bg-white/90 px-2 py-1 text-[0.625rem] font-semibold uppercase text-neutral-800 backdrop-blur">
                         {integration.category}
                       </div>
 
                       {/* Bottom card */}
-                      <div className="absolute inset-x-4 bottom-4 hidden items-center gap-3 rounded bg-white p-3 transition-all duration-100 group-hover:drop-shadow-sm sm:flex">
+                      <div className="absolute inset-x-4 bottom-4 hidden items-center gap-3 rounded-lg bg-white/95 p-3 backdrop-blur sm:flex">
                         <div className="shrink-0">
                           <IntegrationLogo
                             src={integration.logo}

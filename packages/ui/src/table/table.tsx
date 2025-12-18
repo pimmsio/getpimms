@@ -21,6 +21,7 @@ import {
   memo,
   MouseEvent,
   PropsWithChildren,
+  ReactElement,
   ReactNode,
   SetStateAction,
   useEffect,
@@ -106,7 +107,7 @@ type TableProps<T> = BaseTableProps<T> &
     | { pagination?: never; rowCount?: never }
   );
 
-export function useTable<T extends any>(
+export function useTable<T>(
   props: UseTableProps<T>,
 ): TableProps<T> & { table: TableType<T> } {
   const {
@@ -272,7 +273,7 @@ const ResizableTableRow = memo(
   cellRight?: (cell: Cell<T, any>) => ReactNode;
   tdClassName?: string | ((columnId: string) => string);
   table: TableType<T>;
-}) => JSX.Element;
+}) => ReactElement;
 
 export function Table<T>({
   columns,

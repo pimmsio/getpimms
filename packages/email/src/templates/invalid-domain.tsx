@@ -12,6 +12,7 @@ import {
   Tailwind,
   Text,
 } from "@react-email/components";
+import type { ReactElement } from "react";
 import { Footer } from "../components/footer";
 
 export function InvalidDomain({
@@ -24,7 +25,7 @@ export function InvalidDomain({
   domain: string;
   workspaceSlug: string;
   invalidDays: number;
-}): JSX.Element {
+}): ReactElement {
   return (
     <Html>
       <Head />

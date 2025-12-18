@@ -123,8 +123,8 @@ export function Areas({
                 {/* Latest value circle */}
                 {showLatestValueCircle && !tooltipData && (
                   <Circle
-                    cx={xScale(data.at(-1)!.date)}
-                    cy={yScale(s.valueAccessor(data.at(-1)!))}
+                    cx={xScale(data[data.length - 1]!.date)}
+                    cy={yScale(s.valueAccessor(data[data.length - 1]!))}
                     r={4}
                     className={cn(
                       s.colorClassName ?? "text-blue-700",

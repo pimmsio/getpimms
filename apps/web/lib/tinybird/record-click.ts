@@ -1,11 +1,12 @@
 import {
+  APP_DOMAIN_WITH_NGROK,
+  EU_COUNTRY_CODES,
   LOCALHOST_GEO_DATA,
   LOCALHOST_IP,
   capitalize,
   getDomainWithoutWWW,
   nanoid,
 } from "@dub/utils";
-import { EU_COUNTRY_CODES } from "@dub/utils/src/constants/countries";
 import { geolocation, ipAddress } from "@vercel/functions";
 import { userAgent } from "next/server";
 import { clickCache } from "../api/links/click-cache";
@@ -22,7 +23,6 @@ import { webhookCache } from "../webhook/cache";
 import { sendWebhooks } from "../webhook/qstash";
 import { transformClickEventData } from "../webhook/transform";
 import { qstash } from "../cron";
-import { APP_DOMAIN_WITH_NGROK } from "@dub/utils";
 
 /**
  * Recording clicks with geo, ua, referer and timestamp data

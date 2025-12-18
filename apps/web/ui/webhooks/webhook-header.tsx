@@ -90,7 +90,7 @@ export default function WebhookHeader({ webhookId }: { webhookId: string }) {
         <div className="flex justify-between gap-8 sm:items-center">
           {isLoading || !webhook ? (
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="w-fit flex-none rounded border border-neutral-100 bg-gradient-to-t from-neutral-100 p-2">
+              <div className="w-fit flex-none rounded border border-neutral-100 bg-neutral-100/60 p-2">
                 <div className="size-8 rounded-full bg-neutral-100" />
               </div>
               <div className="flex flex-col gap-2">
@@ -100,7 +100,7 @@ export default function WebhookHeader({ webhookId }: { webhookId: string }) {
             </div>
           ) : (
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="w-fit flex-none rounded border border-neutral-100 bg-gradient-to-t from-neutral-100 p-2">
+              <div className="w-fit flex-none rounded border border-neutral-100 bg-neutral-100/60 p-2">
                 <TokenAvatar id={webhook.id} className="size-8" />
               </div>
               <div>

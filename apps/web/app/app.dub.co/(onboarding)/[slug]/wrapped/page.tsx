@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 
-export default function WrappedParentPage({
+export default async function WrappedParentPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  redirect(`/${params.slug}/wrapped/2024`);
+  const { slug } = await params;
+  redirect(`/${slug}/wrapped/2024`);
 }

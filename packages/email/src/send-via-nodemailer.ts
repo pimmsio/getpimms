@@ -26,11 +26,13 @@ export const sendViaNodeMailer = async ({
     },
   });
 
+  const html = react ? await render(react as ReactElement) : undefined;
+
   return await transporter.sendMail({
     from: "noreply@example.com",
     to: email,
     subject,
     text,
-    html: render(react as ReactElement),
+    html,
   });
 };

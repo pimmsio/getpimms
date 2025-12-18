@@ -4,17 +4,18 @@ import { updateNotificationPreference } from "@/lib/actions/update-notification-
 import useWorkspace from "@/lib/swr/use-workspace";
 import { notificationTypes } from "@/lib/zod/schemas/workspaces";
 import { Switch, useOptimisticUpdate } from "@dub/ui";
-import { Globe, Hyperlink, UserPlus } from "@dub/ui/icons";
-import { DollarSign } from "lucide-react";
+import { Hyperlink } from "@dub/ui/icons";
 import { useAction } from "next-safe-action/hooks";
 import { useMemo } from "react";
 import { z } from "zod";
+import { text } from "@/ui/design/tokens";
+import { cn } from "@dub/utils";
 
 type PreferenceType = z.infer<typeof notificationTypes>;
 type Preferences = Record<PreferenceType, boolean>;
 
 export default function NotificationsSettingsPageClient() {
-  const { id: workspaceId, partnersEnabled } = useWorkspace();
+  const { id: workspaceId } = useWorkspace();
   const { executeAsync } = useAction(updateNotificationPreference);
 
   const notifications = useMemo(
@@ -32,26 +33,8 @@ export default function NotificationsSettingsPageClient() {
         description:
           "Monthly summary email of your top 5 links by usage & total links created.",
       },
-      ...(partnersEnabled
-        ? [
-            {
-              type: "newPartnerApplication",
-              icon: UserPlus,
-              title: "New partner application",
-              description:
-                "Alert when a new partner application is made in your partner program.",
-            },
-            {
-              type: "newPartnerSale",
-              icon: DollarSign,
-              title: "New partner sale",
-              description:
-                "Alert when a new sale is made in your partner program.",
-            },
-          ]
-        : []),
     ],
-    [partnersEnabled],
+    [],
   );
 
   const {
@@ -91,10 +74,10 @@ export default function NotificationsSettingsPageClient() {
   return (
     <div>
       <div className="max-w-screen-sm pb-8">
-        <h2 className="text-xl font-semibold tracking-tight text-black">
+        <h2 className={cn(text.pageTitle, "text-xl")}>
           Workspace Notifications
         </h2>
-        <p className="mt-3 text-sm text-neutral-500">
+        <p className={cn("mt-3", text.pageDescription, "text-sm")}>
           Adjust your personal notification preferences and choose which updates
           you want to receive. These settings will only be applied to your
           personal account.
@@ -104,13 +87,11 @@ export default function NotificationsSettingsPageClient() {
         {notifications.map(({ type, icon: Icon, title, description }) => (
           <div
             key={type}
-            className="flex items-center justify-between gap-4 rounded border border-neutral-100 bg-white p-5"
+            className="flex items-center justify-between gap-4 rounded-xl bg-white px-4 py-3"
           >
             <div className="flex min-w-0 items-center gap-4">
-              <div className="hidden rounded-full border border-neutral-100 sm:block">
-                <div className="rounded-full border border-white bg-gradient-to-t from-neutral-100 p-1 md:p-3">
-                  <Icon className="size-5" />
-                </div>
+              <div className="hidden sm:flex size-10 items-center justify-center rounded-lg bg-neutral-50">
+                <Icon className="size-5 text-neutral-800" />
               </div>
               <div className="overflow-hidden">
                 <div className="flex items-center gap-1.5 sm:gap-2.5">

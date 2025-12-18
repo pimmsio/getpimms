@@ -38,7 +38,7 @@ export type ComboboxOption<TMeta = any> = {
 
 export type ComboboxProps<
   TMultiple extends boolean | undefined,
-  TMeta extends any,
+  TMeta = any,
 > = PropsWithChildren<{
   multiple?: TMultiple;
   selected: TMultiple extends true
@@ -213,7 +213,8 @@ export function Combobox({
                   value={search}
                   onValueChange={setSearch}
                   className={cn(
-                    "grow border-0 py-3 pl-4 pr-2 outline-none placeholder:text-neutral-400 focus:ring-0 sm:text-sm",
+                    // Minimal internal search input (match app input sizing)
+                    "h-10 grow border-0 bg-white px-3 text-sm text-neutral-900 outline-none placeholder:text-neutral-400 focus-visible:ring-2 focus-visible:ring-neutral-300",
                     inputClassName,
                   )}
                   onKeyDown={(e) => {
@@ -308,7 +309,12 @@ export function Combobox({
       <Button
         variant="secondary"
         {...buttonProps}
-        className={cn(buttonProps?.className, "flex gap-2")}
+        className={cn(
+          // Enforce consistent trigger styling (even when Button defaults drift)
+          "!h-10 !rounded-lg !bg-white !px-3 !text-sm !font-semibold !text-neutral-800 hover:!bg-neutral-50 focus-visible:!outline-none focus-visible:!ring-2 focus-visible:!ring-neutral-300",
+          buttonProps?.className,
+          "flex gap-2",
+        )}
         textWrapperClassName={cn(
           buttonProps?.textWrapperClassName,
           "w-full flex items-center justify-start",
@@ -360,7 +366,7 @@ const Scroll = ({ children }: PropsWithChildren) => {
       </div>
       {/* Bottom scroll fade */}
       <div
-        className="pointer-events-none absolute bottom-0 left-0 hidden h-16 w-full rounded-b bg-gradient-to-t from-white sm:block"
+        className="pointer-events-none absolute bottom-0 left-0 hidden h-12 w-full rounded-b bg-white/80 sm:block"
         style={{ opacity: 1 - Math.pow(scrollProgress, 2) }}
       ></div>
     </>
@@ -424,7 +430,7 @@ function Option({
         </Command.Item>
       </DisabledTooltip>
       {option.separatorAfter && (
-        <Command.Separator className="-mx-1 my-1 h-px bg-neutral-200" />
+        <Command.Separator className="-mx-1 my-1 h-px bg-neutral-100" />
       )}
     </>
   );

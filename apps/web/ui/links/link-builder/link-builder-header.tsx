@@ -162,7 +162,7 @@ export function LinkBuilderHeader({
           <button
             type="button"
             onClick={onClose}
-            className="group hidden rounded-full p-2 text-neutral-500 transition-all duration-75 hover:bg-neutral-100 focus:outline-none active:bg-neutral-200 md:block"
+            className="group hidden rounded-lg p-2 text-neutral-500 transition-colors duration-75 hover:bg-neutral-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300 active:bg-neutral-200 md:block"
           >
             <X className="h-5 w-5" />
           </button>

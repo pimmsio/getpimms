@@ -1,12 +1,10 @@
 import { MaxWidthWrapper } from "@dub/ui";
 import { cn } from "@dub/utils";
 import { ChevronLeft } from "lucide-react";
-import Link from "next/link";
 import { PropsWithChildren, ReactNode } from "react";
-import { HelpButtonRSC } from "../sidebar/help-button-rsc";
-import { ReferButton } from "../sidebar/refer-button";
-import UserDropdown from "../sidebar/user-dropdown";
 import { NavButton } from "./nav-button";
+import { layout, radius, spacing, surface, text } from "@/ui/design/tokens";
+import { AppIconLink } from "@/ui/components/controls/app-icon-button";
 
 export function PageContent({
   title,
@@ -14,8 +12,12 @@ export function PageContent({
   titleControls,
   description,
   hideReferButton,
+  headerPlacement = "shell",
+  variant = "panel",
+  wrapChildren = false,
   className,
   contentWrapperClassName,
+  childrenWrapperClassName,
   children,
 }: PropsWithChildren<{
   title?: ReactNode;
@@ -23,73 +25,144 @@ export function PageContent({
   titleControls?: ReactNode;
   description?: ReactNode;
   hideReferButton?: boolean;
+  /**
+   * `shell` (default): header is rendered above the content panel on the app shell.
+   * `content`: header is rendered inside the content panel (Today-like).
+   */
+  headerPlacement?: "shell" | "content";
+  /**
+   * `panel` = primary content surface (default).
+   * `flat` = no built-in surface/radius; page owns its own surfaces.
+   */
+  variant?: "panel" | "flat";
+  /**
+   * When true, wraps `children` in MaxWidthWrapper to avoid repeating wrappers in every page.
+   * Keep false for pages that intentionally render full-bleed content (tables, charts, etc.).
+   */
+  wrapChildren?: boolean;
   className?: string;
   contentWrapperClassName?: string;
+  childrenWrapperClassName?: string;
 }>) {
   const hasTitle = title !== undefined;
   const hasDescription = description !== undefined;
+  const isTextTitle = typeof title === "string" || typeof title === "number";
+  const showShellHeader = headerPlacement === "shell" && (hasTitle || hasDescription);
 
   return (
     <div
       className={cn(
-        "pt-3 bg-zinc-100 md:bg-white",
-        (hasTitle || hasDescription) && "md:mt-6 md:pt-3",
+        spacing.pageTop,
+        showShellHeader && "md:mt-5",
         className,
       )}
     >
-      <MaxWidthWrapper>
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex min-w-0 items-center gap-4">
-            <NavButton />
-            {(hasTitle || hasDescription) && (
-              <div>
-                {hasTitle && (
-                  <div className="flex items-center gap-2">
-                    {titleBackButtonLink && (
-                      <Link
-                        href={titleBackButtonLink}
-                        className="rounded p-1.5 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
+      {headerPlacement === "shell" && (
+        <MaxWidthWrapper>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex min-w-0 items-center gap-4">
+              <NavButton />
+              {(hasTitle || hasDescription) && (
+                <div className="min-w-0">
+                  {hasTitle && (
+                    <div className="flex min-w-0 items-center gap-2">
+                      {titleBackButtonLink && (
+                        <AppIconLink href={titleBackButtonLink} className="app-icon-btn">
+                          <ChevronLeft className="size-5" />
+                        </AppIconLink>
+                      )}
+                      <div
+                        className={cn(
+                          isTextTitle ? text.pageTitle : "min-w-0",
+                          isTextTitle && "truncate",
+                        )}
                       >
-                        <ChevronLeft className="size-5" />
-                      </Link>
-                    )}
-                    <h1 className="text-xl font-semibold leading-7 text-neutral-900 md:text-2xl">
-                      {title}
-                    </h1>
-                  </div>
-                )}
-                {hasDescription && (
-                  <p className="mt-1 hidden text-base text-neutral-500 md:block">
-                    {description}
-                  </p>
-                )}
-              </div>
-            )}
+                        {title}
+                      </div>
+                    </div>
+                  )}
+                  {hasDescription && (
+                    <p className={cn("mt-1 hidden md:block", text.pageDescription)}>
+                      {description}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+            {titleControls && <div className="hidden md:block">{titleControls}</div>}
+            {/* <div className="flex items-center gap-4 md:hidden">
+                {!hideReferButton && <ReferButton />}
+                <HelpButtonRSC />
+                <UserDropdown />
+              </div> */}
           </div>
-          {titleControls && (
-            <div className="hidden md:block">{titleControls}</div>
-          )}
-          {/* <div className="flex items-center gap-4 md:hidden">
-            {!hideReferButton && <ReferButton />}
-            <HelpButtonRSC />
-            <UserDropdown />
-          </div> */}
-        </div>
-      </MaxWidthWrapper>
+        </MaxWidthWrapper>
+      )}
       <div
         className={cn(
-          "bg-white pt-2.5 max-md:mt-3 max-md:rounded-t-[16px]",
+          layout.contentPanel,
+          variant === "panel" && surface.content,
+          variant === "panel" && radius.xl,
           contentWrapperClassName,
         )}
       >
+        {headerPlacement === "content" && (
+          <div className="border-b border-neutral-100">
+            <MaxWidthWrapper className="py-3">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex min-w-0 items-center gap-4">
+                  <NavButton />
+                  {(hasTitle || hasDescription) && (
+                    <div className="min-w-0">
+                      {hasTitle && (
+                        <div className="flex min-w-0 items-center gap-2">
+                          {titleBackButtonLink && (
+                            <AppIconLink href={titleBackButtonLink} className="app-icon-btn">
+                              <ChevronLeft className="size-5" />
+                            </AppIconLink>
+                          )}
+                          <div
+                            className={cn(
+                              isTextTitle ? text.pageTitle : "min-w-0",
+                              isTextTitle && "truncate",
+                            )}
+                          >
+                            {title}
+                          </div>
+                        </div>
+                      )}
+                      {hasDescription && (
+                        <p className={cn("mt-1 hidden md:block", text.pageDescription)}>
+                          {description}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {titleControls && <div className="hidden md:block">{titleControls}</div>}
+              </div>
+            </MaxWidthWrapper>
+          </div>
+        )}
         {hasDescription && (
           <MaxWidthWrapper>
-            <p className="mb-3 mt-1 text-base text-neutral-500 md:hidden">
+            <p
+              className={cn(
+                "mb-3 mt-1 md:hidden",
+                text.pageDescription,
+              )}
+            >
               {description}
             </p>
           </MaxWidthWrapper>
         )}
-        {children}
+        {wrapChildren ? (
+          <MaxWidthWrapper className={childrenWrapperClassName}>
+            {children}
+          </MaxWidthWrapper>
+        ) : (
+          children
+        )}
       </div>
     </div>
   );

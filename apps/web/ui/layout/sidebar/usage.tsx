@@ -1,9 +1,10 @@
 "use client";
 
 import useWorkspace from "@/lib/swr/use-workspace";
+import { AppButtonLink } from "@/ui/components/controls/app-button";
 import ManageSubscriptionButton from "@/ui/workspaces/manage-subscription-button";
-import { AnimatedSizeContainer, buttonVariants, Icon } from "@dub/ui";
-import { CircleDollar, CursorRays, Hyperlink } from "@dub/ui/icons";
+import { AnimatedSizeContainer, Icon } from "@dub/ui";
+import { CursorRays, Hyperlink } from "@dub/ui/icons";
 import {
   cn,
   getFirstAndLastDay,
@@ -12,7 +13,7 @@ import {
   nFormatter,
 } from "@dub/utils";
 import NumberFlow from "@number-flow/react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -81,7 +82,7 @@ function UsageInner() {
   return loading || usage !== undefined ? (
     <>
       <AnimatedSizeContainer height>
-      <div className="p-3">
+        <div className="px-3 pb-3 pt-2">
           <div className="flex items-center justify-between gap-3">
             <Link
               className="group flex items-center gap-0.5 text-sm font-normal text-neutral-500 transition-colors hover:text-neutral-700"
@@ -90,27 +91,29 @@ function UsageInner() {
               Usage
               <ChevronRight className="size-3 text-neutral-400 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-neutral-500" />
             </Link>
-            <div className="items-center gap-3 flex">
+            <div className="flex items-center gap-3">
               {/* <Suspense fallback={null}>{toolContent}</Suspense> */}
               <UserDropdown />
             </div>
           </div>
 
-          <div className="hidden md:flex mt-4 flex-col gap-4">
+          <div className="mt-3 hidden flex-col gap-3 md:flex">
             <UsageRow
               icon={CursorRays}
-              label="Clicks + leads"
+              label="Events"
               usage={usage}
               limit={usageLimit}
+              href={`/${slug}/conversions`}
               showNextPlan={hovered}
               nextPlanLimit={nextPlan?.limits.clicks}
               warning={warnings[0]}
             />
             <UsageRow
               icon={Hyperlink}
-              label="Deep links"
+              label="Links"
               usage={linksUsage}
               limit={linksLimit}
+              href={`/${slug}/links`}
               showNextPlan={hovered}
               nextPlanLimit={nextPlan?.limits.links}
               warning={warnings[1]}
@@ -131,22 +134,24 @@ function UsageInner() {
 
           <ConversionsOnboarding referenceElement={salesRef} />
 
-          {paymentFailedAt && <div className="mt-3">
-            {loading ? (
-              <div className="h-4 w-2/3 animate-pulse rounded bg-neutral-500/10" />
-            ) : (
-              <p
-                className={cn(
-                  "text-xs text-neutral-900/40",
-                  paymentFailedAt && "text-red-600",
-                )}
-              >
-                {paymentFailedAt
-                  ? "Your last payment failed. Please update your payment method to continue using PiMMs."
-                  : `Usage will reset ${billingEnd}`}
-              </p>
-            )}
-          </div>}
+          {paymentFailedAt && (
+            <div className="mt-3">
+              {loading ? (
+                <div className="h-4 w-2/3 animate-pulse rounded bg-neutral-500/10" />
+              ) : (
+                <p
+                  className={cn(
+                    "text-xs text-neutral-900/40",
+                    paymentFailedAt && "text-red-600",
+                  )}
+                >
+                  {paymentFailedAt
+                    ? "Your last payment failed. Please update your payment method to continue using PiMMs."
+                    : `Usage will reset ${billingEnd}`}
+                </p>
+              )}
+            </div>
+          )}
 
           {paymentFailedAt ? (
             <ManageSubscriptionButton
@@ -161,13 +166,11 @@ function UsageInner() {
               }}
             />
           ) : (warning || plan === "free") && plan !== "enterprise" ? (
-            <Link
+            <AppButtonLink
               href={`/${slug}/upgrade`}
-              className={cn(
-                buttonVariants(),
-                "bg-gradient-to-r from-[#2fcdfa] to-[#3970ff] hover:scale-105 transition-all duration-300",
-                "mt-4 flex h-9 items-center justify-center rounded border px-4 text-sm",
-              )}
+              variant="primary"
+              size="sm"
+              className="mt-4 w-full"
               onMouseEnter={() => {
                 setHovered(true);
               }}
@@ -175,8 +178,8 @@ function UsageInner() {
                 setHovered(false);
               }}
             >
-              {plan === "free" ? "Get PIMMS Pro" : "Upgrade plan"}
-            </Link>
+              {plan === "free" ? "Upgrade plan" : "Upgrade plan"}
+            </AppButtonLink>
           ) : null}
         </div>
       </AnimatedSizeContainer>
@@ -189,6 +192,7 @@ type UsageRowProps = {
   label: string;
   usage?: number;
   limit?: number;
+  href?: string;
   showNextPlan: boolean;
   nextPlanLimit?: number;
   warning: boolean;
@@ -201,6 +205,7 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
       label,
       usage,
       limit,
+      href,
       showNextPlan,
       nextPlanLimit,
       warning,
@@ -210,8 +215,8 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
     const loading = usage === undefined || limit === undefined;
     const unlimited = limit !== undefined && limit >= INFINITY_NUMBER;
 
-    return (
-      <div ref={ref}>
+    const content = (
+      <>
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             {/* <Icon className="size-3.5 text-neutral-600" /> */}
@@ -220,7 +225,7 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
             </span>
           </div>
           {!loading ? (
-            <div className="flex items-center">
+            <div className="flex items-center gap-1.5">
               <span className="text-xs font-medium text-neutral-600">
                 <NumberFlow
                   value={label === "Sales" ? usage / 100 : usage}
@@ -258,27 +263,9 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
                   )}
                 </motion.span>
               </span>
-              {/* <AnimatePresence>
-                {showNextPlan && nextPlanLimit && (
-                  <motion.div
-                    className="flex items-center"
-                    initial={{ width: 0, opacity: 0 }}
-                    animate={{ width: "auto", opacity: 1 }}
-                    exit={{ width: 0, opacity: 0 }}
-                    transition={{
-                      duration: 0.25,
-                      ease: [0.4, 0, 0.2, 1], // Custom cubic-bezier for smooth movement
-                    }}
-                  >
-                    <motion.span className="ml-1 whitespace-nowrap text-xs font-medium text-[#08272e]">
-                      {label === "Sales" ? "$" : ""}
-                      {formatNumber(
-                        label === "Sales" ? nextPlanLimit / 100 : nextPlanLimit,
-                      )}
-                    </motion.span>
-                  </motion.div>
-                )}
-              </AnimatePresence> */}
+              {href && (
+                <ChevronRight className="size-3 text-neutral-400 opacity-0 transition-opacity group-hover:opacity-100" />
+              )}
             </div>
           ) : (
             <div className="h-4 w-16 animate-pulse rounded bg-neutral-500/10" />
@@ -299,7 +286,7 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
                 >
                   <div
                     className={cn(
-                      "size-full rounded-full bg-gradient-to-r from-transparent to-brand-primary",
+                      "size-full rounded-full bg-neutral-200/40",
                       warning && "to-brand-primary",
                     )}
                     style={{
@@ -311,6 +298,21 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
               )}
             </div>
           </div>
+        )}
+      </>
+    );
+
+    return (
+      <div ref={ref}>
+        {href ? (
+          <Link
+            href={href}
+            className="group -m-2 block rounded-lg p-2 transition-colors hover:bg-neutral-50 active:bg-neutral-100"
+          >
+            {content}
+          </Link>
+        ) : (
+          content
         )}
       </div>
     );

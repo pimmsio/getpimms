@@ -177,29 +177,6 @@ export default function MixedAnalyticsChart({
             </div>
           )}
 
-          {/* Hot Leads - Combined Metric (Warm + Hot only) */}
-          {/* {hotLeadsData && (hotLeadsData.warm > 0 || hotLeadsData.hot > 0) && (
-             <Link
-               href={hotLeadsUrl}
-              className="cursor-pointer rounded-lg border border-orange-200/50 bg-gradient-to-r from-orange-50 to-red-50 px-2 py-2 transition-all hover:border-orange-300/50 hover:bg-gradient-to-r hover:from-orange-100 hover:to-red-100 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[120px] lg:flex-shrink-0"
-            >
-              <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
-                <span>Hot Leads</span>
-                <InfoTooltip content="Leads with high engagement scores (warm 34-66, hot 67-100). Click to view detailed conversions." />
-              </div>
-              <div className="flex items-center gap-1 text-xs font-bold text-gray-800 sm:gap-2 sm:text-sm">
-                <div className="flex items-center gap-0.5">
-                  <span>{hotLeadsData.warm}</span>
-                  <WarmScoreIcon className="h-3 w-3 sm:h-4 sm:w-4" />
-                </div>
-                <div className="flex items-center gap-0.5">
-                  <span>{hotLeadsData.hot}</span>
-                  <HotScoreIcon className="h-3 w-3 sm:h-4 sm:w-4" />
-                </div>
-              </div>
-            </Link>
-          )} */}
-
           {/* Only show recent visitors for 24h hourly data */}
           {additionalMetrics.showRecentVisitors && additionalMetrics.recentVisitors > 0 && (
             <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">

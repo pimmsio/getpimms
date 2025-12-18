@@ -1,5 +1,5 @@
 import { getDomainWithoutWWW } from "@dub/utils";
-import { get } from "@vercel/edge-config";
+import { edgeConfigGet } from "./safe-get";
 
 export const isBlacklistedReferrer = async (referrer: string | null) => {
   if (!process.env.NEXT_PUBLIC_IS_DUB || !process.env.EDGE_CONFIG) {
@@ -9,7 +9,7 @@ export const isBlacklistedReferrer = async (referrer: string | null) => {
   const hostname = referrer ? getDomainWithoutWWW(referrer) : "(direct)";
   let referrers;
   try {
-    referrers = await get("referrers");
+    referrers = (await edgeConfigGet<string[]>("referrers")) ?? [];
   } catch (e) {
     referrers = [];
   }

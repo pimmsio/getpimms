@@ -7,13 +7,7 @@ import AnalyticsClient from "./client";
 export default function WorkspaceAnalytics() {
   return (
     <Suspense fallback={<LayoutLoader />}>
-      <PageContent 
-        title={
-          <div className="flex items-center justify-between">
-            <h1>Analytics</h1>
-          </div>
-        }
-      >
+      <PageContent title="Analytics" headerPlacement="content">
         <AnalyticsClient>
           <Analytics />
         </AnalyticsClient>

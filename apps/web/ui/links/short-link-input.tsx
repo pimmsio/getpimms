@@ -243,7 +243,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
             </div>
           )}
         </div>
-        <div className="relative mt-1 flex rounded shadow-sm">
+        <div className="relative mt-1 flex rounded">
           <div className="z-[1]">
             <DomainCombobox
               domain={domain}

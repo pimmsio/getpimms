@@ -1,6 +1,5 @@
 import z from "../zod";
 import { linkEventSchema } from "../zod/schemas/links";
-import { EnrolledPartnerSchema } from "../zod/schemas/partners";
 import { WEBHOOK_TRIGGERS } from "./constants";
 import {
   clickWebhookEventSchema,
@@ -19,14 +18,11 @@ export type LeadEventDataProps = z.infer<typeof leadWebhookEventSchema>;
 
 export type SaleEventDataProps = z.infer<typeof saleWebhookEventSchema>;
 
-export type PartnerEventDataProps = z.infer<typeof EnrolledPartnerSchema>;
-
 export type EventDataProps =
   | LinkEventDataProps
   | ClickEventDataProps
   | LeadEventDataProps
-  | SaleEventDataProps
-  | PartnerEventDataProps;
+  | SaleEventDataProps;
 
 export type WebhookTrigger = (typeof WEBHOOK_TRIGGERS)[number];
 

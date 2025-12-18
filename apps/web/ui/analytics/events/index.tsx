@@ -1,12 +1,8 @@
 "use client";
 
 import useWorkspace from "@/lib/swr/use-workspace";
-import { Button, Tooltip, useRouterStuff } from "@dub/ui";
-import { cn } from "@dub/utils";
-import { useMemo } from "react";
 import AnalyticsProvider from "../analytics-provider";
 import Toggle from "../toggle";
-import EventsTable from "./events-table";
 import LeadsFeedTable from "./leads-feed-table";
 
 export default function AnalyticsEvents({
@@ -23,8 +19,10 @@ export default function AnalyticsEvents({
   return (
     <AnalyticsProvider {...{ staticDomain, staticUrl, adminPage }}>
       <div className="pb-10">
-        <Toggle page="events" />
-        <div className="mx-auto flex max-w-screen-xl flex-col gap-3 px-3 lg:px-10">
+        <div className="border-b border-neutral-100 bg-white/85 backdrop-blur-sm">
+          <Toggle page="events" />
+        </div>
+        <div className="px-3 py-4 lg:px-10">
           <LeadsViewToggle />
           <EventsTableContainer />
         </div>

@@ -1,25 +1,12 @@
 "use client";
 
-import { PAYOUT_FEES } from "@/lib/partners/constants";
-import usePartnersCount from "@/lib/swr/use-partners-count";
-import usePrograms from "@/lib/swr/use-programs";
 import useTagsCount from "@/lib/swr/use-tags-count";
 import useUsers from "@/lib/swr/use-users";
 import useWorkspace from "@/lib/swr/use-workspace";
+import { AppButtonLink } from "@/ui/components/controls/app-button";
 import SubscriptionMenu from "@/ui/workspaces/subscription-menu";
-import { buttonVariants, Icon, Tooltip, useRouterStuff } from "@dub/ui";
-import {
-  CircleDollar,
-  CirclePercentage,
-  CrownSmall,
-  CursorRays,
-  Folder5,
-  Globe,
-  Hyperlink,
-  Tag,
-  Users,
-  Users6,
-} from "@dub/ui/icons";
+import { Icon, Tooltip, useRouterStuff } from "@dub/ui";
+import { CircleDollar, CrownSmall, CursorRays, Hyperlink } from "@dub/ui/icons";
 import {
   capitalize,
   cn,
@@ -49,19 +36,9 @@ export default function PlanUsage() {
     foldersLimit,
     tagsLimit,
     usersLimit,
-    partnersEnabled,
     billingCycleStart,
     flags,
   } = useWorkspace();
-
-  const { programs } = usePrograms();
-  const { partnersCount } = usePartnersCount<number>({
-    enabled: !!programs?.[0]?.id,
-    programId: programs?.[0]?.id,
-    status: "approved",
-  });
-
-  const payoutFees = plan ? PAYOUT_FEES[plan.toLowerCase()]?.ach : null;
 
   const { data: tags } = useTagsCount();
   const { users } = useUsers();
@@ -85,7 +62,7 @@ export default function PlanUsage() {
   }, [billingCycleStart]);
 
   return (
-    <div className="rounded border border-neutral-100 bg-white">
+    <div className="rounded bg-white">
       <div className="flex flex-col items-start justify-between gap-y-4 p-6 md:p-8 lg:flex-row">
         <div>
           <h2 className="text-xl font-medium">{capitalize(plan)} Plan</h2>
@@ -102,31 +79,27 @@ export default function PlanUsage() {
         </div>
         <div className="flex items-center gap-4">
           {plan !== "enterprise" && (
-            <Link
+            <AppButtonLink
               href={`/${slug}/settings/billing/upgrade`}
-              className={cn(
-                buttonVariants({ variant: "primary" }),
-                "flex h-9 w-full items-center justify-center whitespace-nowrap rounded border px-4 text-sm",
-              )}
+              variant="primary"
+              size="sm"
             >
               Upgrade
-            </Link>
+            </AppButtonLink>
           )}
-          <Link
+          <AppButtonLink
             href={`/${slug}/settings/billing/invoices`}
-            className={cn(
-              buttonVariants({ variant: "secondary" }),
-              "flex h-9 w-full items-center justify-center whitespace-nowrap rounded border px-4 text-sm",
-            )}
+            variant="secondary"
+            size="sm"
           >
             View invoices
-          </Link>
+          </AppButtonLink>
           {stripeId && plan !== "free" && <SubscriptionMenu />}
         </div>
       </div>
-      <div className="grid grid-cols-[minmax(0,1fr)] divide-y divide-neutral-100 border-x border-neutral-100">
+      <div className="grid grid-cols-[minmax(0,1fr)] divide-y divide-neutral-100">
         <div>
-          <div className="grid gap-4 p-6 md:p-8 lg:gap-6 grid-cols-1 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 p-6 md:grid-cols-3 md:p-8 lg:gap-6">
             <UsageTabCard
               id="events"
               icon={CursorRays}
@@ -155,72 +128,6 @@ export default function PlanUsage() {
             <UsageChart />
           </div>
         </div>
-        {/* <div
-          className={cn(
-            "grid grid-cols-1 gap-[1px] overflow-hidden rounded-b bg-neutral-200 md:grid-cols-3",
-            flags?.linkFolders &&
-              "md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4",
-            !partnersEnabled && "rounded-b",
-          )}
-        >
-          <UsageCategory
-            title="Custom Domains"
-            icon={Globe}
-            usage={domains?.length}
-            usageLimit={domainsLimit}
-            href={`/${slug}/settings/domains`}
-          />
-          {flags?.linkFolders && (
-            <UsageCategory
-              title="Folders"
-              icon={Folder5}
-              usage={foldersUsage}
-              usageLimit={foldersLimit}
-              href={`/${slug}/settings/library/folders`}
-            />
-          )}
-          <UsageCategory
-            title="Tags"
-            icon={Tag}
-            usage={tags}
-            usageLimit={tagsLimit}
-            href={`/${slug}/settings/library/tags`}
-          />
-          <UsageCategory
-            title="Teammates"
-            icon={Users}
-            usage={users?.filter((user) => !user.isMachine).length}
-            usageLimit={usersLimit}
-            href={`/${slug}/settings/people`}
-          />
-        </div> */}
-        {/* {partnersEnabled && (
-        <div className="flex flex-col items-center justify-between space-y-3 border-x border-neutral-100 px-6 py-4 text-center md:flex-row md:space-y-0 md:px-8 md:text-left">
-            <UsageCategory
-              title="Partners"
-              icon={Users6}
-              usage={programs && !programs.length ? 0 : partnersCount}
-              usageLimit={INFINITY_NUMBER}
-              href={
-                programs?.[0]?.id
-                  ? `/${slug}/programs/${programs?.[0]?.id}/partners`
-                  : undefined
-              }
-            />
-            <UsageCategory
-              title="Payout fees"
-              icon={CirclePercentage}
-              usage={
-                plan
-                  ? payoutFees
-                    ? `${Math.round(payoutFees * 100)}%`
-                    : "-"
-                  : undefined
-              }
-              // href="https://dub.co/help/article/partner-payouts#payout-fees-and-timing"
-            />
-          </div>
-        )} */}
       </div>
     </div>
   );
@@ -339,8 +246,9 @@ function UsageTabCard({
                   "size-full rounded-full",
                   requiresUpgrade
                     ? "bg-neutral-900/10"
-                    : "bg-gradient-to-r from-neutral-500/80 to-neutral-600",
-                  warning && "from-neutral-900/10 via-red-500 to-red-600",
+                    : warning
+                      ? "bg-red-500"
+                      : "bg-neutral-700/70",
                 )}
                 style={{
                   transform: `translateX(-${100 - Math.max(Math.floor((usage / Math.max(0, usage, limit)) * 100), usage === 0 ? 0 : 1)}%)`,
@@ -372,7 +280,7 @@ function UsageCategory(data: {
   usageLimit?: number;
   href?: string;
 }) {
-  let { title, icon: Icon, usage, usageLimit, href } = data;
+  const { title, icon: Icon, usage, usageLimit, href } = data;
 
   const As = href ? Link : "div";
 

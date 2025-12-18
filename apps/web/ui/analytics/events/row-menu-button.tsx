@@ -1,4 +1,4 @@
-import { Button, Icon, Popover, useCopyToClipboard } from "@dub/ui";
+import { Icon, Popover, useCopyToClipboard } from "@dub/ui";
 import { Copy, Dots } from "@dub/ui/icons";
 import { cn } from "@dub/utils";
 import { Row } from "@tanstack/react-table";
@@ -6,6 +6,7 @@ import { Command } from "cmdk";
 import { useState } from "react";
 import { toast } from "sonner";
 import { EventDatum } from "./events-table";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 
 export function RowMenuButton({ row }: { row: Row<EventDatum> }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,12 +48,9 @@ export function RowMenuButton({ row }: { row: Row<EventDatum> }) {
       }
       align="end"
     >
-      <Button
-        type="button"
-        className="h-8 whitespace-nowrap px-2"
-        variant="outline"
-        icon={<Dots className="h-4 w-4 shrink-0" />}
-      />
+      <AppIconButton type="button" className="h-8 w-8">
+        <Dots className="h-4 w-4 shrink-0" />
+      </AppIconButton>
     </Popover>
   );
 }

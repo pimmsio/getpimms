@@ -8,12 +8,15 @@ import {
   smartTruncate,
   STAGGER_CHILD_VARIANTS,
 } from "@dub/utils";
-import { COUNTRIES } from "@dub/utils/src/constants/countries";
+import { COUNTRIES } from "@dub/utils";
 import NumberFlow from "@number-flow/react";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect, useParams } from "next/navigation";
+
+// @dub/utils emits widened .d.ts types for this constant, so we cast to satisfy framer-motion Variants.
+const STAGGER_CHILD_VARIANTS_FM = STAGGER_CHILD_VARIANTS as unknown as Variants;
 
 export default function WrappedPageClient() {
   const { slug, year } = useParams();
@@ -182,7 +185,7 @@ const StatTable = ({
           return (
             <motion.div
               key={index}
-              variants={STAGGER_CHILD_VARIANTS}
+              variants={STAGGER_CHILD_VARIANTS_FM}
               className="text-sm text-neutral-500"
             >
               <a

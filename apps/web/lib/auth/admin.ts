@@ -32,10 +32,8 @@ export const isDubAdmin = async (userId: string) => {
 
 export const withAdmin =
   (handler: WithAdminHandler) =>
-  async (
-    req: Request,
-    { params = {} }: { params: Record<string, string> | undefined },
-  ) => {
+  async (req: Request, { params }: { params: Promise<any> }) => {
+    const resolvedParams = (await params) ?? {};
     const session = await getSession();
     if (!session?.user) {
       return new Response("Unauthorized: Login required.", { status: 401 });
@@ -47,5 +45,5 @@ export const withAdmin =
     }
 
     const searchParams = getSearchParams(req.url);
-    return handler({ req, params, searchParams });
+    return handler({ req, params: resolvedParams, searchParams });
   };

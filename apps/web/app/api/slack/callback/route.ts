@@ -27,7 +27,7 @@ export const GET = async (req: Request) => {
 
   let workspace: Pick<
     Project,
-    "id" | "slug" | "plan" | "partnersEnabled"
+    "id" | "slug" | "plan"
   > | null = null;
 
   try {
@@ -60,7 +60,6 @@ export const GET = async (req: Request) => {
         id: true,
         slug: true,
         plan: true,
-        partnersEnabled: true,
       },
     });
 

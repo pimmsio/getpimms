@@ -1,7 +1,7 @@
 import { prefixWorkspaceId } from "@/lib/api/workspace-id";
 import { hashToken, withAdmin } from "@/lib/auth";
 import { prisma } from "@dub/prisma";
-import { APP_DOMAIN, PARTNERS_DOMAIN } from "@dub/utils";
+import { APP_DOMAIN } from "@dub/utils";
 import { randomBytes } from "crypto";
 import { NextResponse } from "next/server";
 
@@ -80,12 +80,5 @@ async function getImpersonateUrl(email: string) {
       email,
       token,
     })}`,
-    partners: `${PARTNERS_DOMAIN}/api/auth/callback/email?${new URLSearchParams(
-      {
-        callbackUrl: PARTNERS_DOMAIN,
-        email,
-        token,
-      },
-    )}`,
   };
 }

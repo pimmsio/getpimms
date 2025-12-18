@@ -1,17 +1,9 @@
 import z from "@/lib/zod";
 import { metaTagsSchema } from "@/lib/zod/schemas/metatags";
 import {
-  PartnerEarningsSchema,
-  PartnerProfileLinkSchema,
-} from "@/lib/zod/schemas/partner-profile";
-import { DirectorySyncProviders } from "@boxyhq/saml-jackson";
-import {
-  CommissionStatus,
   FolderUserRole,
   Link,
-  PayoutStatus,
   Prisma,
-  ProgramEnrollmentStatus,
   Project,
   User,
   UtmTemplate,
@@ -23,14 +15,12 @@ import {
 } from "./folder/constants";
 import { WEBHOOK_TRIGGER_DESCRIPTIONS } from "./webhook/constants";
 import { clickEventResponseSchema } from "./zod/schemas/clicks";
-import { CommissionResponseSchema } from "./zod/schemas/commissions";
 import { customerActivityResponseSchema } from "./zod/schemas/customer-activity";
 import {
   CustomerEnrichedSchema,
   CustomerSchema,
 } from "./zod/schemas/customers";
 import { dashboardSchema } from "./zod/schemas/dashboard";
-import { DiscountSchema } from "./zod/schemas/discount";
 import { FolderSchema } from "./zod/schemas/folders";
 import { integrationSchema } from "./zod/schemas/integration";
 import { InvoiceSchema } from "./zod/schemas/invoices";
@@ -43,26 +33,6 @@ import {
   createLinkBodySchema,
 } from "./zod/schemas/links";
 import { createOAuthAppSchema, oAuthAppSchema } from "./zod/schemas/oauth";
-import {
-  createPartnerSchema,
-  EnrolledPartnerSchemaWithExpandedFields,
-  PartnerSchema,
-} from "./zod/schemas/partners";
-import {
-  PartnerPayoutResponseSchema,
-  PayoutResponseSchema,
-  PayoutSchema,
-} from "./zod/schemas/payouts";
-import { programDataSchema } from "./zod/schemas/program-onboarding";
-import {
-  PartnerProgramInviteSchema,
-  ProgramEnrollmentSchema,
-  ProgramInviteSchema,
-  ProgramMetricsSchema,
-  ProgramPartnerLinkSchema,
-  ProgramSchema,
-} from "./zod/schemas/programs";
-import { RewardSchema } from "./zod/schemas/rewards";
 import {
   saleEventResponseSchema,
   trackSaleResponseSchema,
@@ -172,7 +142,6 @@ export interface UserProps {
   createdAt: Date;
   source: string | null;
   defaultWorkspace?: string;
-  defaultPartnerId?: string;
   isMachine: boolean;
   hasPassword: boolean;
   provider: string | null;
@@ -223,18 +192,6 @@ export interface ImportedDomainCountProps {
   id: number;
   domain: string;
   links: number;
-}
-
-export interface SAMLProviderProps {
-  name: string;
-  logo: string;
-  saml: "okta" | "azure" | "google";
-  samlModalCopy: string;
-  scim: keyof typeof DirectorySyncProviders;
-  scimModalCopy: {
-    url: string;
-    token: string;
-  };
 }
 
 export type NewLinkProps = z.infer<typeof createLinkBodySchema>;
@@ -364,56 +321,7 @@ export type CustomerEnriched = z.infer<typeof CustomerEnrichedSchema>;
 
 export type UsageResponse = z.infer<typeof usageResponse>;
 
-export type PartnersCount = Record<ProgramEnrollmentStatus | "all", number>;
-
-export type CommissionsCount = Record<
-  CommissionStatus | "all",
-  {
-    count: number;
-    amount: number;
-    earnings: number;
-  }
->;
-
-export type CommissionResponse = z.infer<typeof CommissionResponseSchema>;
-
-export type PartnerEarningsResponse = z.infer<typeof PartnerEarningsSchema>;
-
 export type CustomerProps = z.infer<typeof CustomerSchema>;
-
-export type PartnerProps = z.infer<typeof PartnerSchema>;
-
-export type ProgramPartnerLinkProps = z.infer<typeof ProgramPartnerLinkSchema>;
-
-export type PartnerProfileLinkProps = z.infer<typeof PartnerProfileLinkSchema>;
-
-export type EnrolledPartnerProps = z.infer<
-  typeof EnrolledPartnerSchemaWithExpandedFields
->;
-
-export type DiscountProps = z.infer<typeof DiscountSchema>;
-
-export type ProgramProps = z.infer<typeof ProgramSchema>;
-
-export type ProgramInviteProps = z.infer<typeof ProgramInviteSchema>;
-
-export type PartnerProgramInviteProps = z.infer<
-  typeof PartnerProgramInviteSchema
->;
-
-export type ProgramEnrollmentProps = z.infer<typeof ProgramEnrollmentSchema>;
-
-export type PayoutsCount = {
-  status: PayoutStatus;
-  count: number;
-  amount: number;
-};
-
-export type PayoutProps = z.infer<typeof PayoutSchema>;
-
-export type PayoutResponse = z.infer<typeof PayoutResponseSchema>;
-
-export type PartnerPayoutResponse = z.infer<typeof PartnerPayoutResponseSchema>;
 
 export type SegmentIntegrationCredentials = {
   writeKey?: string;
@@ -452,12 +360,4 @@ export type FolderSummary = Pick<
   "id" | "name" | "accessLevel" | "linkCount"
 >;
 
-// Rewards
-
-export type RewardProps = z.infer<typeof RewardSchema>;
-
-export type CreatePartnerProps = z.infer<typeof createPartnerSchema>;
-
-export type ProgramData = z.infer<typeof programDataSchema>;
-
-export type ProgramMetrics = z.infer<typeof ProgramMetricsSchema>;
+// Programs/partners/referrals removed.

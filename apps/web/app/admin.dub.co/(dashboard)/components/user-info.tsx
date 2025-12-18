@@ -17,7 +17,6 @@ export interface UserInfoProps {
   }[];
   impersonateUrl: {
     app: string;
-    partners: string;
   };
 }
 
@@ -28,10 +27,6 @@ export default function UserInfo({ data }: { data: UserInfoProps }) {
       <LoginLinkCopyButton
         text="app.pimms.io login link"
         url={data.impersonateUrl.app}
-      />
-      <LoginLinkCopyButton
-        text="partners.pimms.io login link"
-        url={data.impersonateUrl.partners}
       />
       <div className="grid grid-cols-2 gap-4">
         {data.workspaces.map((workspace) => (

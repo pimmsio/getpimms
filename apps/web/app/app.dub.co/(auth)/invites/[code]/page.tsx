@@ -9,13 +9,14 @@ import { Suspense } from "react";
 
 export const runtime = "nodejs";
 
-export default function InvitesPage({
+export default async function InvitesPage({
   params,
 }: {
-  params: {
+  params: Promise<{
     code: string;
-  };
+  }>;
 }) {
+  const { code } = await params;
   return (
     <div className="flex flex-col items-center justify-center gap-6 text-center">
       <Suspense
@@ -27,7 +28,7 @@ export default function InvitesPage({
           />
         }
       >
-        <VerifyInvite code={params.code} />
+        <VerifyInvite code={code} />
       </Suspense>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { createUserAccountAction } from "@/lib/actions/create-user-account";
-import { AnimatedSizeContainer, Button, useMediaQuery } from "@dub/ui";
+import { AnimatedSizeContainer, useMediaQuery } from "@dub/ui";
 import { cn } from "@dub/utils";
 import { OTPInput } from "input-otp";
 import { signIn } from "next-auth/react";
@@ -11,6 +11,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useRegisterContext } from "./context";
 import { ResendOtp } from "./resend-otp";
+import { AppButton } from "@/ui/components/controls/app-button";
 
 export const VerifyEmailForm = () => {
   const router = useRouter();
@@ -69,7 +70,7 @@ export const VerifyEmailForm = () => {
                 setCode(code);
               }}
               autoFocus={!isMobile}
-              containerClassName="group flex items-center justify-center rounded-full"
+              containerClassName="group flex items-center justify-center rounded-lg"
               render={({ slots }) => (
                 <div className="flex items-center">
                   {slots.map(({ char, isActive, hasFakeCaret }, idx) => (
@@ -104,13 +105,15 @@ export const VerifyEmailForm = () => {
               </p>
             )}
 
-            <Button
+            <AppButton
               className="mt-8"
-              text={isPending ? "Verifying..." : "Continue"}
               type="submit"
+              variant="primary"
               loading={isPending || isRedirecting}
               disabled={!code || code.length < 6}
-            />
+            >
+              Continue
+            </AppButton>
           </div>
         </form>
 

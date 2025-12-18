@@ -6,6 +6,7 @@ import { OG_AVATAR_URL } from "@dub/utils";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { card, text } from "@/ui/design/tokens";
 
 export default function UpdateDefaultWorkspace() {
   const { data: session, update } = useSession();
@@ -78,11 +79,11 @@ export default function UpdateDefaultWorkspace() {
           error: (error) => error,
         });
       }}
-      className="rounded border border-neutral-100 bg-white"
+      className={card.base}
     >
       <div className="flex flex-col space-y-3 p-5 sm:p-10">
-        <h2 className="text-xl font-medium">Your Default Workspace</h2>
-        <p className="text-sm text-neutral-500">
+        <h2 className={text.sectionTitle}>Your Default Workspace</h2>
+        <p className={text.pageDescription}>
           Choose the workspace to show by default when you sign in.
         </p>
         <div className="mt-1 max-w-md">

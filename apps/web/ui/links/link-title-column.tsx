@@ -222,7 +222,7 @@ function SettingsBadge({ link }: { link: ResponseLink }) {
           <HoverCard.Content
             side="bottom"
             sideOffset={8}
-            className="animate-slide-up-fade z-[99] items-center overflow-hidden rounded border border-neutral-100 bg-white shadow-sm"
+            className="animate-slide-up-fade z-[99] items-center overflow-hidden rounded border border-neutral-100 bg-white"
           >
             <div className="flex w-[340px] flex-col p-3 text-sm">
               {settings.map(({ label, icon: Icon }) => (
@@ -268,13 +268,20 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
       data-checked={isSelected}
       onClick={(e) => handleLinkSelection(link.id, e)}
       className={cn(
-        "group relative hidden shrink-0 items-center justify-center outline-none sm:flex",
+        "group relative hidden h-9 w-9 shrink-0 items-center justify-center outline-none sm:flex sm:h-10 sm:w-10",
         isSelectMode && "flex",
       )}
     >
       {/* Link logo background circle */}
-      <div className="absolute inset-0 shrink-0 rounded border border-neutral-100 opacity-100" />
-        <div className="relative transition-[padding,transform] group-hover:scale-90 sm:p-1">
+      <div
+        className={cn(
+          "absolute inset-1 shrink-0 rounded-full border transition-colors duration-150",
+          isSelectMode || isSelected
+            ? "border-neutral-200 bg-white"
+            : "border-transparent bg-transparent",
+        )}
+      />
+      <div className="relative transition-[padding,transform] group-hover:scale-90 sm:p-1">
         <div className="hidden sm:block">
           {link.archived ? (
             <BoxArchive
@@ -301,19 +308,16 @@ const LinkIcon = memo(({ link }: { link: ResponseLink }) => {
       {/* Checkbox */}
       <div
         className={cn(
-          "pointer-events-none absolute inset-0 flex items-center justify-center rounded-full border border-neutral-400 bg-white ring-0 ring-black/5",
-          "opacity-100 max-sm:ring sm:opacity-0",
-          "transition-all duration-150 group-hover:opacity-100 group-hover:ring group-focus-visible:opacity-100 group-focus-visible:ring",
-          "group-data-[checked=true]:opacity-100",
+          "pointer-events-none absolute inset-1 flex items-center justify-center rounded-full border border-neutral-300 bg-white",
+          isSelectMode || isSelected ? "opacity-100" : "opacity-0",
         )}
       >
         <div
           className={cn(
-            "rounded-full bg-neutral-800 p-0.5 sm:p-1",
             "scale-90 opacity-0 transition-[transform,opacity] duration-100 group-data-[checked=true]:scale-100 group-data-[checked=true]:opacity-100",
           )}
         >
-          <Check2 className="size-3 text-white" />
+          <Check2 className="size-4 text-neutral-900" />
         </div>
       </div>
     </button>

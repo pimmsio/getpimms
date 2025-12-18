@@ -1,5 +1,5 @@
 import { checkAccountExistsAction } from "@/lib/actions/check-account-exists";
-import { CtaButton, Input, useMediaQuery } from "@dub/ui";
+import { CtaButton, useMediaQuery } from "@dub/ui";
 import { cn, CBE_DOMAIN } from "@dub/utils";
 import { signIn } from "next-auth/react";
 import { useAction } from "next-safe-action/hooks";
@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useContext, useState } from "react";
 import { toast } from "sonner";
 import { errorCodes, LoginFormContext } from "./login-form";
+import { AppInput } from "@/ui/components/controls/app-input";
 
 export const EmailSignIn = ({ next }: { next?: string }) => {
   const router = useRouter();
@@ -126,7 +127,7 @@ export const EmailSignIn = ({ next }: { next?: string }) => {
         className="flex flex-col gap-y-3"
       >
         {authMethod === "email" && (
-          <input
+          <AppInput
             id="email"
             name="email"
             autoFocus={!isMobile && !showPasswordField}
@@ -138,7 +139,7 @@ export const EmailSignIn = ({ next }: { next?: string }) => {
             onChange={(e) => setEmail(e.target.value)}
             size={1}
             className={cn(
-              "block w-full min-w-0 appearance-none rounded-full border border-neutral-200 text-black placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
+              "block w-full min-w-0 appearance-none",
               {
                 "pr-10": isPending,
               },
@@ -148,13 +149,12 @@ export const EmailSignIn = ({ next }: { next?: string }) => {
 
         {showPasswordField && (
           <div>
-            <Input
+            <AppInput
               type="password"
               autoFocus={!isMobile}
               value={password}
               placeholder="Password (optional)"
               onChange={(e) => setPassword(e.target.value)}
-              className="rounded-full"
             />
           </div>
         )}

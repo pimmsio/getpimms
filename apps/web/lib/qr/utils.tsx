@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import qrcodegen from "./codegen";
 import {
   DEFAULT_BGCOLOR,
@@ -167,7 +168,7 @@ export function QRCodeSVG(props: QRPropsSVG) {
     imageSettings,
   );
 
-  let image: null | JSX.Element = null;
+  let image: ReactElement | null = null;
   if (imageSettings != null && calculatedImageSettings != null) {
     if (calculatedImageSettings.excavation != null) {
       cells = excavateModules(cells, calculatedImageSettings.excavation);

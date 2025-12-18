@@ -253,7 +253,16 @@ export default function EventsTable({
             if ((customer as any)?.__skeleton) {
               return (
                 <div className="px-4 py-3">
-                  <LinksRowSkeleton showUtmRow={false} showMetrics={false} />
+                  <div className="flex w-full items-center justify-between gap-4">
+                    <div className="flex min-w-0 flex-1 items-center gap-3">
+                      <div className="size-9 shrink-0 animate-pulse rounded-full bg-neutral-200" />
+                      <div className="min-w-0 flex-1">
+                        <div className="h-4 w-36 animate-pulse rounded bg-neutral-200" />
+                        <div className="mt-1 h-3 w-44 animate-pulse rounded bg-neutral-200/70" />
+                      </div>
+                    </div>
+                    <div className="size-4 shrink-0 animate-pulse rounded bg-neutral-200/70" />
+                  </div>
                 </div>
               );
             }
@@ -267,7 +276,7 @@ export default function EventsTable({
                       customer.avatar ||
                       `${OG_AVATAR_URL}${customer.id}&name=${encodeURIComponent(customer.name || customer.email || "")}`
                     }
-                    className="size-9 shrink-0 rounded-full border border-neutral-200"
+                    className="size-9 shrink-0 rounded-full bg-neutral-50"
                   />
                   <div className="min-w-0 flex-1">
                     <div
@@ -993,7 +1002,7 @@ export default function EventsTable({
       >
         {showDemo && !isLoading && !integrationsLoading && !requiresUpgrade && (
           <>
-            <div className="absolute inset-0 flex touch-pan-y flex-col items-center justify-center gap-6 bg-gradient-to-t from-[#fff_70%] to-[#fff6]">
+            <div className="absolute inset-0 flex touch-pan-y flex-col items-center justify-center gap-6 bg-white/95">
               <EmptyState
                 icon={Target}
                 title="No events recorded"
@@ -1004,7 +1013,7 @@ export default function EventsTable({
         )}
         {requiresUpgrade && (
           <>
-            <div className="absolute inset-0 flex touch-pan-y items-center justify-center bg-gradient-to-t from-[#fff_70%] to-[#fff6]">
+            <div className="absolute inset-0 flex touch-pan-y items-center justify-center bg-white/95">
               {upgradeOverlay}
             </div>
             <div className="h-[400px]" />

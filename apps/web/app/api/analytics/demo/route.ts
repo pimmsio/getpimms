@@ -4,6 +4,8 @@ import { analyticsQuerySchema } from "@/lib/zod/schemas/analytics";
 import { DUB_WORKSPACE_ID } from "@dub/utils";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/analytics/demo
 export const GET = withSession(async ({ searchParams }) => {
   const parsedParams = analyticsQuerySchema.parse(searchParams);

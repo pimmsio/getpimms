@@ -111,7 +111,7 @@ export function InviteTeammatesForm({
                   {pluralize("Email", fields.length)}
                 </span>
               )}
-              <div className="relative flex rounded shadow-sm">
+              <div className="relative flex rounded">
                 <input
                   type="email"
                   placeholder="cheers@pimms.io"

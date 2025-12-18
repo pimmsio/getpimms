@@ -1,8 +1,16 @@
 import { Logger } from "next-axiom";
-import { NextFetchEvent, NextRequest } from "next/server";
+import { NextRequest } from "next/server";
 
-export default function AxiomMiddleware(req: NextRequest, ev: NextFetchEvent) {
+export default function AxiomMiddleware(
+  req: NextRequest,
+  waitUntil?: (promise: Promise<unknown>) => void,
+) {
   const logger = new Logger({ source: "middleware" }); // traffic, request
   logger.middleware(req);
-  ev.waitUntil(logger.flush());
+  const flushPromise = logger.flush();
+  if (waitUntil) {
+    waitUntil(flushPromise);
+  } else {
+    void flushPromise.catch(() => {});
+  }
 }

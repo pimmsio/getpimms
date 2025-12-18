@@ -1,5 +1,5 @@
 {
-  "name": "dub-monorepo",
+  "name": "hydra",
   "private": true,
   "license": "AGPL-3.0-or-later",
   "scripts": {
@@ -26,16 +26,12 @@
   },
   "devDependencies": {
     "@dub/tailwind-config": "workspace:*",
-    "eslint": "^8.48.0",
-    "prettier": "^3.2.5",
-    "prettier-plugin-organize-imports": "^3.2.4",
-    "prettier-plugin-tailwindcss": "^0.6.0",
+    "eslint": "^9.39.2",
+    "prettier": "^3.7.4",
+    "prettier-plugin-organize-imports": "^4.3.0",
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "tsconfig": "workspace:*",
-    "turbo": "^1.12.5"
-  },
-  "resolutions": {
-    "@radix-ui/react-dialog": "1.0.5",
-    "@radix-ui/react-popover": "1.0.7"
+    "turbo": "^2.6.3"
   },
   "packageManager": "pnpm@8.6.10"
 }

@@ -80,7 +80,6 @@ export function PlanSelector() {
                     currency: "EUR",
                     maximumFractionDigits: 0,
                   }}
-                  continuous
                 />
                 {plan.name === "Starter" || plan.name === "Pro" ? (
                   <span className="ml-1 font-medium">One-time payment</span>

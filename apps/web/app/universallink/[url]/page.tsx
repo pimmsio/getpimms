@@ -1,53 +1,56 @@
 import { getDirectLink } from "@/lib/middleware/utils";
-import { linkConstructor } from "@dub/utils";
 import UniversalLinkRedirect from "@/ui/links/universal-link-redirect";
+import { linkConstructor } from "@dub/utils";
 
 export const runtime = "edge";
 
-export default function UniversalLinkPage({
+export default async function UniversalLinkPage({
   params,
   searchParams,
 }: {
-  params: { url: string };
-  searchParams: {
+  params: Promise<{ url: string }>;
+  searchParams: Promise<{
     os?: string;
     browser?: string;
     key?: string;
     domain?: string;
     universal?: string;
-  };
+  }>;
 }) {
-  console.log('Runtime:', (globalThis as any).EdgeRuntime ? 'edge' : 'node');
+  console.log("Runtime:", (globalThis as any).EdgeRuntime ? "edge" : "node");
+
+  const { url: encodedUrl } = await params;
+  const { os, browser, key, domain, universal } = await searchParams;
 
   // First decode the full URL parameter from the route
-  const url = decodeURIComponent(params.url);
+  const url = decodeURIComponent(encodedUrl);
 
-  const os = searchParams.os as "ios" | "android" | undefined;
-  const browser = searchParams.browser as string | undefined;
-  const key = searchParams.key as string | undefined;
-  const domain = searchParams.domain as string | undefined;
-  const universal = searchParams.universal as string | undefined;
+  const osParam = os as "ios" | "android" | undefined;
+  const browserParam = browser as string | undefined;
+  const keyParam = key as string | undefined;
+  const domainParam = domain as string | undefined;
+  const universalParam = universal as string | undefined;
   // get direct link uri scheme
-  const directLink = !universal
+  const directLink = !universalParam
     ? getDirectLink(
-        browser?.includes("safari")
+        browserParam?.includes("safari")
           ? url
           : linkConstructor({
-              domain,
-              key,
+              domain: domainParam,
+              key: keyParam,
               searchParams: { universal: "true" },
             }),
-        os,
+        osParam,
       )
     : undefined;
 
   console.log("universal link", {
     directLink,
     url,
-    os,
-    key,
-    domain,
-    universal,
+    os: osParam,
+    key: keyParam,
+    domain: domainParam,
+    universal: universalParam,
   });
 
   return <UniversalLinkRedirect directLink={directLink} url={url} />;

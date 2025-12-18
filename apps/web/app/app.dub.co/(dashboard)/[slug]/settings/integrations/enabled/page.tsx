@@ -1,3 +1,4 @@
+import { text } from "@/ui/design/tokens";
 import { IntegrationLogo } from "@/ui/integrations/integration-logo";
 import { BackLink } from "@/ui/shared/back-link";
 import { prisma } from "@dub/prisma";
@@ -7,21 +8,20 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
-export default function EnabledIntegrationsPage({
+export default async function EnabledIntegrationsPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  const { slug } = await params;
   return (
-    <div className="mx-auto flex w-full max-w-screen-md flex-col gap-8">
-      <BackLink href={`/${params.slug}/settings/integrations`}>
+    <div className="flex w-full flex-col gap-6">
+      <BackLink href={`/${slug}/settings/integrations`}>
         Integrations
       </BackLink>
-      <h1 className="text-2xl font-semibold tracking-tight text-black">
-        Enabled Integrations
-      </h1>
+      <div className={text.pageTitle}>Enabled Integrations</div>
       <Suspense fallback={<div>Loading...</div>}>
-        <EnabledIntegrationsPageRSC slug={params.slug} />
+        <EnabledIntegrationsPageRSC slug={slug} />
       </Suspense>
     </div>
   );

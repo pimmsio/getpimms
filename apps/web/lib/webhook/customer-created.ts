@@ -1,6 +1,5 @@
 import { computeCustomerHotScore } from "@/lib/analytics/compute-customer-hot-score";
 import { includeTags } from "@/lib/api/links/include-tags";
-import { createPartnerCommission } from "@/lib/partners/create-partner-commission";
 import { getClickEvent, recordLead } from "@/lib/tinybird";
 import {
   computeAnonymousCustomerFields,
@@ -131,18 +130,6 @@ export const customerCreated = async (
       data: { usage: { increment: 1 } },
     }),
   ]);
-
-  if (link.programId && link.partnerId) {
-    await createPartnerCommission({
-      event: "lead",
-      programId: link.programId,
-      partnerId: link.partnerId,
-      linkId,
-      eventId: leadData.event_id,
-      customerId: customer.id,
-      quantity: 1,
-    });
-  }
 
   waitUntil(
     (async () => {

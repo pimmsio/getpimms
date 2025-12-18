@@ -8,11 +8,16 @@ import Insights from "./insights";
 export default function WorkspaceInsights() {
   return (
     <Suspense fallback={<LayoutLoader />}>
-      <PageContent title="Links Report">
+      <PageContent
+        title="Links Report"
+        headerPlacement="content"
+      >
         <AnalyticsClient eventsPage>
-          <EventsProvider>
-            <Insights />
-          </EventsProvider>
+          <div className="px-3 py-4 pb-16 lg:px-10">
+            <EventsProvider>
+              <Insights />
+            </EventsProvider>
+          </div>
         </AnalyticsClient>
       </PageContent>
     </Suspense>

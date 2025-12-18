@@ -4,8 +4,10 @@ import useWorkspace from "@/lib/swr/use-workspace";
 import { UtmTemplateWithUserProps } from "@/lib/types";
 import UtmTemplateBadge from "@/ui/links/utm-template-badge";
 import { useAddEditUtmTemplateModal } from "@/ui/modals/add-edit-utm-template.modal";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 import { Delete, ThreeDots } from "@/ui/shared/icons";
-import { Avatar, Button, Popover, Tooltip } from "@dub/ui";
+import { Avatar, IconMenu, Popover, Tooltip } from "@dub/ui";
 import {
   DiamondTurnRight,
   Flag6,
@@ -35,9 +37,9 @@ export function TemplateTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
+    <div className="overflow-x-auto rounded-xl bg-white">
       <table className="w-full">
-        <thead className="border-b border-neutral-200 bg-neutral-50">
+        <thead className="border-b border-neutral-100 bg-neutral-50">
           <tr>
             <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-600">
               <div className="flex items-center gap-2">
@@ -209,50 +211,49 @@ function TemplateRow({
           <Popover
             content={
               <div className="grid w-full gap-px p-2 sm:w-48">
-                <Button
-                  text="Edit"
-                  variant="outline"
+                <AppButton
+                  type="button"
+                  variant="ghost"
                   onClick={(e) => {
                     e.stopPropagation();
                     setOpenPopover(false);
                     setShowAddEditUtmTemplateModal(true);
                   }}
-                  icon={<PenWriting className="h-4 w-4" />}
-                  shortcut="E"
-                  className="h-9 px-2 font-medium"
-                />
-                <Button
-                  text="Delete"
-                  variant="danger-outline"
+                  className="w-full justify-start"
+                >
+                  <IconMenu text="Edit" icon={<PenWriting className="h-4 w-4" />} />
+                </AppButton>
+                <AppButton
+                  type="button"
+                  variant="ghost"
                   onClick={handleDelete}
-                  icon={<Delete className="h-4 w-4" />}
-                  shortcut="X"
-                  className="h-9 px-2 font-medium"
-                />
+                  className="w-full justify-start text-red-600 hover:bg-red-50"
+                >
+                  <IconMenu text="Delete" icon={<Delete className="h-4 w-4" />} />
+                </AppButton>
               </div>
             }
             align="end"
             openPopover={openPopover}
             setOpenPopover={setOpenPopover}
           >
-            <Button
-              variant="secondary"
+            <AppIconButton
+              type="button"
               className={cn(
                 "h-8 px-1.5 outline-none transition-all duration-200",
-                "border-transparent data-[state=open]:border-neutral-500",
+                "data-[state=open]:bg-neutral-100",
               )}
-              icon={
-                processing ? (
-                  <LoadingSpinner className="h-5 w-5 shrink-0" />
-                ) : (
-                  <ThreeDots className="h-5 w-5 shrink-0" />
-                )
-              }
               onClick={(e) => {
                 e.stopPropagation();
                 setOpenPopover(!openPopover);
               }}
-            />
+            >
+              {processing ? (
+                <LoadingSpinner className="h-5 w-5 shrink-0" />
+              ) : (
+                <ThreeDots className="h-5 w-5 shrink-0" />
+              )}
+            </AppIconButton>
           </Popover>
         </td>
       </tr>

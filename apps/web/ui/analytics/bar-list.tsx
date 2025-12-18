@@ -9,7 +9,6 @@ import Link from "next/link";
 import {
   ComponentProps,
   Dispatch,
-  memo,
   ReactNode,
   SetStateAction,
   useContext,
@@ -17,7 +16,7 @@ import {
   useState,
 } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { areEqual, FixedSizeList } from "react-window";
+import { List, type RowComponentProps } from "react-window";
 import { AnalyticsContext } from "./analytics-provider";
 import LinkPreviewTooltip from "./link-preview";
 import { UrlDecompositionTooltip } from "../shared/url-decomposition-tooltip";
@@ -90,15 +89,13 @@ export default function BarList({
         {virtualize ? (
           <AutoSizer>
             {({ width, height }) => (
-              <FixedSizeList
-                width={width}
-                height={height}
-                itemCount={filteredData.length}
-                itemSize={40}
-                itemData={itemProps}
-              >
-                {VirtualLineItem}
-              </FixedSizeList>
+              <List
+                style={{ width, height }}
+                rowCount={filteredData.length}
+                rowHeight={40}
+                rowProps={{ data: itemProps }}
+                rowComponent={VirtualLineItem}
+              />
             )}
           </AutoSizer>
         ) : (
@@ -290,23 +287,17 @@ export function LineItem({
   );
 }
 
-const VirtualLineItem = memo(
-  ({
-    data,
-    index,
-    style,
-  }: {
-    data: ComponentProps<typeof LineItem>[];
-    index: number;
-    style: any;
-  }) => {
-    const props = data[index];
+function VirtualLineItem({
+  ariaAttributes,
+  data,
+  index,
+  style,
+}: RowComponentProps<{ data: ComponentProps<typeof LineItem>[] }>) {
+  const props = data[index];
 
-    return (
-      <div style={style}>
-        <LineItem {...props} />
-      </div>
-    );
-  },
-  areEqual,
-);
+  return (
+    <div style={style} {...ariaAttributes}>
+      <LineItem {...props} />
+    </div>
+  );
+}

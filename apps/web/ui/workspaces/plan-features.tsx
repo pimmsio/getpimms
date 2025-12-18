@@ -6,7 +6,10 @@ import {
   Tooltip,
 } from "@dub/ui";
 import { cn, SELF_SERVE_PAID_PLANS, STAGGER_CHILD_VARIANTS } from "@dub/utils";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
+
+// @dub/utils emits widened .d.ts types for this constant, so we cast to satisfy framer-motion Variants.
+const STAGGER_CHILD_VARIANTS_FM = STAGGER_CHILD_VARIANTS as unknown as Variants;
 
 export function PlanFeatures({
   plan,
@@ -36,7 +39,7 @@ export function PlanFeatures({
       {selectedPlan.featureTitle && (
         <motion.div
           key="business-plan-feature"
-          variants={STAGGER_CHILD_VARIANTS}
+          variants={STAGGER_CHILD_VARIANTS_FM}
           className="text-sm text-neutral-500"
         >
           {selectedPlan.featureTitle}
@@ -49,7 +52,7 @@ export function PlanFeatures({
         return (
           <motion.div
             key={i}
-            variants={STAGGER_CHILD_VARIANTS}
+            variants={STAGGER_CHILD_VARIANTS_FM}
             className="flex items-center space-x-2 text-sm text-neutral-500"
           >
             <Icon className="size-4" />

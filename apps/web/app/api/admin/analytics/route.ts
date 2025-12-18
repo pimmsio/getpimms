@@ -4,6 +4,8 @@ import { analyticsQuerySchema } from "@/lib/zod/schemas/analytics";
 import { THE_BEGINNING_OF_TIME } from "@dub/utils";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/admin/analytics – get analytics for admin (all workspaces)
 export const GET = withAdmin(async ({ searchParams }) => {
   try {

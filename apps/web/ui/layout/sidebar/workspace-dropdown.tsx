@@ -9,9 +9,9 @@ import {
   Popover,
   useScrollProgress,
 } from "@dub/ui";
-import { Book2, Check2, ConnectedDots, Plus } from "@dub/ui/icons";
+import { Check2, Plus } from "@dub/ui/icons";
 import { cn, OG_AVATAR_URL } from "@dub/utils";
-import { ChevronsUpDown, HelpCircle, Settings2 } from "lucide-react";
+import { ChevronsUpDown } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
@@ -22,6 +22,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefObject,
 } from "react";
 
 export function WorkspaceDropdown() {
@@ -152,20 +153,17 @@ function WorkspaceDropdownPlaceholder() {
 const LINKS = [
   {
     name: "Settings",
-    icon: Settings2,
     href: "/{slug}/settings",
     isWorkspaceLink: true,
   },
   {
     name: "Integrations",
-    icon: ConnectedDots,
     href: "/{slug}/settings/integrations",
     isWorkspaceLink: true,
     planRequired: true,
   },
   {
     name: "Guides & Tutorials",
-    icon: HelpCircle,
     href: "https://pimms.io/guides",
     target: "_blank",
   },
@@ -199,22 +197,21 @@ function WorkspaceList({
   const pathname = usePathname();
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { scrollProgress, updateScrollProgress } = useScrollProgress(scrollRef);
+  const { scrollProgress, updateScrollProgress } = useScrollProgress(
+    scrollRef as unknown as RefObject<HTMLElement>,
+  );
 
   const href = useCallback(
     (slug: string) => {
       if (link || selected.slug === "/") {
         // if we're on a link page, navigate back to the workspace root
         return `/${slug}`;
-      } else if (programId) {
-        // if we're on a program page, navigate to the program page
-        return `/${slug}/programs`;
       } else {
         // else, we keep the path but remove all query params
         return pathname?.replace(selected.slug, slug).split("?")[0] || "/";
       }
     },
-    [link, programId, pathname, selected.slug],
+    [link, pathname, selected.slug],
   );
 
   // Filter links based on workspace settings
@@ -233,7 +230,7 @@ function WorkspaceList({
         className="relative max-h-80 w-full space-y-0.5 overflow-auto rounded bg-white text-base sm:w-64 sm:text-sm"
       >
         <div className="flex flex-col gap-0.5 border-b border-neutral-100 p-2">
-          {filteredLinks.map(({ name, icon: Icon, href: linkHref, target, isWorkspaceLink }) => {
+          {filteredLinks.map(({ name, href: linkHref, target, isWorkspaceLink }) => {
             const finalHref = isWorkspaceLink 
               ? linkHref.replace("{slug}", selected.slug)
               : linkHref;
@@ -244,14 +241,13 @@ function WorkspaceList({
                 href={finalHref}
                 target={target}
                 className={cn(
-                  "flex items-center gap-x-3 rounded-lg px-3 py-2.5 transition-all duration-75",
+                  "flex items-center rounded-lg px-3 py-2.5 transition-all duration-75",
                   "text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900",
                   "active:scale-[0.98]",
                   "outline-none focus-visible:ring-2 focus-visible:ring-neutral-300",
                 )}
                 onClick={() => setOpenPopover(false)}
               >
-                <Icon className="size-4 shrink-0 text-neutral-600" />
                 <span className="block truncate">{name}</span>
               </Link>
             );
@@ -328,7 +324,7 @@ function WorkspaceList({
       </div>
       {/* Bottom scroll fade */}
       <div
-        className="pointer-events-none absolute -bottom-px left-0 h-16 w-full rounded-b bg-gradient-to-t from-white sm:bottom-0"
+        className="pointer-events-none absolute -bottom-px left-0 h-16 w-full rounded-b bg-white sm:bottom-0"
         style={{ opacity: 1 - Math.pow(scrollProgress, 2) }}
       />
     </div>

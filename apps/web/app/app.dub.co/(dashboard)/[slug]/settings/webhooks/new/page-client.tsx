@@ -3,7 +3,6 @@
 import useWorkspace from "@/lib/swr/use-workspace";
 import { BackLink } from "@/ui/shared/back-link";
 import AddEditWebhookForm from "@/ui/webhooks/add-edit-webhook-form";
-import { MaxWidthWrapper } from "@dub/ui";
 import { redirect } from "next/navigation";
 
 export default function NewWebhookPageClient({
@@ -20,16 +19,9 @@ export default function NewWebhookPageClient({
   }
 
   return (
-    <>
-      <MaxWidthWrapper className="grid max-w-screen-lg gap-8">
-        <BackLink href={`/${slug}/settings/webhooks`}>
-          Back to webhooks
-        </BackLink>
-      </MaxWidthWrapper>
-
-      <MaxWidthWrapper className="max-w-screen-lg space-y-6">
-        <AddEditWebhookForm webhook={null} newSecret={newSecret} />
-      </MaxWidthWrapper>
-    </>
+    <div className="mx-auto w-full max-w-screen-lg space-y-6">
+      <BackLink href={`/${slug}/settings/webhooks`}>Back to webhooks</BackLink>
+      <AddEditWebhookForm webhook={null} newSecret={newSecret} />
+    </div>
   );
 }

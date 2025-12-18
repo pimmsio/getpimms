@@ -7,6 +7,7 @@ import {
   DragOverlay,
   DragStartEvent,
   KeyboardSensor,
+  MeasuringStrategy,
   PointerSensor,
   type CollisionDetection,
   closestCenter,
@@ -152,6 +153,7 @@ export function DraggableGrid({
     <DndContext
       sensors={sensors}
       collisionDetection={collisionDetection}
+      measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onDragCancel={() => {

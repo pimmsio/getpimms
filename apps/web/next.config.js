@@ -1,5 +1,6 @@
 const { PrismaPlugin } = require("@prisma/nextjs-monorepo-workaround-plugin");
 const { withAxiom } = require("next-axiom");
+const path = require("path");
 
 const REDIRECT_SEGMENTS = [
   "pricing",
@@ -13,19 +14,28 @@ const REDIRECT_SEGMENTS = [
 /** @type {import('next').NextConfig} */
 module.exports = withAxiom({
   reactStrictMode: false,
+  // Avoid Next guessing the wrong monorepo root (this repo has multiple lockfiles).
+  // This also silences the "inferred your workspace root" warning.
+  outputFileTracingRoot: path.join(__dirname, "..", ".."),
   transpilePackages: [
     "shiki",
     "@dub/prisma",
     "@dub/email",
-    "@boxyhq/saml-jackson",
   ],
-  experimental: {
-    ...(process.env.NODE_ENV === "production" && {
-      esmExternals: "loose",
-    }),
-    serverComponentsExternalPackages: ["@napi-rs/image"],
-  },
+  // `experimental.esmExternals = "loose"` is not supported by Turbopack and
+  // causes `next build` to crash. Keep module resolution defaults.
+  serverExternalPackages: ["@napi-rs/image"],
+  // NOTE: We intentionally avoid Turbopack-specific config for `next build`
+  // because Turbopack is still unstable for production builds in some setups.
   webpack: (config, { webpack, isServer }) => {
+    config.resolve = config.resolve || {};
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      // Ensure webpack bypasses Zod's package "exports" (Zod v3 does not export "./v3")
+      // by aliasing to the resolved entry file.
+      "zod/v3": require.resolve("zod"),
+    };
+
     if (isServer) {
       config.plugins.push(
         // mute errors for unused typeorm deps

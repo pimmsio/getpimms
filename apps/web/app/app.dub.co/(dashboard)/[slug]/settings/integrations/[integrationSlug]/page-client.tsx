@@ -6,6 +6,9 @@ import { SlackSettings } from "@/lib/integrations/slack/ui/settings";
 import { ZapierSettings } from "@/lib/integrations/zapier/ui/settings";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { InstalledIntegrationInfoProps } from "@/lib/types";
+import { AppButton, AppButtonLink } from "@/ui/components/controls/app-button";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
+import { text } from "@/ui/design/tokens";
 import { IntegrationLogo } from "@/ui/integrations/integration-logo";
 import { useUninstallIntegrationModal } from "@/ui/modals/uninstall-integration-modal";
 import { BackLink } from "@/ui/shared/back-link";
@@ -14,15 +17,12 @@ import { Markdown } from "@/ui/shared/markdown";
 import {
   Avatar,
   BlurImage,
-  Button,
-  buttonVariants,
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNavBar,
   CarouselThumbnail,
   CarouselThumbnails,
-  MaxWidthWrapper,
   Popover,
   Tooltip,
   TooltipContent,
@@ -84,7 +84,7 @@ export default function IntegrationPageClient({
   const SettingsComponent = integrationSettings[integration.id] || null;
 
   return (
-    <MaxWidthWrapper className="grid max-w-screen-lg grid-cols-1 gap-6">
+    <div className="mx-auto grid w-full max-w-screen-lg grid-cols-1 gap-6">
       {integration.installed && <UninstallIntegrationModal />}
       <BackLink href={`/${slug}/settings/integrations`}>Integrations</BackLink>
       <div className="flex justify-between gap-8">
@@ -96,9 +96,9 @@ export default function IntegrationPageClient({
           />
           <div>
             <div className="flex items-center gap-1.5">
-              <h1 className="text-base font-semibold leading-none text-neutral-800">
+              <div className="text-base font-semibold leading-none text-neutral-800">
                 {integration.name}
-              </h1>
+              </div>
               {integration.projectId === DUB_WORKSPACE_ID ? (
                 <Tooltip content="This is an official integration built and maintained by PIMMS">
                   <div>
@@ -124,45 +124,64 @@ export default function IntegrationPageClient({
             align="end"
             content={
               <div className="grid w-screen gap-px p-2 sm:w-48">
-                <Button
-                  text="Remove Integration"
-                  variant="danger-outline"
-                  icon={<Trash className="size-4" />}
-                  className="h-9 justify-start px-2"
-                  onClick={() => {
-                    setShowUninstallIntegrationModal(true);
-                  }}
-                  {...(integration.slug === "stripe" && {
-                    disabledTooltip: (
+                {integration.slug === "stripe" ? (
+                  <Tooltip
+                    content={
                       <TooltipContent
                         title="You cannot uninstall the Stripe integration from here. Please visit the Stripe dashboard to uninstall the app."
                         cta="Go to Stripe"
                         href="https://dashboard.stripe.com/settings/apps/pimms.io"
                         target="_blank"
                       />
-                    ),
-                  })}
-                />
+                    }
+                  >
+                    <div className="w-full">
+                      <AppButton
+                        type="button"
+                        variant="ghost"
+                        className="w-full justify-start text-neutral-400"
+                        disabled
+                      >
+                        <span className="flex items-center gap-2">
+                          <Trash className="size-4" />
+                          Remove Integration
+                        </span>
+                      </AppButton>
+                    </div>
+                  </Tooltip>
+                ) : (
+                  <AppButton
+                    type="button"
+                    variant="ghost"
+                    className="w-full justify-start text-red-600 hover:bg-red-50"
+                    onClick={() => {
+                      setShowUninstallIntegrationModal(true);
+                      setOpenPopover(false);
+                    }}
+                  >
+                    <span className="flex items-center gap-2">
+                      <Trash className="size-4" />
+                      Remove Integration
+                    </span>
+                  </AppButton>
+                )}
               </div>
             }
             openPopover={openPopover}
             setOpenPopover={setOpenPopover}
           >
-            <button
+            <AppIconButton
+              type="button"
               onClick={() => setOpenPopover(!openPopover)}
-              className={cn(
-                "flex h-10 items-center rounded border px-1.5 outline-none transition-all",
-                "border-neutral-200 bg-white text-neutral-900 placeholder-neutral-400",
-                "focus-visible:border-neutral-500 data-[state=open]:border-neutral-500 data-[state=open]:ring-4 data-[state=open]:ring-transparent",
-              )}
+              className="h-10 w-10 rounded-lg bg-white hover:bg-neutral-50"
             >
               <ThreeDots className="h-5 w-5 text-neutral-500" />
-            </button>
+            </AppIconButton>
           </Popover>
         )}
       </div>
 
-      <div className="flex flex-col justify-between gap-4 rounded border border-neutral-100 bg-white p-4 sm:flex-row sm:gap-0">
+      <div className="border-t border-neutral-100 pt-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:gap-8">
           {[
             ...(integration.installed
@@ -232,19 +251,19 @@ export default function IntegrationPageClient({
 
         <div className="flex items-center gap-x-4">
           {(slug === "pimms" || slug === "pimms-staging") && (
-            <Link
+            <AppButtonLink
               href={`/${slug}/settings/integrations/${integration.slug}/manage`}
-              className={cn(
-                buttonVariants({ variant: "secondary" }),
-                "flex h-9 items-center rounded border px-4 text-sm",
-              )}
+              variant="secondary"
+              size="sm"
+              className="h-9 px-4"
             >
               Manage
-            </Link>
+            </AppButtonLink>
           )}
           {!integration.installed &&
             integration.id !== SEGMENT_INTEGRATION_ID && (
-              <Button
+              <AppButton
+                type="button"
                 onClick={() => {
                   const { installUrl } = integration;
 
@@ -260,14 +279,17 @@ export default function IntegrationPageClient({
                   });
                 }}
                 loading={isPending}
-                text="Enable"
                 variant="primary"
-                icon={<ConnectedDots className="size-4" />}
-              />
+                className="flex items-center gap-2"
+              >
+                <ConnectedDots className="size-4" />
+                Enable
+              </AppButton>
             )}
           {!integration.installed &&
             integration.id === STRIPE_INTEGRATION_ID && (
-              <Button
+              <AppButton
+                type="button"
                 onClick={() => {
                   execute({
                     workspaceId: workspaceId!,
@@ -276,18 +298,20 @@ export default function IntegrationPageClient({
                   });
                 }}
                 loading={isPending}
-                text="Enable (Test)"
                 variant="secondary"
-                icon={<ConnectedDots className="size-4" />}
-              />
+                className="flex items-center gap-2"
+              >
+                <ConnectedDots className="size-4" />
+                Enable (Test)
+              </AppButton>
             )}
         </div>
       </div>
 
-      <div className="w-full rounded border border-neutral-100 bg-white">
+      <div className="border-t border-neutral-100 pt-4">
         {integration.screenshots && integration.screenshots.length > 0 ? (
           <Carousel autoplay={{ delay: 5000 }}>
-            <div className="relative rounded-t-lg bg-white p-4">
+            <div className="relative rounded-lg border border-neutral-100 bg-white p-4">
               <CarouselContent>
                 {integration.screenshots.map((src, idx) => (
                   <CarouselItem key={idx}>
@@ -296,7 +320,7 @@ export default function IntegrationPageClient({
                       alt={`Screenshot ${idx + 1} of ${integration.name}`}
                       width={900}
                       height={580}
-                      className="aspect-[900/580] w-[5/6] overflow-hidden rounded border border-neutral-100 object-cover object-top"
+                      className="aspect-[900/580] w-[5/6] overflow-hidden rounded-lg object-cover object-top"
                     />
                   </CarouselItem>
                 ))}
@@ -334,8 +358,8 @@ export default function IntegrationPageClient({
                   ))}
                 </CarouselThumbnails>
 
-                <div className="absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-white" />
-                <div className="absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-white" />
+                <div className="absolute inset-y-0 left-0 w-4 bg-white" />
+                <div className="absolute inset-y-0 right-0 w-4 bg-white" />
               </div>
             )}
           </Carousel>
@@ -345,7 +369,7 @@ export default function IntegrationPageClient({
       </div>
 
       {SettingsComponent && <SettingsComponent {...integration} />}
-    </MaxWidthWrapper>
+    </div>
   );
 }
 

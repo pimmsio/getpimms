@@ -11,8 +11,8 @@ export function LinksTitle() {
   const { flags } = useWorkspace();
 
   return (
-    <div className="flex items-center justify-between">
-      {flags?.linkFolders ? <FolderSwitcher /> : <h1>Links</h1>}
+    <div className="min-w-0">
+      {flags?.linkFolders ? <FolderSwitcher /> : "Links"}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { get } from "@vercel/edge-config";
+import { edgeConfigGet } from "./safe-get";
 
 /**
  * Only for dub.sh / dub.link domains
@@ -11,7 +11,7 @@ export const isReservedUsername = async (key: string) => {
 
   let reservedUsernames;
   try {
-    reservedUsernames = await get("reservedUsernames");
+    reservedUsernames = (await edgeConfigGet<string[]>("reservedUsernames")) ?? [];
   } catch (e) {
     reservedUsernames = [];
   }

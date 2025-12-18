@@ -4,7 +4,6 @@ import { sendWebhooks } from "./qstash";
 import {
   LeadEventDataProps,
   LinkEventDataProps,
-  PartnerEventDataProps,
   SaleEventDataProps,
 } from "./types";
 
@@ -19,8 +18,7 @@ export const sendWorkspaceWebhook = async ({
   data:
     | LinkEventDataProps
     | LeadEventDataProps
-    | SaleEventDataProps
-    | PartnerEventDataProps;
+    | SaleEventDataProps;
 }) => {
   if (!workspace.webhookEnabled) {
     return;

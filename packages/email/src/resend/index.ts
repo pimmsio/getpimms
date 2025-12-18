@@ -32,19 +32,37 @@ export const sendEmailViaResend = async (opts: ResendEmailOptions) => {
     scheduledAt,
   } = opts;
 
-  return await resend.emails.send({
+  if (!subject) {
+    throw new Error("Email subject is required.");
+  }
+
+  if (!react && !text) {
+    throw new Error("Email content is required (react or text).");
+  }
+
+  const base = {
     to: email,
     from: from || VARIANT_TO_FROM_MAP[variant],
     bcc: bcc,
     replyTo: replyTo || "alexandre@pimms.io",
     subject,
-    text,
-    react,
     scheduledAt,
     ...(variant === "marketing" && {
       headers: {
         "List-Unsubscribe": "https://app.pimms.io/account/settings",
       },
     }),
+  } as const;
+
+  if (react) {
+    return await resend.emails.send({
+      ...base,
+      react,
+    });
+  }
+
+  return await resend.emails.send({
+    ...base,
+    text: text!,
   });
 };

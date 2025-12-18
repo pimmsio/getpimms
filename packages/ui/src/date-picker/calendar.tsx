@@ -1,268 +1,79 @@
 import { cn } from "@dub/utils";
-import { addYears, format, isSameMonth } from "date-fns";
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from "lucide-react";
-import { ElementType, HTMLAttributes, forwardRef, useRef } from "react";
-import {
-  DayPicker,
-  useDayPicker,
-  useDayRender,
-  useNavigation,
-  type DayPickerRangeProps,
-  type DayPickerSingleProps,
-  type DayProps,
-  type Matcher,
-} from "react-day-picker";
+import type { ComponentProps } from "react";
+import { DayPicker, type DayPickerProps, type Matcher } from "react-day-picker";
 
-interface NavigationButtonProps extends HTMLAttributes<HTMLButtonElement> {
-  onClick: () => void;
-  icon: ElementType;
-  disabled?: boolean;
-}
+type KeysToOmit = "showWeekNumber" | "captionLayout";
 
-const NavigationButton = forwardRef<HTMLButtonElement, NavigationButtonProps>(
-  (
-    { onClick, icon: Icon, disabled, ...props }: NavigationButtonProps,
-    forwardedRef,
-  ) => {
-    return (
-      <button
-        ref={forwardedRef}
-        type="button"
-        disabled={disabled}
-        className={cn(
-          "flex size-7 shrink-0 select-none items-center justify-center rounded border p-1 outline-none transition",
-          "border-neutral-200 text-neutral-600 hover:text-neutral-800",
-          "hover:bg-neutral-50 active:bg-neutral-100",
-          "disabled:pointer-events-none disabled:text-neutral-400",
-        )}
-        onClick={onClick}
-        {...props}
-      >
-        <Icon className="h-full w-full shrink-0" />
-      </button>
-    );
-  },
-);
-
-NavigationButton.displayName = "NavigationButton";
-
-type OmitKeys<T, K extends keyof T> = {
-  [P in keyof T as P extends K ? never : P]: T[P];
+type CalendarProps = Omit<ComponentProps<typeof DayPicker>, KeysToOmit> & {
+  // In newer `react-day-picker` versions this is part of the discriminated union props,
+  // but in our current type surface it isn't included on the `DayPicker` component type.
+  // We accept it here because consumers (e.g. range pickers) pass it through.
+  selected?: unknown;
+  onSelect?: unknown;
 };
-
-type KeysToOmit = "showWeekNumber" | "captionLayout" | "mode";
-
-type SingleProps = OmitKeys<DayPickerSingleProps, KeysToOmit>;
-type RangeProps = OmitKeys<DayPickerRangeProps, KeysToOmit>;
-
-type CalendarProps =
-  | ({
-      mode: "single";
-    } & SingleProps)
-  | ({
-      mode?: undefined;
-    } & SingleProps)
-  | ({
-      mode: "range";
-    } & RangeProps);
 
 function Calendar({
   mode = "single",
   weekStartsOn = 1,
   numberOfMonths = 1,
   showYearNavigation = false,
-  disableNavigation,
-  locale,
   className,
   classNames,
   ...props
 }: CalendarProps & { showYearNavigation?: boolean }) {
-  return (
-    <DayPicker
-      mode={mode}
-      weekStartsOn={weekStartsOn}
-      numberOfMonths={numberOfMonths}
-      locale={locale}
-      showOutsideDays={numberOfMonths === 1 ? true : false}
-      className={className}
-      classNames={{
-        months: "flex space-y-0",
-        month: "space-y-4 p-3 w-full",
-        nav: "gap-1 flex items-center rounded-full w-full h-full justify-between p-4",
-        table: "w-full border-separate border-spacing-y-1",
-        head_cell: "w-9 font-medium text-xs text-center text-neutral-400 pb-2",
-        row: "w-full",
-        cell: "relative p-0 text-center focus-within:relative text-neutral-900",
-        day: cn(
-          "relative size-10 rounded text-sm text-neutral-900",
-          "hover:bg-neutral-100 active:bg-neutral-200 outline outline-offset-2 outline-0 focus-visible:outline-2 outline-blue-500",
-        ),
-        day_today: "font-semibold",
-        day_selected:
-          "rounded aria-selected:bg-brand-primary aria-selected:text-white",
-        day_disabled:
-          "!text-neutral-300 line-through disabled:hover:bg-transparent",
-        day_outside: "text-neutral-400",
-        day_range_middle:
-          "!rounded-none aria-selected:!bg-brand-primary aria-selected:!text-white",
-        day_range_start: "rounded-r-none !rounded-l",
-        day_range_end: "rounded-l-none !rounded-r",
-        day_hidden: "invisible",
-        ...classNames,
-      }}
-      components={{
-        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
-        IconRight: () => <ChevronRight className="h-4 w-4" />,
-        Caption: ({ ...props }) => {
-          const {
-            goToMonth,
-            nextMonth,
-            previousMonth,
-            currentMonth,
-            displayMonths,
-          } = useNavigation();
-          const { numberOfMonths, fromDate, toDate } = useDayPicker();
+  // This is a custom prop used by some consumers of this Calendar wrapper.
+  // It's intentionally not forwarded to `react-day-picker`.
+  void showYearNavigation;
 
-          const displayIndex = displayMonths.findIndex((month) =>
-            isSameMonth(props.displayMonth, month),
-          );
-          const isFirst = displayIndex === 0;
-          const isLast = displayIndex === displayMonths.length - 1;
+  // `react-day-picker` models its props as a discriminated union where some fields
+  // become required depending on the mode/required flags. After we destructure and
+  // rebuild props, TS can no longer prove those relationships, so we re-assert the
+  // final shape as `DayPickerProps`.
+  const dayPickerProps = {
+    ...props,
+    mode,
+    weekStartsOn,
+    numberOfMonths,
+    showOutsideDays: numberOfMonths === 1,
+    className,
+    classNames: {
+      months: "flex flex-row space-y-0",
+      month: "space-y-4 p-3 w-full",
+      caption: "relative flex items-center justify-center pt-1",
+      caption_label: "text-sm font-semibold text-neutral-900",
+      nav: "flex items-center gap-1",
+      nav_button: cn(
+        "inline-flex size-9 items-center justify-center rounded-md text-neutral-600",
+        "hover:bg-neutral-100 active:bg-neutral-200",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300",
+        "disabled:pointer-events-none disabled:opacity-50",
+      ),
+      nav_button_previous: "absolute left-1",
+      nav_button_next: "absolute right-1",
+      table: "w-full border-separate border-spacing-y-1",
+      head_cell: "w-9 font-medium text-xs text-center text-neutral-400 pb-2",
+      row: "w-full",
+      cell: "relative p-0 text-center focus-within:relative text-neutral-900",
+      day: cn(
+        "relative size-10 rounded text-sm text-neutral-900",
+        "hover:bg-neutral-100 active:bg-neutral-200 outline outline-offset-2 outline-0 focus-visible:outline-2 outline-blue-500",
+      ),
+      day_today: "font-semibold",
+      day_selected:
+        "rounded aria-selected:bg-brand-primary aria-selected:text-white",
+      day_disabled:
+        "!text-neutral-300 line-through disabled:hover:bg-transparent",
+      day_outside: "text-neutral-400",
+      day_range_middle:
+        "!rounded-none aria-selected:!bg-brand-primary aria-selected:!text-white",
+      day_range_start: "rounded-r-none !rounded-l",
+      day_range_end: "rounded-l-none !rounded-r",
+      day_hidden: "invisible",
+      ...classNames,
+    },
+  } as DayPickerProps;
 
-          const hideNextButton = numberOfMonths > 1 && (isFirst || !isLast);
-          const hidePreviousButton = numberOfMonths > 1 && (isLast || !isFirst);
-
-          const goToPreviousYear = () => {
-            const targetMonth = addYears(currentMonth, -1);
-            if (
-              previousMonth &&
-              (!fromDate || targetMonth.getTime() >= fromDate.getTime())
-            ) {
-              goToMonth(targetMonth);
-            }
-          };
-
-          const goToNextYear = () => {
-            const targetMonth = addYears(currentMonth, 1);
-            if (
-              nextMonth &&
-              (!toDate || targetMonth.getTime() <= toDate.getTime())
-            ) {
-              goToMonth(targetMonth);
-            }
-          };
-
-          return (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1">
-                {showYearNavigation && !hidePreviousButton && (
-                  <NavigationButton
-                    disabled={
-                      disableNavigation ||
-                      !previousMonth ||
-                      (fromDate &&
-                        addYears(currentMonth, -1).getTime() <
-                          fromDate.getTime())
-                    }
-                    aria-label="Go to previous year"
-                    onClick={goToPreviousYear}
-                    icon={ChevronsLeft}
-                  />
-                )}
-                {!hidePreviousButton && (
-                  <NavigationButton
-                    disabled={disableNavigation || !previousMonth}
-                    aria-label="Go to previous month"
-                    onClick={() => previousMonth && goToMonth(previousMonth)}
-                    icon={ChevronLeft}
-                  />
-                )}
-              </div>
-
-              <div
-                role="presentation"
-                aria-live="polite"
-                className="text-sm font-medium capitalize tabular-nums text-neutral-900"
-              >
-                {format(props.displayMonth, "LLLL yyy", { locale })}
-              </div>
-
-              <div className="flex items-center gap-1">
-                {!hideNextButton && (
-                  <NavigationButton
-                    disabled={disableNavigation || !nextMonth}
-                    aria-label="Go to next month"
-                    onClick={() => nextMonth && goToMonth(nextMonth)}
-                    icon={ChevronRight}
-                  />
-                )}
-                {showYearNavigation && !hideNextButton && (
-                  <NavigationButton
-                    disabled={
-                      disableNavigation ||
-                      !nextMonth ||
-                      (toDate &&
-                        addYears(currentMonth, 1).getTime() > toDate.getTime())
-                    }
-                    aria-label="Go to next year"
-                    onClick={goToNextYear}
-                    icon={ChevronsRight}
-                  />
-                )}
-              </div>
-            </div>
-          );
-        },
-        Day: ({ date, displayMonth }: DayProps) => {
-          const buttonRef = useRef<HTMLButtonElement>(null);
-          const { activeModifiers, buttonProps, divProps, isButton, isHidden } =
-            useDayRender(date, displayMonth, buttonRef);
-
-          const { selected, today, disabled, range_middle } = activeModifiers;
-
-          if (isHidden) return <></>;
-
-          if (!isButton) {
-            return (
-              <div
-                {...divProps}
-                className={cn(
-                  "flex items-center justify-center",
-                  divProps.className,
-                )}
-              />
-            );
-          }
-
-          const { children: buttonChildren, ...buttonPropsRest } = buttonProps;
-
-          return (
-            <button ref={buttonRef} {...buttonPropsRest} type="button">
-              {buttonChildren}
-              {today && (
-                <span
-                  className={cn(
-                    "absolute inset-x-1/2 bottom-1.5 h-0.5 w-4 -translate-x-1/2 rounded-[2px]",
-                    {
-                      "bg-brand-primary": !selected,
-                      "!bg-white": selected,
-                      "text-neutral-400": disabled,
-                    },
-                  )}
-                />
-              )}
-            </button>
-          );
-        },
-      }}
-      {...(props as SingleProps & RangeProps)}
-    />
-  );
+  return <DayPicker {...dayPickerProps} />;
 }
 
 export { Calendar, type Matcher };

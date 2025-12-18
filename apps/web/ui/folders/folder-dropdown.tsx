@@ -5,13 +5,14 @@ import useFolders from "@/lib/swr/use-folders";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { FolderSummary } from "@/lib/types";
 import { FOLDERS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/folders";
-import { Button, Combobox, TooltipContent } from "@dub/ui";
+import { Combobox, TooltipContent } from "@dub/ui";
 import { cn } from "@dub/utils";
 import { ChevronsUpDown } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
+import { AppButton } from "@/ui/components/controls/app-button";
 import { useAddFolderModal } from "../modals/add-folder-modal";
 import { FolderIcon } from "./folder-icon";
 
@@ -186,7 +187,7 @@ export const FolderDropdown = ({
             <Link
               href={`/${slug}/settings/library/folders`}
               onClick={() => setOpenPopover(false)}
-              className="rounded border border-neutral-100 px-2 py-1 text-xs transition-colors hover:bg-neutral-100"
+              className="app-btn-secondary-sm h-8 px-2 text-xs font-semibold"
             >
               View All
             </Link>
@@ -216,13 +217,16 @@ export const FolderDropdown = ({
         }
         buttonProps={{
           className: cn(
-            "group flex items-center gap-2 rounded px-2 py-1 w-fit",
-            variant === "inline" && "border-none !ring-0",
-            "transition-colors hover:bg-neutral-100 active:bg-neutral-200 data-[state=open]:bg-neutral-100",
+            // Standardize triggers across the app
+            variant === "input"
+              ? "app-btn-secondary w-full justify-between"
+              : "app-btn-secondary-sm w-fit justify-between",
             buttonClassName,
           ),
           textWrapperClassName: cn(
-            "min-w-0 truncate text-left text-xl font-semibold leading-7 text-neutral-900 md:text-2xl",
+            variant === "input"
+              ? "min-w-0 truncate text-left text-sm font-medium text-neutral-900"
+              : "min-w-0 truncate text-left text-xl font-semibold leading-7 text-neutral-900 md:text-2xl",
             buttonTextClassName,
           ),
         }}
@@ -232,7 +236,7 @@ export const FolderDropdown = ({
         emptyState={
           <div className="flex w-full flex-col items-center gap-2 py-4">
             No folders found
-            <Button
+            <AppButton
               onClick={() => {
                 setOpenPopover(false);
                 setShowAddFolderModal(true);
@@ -248,8 +252,9 @@ export const FolderDropdown = ({
                   />
                 ) : undefined
               }
-              text="Create folder"
-            />
+            >
+              Create folder
+            </AppButton>
           </div>
         }
         open={openPopover}

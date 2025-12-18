@@ -173,8 +173,8 @@ export function UTMParametersSection() {
         type="button"
         onClick={toggleVisibility}
         className={cn(
-          "group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 transition-all hover:border-neutral-300 hover:bg-neutral-50",
-          isVisible && "border-neutral-300 bg-neutral-50",
+          "group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 transition-all hover:border-neutral-300",
+          isVisible && "border-neutral-300",
         )}
       >
         <div className="flex items-center justify-between">
@@ -187,7 +187,13 @@ export function UTMParametersSection() {
           </div>
           <div className="flex items-center gap-2">
             {hasUtmParams && (
-              <span className={cn("inline-flex items-center rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-600", (selectedTemplate || hasUtmParams) && "bg-green-100 text-green-900")}>
+              <span
+                className={cn(
+                  "inline-flex items-center rounded-md border border-neutral-200 bg-white px-2 py-0.5 text-xs font-medium text-neutral-600",
+                  (selectedTemplate || hasUtmParams) &&
+                    "border-green-200 bg-green-50 text-green-900",
+                )}
+              >
                 {selectedTemplate ? "Template" : "Active"}
               </span>
             )}
@@ -203,7 +209,7 @@ export function UTMParametersSection() {
 
       {/* Preview URL - Always visible when UTMs exist */}
       {previewUrl && (
-        <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2.5">
+        <div className="rounded-lg border border-neutral-200 bg-white px-3 py-2.5">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <span className="text-xs font-medium text-neutral-600 shrink-0">
@@ -231,7 +237,7 @@ export function UTMParametersSection() {
 
       {/* Collapsible content */}
       {isVisible && (
-        <div className="rounded-lg border border-neutral-200 bg-neutral-50 p-4">
+        <div className="rounded-lg border border-neutral-200 bg-white p-4">
           <div className="space-y-4">
             {/* Template selector */}
             <div>

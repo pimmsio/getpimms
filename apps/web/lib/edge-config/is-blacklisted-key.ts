@@ -1,4 +1,4 @@
-import { get } from "@vercel/edge-config";
+import { edgeConfigGet } from "./safe-get";
 
 export const isBlacklistedKey = async (key: string) => {
   if (!process.env.NEXT_PUBLIC_IS_DUB || !process.env.EDGE_CONFIG) {
@@ -7,7 +7,7 @@ export const isBlacklistedKey = async (key: string) => {
 
   let blacklistedKeys;
   try {
-    blacklistedKeys = await get("keys");
+    blacklistedKeys = (await edgeConfigGet<string[]>("keys")) ?? [];
   } catch (e) {
     blacklistedKeys = [];
   }

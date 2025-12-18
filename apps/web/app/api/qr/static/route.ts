@@ -64,7 +64,12 @@ export async function POST(req: NextRequest) {
     const contentType =
       imageType === "svg" ? "image/svg+xml" : `image/${imageType}`;
 
-    const response = new NextResponse(imageResponse);
+    const body =
+      typeof imageResponse === "string"
+        ? imageResponse
+        : new Uint8Array(imageResponse);
+
+    const response = new NextResponse(body);
     response.headers.set("content-type", contentType);
     return response;
   } catch (e) {

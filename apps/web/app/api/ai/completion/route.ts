@@ -6,7 +6,7 @@ import z from "@/lib/zod";
 import { anthropic } from "@ai-sdk/anthropic";
 import { prismaEdge } from "@dub/prisma/edge";
 import { waitUntil } from "@vercel/functions";
-import { streamText } from "ai";
+import { LangChainAdapter } from "ai";
 
 const completionSchema = z.object({
   prompt: z.string(),
@@ -27,16 +27,25 @@ export const POST = withWorkspace(async ({ req, workspace }) => {
 
     throwIfAIUsageExceeded(workspace);
 
-    const result = streamText({
-      model: anthropic(model),
-      messages: [
+    const { stream } = await anthropic(model).doStream({
+      prompt: [
         {
           role: "user",
-          content: prompt,
+          content: [{ type: "text", text: prompt }],
         },
       ],
-      maxTokens: 300,
+      maxOutputTokens: 300,
     });
+
+    const textStream = stream.pipeThrough(
+      new TransformStream({
+        transform(chunk, controller) {
+          if (chunk.type === "text-delta") {
+            controller.enqueue(chunk.delta);
+          }
+        },
+      }),
+    );
 
     // only count usage for the sonnet model
     if (model === "claude-3-5-sonnet-latest") {
@@ -52,7 +61,7 @@ export const POST = withWorkspace(async ({ req, workspace }) => {
       );
     }
 
-    return result.toDataStreamResponse();
+    return LangChainAdapter.toDataStreamResponse(textStream);
   } catch (error) {
     return handleAndReturnErrorResponse(error);
   }

@@ -1,5 +1,4 @@
 import { isBlacklistedEmail } from "@/lib/edge-config";
-import { jackson } from "@/lib/jackson";
 import { isStored, storage } from "@/lib/storage";
 import { UserProps } from "@/lib/types";
 import { ratelimit, redis } from "@/lib/upstash";
@@ -8,11 +7,7 @@ import { subscribe } from "@dub/email/resend/subscribe";
 import { LoginLink } from "@dub/email/templates/login-link";
 import { prisma } from "@dub/prisma";
 import { PrismaClient } from "@dub/prisma/client";
-import {
-  CBE_DOMAIN,
-  generateRandomString,
-  nanoid,
-} from "@dub/utils";
+import { CBE_DOMAIN, generateRandomString, nanoid } from "@dub/utils";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { waitUntil } from "@vercel/functions";
 import { User, type NextAuthOptions } from "next-auth";
@@ -25,7 +20,6 @@ import GoogleProvider from "next-auth/providers/google";
 
 import { createId } from "../api/create-id";
 import { createWorkspaceId } from "../api/workspace-id";
-import { completeProgramApplications } from "../partners/complete-program-applications";
 import { FRAMER_API_HOST } from "./constants";
 import {
   exceededLoginAttemptsThreshold,
@@ -72,7 +66,7 @@ export const authOptions: NextAuthOptions = {
       allowDangerousEmailAccountLinking: true,
       authorization: {
         params: {
-          prompt: "select_account"
+          prompt: "select_account",
         },
       },
     }),
@@ -80,127 +74,6 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GITHUB_CLIENT_ID as string,
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
       allowDangerousEmailAccountLinking: true,
-    }),
-    {
-      id: "saml",
-      name: "BoxyHQ",
-      type: "oauth",
-      version: "2.0",
-      checks: ["pkce", "state"],
-      authorization: {
-        url: `${process.env.NEXTAUTH_URL}/api/auth/saml/authorize`,
-        params: {
-          scope: "",
-          response_type: "code",
-          provider: "saml",
-        },
-      },
-      token: {
-        url: `${process.env.NEXTAUTH_URL}/api/auth/saml/token`,
-        params: { grant_type: "authorization_code" },
-      },
-      userinfo: `${process.env.NEXTAUTH_URL}/api/auth/saml/userinfo`,
-      profile: async (profile) => {
-        let existingUser = await prisma.user.findUnique({
-          where: { email: profile.email },
-        });
-
-        // user is authorized but doesn't have a Dub account, create one for them
-        if (!existingUser) {
-          existingUser = await prisma.user.create({
-            data: {
-              id: createId({ prefix: "user_" }),
-              email: profile.email,
-              name: `${profile.firstName || ""} ${
-                profile.lastName || ""
-              }`.trim(),
-            },
-          });
-        }
-
-        const { id, name, email, image } = existingUser;
-
-        return {
-          id,
-          name,
-          email,
-          image,
-        };
-      },
-      options: {
-        clientId: "dummy",
-        clientSecret: process.env.NEXTAUTH_SECRET as string,
-      },
-      allowDangerousEmailAccountLinking: true,
-    },
-    CredentialsProvider({
-      id: "saml-idp",
-      name: "IdP Login",
-      credentials: {
-        code: {},
-      },
-      async authorize(credentials) {
-        if (!credentials) {
-          return null;
-        }
-
-        const { code } = credentials;
-
-        if (!code) {
-          return null;
-        }
-
-        const { oauthController } = await jackson();
-
-        // Fetch access token
-        const { access_token } = await oauthController.token({
-          code,
-          grant_type: "authorization_code",
-          redirect_uri: process.env.NEXTAUTH_URL as string,
-          client_id: "dummy",
-          client_secret: process.env.NEXTAUTH_SECRET as string,
-        });
-
-        if (!access_token) {
-          return null;
-        }
-
-        // Fetch user info
-        const userInfo = await oauthController.userInfo(access_token);
-
-        if (!userInfo) {
-          return null;
-        }
-
-        let existingUser = await prisma.user.findUnique({
-          where: { email: userInfo.email },
-        });
-
-        // user is authorized but doesn't have a Dub account, create one for them
-        if (!existingUser) {
-          existingUser = await prisma.user.create({
-            data: {
-              id: createId({ prefix: "user_" }),
-              email: userInfo.email,
-              name: `${userInfo.firstName || ""} ${
-                userInfo.lastName || ""
-              }`.trim(),
-            },
-          });
-        }
-
-        const { id, name, email, image } = existingUser;
-
-        return {
-          id,
-          email,
-          name,
-          email_verified: true,
-          image,
-          // adding profile here so we can access it in signIn callback
-          profile: userInfo,
-        };
-      },
     }),
 
     // Sign in with email and password
@@ -334,13 +207,15 @@ export const authOptions: NextAuthOptions = {
     error: "/login",
   },
   callbacks: {
-    redirect: async ({ url, baseUrl }) => {      
+    redirect: async ({ url, baseUrl }) => {
       // Check if the request is coming from CBE domain (only check domain, not path)
-      if (baseUrl.includes('cbe.')) {
-        console.log('[NextAuth] CBE domain detected, redirecting to CBE success');
+      if (baseUrl.includes("cbe.")) {
+        console.log(
+          "[NextAuth] CBE domain detected, redirecting to CBE success",
+        );
         return `${CBE_DOMAIN}/success`;
       }
-      
+
       // For all other requests, use default redirect logic
       if (url.startsWith("/")) return `${baseUrl}${url}`;
       else if (new URL(url).origin === baseUrl) return url;
@@ -392,58 +267,9 @@ export const authOptions: NextAuthOptions = {
           });
         }
       } else if (
-        account?.provider === "saml" ||
-        account?.provider === "saml-idp"
-      ) {
-        let samlProfile;
-
-        if (account?.provider === "saml-idp") {
-          // @ts-ignore
-          samlProfile = user.profile;
-          if (!samlProfile) {
-            return true;
-          }
-        } else {
-          samlProfile = profile;
-        }
-
-        if (!samlProfile?.requested?.tenant) {
-          return false;
-        }
-        const workspace = await prisma.project.findUnique({
-          where: {
-            id: samlProfile.requested.tenant,
-          },
-        });
-        if (workspace) {
-          await Promise.allSettled([
-            // add user to workspace
-            prisma.projectUsers.upsert({
-              where: {
-                userId_projectId: {
-                  projectId: workspace.id,
-                  userId: user.id,
-                },
-              },
-              update: {},
-              create: {
-                projectId: workspace.id,
-                userId: user.id,
-              },
-            }),
-            // delete any pending invites for this user
-            prisma.projectInvite.delete({
-              where: {
-                email_projectId: {
-                  email: user.email,
-                  projectId: workspace.id,
-                },
-              },
-            }),
-          ]);
-        }
         // Login with Framer
-      } else if (account?.provider === "framer") {
+        account?.provider === "framer"
+      ) {
         const userFound = await prisma.user.findUnique({
           where: {
             email: user.email,
@@ -573,8 +399,7 @@ export const authOptions: NextAuthOptions = {
         );
       }
 
-      // Complete any outstanding program applications
-      waitUntil(completeProgramApplications(message.user.id));
+      // Partner program applications removed.
 
       // Auto-create workspace if user has no workspaces
       waitUntil(
@@ -628,9 +453,12 @@ export const authOptions: NextAuthOptions = {
                   defaultWorkspace: workspace.slug,
                 },
               });
-              
+
               // Set initial onboarding step so middleware redirects to dashboard with onboarding modal
-              await redis.set(`onboarding-step:${user.id}`, "tracking-familiarity");
+              await redis.set(
+                `onboarding-step:${user.id}`,
+                "tracking-familiarity",
+              );
             } catch (error) {
               // If slug collision, try again with different suffix
               console.error("Failed to auto-create workspace:", error);

@@ -1,10 +1,9 @@
 import { EventType } from "@/lib/analytics/types";
 
-import { buttonVariants } from "@dub/ui";
 import { cn } from "@dub/utils";
 import { Coins } from "lucide-react";
-import Link from "next/link";
 import { useContext, useMemo } from "react";
+import { AppButtonLink } from "@/ui/components/controls/app-button";
 import { AnalyticsContext } from "./analytics-provider";
 
 import MixedAnalyticsChart from "./mixed-analytics-chart";
@@ -66,7 +65,8 @@ export default function Main() {
       <div className="relative">
         <div
           className={cn(
-            "relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm",
+            // The page surface is owned by PageContent; keep this as a simple section.
+            "relative overflow-hidden rounded-lg border border-neutral-100 bg-white",
             showPaywall &&
               "pointer-events-none [mask-image:linear-gradient(#0006,#0006_25%,transparent_40%)]",
           )}
@@ -89,7 +89,7 @@ function ConversionTrackingPaywall() {
   return (
     <div className="animate-slide-up-fade pointer-events-none absolute inset-0 flex items-center justify-center pt-24">
       <div className="pointer-events-auto flex flex-col items-center">
-        <div className="flex size-16 items-center justify-center rounded-full border border-neutral-100 bg-neutral-50">
+        <div className="flex size-16 items-center justify-center rounded-2xl bg-white">
           <Coins className="size-6 text-neutral-800" />
         </div>
         <h2 className="mt-7 text-base font-semibold text-neutral-700">
@@ -105,15 +105,9 @@ function ConversionTrackingPaywall() {
             Learn more
           </a>
         </p>
-        <Link
-          href={`/${slug}/upgrade`}
-          className={cn(
-            buttonVariants({ variant: "primary" }),
-            "mt-4 flex h-9 items-center justify-center rounded border px-4 text-sm",
-          )}
-        >
+        <AppButtonLink href={`/${slug}/upgrade`} variant="primary" size="sm" className="mt-4">
           Upgrade to Pro
-        </Link>
+        </AppButtonLink>
       </div>
     </div>
   );

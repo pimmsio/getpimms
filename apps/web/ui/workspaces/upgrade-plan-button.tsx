@@ -1,6 +1,5 @@
 "use client";
 
-import { getStripe } from "@/lib/stripe/client";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { Button, ButtonProps } from "@dub/ui";
 import { APP_DOMAIN, capitalize, cn, SELF_SERVE_PAID_PLANS } from "@dub/utils";
@@ -46,7 +45,10 @@ export function UpgradePlanButton({
             ? `Get started with ${selectedPlan.name} ${capitalize(period)}`
             : `Switch to ${selectedPlan.name} ${capitalize(period)}`
       }
-      className={cn("text-sm rounded-2xl text-white bg-gradient-to-r from-[#2fcdfa] to-[#3970ff] hover:scale-105 transition-all duration-300", className)}
+      className={cn(
+        "text-sm rounded-lg !border-transparent !bg-neutral-900 !text-white hover:!bg-neutral-800",
+        className,
+      )}
       loading={clicked}
       disabled={!workspaceSlug || isCurrentPlan}
       onClick={() => {
@@ -80,9 +82,12 @@ export function UpgradePlanButton({
             });
             if (currentPlan === "free") {
               const data = await res.json();
-              const { id: sessionId } = data;
-              const stripe = await getStripe();
-              stripe?.redirectToCheckout({ sessionId });
+              const { url } = data as { url?: string };
+              if (url) {
+                window.location.href = url;
+              } else {
+                throw new Error("Stripe checkout URL missing");
+              }
             } else {
               const { url } = await res.json();
               router.push(url);

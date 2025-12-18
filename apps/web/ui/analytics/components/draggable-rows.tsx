@@ -7,7 +7,10 @@ import {
   DragEndEvent,
   DragStartEvent,
   KeyboardSensor,
+  MeasuringStrategy,
   PointerSensor,
+  pointerWithin,
+  type CollisionDetection,
   closestCenter,
   useSensor,
   useSensors,
@@ -47,6 +50,13 @@ export function DraggableRows({
   );
 
   const rowIds = useMemo(() => rows.map((r) => r.rowId), [rows]);
+
+  // Pointer-first collision detection is much more intuitive for tall / uneven rows.
+  // Fallback to closestCenter when the pointer is between droppables.
+  const collisionDetection: CollisionDetection = (args) => {
+    const pointerCollisions = pointerWithin(args);
+    return pointerCollisions.length > 0 ? pointerCollisions : closestCenter(args);
+  };
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [activeRowId, setActiveRowId] = useState<string | null>(null);
@@ -93,7 +103,8 @@ export function DraggableRows({
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCenter}
+      collisionDetection={collisionDetection}
+      measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onDragCancel={() => {
@@ -197,7 +208,7 @@ function SortableRow({
             aria-label="Swap left and right"
             onClick={onSwap}
             className={cn(
-              "absolute left-1/2 top-2 z-20 -translate-x-1/2 rounded-full border border-neutral-200 bg-white px-2 py-1 text-xs text-neutral-600 shadow-sm",
+              "absolute left-1/2 top-2 z-20 -translate-x-1/2 rounded-md bg-white/95 px-2 py-1 text-xs text-neutral-600 backdrop-blur-sm",
               "opacity-0 transition-opacity hover:text-neutral-900 group-hover:opacity-100",
             )}
           >

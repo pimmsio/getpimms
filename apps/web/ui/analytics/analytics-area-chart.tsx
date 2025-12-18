@@ -165,8 +165,8 @@ export default function AnalyticsAreaChart({
             tooltipClassName="p-0"
             tooltipContent={(d) => {
               return (
-                <div 
-                  className="bg-white rounded shadow-xl border-0"
+                <div
+                  className="rounded-lg border border-neutral-100 bg-white"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <p className="border-b border-neutral-100/80 px-3 py-2 text-sm text-neutral-900 font-medium">
@@ -195,7 +195,13 @@ export default function AnalyticsAreaChart({
                       <p className="text-right font-medium text-neutral-900">
                         {resource === "sales" && saleUnit === "saleAmount"
                           ? currencyFormatter(d.values.saleAmount)
-                          : nFormatter(d.values[resource], { full: true })}
+                          : resource === "leads"
+                            ? `${(
+                                d.values.clicks > 0
+                                  ? (d.values.leads / d.values.clicks) * 100
+                                  : 0
+                              ).toFixed(1)}%`
+                            : nFormatter(d.values[resource], { full: true })}
                       </p>
                     </Fragment>
                   </div>
@@ -228,7 +234,7 @@ export default function AnalyticsAreaChart({
         )}
 
         {isDataEmpty && !integrationsLoading && !!integrations && (
-          <div className="absolute inset-0 flex touch-pan-y flex-col items-center justify-center gap-4 bg-gradient-to-t from-[#fff_30%] to-[#fff6] pt-12">
+          <div className="absolute inset-0 flex touch-pan-y flex-col items-center justify-center gap-4 bg-white/95 pt-12">
             <EmptyState
               icon={resource === "sales" ? Coins : Target}
               title={`No ${resource === "sales" ? "sales" : "conversions"} recorded`}

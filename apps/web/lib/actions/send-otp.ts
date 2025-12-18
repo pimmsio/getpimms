@@ -4,11 +4,10 @@ import { ratelimit, redis } from "@/lib/upstash";
 import { sendEmail } from "@dub/email";
 import { VerifyEmail } from "@dub/email/templates/verify-email";
 import { prisma } from "@dub/prisma";
-import { get } from "@vercel/edge-config";
-import { flattenValidationErrors } from "next-safe-action";
 import { getIP } from "../api/utils";
 import { generateOTP } from "../auth";
 import { EMAIL_OTP_EXPIRY_IN } from "../auth/constants";
+import { edgeConfigGet } from "../edge-config/safe-get";
 import z from "../zod";
 import { emailSchema, passwordSchema } from "../zod/schemas/auth";
 import { throwIfAuthenticated } from "./auth/throw-if-authenticated";
@@ -21,15 +20,12 @@ const schema = z.object({
 
 // Send OTP to email to verify account
 export const sendOtpAction = actionClient
-  .schema(schema, {
-    handleValidationErrorsShape: (ve) =>
-      flattenValidationErrors(ve).fieldErrors,
-  })
+  .schema(schema)
   .use(throwIfAuthenticated)
   .action(async ({ parsedInput }) => {
     const { email } = parsedInput;
 
-    const { success } = await ratelimit(2, "1 m").limit(`send-otp:${getIP()}`);
+    const { success } = await ratelimit(2, "1 m").limit(`send-otp:${await getIP()}`);
 
     if (!success) {
       throw new Error("Too many requests. Please try again later.");
@@ -57,7 +53,7 @@ export const sendOtpAction = actionClient
     if (process.env.NEXT_PUBLIC_IS_DUB) {
       const [isDisposable, emailDomainTerms] = await Promise.all([
         redis.sismember("disposableEmailDomains", domain),
-        process.env.EDGE_CONFIG ? get("emailDomainTerms") : [],
+        edgeConfigGet<string[]>("emailDomainTerms"),
       ]);
 
       if (isDisposable) {

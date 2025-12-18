@@ -1,8 +1,9 @@
-import { Button, Gear, Popover } from "@dub/ui";
+import { Gear, Popover } from "@dub/ui";
 import { cn } from "@dub/utils";
 import { Table } from "@tanstack/react-table";
 import { Command } from "cmdk";
 import { useState } from "react";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 
 export default function EditColumnsButton({ table }: { table: Table<any> }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,7 +30,7 @@ export default function EditColumnsButton({ table }: { table: Table<any> }) {
                   <input
                     checked={column.getIsVisible()}
                     type="checkbox"
-                    className="h-3 w-3 rounded-full border-neutral-300 text-black focus:outline-none focus:ring-0"
+                    className="h-3 w-3 rounded-sm border-neutral-300 text-black focus:outline-none focus:ring-0"
                     disabled
                   />
                   {column.columnDef.header?.toString()}
@@ -40,12 +41,9 @@ export default function EditColumnsButton({ table }: { table: Table<any> }) {
       }
       align="end"
     >
-      <Button
-        type="button"
-        className="h-8 whitespace-nowrap px-2"
-        variant="outline"
-        icon={<Gear className="h-4 w-4 shrink-0" />}
-      />
+      <AppIconButton type="button" className="h-8 w-8">
+        <Gear className="h-4 w-4 shrink-0" />
+      </AppIconButton>
     </Popover>
   );
 }

@@ -101,7 +101,7 @@ export function UnifiedActivityList({
             {conversions.map((event, index) => (
               <div
                 key={`conversion-${index}`}
-                className="flex items-center gap-3 rounded-lg border border-neutral-200 bg-white p-3 ring-1 ring-inset ring-green-100"
+                className="flex items-center gap-3 rounded-lg bg-neutral-50 px-3 py-2"
               >
                 <div className="flex-shrink-0">
                   {event.event === "sale" ? (
@@ -113,11 +113,11 @@ export function UnifiedActivityList({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between">
                     <div className="flex min-w-0 items-center gap-2">
-                      <span className="truncate font-bold text-neutral-900">
+                      <span className="truncate font-semibold text-neutral-900">
                         {event.eventName || event.event}
                       </span>
                       {event.event === "sale" && (
-                        <span className="inline-flex items-center rounded-full bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-700">
+                        <span className="inline-flex items-center rounded-full bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700">
                           Sale
                         </span>
                       )}
@@ -132,7 +132,7 @@ export function UnifiedActivityList({
                       <Link
                         href={`/${slug}/links/${getPrettyUrl(event.link.shortLink)}`}
                         target="_blank"
-                        className="text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                        className="text-xs text-neutral-700 underline-offset-2 hover:text-neutral-900 hover:underline"
                       >
                         {getPrettyUrl(event.link.shortLink)}
                       </Link>

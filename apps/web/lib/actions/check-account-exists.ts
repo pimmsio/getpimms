@@ -20,7 +20,7 @@ export const checkAccountExistsAction = actionClient
     const { email } = parsedInput;
 
     const { success } = await ratelimit(8, "1 m").limit(
-      `account-exists:${getIP()}`,
+      `account-exists:${await getIP()}`,
     );
 
     if (!success) {

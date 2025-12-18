@@ -26,6 +26,10 @@ export const CarouselNavBar = ({
     useCarousel();
 
   const autoplay = api?.plugins()?.autoplay;
+  const autoplayDelayMs =
+    typeof autoplay?.options?.delay === "number"
+      ? autoplay.options.delay
+      : AUTOPLAY_DEFAULT_DELAY;
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
@@ -89,8 +93,7 @@ export const CarouselNavBar = ({
                     transition={{
                       type: "tween",
                       duration:
-                        (autoplay?.options.delay ?? AUTOPLAY_DEFAULT_DELAY) /
-                        1000,
+                        autoplayDelayMs / 1000,
                     }}
                     className="animate-fill-width h-full w-full rounded-full bg-black"
                   />

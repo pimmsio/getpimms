@@ -3,12 +3,14 @@
 import { clientAccessCheck } from "@/lib/api/tokens/permissions";
 import useWebhooks from "@/lib/swr/use-webhooks";
 import useWorkspace from "@/lib/swr/use-workspace";
+import { AppButton } from "@/ui/components/controls/app-button";
 import EmptyState from "@/ui/shared/empty-state";
 import WebhookCard from "@/ui/webhooks/webhook-card";
 import WebhookPlaceholder from "@/ui/webhooks/webhook-placeholder";
-import { Button, InfoTooltip, TooltipContent } from "@dub/ui";
+import { InfoTooltip, TooltipContent } from "@dub/ui";
 import { Webhook } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { text } from "@/ui/design/tokens";
 
 export default function WebhooksPageClient() {
   const router = useRouter();
@@ -25,7 +27,7 @@ export default function WebhooksPageClient() {
 
   if (needsHigherPlan) {
     return (
-      <div className="rounded border border-neutral-100 bg-white p-10">
+      <div className="rounded-lg bg-neutral-50/60 p-6 md:p-10">
         <EmptyState
           icon={Webhook}
           title="Webhooks"
@@ -42,9 +44,7 @@ export default function WebhooksPageClient() {
     <div className="grid gap-5">
       <div className="flex flex-wrap justify-between gap-6">
         <div className="flex items-center gap-x-2">
-          <h1 className="text-2xl font-semibold tracking-tight text-black">
-            Webhooks
-          </h1>
+          <div className={text.pageTitle}>Webhooks</div>
           {/* <InfoTooltip
             content={
               <TooltipContent
@@ -57,12 +57,16 @@ export default function WebhooksPageClient() {
           /> */}
         </div>
         <div className="flex w-full items-center gap-3 sm:w-auto">
-          <Button
-            className="flex h-10 items-center justify-center whitespace-nowrap rounded border px-4 text-sm"
-            text="Create Webhook"
+          <AppButton
+            type="button"
+            variant="secondary"
+            size="md"
             onClick={() => router.push(`/${slug}/settings/webhooks/new`)}
-            disabledTooltip={permissionsError}
-          />
+            disabled={!!permissionsError}
+            title={typeof permissionsError === "string" ? permissionsError : undefined}
+          >
+            Create Webhook
+          </AppButton>
         </div>
       </div>
 
@@ -75,7 +79,7 @@ export default function WebhooksPageClient() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-4 rounded border border-neutral-100 py-10">
+            <div className="flex flex-col items-center gap-4 rounded-lg bg-neutral-50/60 py-10">
               <EmptyState
                 icon={Webhook}
                 title="You haven't set up any webhooks yet."

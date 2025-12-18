@@ -265,7 +265,7 @@ function GridInsightsTable({
             left: 0 !important;
             z-index: 20 !important;
             background: white !important;
-            border-right: 1px solid #e5e7eb !important;
+            border-right: 1px solid #f5f5f5 !important;
           }
           .insights-table th:first-child {
             z-index: 21 !important;
@@ -279,7 +279,7 @@ function GridInsightsTable({
           position: sticky !important;
           bottom: 0 !important;
           z-index: 15 !important;
-          box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.06) !important;
+          box-shadow: none !important;
         }
       `}</style>
 
@@ -310,7 +310,7 @@ function GridInsightsTable({
                 <th
                   key={index}
                   colSpan={3}
-                  className="border-l border-neutral-200 bg-neutral-50 px-3 py-2 text-center text-[11px] font-semibold text-neutral-700"
+                  className="border-l border-neutral-100 bg-neutral-50 px-3 py-2 text-center text-[11px] font-semibold text-neutral-700"
                 >
                   {period.label}
                 </th>
@@ -319,7 +319,7 @@ function GridInsightsTable({
             <tr>
               {periodColumns.map((_, index) => (
                 <React.Fragment key={index}>
-                  <th className="border-l border-neutral-200 bg-neutral-50 px-3 py-2 text-center text-[10px] font-medium text-neutral-500">
+                  <th className="border-l border-neutral-100 bg-neutral-50 px-3 py-2 text-center text-[10px] font-medium text-neutral-500">
                     CLK
                   </th>
                   <th className="bg-neutral-50 px-3 py-2 text-center text-[10px] font-medium text-neutral-500">
@@ -333,7 +333,7 @@ function GridInsightsTable({
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-neutral-200 bg-white">
+          <tbody className="divide-y divide-neutral-100 bg-white">
             {rows.map((row: any) => {
               const isSkeleton = !!row.__skeleton;
               const link = row as LinkInsight;
@@ -372,7 +372,9 @@ function GridInsightsTable({
                     {isSkeleton ? (
                       <div className="flex items-center gap-2">
                         <div className="h-8 w-[46px] animate-pulse rounded bg-neutral-200" />
+                        <div className="h-6 w-px bg-neutral-200/70" />
                         <div className="h-8 w-[46px] animate-pulse rounded bg-neutral-200" />
+                        <div className="h-6 w-px bg-neutral-200/70" />
                         <div className="h-8 w-[46px] animate-pulse rounded bg-neutral-200" />
                       </div>
                     ) : (
@@ -390,7 +392,7 @@ function GridInsightsTable({
                     if (isSkeleton) {
                       return (
                         <React.Fragment key={periodIndex}>
-                          <td className="border-l border-neutral-200 px-3 py-2 text-center">
+                          <td className="border-l border-neutral-100 px-3 py-2 text-center">
                             <div className="mx-auto h-4 w-10 animate-pulse rounded bg-neutral-200" />
                           </td>
                           <td className="px-3 py-2 text-center">
@@ -408,7 +410,7 @@ function GridInsightsTable({
 
                     return (
                       <React.Fragment key={periodIndex}>
-                        <td className={cn("border-l border-neutral-200 px-3 py-2 text-center", isGrayedOut && "opacity-30")}>
+                        <td className={cn("border-l border-neutral-100 px-3 py-2 text-center", isGrayedOut && "opacity-30")}>
                           {isGrayedOut ? (
                             <span className="text-neutral-300 text-sm">—</span>
                           ) : (
@@ -447,7 +449,7 @@ function GridInsightsTable({
             })}
 
             {!loading && totals && (
-              <tr className="totals-row border-t border-neutral-300 bg-neutral-50 font-semibold">
+              <tr className="totals-row border-t border-neutral-100 bg-neutral-50 font-semibold">
                 <td className="bg-neutral-50 px-2 py-2 text-left md:sticky md:left-0 md:z-10 sm:px-5 min-w-[450px] w-[450px]">
                   <div className="text-sm font-semibold text-neutral-900">
                     Total ({data.length} links)
@@ -466,7 +468,7 @@ function GridInsightsTable({
 
                 {totals.periodTotals.map((pt, idx) => (
                   <React.Fragment key={idx}>
-                    <td className="border-l border-neutral-200 bg-neutral-50 px-3 py-2 text-center">
+                    <td className="border-l border-neutral-100 bg-neutral-50 px-3 py-2 text-center">
                       <div className={cn("text-sm font-semibold tabular-nums", pt.clicks === 0 && "text-neutral-400")}>
                         {nFormatter(pt.clicks)}
                       </div>

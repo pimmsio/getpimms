@@ -6,8 +6,8 @@ import useUsers from "@/lib/swr/use-users";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { UtmTemplateWithUserProps } from "@/lib/types";
 import { CheckCircleFill, ThreeDots } from "@/ui/shared/icons";
+import { AppButton } from "@/ui/components/controls/app-button";
 import {
-  Button,
   Popover,
   Tooltip,
   TooltipContent,
@@ -187,7 +187,7 @@ function OnboardingButtonInner({
                               }
                             >
                               <div className="inline-block">
-                                <CrownSmall className="size-5 text-neutral-600 rounded-full border border-neutral-600" />
+                                <CrownSmall className="size-5 rounded-md border border-neutral-300 text-neutral-600" />
                               </div>
                             </Tooltip>
                           )}
@@ -207,15 +207,14 @@ function OnboardingButtonInner({
       openPopover={isOpen}
       setOpenPopover={setIsOpen}
     >
-      <button
-        type="button"
-        className="animate-slide-up-fade -mr-2 mt-1 flex h-12 flex-col items-center justify-center rounded-full bg-[#3970ff] px-6 text-sm font-medium leading-tight text-white shadow-md transition-all [--offset:10px] sm:mr-0"
-      >
-        <span>Getting Started</span>
-        <span className="text-neutral-200">
-          {Math.round((completedTasks / tasks.length) * 100)}% complete
+      <AppButton type="button" variant="primary" size="md" className="w-auto px-4 leading-tight">
+        <span className="flex flex-col items-center">
+          <span>Getting Started</span>
+          <span className="text-[11px] font-medium text-white/80">
+            {Math.round((completedTasks / tasks.length) * 100)}% complete
+          </span>
         </span>
-      </button>
+      </AppButton>
     </Popover>
   );
 }
@@ -241,12 +240,15 @@ function OnboardingMenu({ onHideForever }: { onHideForever: () => void }) {
       align="end"
       content={
         <div className="p-1">
-          <Button
+          <AppButton
+            type="button"
             onClick={onHideForever}
-            variant="outline"
-            text="Dismiss forever"
-            className="h-9"
-          />
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start"
+          >
+            Dismiss forever
+          </AppButton>
         </div>
       }
       openPopover={isOpen}

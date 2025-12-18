@@ -14,9 +14,10 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({
   params,
 }: {
-  params: { dashboardId: string };
+  params: Promise<{ dashboardId: string }>;
 }) {
-  const data = await getDashboard({ id: params.dashboardId });
+  const { dashboardId } = await params;
+  const data = await getDashboard({ id: dashboardId });
 
   // if the dashboard or link doesn't exist
   if (!data?.link) {
@@ -33,9 +34,11 @@ export async function generateMetadata({
 export default async function dashboardPage({
   params,
 }: {
-  params: { dashboardId: string };
+  params: Promise<{ dashboardId: string }>;
 }) {
-  const data = await getDashboard({ id: params.dashboardId });
+  const { dashboardId } = await params;
+  const data = await getDashboard({ id: dashboardId });
+  const cookieStore = await cookies();
 
   // if the dashboard or link doesn't exist
   if (!data?.link) {
@@ -44,7 +47,7 @@ export default async function dashboardPage({
 
   if (
     data.password &&
-    cookies().get(`pimms_password_${params.dashboardId}`)?.value !== data.password
+    cookieStore.get(`pimms_password_${dashboardId}`)?.value !== data.password
   ) {
     return (
       <main className="flex h-screen w-screen items-center justify-center">

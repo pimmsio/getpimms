@@ -1,16 +1,18 @@
-import { isValidDomain } from "@/lib/api/domains";
+import { isValidDomain } from "@/lib/api/domains/validation";
 import { mutatePrefix } from "@/lib/swr/mutate";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { DomainProps } from "@/lib/types";
 import { createDomainBodySchema } from "@/lib/zod/schemas/domains";
 import { AlertCircleFill, CheckCircleFill, Lock } from "@/ui/shared/icons";
 import { UpgradeRequiredToast } from "@/ui/shared/upgrade-required-toast";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { AppInput } from "@/ui/components/controls/app-input";
+import { AppTextarea } from "@/ui/components/controls/app-textarea";
 import {
   AndroidLogo,
   AnimatedSizeContainer,
   AppleLogo,
   Badge,
-  Button,
   FileUpload,
   InfoTooltip,
   LoadingSpinner,
@@ -308,14 +310,14 @@ export function AddEditDomainForm({
               )}
             >
               <div className="flex rounded border border-neutral-300 bg-white">
-                <input
+                <AppInput
                   {...register("slug", {
                     onChange: (e) => {
                       setDomainStatus("idle");
                       debouncedValidateDomain(e.target.value);
                     },
                   })}
-                  className="block w-full rounded border-0 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-0 sm:text-sm"
+                  className="h-10 w-full border-0 ring-0 focus-visible:ring-0"
                   placeholder="go.domain.io"
                   autoFocus={!isMobile}
                 />
@@ -445,11 +447,19 @@ export function AddEditDomainForm({
                             />
                           </div>
                         ) : (
-                          <input
-                            {...register(id)}
-                            className="block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
-                            placeholder="https://yourwebsite.com"
-                          />
+                          id === "appleAppSiteAssociation" || id === "assetLinks" ? (
+                            <AppTextarea
+                              {...register(id)}
+                              placeholder="Paste JSON here"
+                              className="min-h-[120px] font-mono"
+                            />
+                          ) : (
+                            <AppInput
+                              {...register(id)}
+                              placeholder="https://yourwebsite.com"
+                              className="max-w-none"
+                            />
+                          )
                         )}
                       </div>
                     </motion.div>
@@ -523,10 +533,10 @@ export function AddEditDomainForm({
                         </div>
 
                         {showOptionStates[id] && (
-                          <div className="rounded border border-neutral-100 bg-white">
-                            <textarea
+                          <div className="rounded-lg border border-neutral-100 bg-white">
+                            <AppTextarea
                               {...register(id)}
-                              className="w-full resize-none rounded border-0 bg-transparent px-3 py-2 font-mono text-xs text-neutral-700 focus:outline-none focus:ring-0"
+                              className="min-h-[120px] resize-none font-mono text-xs focus-visible:ring-0"
                               rows={4}
                               spellCheck={false}
                               onPaste={(e) => {
@@ -568,11 +578,9 @@ export function AddEditDomainForm({
         </>
       )}
 
-      <Button
-        text={props ? "Save changes" : "Add domain"}
-        disabled={saveDisabled}
-        loading={isSubmitting}
-      />
+      <AppButton variant="primary" disabled={saveDisabled} loading={isSubmitting}>
+        {props ? "Save changes" : "Add domain"}
+      </AppButton>
     </form>
   );
 }

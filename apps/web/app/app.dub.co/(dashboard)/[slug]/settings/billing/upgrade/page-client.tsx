@@ -1,6 +1,8 @@
 "use client";
 
 import useWorkspace from "@/lib/swr/use-workspace";
+import { AppButtonLink } from "@/ui/components/controls/app-button";
+import { text } from "@/ui/design/tokens";
 import { UpgradePlanButton } from "@/ui/workspaces/upgrade-plan-button";
 import {
   ChartLine,
@@ -54,16 +56,14 @@ export function WorkspaceBillingUpgradePageClient() {
             className="mt-px size-5 text-neutral-500 transition-transform duration-100 group-hover:-translate-x-0.5"
             strokeWidth={2}
           />
-          <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">
-            Plans
-          </h1>
+          <div className={text.pageTitle}>Plans</div>
         </Link>
         {/* Hide period toggle since we're showing lifetime pricing */}
       </div>
 
       <div className="mt-6">
         <div className="sticky -top-px z-10">
-          <div className="overflow-x-hidden rounded-b-[12px] from-neutral-200 [container-type:inline-size] lg:bg-gradient-to-t lg:p-px">
+          <div className="overflow-x-hidden rounded-b-[12px] bg-neutral-100/60 [container-type:inline-size] lg:p-px">
             <div
               className={cn(
                 "grid grid-cols-3 gap-px overflow-hidden rounded-b-[11px] text-sm text-neutral-800 lg:grid-cols-3 [&_strong]:font-medium",
@@ -94,7 +94,7 @@ export function WorkspaceBillingUpgradePageClient() {
                     key={plan.name}
                     className={cn(
                       "relative top-0 flex h-full flex-col gap-6 bg-white p-5",
-                      "max-lg:rounded max-lg:border max-lg:border-neutral-200",
+                      "max-lg:rounded",
 
                       idx !== mobilePlanIndex && "max-lg:opacity-0",
                     )}
@@ -130,7 +130,6 @@ export function WorkspaceBillingUpgradePageClient() {
                                       currency: "EUR",
                                       minimumFractionDigits: 0,
                                     }}
-                                    continuous
                                   />
                                   {plan.name === "Starter" ||
                                   plan.name === "Pro" ? (
@@ -150,7 +149,7 @@ export function WorkspaceBillingUpgradePageClient() {
                           )}
                         </div>
                       </div>
-                      {(plan.name === "Starter" || plan.name === "Pro") ? (
+                      {plan.name === "Starter" || plan.name === "Pro" ? (
                         <p className="text-xs text-neutral-500">
                           One-time payment
                         </p>
@@ -170,16 +169,14 @@ export function WorkspaceBillingUpgradePageClient() {
                         <ChevronLeft className="size-5 text-neutral-800" />
                       </button>
                       {plan.name === "Business" ? (
-                        <Link
+                        <AppButtonLink
                           href="https://pim.ms/dAXN6jl"
                           target="_blank"
-                          className={cn(
-                            "flex h-8 w-full items-center justify-center rounded text-center text-sm ring-transparent transition-all duration-200 ease-in-out",
-                            "border border-neutral-100 bg-white text-neutral-900 shadow-sm hover:bg-neutral-50",
-                          )}
+                          variant="secondary"
+                          size="sm"
                         >
                           Book a demo
-                        </Link>
+                        </AppButtonLink>
                       ) : (
                         <UpgradePlanButton
                           plan={plan.name.toLowerCase()}
@@ -195,7 +192,7 @@ export function WorkspaceBillingUpgradePageClient() {
                                   : "Upgrade"
                           }
                           variant={isDowngrade ? "secondary" : "primary"}
-                          className="h-8 shadow-sm"
+                          className="h-8"
                         />
                       )}
                       <button
@@ -212,7 +209,7 @@ export function WorkspaceBillingUpgradePageClient() {
               })}
             </div>
           </div>
-          <div className="h-8 bg-gradient-to-b from-white" />
+          <div className="h-8 bg-white" />
         </div>
         <div className="flex flex-col gap-8 pb-12">
           {PLAN_COMPARE_FEATURES.map(({ category, href, features }) => {

@@ -2,7 +2,9 @@
 
 import useWorkspace from "@/lib/swr/use-workspace";
 import { TabSelect } from "@dub/ui";
+import { cn } from "@dub/utils";
 import { redirect, useRouter, useSelectedLayoutSegment } from "next/navigation";
+import { text } from "@/ui/design/tokens";
 
 export default function LibraryHeader() {
   const router = useRouter();
@@ -17,10 +19,8 @@ export default function LibraryHeader() {
 
   return (
     <div className="border-b border-neutral-100">
-      <h1 className="text-2xl font-semibold tracking-tight text-black">
-        Library
-      </h1>
-      <p className="mb-2 mt-2 text-base text-neutral-600">
+      <div className={text.pageTitle}>Library</div>
+      <p className={cn("mb-2 mt-2", text.pageDescription)}>
         Manage tags (and folders) to organize your links.
       </p>
       <TabSelect

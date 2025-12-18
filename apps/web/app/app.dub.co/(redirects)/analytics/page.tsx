@@ -4,19 +4,20 @@ import { redirect } from "next/navigation";
 export default async function OldLinksAnalytics({
   searchParams,
 }: {
-  searchParams: { [key: string]: string };
+  searchParams: Promise<{ [key: string]: string }>;
 }) {
+  const awaitedSearchParams = await searchParams;
   const defaultWorkspace = await getDefaultWorkspace();
   if (!defaultWorkspace) {
     redirect("/");
   }
 
   const newParams = new URLSearchParams();
-  if (searchParams.domain) {
-    newParams.set("domain", searchParams.domain);
+  if (awaitedSearchParams.domain) {
+    newParams.set("domain", awaitedSearchParams.domain);
   }
-  if (searchParams.key) {
-    newParams.set("key", searchParams.key);
+  if (awaitedSearchParams.key) {
+    newParams.set("key", awaitedSearchParams.key);
   }
   const queryString = newParams.toString();
 

@@ -19,8 +19,8 @@ export function TestsBadge({
           <button
             type="button"
             className={cn(
-              "text-xs rounded-full px-2 py-1.5 text-neutral-800 transition-colors duration-100 bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300",
-              showTests ? "bg-neutral-300" : "bg-neutral-100",
+              "rounded-md border border-neutral-200 bg-white px-2 py-1.5 text-xs text-neutral-800 transition-[box-shadow,border-color] duration-100 hover:border-neutral-300",
+              showTests && "ring-1 ring-neutral-200/70",
             )}
             aria-pressed={showTests}
             onClick={() => setShowTests((s) => !s)}

@@ -81,7 +81,7 @@ export default function Referrers() {
                             alt={displayName}
                             width={20}
                             height={20}
-                            className="h-4 w-4 rounded-full"
+                            className="h-4 w-4 rounded-md"
                           />
                         ),
                         title: displayName,

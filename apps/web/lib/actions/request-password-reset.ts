@@ -5,7 +5,6 @@ import { sendEmail } from "@dub/email";
 import { ResetPasswordLink } from "@dub/email/templates/reset-password-link";
 import { prisma } from "@dub/prisma";
 import { randomBytes } from "crypto";
-import { flattenValidationErrors } from "next-safe-action";
 import { PASSWORD_RESET_TOKEN_EXPIRY } from "../auth/constants";
 import { requestPasswordResetSchema } from "../zod/schemas/auth";
 import { throwIfAuthenticated } from "./auth/throw-if-authenticated";
@@ -13,10 +12,7 @@ import { actionClient } from "./safe-action";
 
 // Request a password reset email
 export const requestPasswordResetAction = actionClient
-  .schema(requestPasswordResetSchema, {
-    handleValidationErrorsShape: (ve) =>
-      flattenValidationErrors(ve).fieldErrors,
-  })
+  .schema(requestPasswordResetSchema)
   .use(throwIfAuthenticated)
   .action(async ({ parsedInput }) => {
     const { email } = parsedInput;

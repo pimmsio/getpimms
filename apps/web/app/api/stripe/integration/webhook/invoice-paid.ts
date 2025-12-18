@@ -1,7 +1,5 @@
 import { convertCurrency } from "@/lib/analytics/convert-currency";
 import { includeTags } from "@/lib/api/links/include-tags";
-import { notifyPartnerSale } from "@/lib/api/partners/notify-partner-sale";
-import { createPartnerCommission } from "@/lib/partners/create-partner-commission";
 import { getLeadEvent, recordSale } from "@/lib/tinybird";
 import { redis } from "@/lib/upstash";
 import { sendWorkspaceWebhook } from "@/lib/webhook/publish";
@@ -71,7 +69,9 @@ export async function invoicePaid(event: Stripe.Event) {
     ...leadEvent.data[0],
     event_id: eventId,
     // if the invoice has no subscription, it's a one-time payment
-    event_name: !invoice.subscription ? "Purchase" : "Invoice paid",
+    event_name: !invoice.parent?.subscription_details?.subscription
+      ? "Purchase"
+      : "Invoice paid",
     payment_processor: "stripe",
     amount: invoice.amount_paid,
     currency: invoice.currency,
@@ -133,31 +133,6 @@ export async function invoicePaid(event: Stripe.Event) {
       },
     }),
   ]);
-
-  // for program links
-  if (link.programId && link.partnerId) {
-    const commission = await createPartnerCommission({
-      event: "sale",
-      programId: link.programId,
-      partnerId: link.partnerId,
-      linkId: link.id,
-      eventId,
-      customerId: customer.id,
-      amount: saleData.amount,
-      quantity: 1,
-      invoiceId,
-      currency: saleData.currency,
-    });
-
-    if (commission) {
-      waitUntil(
-        notifyPartnerSale({
-          link,
-          commission,
-        }),
-      );
-    }
-  }
 
   // send workspace webhook
   waitUntil(

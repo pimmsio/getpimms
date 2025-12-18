@@ -3,6 +3,7 @@
 import { LoadingSpinner, useRouterStuff } from "@dub/ui";
 import { CircleXmark, Magnifier } from "@dub/ui/icons";
 import { cn } from "@dub/utils";
+import { AppInput } from "@/ui/components/controls/app-input";
 import {
   forwardRef,
   useCallback,
@@ -77,14 +78,12 @@ export const SearchBox = forwardRef(
             <Magnifier className="h-5 w-5 text-neutral-400 transition-colors group-focus-within:text-neutral-600" />
           )}
         </div>
-        <input
+        <AppInput
           ref={inputRef}
           type="text"
           className={cn(
-            "peer w-full rounded-full border border-neutral-200 bg-white pl-11 pr-4 text-black outline-none placeholder:text-neutral-400 sm:text-sm",
-            "transition-all duration-200",
-            "focus:border-neutral-400 focus:ring-2 focus:ring-blue-500/10 focus:shadow-sm",
-            "hover:border-neutral-300",
+            // Keep dashboard inputs consistent: rounded-lg (AppInput default), not pill.
+            "peer pl-11 pr-4 text-black",
             inputClassName,
           )}
           placeholder={placeholder || "Search..."}

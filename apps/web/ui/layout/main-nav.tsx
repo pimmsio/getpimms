@@ -1,5 +1,6 @@
 "use client";
 
+import { borders, radius, surface } from "@/ui/design/tokens";
 import { useMediaQuery } from "@dub/ui";
 import { cn } from "@dub/utils";
 import { usePathname } from "next/navigation";
@@ -53,11 +54,16 @@ export function MainNav({
   }, [pathname]);
 
   return (
-    <div className="min-h-screen md:grid md:grid-cols-[240px_minmax(0,1fr)]">
+    <div
+      className={cn(
+        surface.shell,
+        "min-h-screen md:grid md:grid-cols-[240px_minmax(0,1fr)]",
+      )}
+    >
       {/* Side nav backdrop */}
       <div
         className={cn(
-          "fixed left-0 top-0 z-50 h-dvh w-screen transition-all duration-300 md:sticky md:z-auto md:w-full md:bg-zinc-100",
+          "fixed left-0 top-0 z-50 h-dvh w-screen transition-all duration-300 md:sticky md:z-auto md:w-full",
           isOpen
             ? "bg-black/40 backdrop-blur-sm"
             : "bg-transparent backdrop-blur-0 max-md:pointer-events-none",
@@ -72,7 +78,10 @@ export function MainNav({
         {/* Side nav */}
         <div
           className={cn(
-            "relative h-[calc(100dvh-16px)] sm:h-[calc(100vh-20px)] top-[8px] left-[8px] w-[280px] sm:w-[220px] border border-neutral-200/80 bg-white shadow-xl rounded-2xl max-w-[calc(100vw-32px)] transition-all duration-300 ease-out md:translate-x-0 md:border-0 md:shadow-none md:bg-transparent md:rounded-3xl md:h-[calc(100vh-20px)] md:top-[10px] md:left-[10px]",
+            "relative left-[8px] top-[8px] h-[calc(100dvh-16px)] w-[280px] max-w-[calc(100vw-32px)] transition-all duration-300 ease-out sm:h-[calc(100vh-20px)] sm:w-[220px] md:left-[10px] md:top-[10px] md:h-[calc(100vh-20px)] md:translate-x-0 md:rounded-3xl",
+            borders.hairline,
+            surface.sidebar,
+            radius.xl,
             !isOpen && "-translate-x-[calc(100%+24px)]",
           )}
         >
@@ -87,8 +96,18 @@ export function MainNav({
           <Sidebar toolContent={toolContent} newsContent={newsContent} />
         </div>
       </div>
-      <div className="bg-zinc-100 md:pt-[10px]">
-        <div className="relative overflow-hidden min-h-full bg-[#fafafa] pt-px md:rounded-tl-3xl md:border md:border-b-0 md:border-r-0 md:border-neutral-200 md:bg-white shadow-sm">
+      <div
+        className={cn(
+          surface.shell,
+          "md:pb-[10px] md:pl-[10px] md:pr-[10px] md:pt-[10px]",
+        )}
+      >
+        <div
+          className={cn(
+            "relative min-h-full overflow-hidden pt-px md:rounded-tl-3xl",
+            surface.shell,
+          )}
+        >
           <SideNavContext.Provider value={{ isOpen, setIsOpen }}>
             {children}
           </SideNavContext.Provider>

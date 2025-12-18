@@ -11,18 +11,16 @@ export default function SecurityPageClient() {
 
   if (loading) {
     return (
-      <div className="rounded border border-neutral-100 bg-white">
-        <div className="flex flex-col gap-3 border-b border-neutral-100 p-5 sm:p-10">
-          <h2 className="text-xl font-medium">Password</h2>
-          <div className="h-3 w-56 rounded-full bg-neutral-100"></div>
+      <div className="space-y-4">
+        <div className="border-b border-neutral-100 pb-3">
+          <div className="h-4 w-24 rounded-full bg-neutral-100"></div>
+          <div className="mt-2 h-3 w-56 rounded-full bg-neutral-100"></div>
         </div>
-        <div className="p-5 sm:p-10">
-          <div className="flex justify-between gap-2">
-            <div className="h-3 w-56 rounded-full bg-neutral-100"></div>
-            <div className="h-3 w-56 rounded-full bg-neutral-100"></div>
-          </div>
-          <div className="mt-5 h-3 rounded-full bg-neutral-100"></div>
+        <div className="flex flex-wrap justify-between gap-4">
+          <div className="h-10 w-full max-w-sm rounded-lg bg-neutral-100"></div>
+          <div className="h-10 w-full max-w-sm rounded-lg bg-neutral-100"></div>
         </div>
+        <div className="h-9 w-40 rounded-lg bg-neutral-100"></div>
       </div>
     );
   }

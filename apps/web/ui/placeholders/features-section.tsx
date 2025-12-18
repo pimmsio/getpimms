@@ -1,3 +1,5 @@
+"use client";
+
 import { ExpandingArrow } from "@dub/ui";
 import { cn, createHref, UTMTags } from "@dub/utils";
 import Link from "next/link";
@@ -157,24 +159,27 @@ function FeatureCard({
       </div>
       <div className="relative flex flex-col">
         <h3 className="text-lg font-medium text-neutral-900">{title}</h3>
-        <Markdown
+        <div
           className={cn(
             "mt-2 text-neutral-500 transition-colors",
             "[&_a]:font-medium [&_a]:text-neutral-600 [&_a]:underline [&_a]:decoration-dotted [&_a]:underline-offset-2 hover:[&_a]:text-neutral-800",
           )}
-          components={{
-            a: ({ children, href }) => {
-              if (!href) return null;
-              return (
-                <Link href={href} target="_blank">
-                  {children}
-                </Link>
-              );
-            },
-          }}
         >
-          {description}
-        </Markdown>
+          <Markdown
+            components={{
+              a: ({ children, href }) => {
+                if (!href) return null;
+                return (
+                  <Link href={href} target="_blank">
+                    {children}
+                  </Link>
+                );
+              },
+            }}
+          >
+            {description}
+          </Markdown>
+        </div>
         <Link
           href={href}
           className={cn(

@@ -2,6 +2,8 @@
 
 import useWorkspace from "@/lib/swr/use-workspace";
 import { ExpandedLinkProps } from "@/lib/types";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 import { BulkDestinationUrlInput } from "@/ui/links/link-builder/bulk-destination-url-input";
 import { BulkDomainSelector } from "@/ui/links/link-builder/bulk-domain-selector";
 import { BulkUTMParametersSection } from "@/ui/links/link-builder/bulk-utm-parameters-section";
@@ -30,16 +32,14 @@ import { useMetatags } from "@/ui/links/link-builder/use-metatags";
 import { useAvailableDomains } from "@/ui/links/use-available-domains";
 import {
   ArrowTurnLeft,
-  Button,
-  ButtonProps,
-  CtaButton,
-  FloatingActionButton,
   Modal,
+  Tooltip,
   TooltipContent,
   useKeyboardShortcut,
   useRouterStuff,
 } from "@dub/ui";
 import { cn, isValidUrl } from "@dub/utils";
+import { Plus } from "lucide-react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   Dispatch,
@@ -284,19 +284,27 @@ function LinkBuilderInner({
           <div className="sticky bottom-0 z-10 flex items-center gap-6 border-t border-neutral-100 bg-neutral-50 p-4">
             <LinkFeatureButtons />
             {homepageDemo ? (
-              <Button
-                disabledTooltip="This is a demo link. You can't edit it."
-                text="Save changes"
+              <AppButton
+                type="button"
+                variant="primary"
+                size="sm"
                 className="h-8 w-fit"
-              />
+                disabled
+                title="This is a demo link. You can't edit it."
+              >
+                Save changes
+              </AppButton>
             ) : (
-              <Button
+              <AppButton
                 type="submit"
+                variant="primary"
                 disabled={
                   saveDisabled || (urlMode === "bulk" && bulkUrls.length === 0)
                 }
                 loading={isSubmitting || isSubmitSuccessful}
-                text={
+                className="h-8 w-full pl-2.5 pr-1.5"
+              >
+                {
                   <span className="flex items-center gap-2">
                     {props
                       ? "Save changes"
@@ -308,8 +316,7 @@ function LinkBuilderInner({
                     </div>
                   </span>
                 }
-                className="h-8 w-full pl-2.5 pr-1.5"
-              />
+              </AppButton>
             )}
           </div>
         </form>
@@ -318,7 +325,9 @@ function LinkBuilderInner({
   );
 }
 
-type CreateLinkButtonProps = Partial<ButtonProps>;
+type CreateLinkButtonProps = {
+  className?: string;
+};
 
 export function CreateLinkButton({
   setShowLinkBuilder,
@@ -361,34 +370,50 @@ export function CreateLinkButton({
   }, []);
 
   if (floating) {
-    return (
-      <FloatingActionButton
-        text="Create link"
-        shortcut="C"
-        disabledTooltip={
-          exceededLinks ? (
-            <TooltipContent
-              title="Your workspace has exceeded its monthly links limit. We're still collecting data on your existing links, but you need to upgrade to add more links."
-              cta={`Upgrade to ${nextPlan.name}`}
-              href={`/${slug}/upgrade`}
-            />
-          ) : undefined
-        }
-        onClick={() => setShowLinkBuilder(true)}
-        {...buttonProps}
+    const disabledTooltip = exceededLinks ? (
+      <TooltipContent
+        title="Your workspace has exceeded its monthly links limit. We're still collecting data on your existing links, but you need to upgrade to add more links."
+        cta={`Upgrade to ${nextPlan.name}`}
+        href={`/${slug}/upgrade`}
       />
+    ) : undefined;
+
+    if (disabledTooltip) {
+      return (
+        <Tooltip content={disabledTooltip}>
+          <div className="fixed bottom-6 right-4 flex h-12 w-12 cursor-not-allowed items-center justify-center rounded-lg border border-neutral-200 bg-neutral-100 text-neutral-400">
+            <Plus className="size-5" />
+          </div>
+        </Tooltip>
+      );
+    }
+
+    return (
+      <AppIconButton
+        type="button"
+        onClick={() => setShowLinkBuilder(true)}
+        className={cn(
+          "fixed bottom-6 right-4 h-12 w-12 bg-brand-primary p-0 text-white hover:bg-brand-primary-hover hover:text-white",
+          buttonProps.className,
+        )}
+        aria-label="Create link"
+      >
+        <Plus className="size-5" />
+      </AppIconButton>
     );
   }
 
   return (
-    <CtaButton
-      className="h-10 shadow-none"
+    <AppButton
+      type="button"
+      variant="primary"
+      size="md"
       disabled={exceededLinks}
       onClick={() => setShowLinkBuilder(true)}
-      {...buttonProps}
+      className={cn(buttonProps.className)}
     >
       Create link
-    </CtaButton>
+    </AppButton>
   );
 }
 

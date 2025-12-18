@@ -77,9 +77,6 @@ export const WorkspaceSchema = z
     dotLinkClaimed: z
       .boolean()
       .describe("Whether the workspace has claimed a free domain."),
-    partnersEnabled: z
-      .boolean()
-      .describe("Whether the workspace has PiMMs Partners enabled."),
 
     createdAt: z
       .date()
@@ -151,8 +148,6 @@ export const updateWorkspaceSchema = createWorkspaceSchema.partial().extend({
 export const notificationTypes = z.enum([
   "linkUsageSummary",
   "domainConfigurationUpdates",
-  "newPartnerSale",
-  "newPartnerApplication",
 ]);
 
 export const WorkspaceSchemaExtended = WorkspaceSchema.extend({

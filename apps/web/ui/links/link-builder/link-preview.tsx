@@ -4,7 +4,7 @@ import {
   useLinkBuilderContext,
 } from "@/ui/links/link-builder/link-builder-provider";
 import { useOGModal } from "@/ui/modals/link-builder/og-modal";
-import { Button, FileUpload, Icon, Switch, useMediaQuery } from "@dub/ui";
+import { FileUpload, Icon, Switch, useMediaQuery } from "@dub/ui";
 import {
   Facebook,
   GlobePointer,
@@ -32,6 +32,7 @@ import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
 import { useLinkBuilderKeyboardShortcut } from "./use-link-builder-keyboard-shortcut";
 import { useMetatags } from "./use-metatags";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 
 const tabs = ["default", "x", "linkedin", "facebook"] as const;
 type Tab = (typeof tabs)[number];
@@ -173,23 +174,23 @@ export const LinkPreview = memo(() => {
       </div> */}
       <div className="relative z-0 mt-2">
         <div className={cn("absolute right-2 top-2 z-10 flex gap-1", doIndex && "hidden")}>
-          <Button
+          <AppIconButton
             type="button"
-            variant="secondary"
-            icon={<Refresh2 className={cn("size-4", generatingMetatags && "animate-spin")} />}
             className="h-8 w-fit px-1.5"
             onClick={() => refreshMetadata({ shouldDirty: true })}
             disabled={!url || generatingMetatags}
             title="Refresh preview from URL"
-          />
-          <Button
+          >
+            <Refresh2 className={cn("size-4", generatingMetatags && "animate-spin")} />
+          </AppIconButton>
+          <AppIconButton
             type="button"
-            variant="secondary"
-            icon={<Pen2 className="mx-px size-4" />}
             className="h-8 w-fit px-1.5"
             onClick={() => setShowOGModal(true)}
             title="Edit preview"
-          />
+          >
+            <Pen2 className="mx-px size-4" />
+          </AppIconButton>
         </div>
         <OGPreview
           title={title}

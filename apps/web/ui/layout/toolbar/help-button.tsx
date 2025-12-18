@@ -33,7 +33,7 @@ export function HelpButton({
             }
             setIsOpen((o) => !o);
           }}
-          className="animate-fade-in font-lg relative h-12 w-12 overflow-hidden rounded-full border border-neutral-100 bg-white shadow-md active:bg-neutral-50"
+          className="animate-fade-in relative h-10 w-10 overflow-hidden rounded-lg bg-white transition-colors hover:bg-neutral-50 active:bg-neutral-100"
         >
           <AnimatePresence>
             <motion.div

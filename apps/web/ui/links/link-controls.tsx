@@ -5,8 +5,9 @@ import useWorkspace from "@/lib/swr/use-workspace";
 import { ExpandedLinkProps } from "@/lib/types";
 import { useArchiveLinkModal } from "@/ui/modals/archive-link-modal";
 import { useDeleteLinkModal } from "@/ui/modals/delete-link-modal";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 import {
-  Button,
   IconMenu,
   PenWriting,
   Popover,
@@ -209,111 +210,143 @@ export function LinkControls({
           <div className="w-full sm:w-48">
             <div className="grid gap-px p-2">
               {options.includes("edit") && (
-                <Button
-                  text="Edit"
-                  variant="outline"
+                <AppButton
+                  type="button"
+                  variant="secondary"
+                  size="sm"
                   onClick={() => {
                     setOpenPopover(false);
                     openLinkBuilder();
                   }}
-                  icon={<PenWriting className="size-4" />}
-                  shortcut="E"
                   className="h-9 px-2 font-medium"
-                  disabledTooltip={
+                  disabled={!canManageLink}
+                  title={
                     !canManageLink
                       ? "You don't have permission to update this link."
                       : undefined
                   }
-                />
+                >
+                  <PenWriting className="mr-2 size-4" />
+                  <span className="flex-1 text-left">Edit</span>
+                  <kbd className="rounded border border-neutral-100 bg-white px-1.5 py-px text-[0.625rem] text-neutral-600">
+                    E
+                  </kbd>
+                </AppButton>
               )}
               {options.includes("qr") && (
-                <Button
-                  text="QR Code"
-                  variant="outline"
+                <AppButton
+                  type="button"
+                  variant="secondary"
+                  size="sm"
                   onClick={() => {
                     setOpenPopover(false);
                     setShowLinkQRModal(true);
                   }}
-                  icon={<QRCode className="size-4" />}
-                  shortcut="Q"
                   className="h-9 px-2 font-medium"
-                />
+                >
+                  <QRCode className="mr-2 size-4" />
+                  <span className="flex-1 text-left">QR Code</span>
+                  <kbd className="rounded border border-neutral-100 bg-white px-1.5 py-px text-[0.625rem] text-neutral-600">
+                    Q
+                  </kbd>
+                </AppButton>
               )}
               {options.includes("id") && (
-                <Button
-                  text="Copy Link ID"
-                  variant="outline"
+                <AppButton
+                  type="button"
+                  variant="secondary"
+                  size="sm"
                   onClick={() => copyLinkId()}
-                  icon={
-                    copiedLinkId ? (
-                      <CircleCheck className="size-4" />
-                    ) : (
-                      <Copy className="size-4" />
-                    )
-                  }
-                  shortcut="I"
                   className="h-9 px-2 font-medium"
-                />
+                >
+                  {copiedLinkId ? (
+                    <CircleCheck className="mr-2 size-4" />
+                  ) : (
+                    <Copy className="mr-2 size-4" />
+                  )}
+                  <span className="flex-1 text-left">Copy Link ID</span>
+                  <kbd className="rounded border border-neutral-100 bg-white px-1.5 py-px text-[0.625rem] text-neutral-600">
+                    I
+                  </kbd>
+                </AppButton>
               )}
               {options.includes("duplicate") && (
-                <Button
-                  text="Duplicate"
-                  variant="outline"
+                <AppButton
+                  type="button"
+                  variant="secondary"
+                  size="sm"
                   onClick={() => {
                     setOpenPopover(false);
                     setShowDuplicateLinkModal(true);
                   }}
-                  icon={<CopyPlus className="size-4" />}
-                  shortcut="D"
                   className="h-9 px-2 font-medium"
-                  disabledTooltip={
+                  disabled={!canManageLink}
+                  title={
                     !canManageLink
                       ? "You don't have permission to duplicate this link."
                       : undefined
                   }
-                />
+                >
+                  <CopyPlus className="mr-2 size-4" />
+                  <span className="flex-1 text-left">Duplicate</span>
+                  <kbd className="rounded border border-neutral-100 bg-white px-1.5 py-px text-[0.625rem] text-neutral-600">
+                    D
+                  </kbd>
+                </AppButton>
               )}
             </div>
-            <div className="border-t border-neutral-200" />
+            <div className="border-t border-neutral-100" />
             <div className="grid gap-px p-2">
               {options.includes("move") &&
                 Boolean(flags?.linkFolders && foldersCount) && (
-                  <Button
-                    text="Move"
-                    variant="outline"
-                    shortcut="M"
+                  <AppButton
+                    type="button"
+                    variant="secondary"
+                    size="sm"
                     className="h-9 px-2 font-medium"
-                    icon={
-                      <FolderBookmark className="size-4 text-neutral-600" />
-                    }
                     onClick={() => {
                       setOpenPopover(false);
                       setShowMoveLinkToFolderModal(true);
                     }}
-                    disabledTooltip={
+                    disabled={!canManageLink}
+                    title={
                       !canManageLink
                         ? "You don't have permission to move this link to another folder."
                         : undefined
                     }
-                  />
+                  >
+                    <FolderBookmark className="mr-2 size-4 text-neutral-600" />
+                    <span className="flex-1 text-left">Move</span>
+                    <kbd className="rounded border border-neutral-100 bg-white px-1.5 py-px text-[0.625rem] text-neutral-600">
+                      M
+                    </kbd>
+                  </AppButton>
                 )}
               {options.includes("archive") && (
-                <Button
-                  text={link.archived ? "Unarchive" : "Archive"}
-                  variant="outline"
+                <AppButton
+                  type="button"
+                  variant="secondary"
+                  size="sm"
                   onClick={() => {
                     setOpenPopover(false);
                     setShowArchiveLinkModal(true);
                   }}
-                  icon={<BoxArchive className="size-4" />}
-                  shortcut="A"
                   className="h-9 px-2 font-medium"
-                  disabledTooltip={
+                  disabled={!canManageLink}
+                  title={
                     !canManageLink
                       ? "You don't have permission to archive this link."
                       : undefined
                   }
-                />
+                >
+                  <BoxArchive className="mr-2 size-4" />
+                  <span className="flex-1 text-left">
+                    {link.archived ? "Unarchive" : "Archive"}
+                  </span>
+                  <kbd className="rounded border border-neutral-100 bg-white px-1.5 py-px text-[0.625rem] text-neutral-600">
+                    A
+                  </kbd>
+                </AppButton>
               )}
               {/* {options.includes("transfer") && (
                 <Button
@@ -340,18 +373,17 @@ export function LinkControls({
                 />
               )} */}
               {options.includes("delete") && (
-                <Button
-                  text="Delete"
-                  variant="danger-outline"
+                <AppButton
+                  type="button"
+                  variant="secondary"
+                  size="sm"
                   onClick={() => {
                     setOpenPopover(false);
                     setShowDeleteLinkModal(true);
                   }}
-                  icon={<Delete className="size-4" />}
-                  shortcut="X"
-                  className="h-9 px-2 font-medium"
+                  className="h-9 px-2 font-medium text-red-600 hover:bg-red-50"
                   disabled={isRootLink || isProgramLink}
-                  disabledTooltip={
+                  title={
                     !canManageLink
                       ? "You don't have permission to delete this link."
                       : isRootLink
@@ -360,7 +392,13 @@ export function LinkControls({
                           ? "You can't delete a link that's part of a program."
                           : undefined
                   }
-                />
+                >
+                  <Delete className="mr-2 size-4" />
+                  <span className="flex-1 text-left">Delete</span>
+                  <kbd className="rounded border border-neutral-100 bg-white px-1.5 py-px text-[0.625rem] text-neutral-600">
+                    X
+                  </kbd>
+                </AppButton>
               )}
 
               {options.includes("ban") &&
@@ -382,18 +420,13 @@ export function LinkControls({
         openPopover={openPopover}
         setOpenPopover={setOpenPopover}
       >
-        <Button
-          variant="secondary"
-          className={cn(
-            "h-8 px-1.5 outline-none transition-all duration-200",
-            "border-transparent data-[state=open]:border-neutral-500 sm:group-hover/card:data-[state=closed]:border-neutral-200",
-            className,
-          )}
-          icon={<ThreeDots className={cn("size-5 shrink-0", iconClassName)} />}
-          onClick={() => {
-            setOpenPopover(!openPopover);
-          }}
-        />
+        <AppIconButton
+          type="button"
+          className={cn("h-8 w-8", className)}
+          onClick={() => setOpenPopover(!openPopover)}
+        >
+          <ThreeDots className={cn("size-5 shrink-0", iconClassName)} />
+        </AppIconButton>
       </Popover>
     </div>
   );

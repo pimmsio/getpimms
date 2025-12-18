@@ -64,9 +64,14 @@ export const withWorkspace = (
   return withAxiom(
     async (
       req: AxiomRequest,
-      { params = {} }: { params: Record<string, string> | undefined },
+      {
+        params,
+      }: {
+        params?: Record<string, string> | Promise<Record<string, string>>;
+      } = {},
     ) => {
       const searchParams = getSearchParams(req.url);
+      const resolvedParams = await Promise.resolve(params ?? {});
 
       let apiKey: string | undefined = undefined;
       let headers = {};
@@ -93,12 +98,10 @@ export const withWorkspace = (
         const isRestrictedToken = apiKey?.startsWith("pimms_");
 
         const idOrSlug =
-          params?.idOrSlug ||
+          resolvedParams?.idOrSlug ||
           searchParams.workspaceId ||
-          params?.slug ||
+          resolvedParams?.slug ||
           searchParams.projectSlug;
-
-        console.log("idOrSlug", idOrSlug);
 
         /*
           if there's no workspace ID or slug and it's not a restricted token:
@@ -115,7 +118,7 @@ export const withWorkspace = (
             // @ts-expect-error
             return await handler({
               req,
-              params,
+              params: resolvedParams,
               searchParams,
               headers,
             });
@@ -361,7 +364,7 @@ export const withWorkspace = (
           // TODO: Remove this once Folders goes GA
           flags = {
             ...flags,
-            linkFolders: flags.linkFolders || workspace.partnersEnabled,
+            linkFolders: flags.linkFolders,
           };
 
           if (!flags[featureFlag]) {
@@ -396,7 +399,7 @@ export const withWorkspace = (
 
         return await handler({
           req,
-          params,
+          params: resolvedParams,
           searchParams,
           headers,
           session,
@@ -404,24 +407,31 @@ export const withWorkspace = (
           permissions,
         });
       } catch (error) {
-        req.log.error(error);
+        // Normalize unknown thrown values and never allow logging itself to crash the handler
+        const err = error instanceof Error ? error : new Error(String(error));
+        try {
+          (req as any).log?.error?.(err);
+        } catch {
+          // ignore
+        }
 
         // Log the conversion events for debugging purposes
         waitUntil(
           (async () => {
             const paths = ["/track/lead", "/track/sale"];
 
-            if (workspace && paths.includes(req.nextUrl.pathname)) {
+            const pathname = (req as any).nextUrl?.pathname;
+            if (workspace && pathname && paths.includes(pathname)) {
               logConversionEvent({
                 workspace_id: workspace.id,
-                path: req.nextUrl.pathname,
-                error: error.message,
+                path: pathname,
+                error: err.message,
               });
             }
           })(),
         );
 
-        return handleAndReturnErrorResponse(error, headers);
+        return handleAndReturnErrorResponse(err, headers);
       }
     },
   );

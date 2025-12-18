@@ -3,6 +3,7 @@ import { FlameIcon } from "../analytics/events/flame-icon";
 import { cn, formatDateTimeSmart } from "@dub/utils";
 import { ProgressBar } from "@dub/ui";
 import { ActivityHeatmap } from "./activity-heatmap";
+import { card, text } from "@/ui/design/tokens";
 
 interface LeadScoringDetailsProps {
   customerActivity?: CustomerActivityResponse;
@@ -14,12 +15,12 @@ interface LeadScoringDetailsProps {
 export function LeadScoringDetails({ customerActivity, clickHistory, customerId, isLoading }: LeadScoringDetailsProps) {
   if (isLoading) {
     return (
-      <div className="rounded-lg border border-neutral-200 bg-white p-6">
+      <div className={cn(card.base, "p-6")}>
         <div className="animate-pulse">
-          <div className="h-6 w-48 bg-neutral-200 rounded mb-4"></div>
+          <div className="mb-4 h-6 w-48 rounded bg-neutral-200"></div>
           <div className="space-y-4">
-            <div className="h-24 bg-neutral-100 rounded"></div>
-            <div className="h-32 bg-neutral-100 rounded"></div>
+            <div className="h-24 rounded bg-neutral-100"></div>
+            <div className="h-32 rounded bg-neutral-100"></div>
           </div>
         </div>
       </div>
@@ -28,9 +29,11 @@ export function LeadScoringDetails({ customerActivity, clickHistory, customerId,
 
   if (!customerActivity?.hot) {
     return (
-      <div className="rounded-lg border border-neutral-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-neutral-900 mb-4">Lead Scoring Analysis</h2>
-        <div className="text-center py-8 text-neutral-500">
+      <div className={cn(card.base, "p-6")}>
+        <h2 className={cn(text.sectionTitle, "mb-4 text-lg")}>
+          Lead Scoring
+        </h2>
+        <div className="py-8 text-center text-neutral-500">
           No scoring data available
         </div>
       </div>
@@ -91,12 +94,12 @@ export function LeadScoringDetails({ customerActivity, clickHistory, customerId,
   const tierInfo = getTierInfo(hot.tier);
 
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white p-4">
-      <div className="flex items-center justify-between mb-4">
+    <div className={cn(card.base, "p-4")}>
+      <div className="mb-4 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-neutral-900">Lead Scoring</h2>
+          <h2 className={cn(text.sectionTitle, "text-base")}>Lead Scoring</h2>
           {hot.lastHotScoreAt && (
-            <p className="text-xs text-neutral-500 mt-1">
+            <p className="mt-1 text-xs text-neutral-500">
               Last updated: {formatDateTimeSmart(hot.lastHotScoreAt)}
             </p>
           )}
@@ -108,8 +111,8 @@ export function LeadScoringDetails({ customerActivity, clickHistory, customerId,
               className="size-6" 
             />
           ) : (
-            <div className="size-6 rounded-full bg-gray-200 flex items-center justify-center">
-              <div className="size-2 rounded-full bg-gray-400" />
+            <div className="flex size-6 items-center justify-center rounded-full bg-neutral-200">
+              <div className="size-2 rounded-full bg-neutral-400" />
             </div>
           )}
           <span className="text-lg font-bold text-neutral-900">{score}/100</span>
@@ -123,16 +126,16 @@ export function LeadScoringDetails({ customerActivity, clickHistory, customerId,
       </div>
 
       {/* Activity Summary */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="text-center p-3 bg-neutral-50 rounded">
+      <div className="mb-4 grid grid-cols-3 gap-3">
+        <div className="rounded-lg bg-neutral-50 p-3 text-center">
           <div className="text-lg font-bold text-neutral-900">{clickCount}</div>
           <div className="text-xs text-neutral-500">{clickCount === 1 ? "Click" : "Clicks"}</div>
         </div>
-        <div className="text-center p-3 bg-neutral-50 rounded">
+        <div className="rounded-lg bg-neutral-50 p-3 text-center">
           <div className="text-lg font-bold text-neutral-900">{conversionEvents.length}</div>
           <div className="text-xs text-neutral-500">{conversionEvents.length === 1 ? "Lead" : "Leads"}</div>
         </div>
-        <div className="text-center p-3 bg-neutral-50 rounded">
+        <div className="rounded-lg bg-neutral-50 p-3 text-center">
           <div className="text-lg font-bold text-neutral-900">
             {clickHistory?.clickHistory ? new Set(clickHistory.clickHistory.map(click => new Date(click.timestamp).toDateString())).size : 0}
           </div>
@@ -151,7 +154,7 @@ export function LeadScoringDetails({ customerActivity, clickHistory, customerId,
       </div>
 
       {/* Simple Summary */}
-      <div className="p-3 bg-neutral-50 rounded">
+      <div className="rounded-lg bg-neutral-50 p-3">
         <div className="text-sm text-neutral-700">
           <strong>Summary:</strong> {clickCount} {clickCount === 1 ? "click" : "clicks"}, {conversionEvents.length} {conversionEvents.length === 1 ? "conversion" : "conversions"} across {clickHistory?.clickHistory ? new Set(clickHistory.clickHistory.map(click => new Date(click.timestamp).toDateString())).size : 0} {clickHistory?.clickHistory && new Set(clickHistory.clickHistory.map(click => new Date(click.timestamp).toDateString())).size === 1 ? "day" : "days"}. {hot.tier >= 2 ? "High engagement level." : hot.tier === 1 ? "Moderate engagement." : "Limited engagement so far."}
         </div>

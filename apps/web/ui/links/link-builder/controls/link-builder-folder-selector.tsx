@@ -20,8 +20,9 @@ export function LinkBuilderFolderSelector() {
             shouldDirty: true,
           });
         }}
-        buttonClassName="w-full min-w-0 bg-transparent h-10 md:h-8 md:pl-1 rounded"
-        buttonTextClassName="text-sm md:text-sm font-medium"
+        // Let FolderDropdown own the unified trigger styling (app-btn-secondary)
+        buttonClassName="w-full"
+        buttonTextClassName="text-sm font-medium"
         iconClassName="size-3"
         selectedFolderId={folderId ?? undefined}
         loadingPlaceholder={
