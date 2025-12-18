@@ -44,8 +44,15 @@ export function WorkspaceDropdown() {
     );
 
     if (slug && workspaces && selectedWorkspace) {
+      // Display "your workspace" for auto-created workspaces
+      const displayName =
+        (selectedWorkspace.store as any)?.autoWorkspace === true
+          ? "your workspace"
+          : selectedWorkspace.name;
+
       return {
         ...selectedWorkspace,
+        name: displayName,
         image:
           selectedWorkspace.logo || `https://avatar.vercel.sh/${selectedWorkspace.id}`,
       };
@@ -257,8 +264,11 @@ function WorkspaceList({
             </p>
           </div>
           <div className="flex flex-col gap-0.5">
-            {workspaces.map(({ id, name, slug, logo, plan }) => {
+            {workspaces.map(({ id, name, slug, logo, plan, store }) => {
               const isActive = selected.slug === slug;
+              // Display "your workspace" for auto-created workspaces
+              const displayName =
+                (store as any)?.autoWorkspace === true ? "your workspace" : name;
               return (
                 <Link
                   key={slug}
@@ -281,7 +291,7 @@ function WorkspaceList({
                   />
                   <div>
                     <span className="block truncate text-sm leading-5 text-neutral-900 sm:max-w-[140px]">
-                      {name}
+                      {displayName}
                     </span>
                     {slug !== "/" && (
                       <div

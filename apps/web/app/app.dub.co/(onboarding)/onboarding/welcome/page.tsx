@@ -29,7 +29,7 @@ export default function Welcome() {
             <div className="animate-slide-up-fade mt-10 flex justify-center [--offset:10px] [animation-delay:750ms] [animation-duration:1s] [animation-fill-mode:both]">
               <NextButton 
                 text="Get Started" 
-                step="workspace" 
+                step="tracking-familiarity" 
                 className="h-12 px-8 text-lg font-semibold"
               />
             </div>

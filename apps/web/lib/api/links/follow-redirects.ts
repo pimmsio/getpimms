@@ -1,3 +1,5 @@
+import { getApexDomain } from "@dub/utils";
+
 export const MAX_REDIRECTS = 3;
 const REQUEST_TIMEOUT = 5000; // 5 seconds
 
@@ -10,6 +12,7 @@ interface RedirectChainResult {
 
 /**
  * Follows a URL's redirect chain and returns all URLs in the chain.
+ * Redirects to the same domain (ignoring subdomain differences) are not counted.
  * 
  * @param url - The initial URL to check
  * @param maxRedirects - Maximum number of redirects to follow (default: 3)
@@ -23,6 +26,9 @@ export async function followRedirectChain(
   const visitedUrls = new Set<string>([url]);
   let currentUrl = url;
   let redirectCount = 0;
+  
+  // Get the apex domain of the original URL to ignore subdomain-only redirects
+  const originalApexDomain = getApexDomain(url);
 
   try {
     while (redirectCount < maxRedirects) {
@@ -77,10 +83,21 @@ export async function followRedirectChain(
             };
           }
 
+          // Check if redirect is to the same domain (ignoring subdomain differences)
+          const nextApexDomain = getApexDomain(nextUrl);
+          const isSameDomainRedirect = originalApexDomain && 
+            nextApexDomain && 
+            originalApexDomain.toLowerCase() === nextApexDomain.toLowerCase();
+
           urls.push(nextUrl);
           visitedUrls.add(nextUrl);
           currentUrl = nextUrl;
-          redirectCount++;
+          
+          // Only increment redirect count if it's not a same-domain redirect
+          // (e.g., abc.com => www.abc.com => abc.com should count as 0 redirects)
+          if (!isSameDomainRedirect) {
+            redirectCount++;
+          }
         } else {
           // Not a redirect - we've reached the final destination
           break;

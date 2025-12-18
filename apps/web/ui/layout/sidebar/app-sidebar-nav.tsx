@@ -7,6 +7,7 @@ import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useParams, usePathname } from "next/navigation";
 import { ReactNode, useMemo } from "react";
+import { FreeAccountSection } from "./free-account-section";
 import { HelpButton } from "./help-button";
 import { ReferralButton } from "./referral-button";
 import { SettingsLink } from "./settings-link";
@@ -338,6 +339,7 @@ export function AppSidebarNav({
       switcher={<WorkspaceDropdown />}
       bottom={
         <>
+          <FreeAccountSection />
           <div className="relative border-t border-neutral-200/80 pt-3">
             <div className="flex flex-col gap-2 px-3 pb-3 sm:gap-2.5">
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-2">

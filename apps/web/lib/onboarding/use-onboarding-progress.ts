@@ -55,9 +55,9 @@ export function useOnboardingProgress() {
       onboardingStep: "completed",
     });
 
-    // Remove onboarding query param and redirect to dashboard
+    // Redirect to today page after onboarding completion
     if (slug) {
-      router.push(`/${slug}?onboarded=true`);
+      router.push(`/${slug}/today?onboarded=true`);
     } else {
       router.push("/");
     }

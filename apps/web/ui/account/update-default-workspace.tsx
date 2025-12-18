@@ -13,16 +13,23 @@ export default function UpdateDefaultWorkspace() {
 
   const selectOptions = useMemo(() => {
     return workspaces
-      ? workspaces.map((workspace) => ({
-          id: workspace.slug,
-          value: workspace.name,
-          image: workspace.logo || `${OG_AVATAR_URL}${workspace.name}`,
-          disabled: workspace.slug === session?.user?.["defaultWorkspace"],
-          label:
-            workspace.slug === session?.user?.["defaultWorkspace"]
-              ? "Current"
-              : "",
-        }))
+      ? workspaces.map((workspace) => {
+          // Display "your workspace" for auto-created workspaces
+          const displayName =
+            (workspace.store as any)?.autoWorkspace === true
+              ? "your workspace"
+              : workspace.name;
+          return {
+            id: workspace.slug,
+            value: displayName,
+            image: workspace.logo || `${OG_AVATAR_URL}${workspace.name}`,
+            disabled: workspace.slug === session?.user?.["defaultWorkspace"],
+            label:
+              workspace.slug === session?.user?.["defaultWorkspace"]
+                ? "Current"
+                : "",
+          };
+        })
       : [];
   }, [workspaces, session]);
 

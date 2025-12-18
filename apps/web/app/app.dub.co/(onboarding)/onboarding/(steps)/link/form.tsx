@@ -92,7 +92,7 @@ export function Form() {
 
   return (
     <div className="flex flex-col gap-y-8">
-      <LaterButton next="plan" />
+      <LaterButton next="support" />
       <form
         className="flex w-full flex-col gap-y-6"
         onSubmit={handleSubmit(async (data) => {
@@ -138,7 +138,7 @@ export function Form() {
           const result = await res.json();
           posthog.capture("link_created", result);
 
-          await continueTo("plan");
+          await continueTo("support");
         })}
       >
         <DestinationUrlInput

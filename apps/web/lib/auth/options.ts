@@ -2,13 +2,17 @@ import { isBlacklistedEmail } from "@/lib/edge-config";
 import { jackson } from "@/lib/jackson";
 import { isStored, storage } from "@/lib/storage";
 import { UserProps } from "@/lib/types";
-import { ratelimit } from "@/lib/upstash";
+import { ratelimit, redis } from "@/lib/upstash";
 import { sendEmail } from "@dub/email";
 import { subscribe } from "@dub/email/resend/subscribe";
 import { LoginLink } from "@dub/email/templates/login-link";
 import { prisma } from "@dub/prisma";
 import { PrismaClient } from "@dub/prisma/client";
-import { CBE_DOMAIN } from "@dub/utils";
+import {
+  CBE_DOMAIN,
+  generateRandomString,
+  nanoid,
+} from "@dub/utils";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { waitUntil } from "@vercel/functions";
 import { User, type NextAuthOptions } from "next-auth";
@@ -20,6 +24,7 @@ import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 
 import { createId } from "../api/create-id";
+import { createWorkspaceId } from "../api/workspace-id";
 import { completeProgramApplications } from "../partners/complete-program-applications";
 import { FRAMER_API_HOST } from "./constants";
 import {
@@ -570,6 +575,69 @@ export const authOptions: NextAuthOptions = {
 
       // Complete any outstanding program applications
       waitUntil(completeProgramApplications(message.user.id));
+
+      // Auto-create workspace if user has no workspaces
+      waitUntil(
+        (async () => {
+          const userWorkspaces = await prisma.projectUsers.findFirst({
+            where: {
+              userId: user.id,
+            },
+          });
+
+          // Only create workspace if user has no workspaces
+          if (!userWorkspaces) {
+            // Generate random name and slug with "a_" prefix
+            const randomSuffix = nanoid(8).toLowerCase();
+            const workspaceName = `a_${randomSuffix}`;
+            const workspaceSlug = `a-${randomSuffix}`;
+
+            try {
+              const workspace = await prisma.project.create({
+                data: {
+                  id: createWorkspaceId(),
+                  name: workspaceName,
+                  slug: workspaceSlug,
+                  store: {
+                    autoWorkspace: true,
+                  },
+                  users: {
+                    create: {
+                      userId: user.id,
+                      role: "owner",
+                      notificationPreference: {
+                        create: {},
+                      },
+                    },
+                  },
+                  billingCycleStart: new Date().getDate(),
+                  invoicePrefix: generateRandomString(8),
+                  inviteCode: nanoid(24),
+                  defaultDomains: {
+                    create: {},
+                  },
+                },
+              });
+
+              // Set as default workspace if user doesn't have one
+              await prisma.user.update({
+                where: {
+                  id: user.id,
+                },
+                data: {
+                  defaultWorkspace: workspace.slug,
+                },
+              });
+              
+              // Set initial onboarding step so middleware redirects to dashboard with onboarding modal
+              await redis.set(`onboarding-step:${user.id}`, "tracking-familiarity");
+            } catch (error) {
+              // If slug collision, try again with different suffix
+              console.error("Failed to auto-create workspace:", error);
+            }
+          }
+        })(),
+      );
     },
   },
 };

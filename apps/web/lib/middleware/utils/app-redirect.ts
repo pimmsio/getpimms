@@ -3,8 +3,7 @@ import { RESERVED_SLUGS } from "@dub/utils";
 const APP_REDIRECTS = {
   "/account": "/account/settings",
   "/referrals": "/account/settings/referrals",
-  "/onboarding": "/onboarding/welcome",
-  "/welcome": "/onboarding/welcome",
+  "/welcome": "/onboarding/tracking-familiarity",
 };
 
 export const appRedirect = (path: string) => {
