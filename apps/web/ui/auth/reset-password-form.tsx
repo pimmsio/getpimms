@@ -2,10 +2,12 @@
 
 import z from "@/lib/zod";
 import { resetPasswordSchema } from "@/lib/zod/schemas/auth";
-import { Button, Input, Label } from "@dub/ui";
+import { Label } from "@dub/ui";
 import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { AppInput } from "@/ui/components/controls/app-input";
 
 export const ResetPasswordForm = () => {
   const router = useRouter();
@@ -48,7 +50,7 @@ export const ResetPasswordForm = () => {
 
         <div className="grid w-full max-w-sm items-center gap-2">
           <Label htmlFor="password">Password</Label>
-          <Input
+          <AppInput
             type="password"
             {...register("password")}
             required
@@ -67,7 +69,7 @@ export const ResetPasswordForm = () => {
 
         <div className="grid w-full max-w-sm items-center gap-2">
           <Label htmlFor="confirmPassword">Confirm Password</Label>
-          <Input
+          <AppInput
             type="password"
             {...register("confirmPassword")}
             required
@@ -84,12 +86,9 @@ export const ResetPasswordForm = () => {
           )}
         </div>
 
-        <Button
-          text="Reset Password"
-          type="submit"
-          loading={isSubmitting}
-          disabled={isSubmitting}
-        />
+        <AppButton type="submit" variant="primary" loading={isSubmitting} disabled={isSubmitting}>
+          Reset Password
+        </AppButton>
       </form>
     </>
   );

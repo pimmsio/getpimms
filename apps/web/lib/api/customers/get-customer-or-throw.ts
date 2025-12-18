@@ -11,9 +11,7 @@ export const getCustomerOrThrow = async (
     id: string;
     workspaceId: string;
   },
-  {
-    includeExpandedFields = false,
-  }: {
+  _opts: {
     includeExpandedFields?: boolean;
   } = {},
 ): Promise<CustomerWithLink> => {
@@ -28,27 +26,9 @@ export const getCustomerOrThrow = async (
           }
         : { id }),
     },
-    ...(includeExpandedFields
-      ? {
-          include: {
-            link: {
-              include: {
-                programEnrollment: {
-                  include: {
-                    program: {
-                      include: {
-                        defaultDiscount: true,
-                      },
-                    },
-                    partner: true,
-                    discount: true,
-                  },
-                },
-              },
-            },
-          },
-        }
-      : {}),
+    include: {
+      link: true,
+    },
   });
 
   if (!customer || customer.projectId !== workspaceId) {

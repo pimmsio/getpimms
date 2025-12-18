@@ -44,20 +44,62 @@ export function LinksRowSkeleton({
       )}
     >
       <div className="min-w-0 overflow-hidden">
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 animate-pulse rounded-full bg-neutral-200" />
-          <div className="min-w-0 flex-1">
-            <div className="h-4 w-40 animate-pulse rounded bg-neutral-200" />
-            <div className="mt-1 h-3.5 w-56 animate-pulse rounded bg-neutral-200" />
+        {/* Mimic LinkCell (variant: links-page) layout: logo + 2-line content */}
+        <div className="flex items-center gap-3 py-1">
+          <div className="group relative flex h-9 w-9 shrink-0 items-center justify-center outline-none sm:h-10 sm:w-10">
+            <div className="absolute inset-1 shrink-0 rounded-full border border-transparent bg-transparent" />
+            <div className="relative">
+              <div className="size-6 shrink-0 animate-pulse rounded-full bg-neutral-200 sm:size-7" />
+            </div>
+          </div>
+
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5 text-sm leading-tight">
+            {/* Line 1 */}
+            <div className="flex min-w-0 items-center gap-2 overflow-hidden">
+              <div className="h-4 w-40 max-w-[70%] shrink-0 animate-pulse rounded bg-neutral-200" />
+              <div className="hidden shrink-0 animate-pulse rounded bg-neutral-200/80 sm:block h-3 w-3" />
+              <div className="hidden min-w-0 max-w-[40%] shrink animate-pulse rounded bg-neutral-200 sm:block h-4 w-24" />
+            </div>
+            {/* Line 2 */}
+            <div className="flex min-w-0 items-center gap-2 overflow-hidden">
+              <div className="h-3 w-3 shrink-0 animate-pulse rounded bg-neutral-200" />
+              <div className="h-3.5 w-56 max-w-[80%] shrink-0 animate-pulse rounded bg-neutral-200" />
+              <div className="hidden shrink-0 animate-pulse rounded bg-neutral-200/80 sm:block h-3 w-3" />
+              <div className="hidden min-w-0 max-w-[40%] shrink animate-pulse rounded bg-neutral-200 sm:block h-3.5 w-20" />
+            </div>
           </div>
         </div>
-        {showUtmRow && <div className="mt-2 h-4 w-64 animate-pulse rounded bg-neutral-200" />}
+
+        {showUtmRow && (
+          <div className="mt-2 w-full overflow-x-auto">
+            <div className="flex min-w-max">
+              {Array.from({ length: 4 }).map((_, idx) => (
+                <div
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={idx}
+                  className={cn(
+                    "min-w-0 shrink-0 pr-2",
+                    "w-[60px] sm:w-[70px] lg:w-[76px] xl:w-[82px] 2xl:w-[96px]",
+                    idx !== 0 && "border-l border-neutral-200/70 pl-2",
+                  )}
+                >
+                  <div className="h-2.5 w-10 animate-pulse rounded bg-neutral-200" />
+                  <div className="mt-1 h-3 w-14 animate-pulse rounded bg-neutral-200" />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
       {showMetrics && (
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-[46px] animate-pulse rounded bg-neutral-200" />
-          <div className="h-8 w-[46px] animate-pulse rounded bg-neutral-200" />
-          <div className="h-8 w-[46px] animate-pulse rounded bg-neutral-200" />
+        <div className="shrink-0">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-[46px] animate-pulse rounded bg-neutral-200" />
+            <div className="h-6 w-px bg-neutral-200/70" />
+            <div className="h-8 w-[46px] animate-pulse rounded bg-neutral-200" />
+            <div className="h-6 w-px bg-neutral-200/70" />
+            <div className="h-8 w-[46px] animate-pulse rounded bg-neutral-200" />
+          </div>
         </div>
       )}
     </div>

@@ -1,11 +1,12 @@
 import { redirect } from "next/navigation";
 
-export default function OldWorkspaceTags({
+export default async function OldWorkspaceTags({
   params,
 }: {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }) {
-  redirect(`/${params.slug}/settings/library/tags`);
+  const { slug } = await params;
+  redirect(`/${slug}/settings/library/tags`);
 }

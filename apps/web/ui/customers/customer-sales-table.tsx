@@ -1,5 +1,4 @@
-import { PartnerEarningsResponse, SaleEvent } from "@/lib/types";
-import { StatusBadge } from "@dub/ui";
+import { SaleEvent } from "@/lib/types";
 import { currencyFormatter, formatDateTimeSmart } from "@dub/utils";
 import {
   flexRender,
@@ -7,7 +6,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import Link from "next/link";
-import { CommissionStatusBadges } from "../partners/commission-status-badges";
 
 export function CustomerSalesTable({
   sales,
@@ -15,34 +13,22 @@ export function CustomerSalesTable({
   isLoading,
   viewAllHref,
 }: {
-  sales?:
-    | Pick<SaleEvent, "timestamp" | "eventName" | "saleAmount">[]
-    | Pick<
-        PartnerEarningsResponse,
-        "createdAt" | "amount" | "earnings" | "status"
-      >[];
+  sales?: Pick<SaleEvent, "timestamp" | "eventName" | "saleAmount">[];
   totalSales?: number;
   isLoading?: boolean;
   viewAllHref?: string;
 }) {
-  const table = useReactTable<
-    | Pick<SaleEvent, "timestamp" | "eventName" | "saleAmount">
-    | Pick<
-        PartnerEarningsResponse,
-        "createdAt" | "amount" | "earnings" | "status"
-      >
-  >({
+  const table = useReactTable<Pick<SaleEvent, "timestamp" | "eventName" | "saleAmount">>({
     data: sales || [],
     columns: [
       {
         header: "Date",
-        accessorFn: (d) =>
-          new Date("timestamp" in d ? d.timestamp : d.createdAt),
+        accessorFn: (d) => new Date(d.timestamp),
         enableHiding: false,
         minSize: 100,
         cell: ({ getValue }) => <span>{formatDateTimeSmart(getValue())}</span>,
       },
-      ...(sales?.length && "eventName" in sales?.[0]
+      ...(sales?.length
         ? [
             {
               header: "Event",
@@ -52,7 +38,7 @@ export function CustomerSalesTable({
         : []),
       {
         header: "Amount",
-        accessorFn: (d) => ("saleAmount" in d ? d.saleAmount : d.amount),
+        accessorFn: (d) => d.saleAmount,
         cell: ({ getValue }) => (
           <span>
             {currencyFormatter(getValue() / 100, {
@@ -62,34 +48,6 @@ export function CustomerSalesTable({
           </span>
         ),
       },
-      ...(sales?.length && "earnings" in sales?.[0]
-        ? [
-            {
-              header: "Earnings",
-              accessorKey: "earnings",
-              cell: ({ getValue }) => (
-                <span>
-                  {currencyFormatter(getValue() / 100, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </span>
-              ),
-            },
-            {
-              header: "Status",
-              cell: ({ row }) => {
-                const badge = CommissionStatusBadges[row.original.status];
-
-                return (
-                  <StatusBadge icon={null} variant={badge.variant}>
-                    {badge.label}
-                  </StatusBadge>
-                );
-              },
-            },
-          ]
-        : []),
     ],
     getCoreRowModel: getCoreRowModel(),
   });

@@ -11,7 +11,7 @@ import { useIntersectionObserver } from "@dub/ui";
 import { Globe } from "@dub/ui/icons";
 import { cn, nFormatter } from "@dub/utils";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, type RefObject } from "react";
 import { FolderActions } from "./folder-actions";
 import { FolderIcon } from "./folder-icon";
 import { RequestFolderEditAccessButton } from "./request-edit-button";
@@ -83,7 +83,7 @@ export const FolderCard = ({ folder }: { folder: Folder }) => {
 function LinksCount({ folderId }: { folderId: string }) {
   const ref = useRef<HTMLDivElement>(null);
 
-  const entry = useIntersectionObserver(ref);
+  const entry = useIntersectionObserver(ref as unknown as RefObject<Element>);
   const isInView = entry?.isIntersecting;
 
   const { data: linkCount, loading } = useLinksCount({

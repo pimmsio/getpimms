@@ -13,7 +13,7 @@ export function NavButton() {
       variant="outline"
       onClick={() => setIsOpen((o) => !o)}
       icon={<LayoutSidebar className="size-4 text-neutral-600" />}
-      className="h-auto w-fit p-1 md:hidden border border-neutral-600 rounded-full ml-1"
+      className="ml-1 h-auto w-fit rounded-lg border border-neutral-300 p-1 md:hidden"
     />
   );
 }

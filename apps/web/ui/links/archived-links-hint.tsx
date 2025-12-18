@@ -1,10 +1,11 @@
 import useLinksCount from "@/lib/swr/use-links-count";
-import { Button, Tooltip } from "@dub/ui";
+import { Tooltip } from "@dub/ui";
 import { BoxArchive } from "@dub/ui/icons";
 import { pluralize } from "@dub/utils";
 import { useSearchParams } from "next/navigation";
 import { useContext } from "react";
 import { LinksDisplayContext } from "./links-display-provider";
+import { AppButton } from "@/ui/components/controls/app-button";
 
 export default function ArchivedLinksHint() {
   const searchParams = useSearchParams();
@@ -39,18 +40,20 @@ function ArchivedLinksHintHelper() {
                 {archivedCount === 1 && "es"} the applied filters
               </span>
               <div>
-                <Button
-                  className="h-6 px-2"
+                <AppButton
+                  size="sm"
                   variant="secondary"
-                  text="Show archived links"
+                  className="h-6 px-2 text-xs"
                   onClick={() => setShowArchived(true)}
-                />
+                >
+                  Show archived links
+                </AppButton>
               </div>
             </div>
           </div>
         }
       >
-        <div className="flex cursor-default items-center gap-1.5 rounded bg-neutral-100 px-2 py-0.5 text-sm font-medium text-neutral-950 hover:bg-neutral-200">
+        <div className="flex cursor-default items-center gap-1.5 rounded border border-neutral-200 bg-white px-2 py-0.5 text-sm font-medium text-neutral-950 transition-[box-shadow,border-color] hover:border-neutral-300">
           <BoxArchive className="h-3 w-3" />
           {archivedCount}
         </div>

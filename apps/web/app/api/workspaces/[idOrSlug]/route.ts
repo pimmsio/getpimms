@@ -43,7 +43,7 @@ export const GET = withWorkspace(
           // TODO: Remove this once Folders goes GA
           flags: {
             ...flags,
-            linkFolders: flags.linkFolders || workspace.partnersEnabled,
+            linkFolders: flags.linkFolders,
           },
         }),
       },

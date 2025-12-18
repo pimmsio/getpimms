@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, Gift, Icon, Popover, User } from "@dub/ui";
+import { Avatar, Icon, Popover, User } from "@dub/ui";
 import { cn } from "@dub/utils";
 import { LogOut } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
@@ -37,13 +37,6 @@ export default function UserDropdown() {
             href="/account/settings"
             onClick={() => setOpenPopover(false)}
           />
-          {/* <UserOption
-            as={Link}
-            label="Refer and earn"
-            icon={Gift}
-            href="/account/settings/referrals"
-            onClick={() => setOpenPopover(false)}
-          /> */}
           <UserOption
             as="button"
             type="button"
@@ -64,8 +57,9 @@ export default function UserDropdown() {
       <button
         onClick={() => setOpenPopover(!openPopover)}
         className={cn(
-          "group relative rounded-full ring-offset-1 ring-offset-neutral-100 transition-all hover:ring-0 hover:ring-black/10 active:ring-black/15 data-[state='open']:ring-black/15",
-          "outline-none focus-visible:ring-0 focus-visible:ring-black/50",
+          // Button shape should match the app controls (not a pill).
+          "group relative rounded-lg transition-colors hover:bg-neutral-50 active:bg-neutral-100",
+          "outline-none focus-visible:ring-2 focus-visible:ring-neutral-300",
         )}
       >
         {session?.user ? (

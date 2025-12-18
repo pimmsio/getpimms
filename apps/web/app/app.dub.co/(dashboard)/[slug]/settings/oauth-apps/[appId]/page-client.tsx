@@ -10,14 +10,14 @@ import AddOAuthAppForm from "@/ui/oauth-apps/add-edit-app-form";
 import OAuthAppCredentials from "@/ui/oauth-apps/oauth-app-credentials";
 import { BackLink } from "@/ui/shared/back-link";
 import { ThreeDots } from "@/ui/shared/icons";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 import {
   BlurImage,
-  Button,
-  MaxWidthWrapper,
   Popover,
   TokenAvatar,
 } from "@dub/ui";
-import { fetcher } from "@dub/utils";
+import { cn, fetcher } from "@dub/utils";
 import { RefreshCcw, Trash, Upload } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { notFound, useSearchParams } from "next/navigation";
@@ -63,110 +63,115 @@ export default function OAuthAppManagePageClient({ appId }: { appId: string }) {
   }
 
   return (
-    <>
-      <MaxWidthWrapper className="grid max-w-screen-lg gap-8">
-        <RemoveOAuthAppModal />
-        <SubmitOAuthAppModal />
-        <BackLink href={`/${slug}/settings/oauth-apps`}>
-          Back to OAuth Apps
-        </BackLink>
-        <div className="flex justify-between gap-2 sm:items-center">
-          {isLoading ? (
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="w-fit flex-none rounded border border-neutral-100 bg-gradient-to-t from-neutral-100 p-2">
-                <TokenAvatar id="placeholder-oauth-app" className="size-8" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <div className="h-3 w-20 rounded-full bg-neutral-100"></div>
-                <div className="h-3 w-40 rounded-full bg-neutral-100"></div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="w-fit flex-none rounded border border-neutral-100 bg-gradient-to-t from-neutral-100 p-2">
-                {oAuthApp?.logo ? (
-                  <BlurImage
-                    src={oAuthApp.logo}
-                    alt={`Logo for ${oAuthApp.name}`}
-                    className="size-8 rounded-full border border-neutral-100"
-                    width={20}
-                    height={20}
-                  />
-                ) : (
-                  <TokenAvatar id={oAuthApp?.clientId!} className="size-8" />
-                )}
-              </div>
-              <div>
-                <p className="font-semibold text-neutral-700">
-                  {oAuthApp?.name}
-                </p>
-                <p className="text-pretty text-sm text-neutral-500">
-                  {oAuthApp?.description}
-                </p>
-              </div>
-            </div>
-          )}
+    <div className="mx-auto w-full max-w-screen-lg space-y-6">
+      <RemoveOAuthAppModal />
+      <SubmitOAuthAppModal />
 
-          <Popover
-            content={
-              <div className="grid w-screen gap-px p-2 sm:w-48">
-                <Button
-                  text={isPending ? "Regenerating..." : "Regenerate secret"}
-                  variant="outline"
-                  icon={<RefreshCcw className="h-4 w-4" />}
-                  className="h-9 justify-start px-2 font-medium"
-                  disabled={isPending}
-                  onClick={async () => {
-                    await executeAsync({
-                      workspaceId: workspaceId!,
-                      appId,
-                    });
-                    setOpenPopover(false);
-                  }}
+      <BackLink href={`/${slug}/settings/oauth-apps`}>Back to OAuth Apps</BackLink>
+
+      <div className="flex justify-between gap-2 sm:items-center">
+        {isLoading ? (
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="w-fit flex-none rounded-lg bg-neutral-50 p-2">
+              <TokenAvatar id="placeholder-oauth-app" className="size-8" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <div className="h-3 w-20 rounded-full bg-neutral-100"></div>
+              <div className="h-3 w-40 rounded-full bg-neutral-100"></div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="w-fit flex-none rounded-lg bg-neutral-50 p-2">
+              {oAuthApp?.logo ? (
+                <BlurImage
+                  src={oAuthApp.logo}
+                  alt={`Logo for ${oAuthApp.name}`}
+                  className="size-8 rounded-full"
+                  width={20}
+                  height={20}
                 />
-                {!oAuthApp?.verified && (
-                  <Button
-                    text="Submit for review"
-                    variant="outline"
-                    icon={<Upload className="h-4 w-4" />}
-                    className="h-9 justify-start px-2"
-                    onClick={() => {
-                      setOpenPopover(false);
-                      setShowSubmitOAuthAppModal(true);
-                    }}
-                  />
-                )}
-                <Button
-                  text="Remove application"
-                  variant="danger-outline"
-                  icon={<Trash className="h-4 w-4" />}
-                  className="h-9 justify-start px-2"
+              ) : (
+                <TokenAvatar id={oAuthApp?.clientId!} className="size-8" />
+              )}
+            </div>
+            <div>
+              <p className="font-semibold text-neutral-700">{oAuthApp?.name}</p>
+              <p className="text-pretty text-sm text-neutral-500">
+                {oAuthApp?.description}
+              </p>
+            </div>
+          </div>
+        )}
+
+        <Popover
+          content={
+            <div className="grid w-screen gap-px p-2 sm:w-48">
+              <AppButton
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="w-full justify-start px-2 font-medium"
+                disabled={isPending}
+                onClick={async () => {
+                  await executeAsync({
+                    workspaceId: workspaceId!,
+                    appId,
+                  });
+                  setOpenPopover(false);
+                }}
+              >
+                <RefreshCcw className="mr-2 h-4 w-4" />
+                {isPending ? "Regenerating..." : "Regenerate secret"}
+              </AppButton>
+              {!oAuthApp?.verified && (
+                <AppButton
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="w-full justify-start px-2"
                   onClick={() => {
-                    setShowRemoveOAuthAppModal(true);
+                    setOpenPopover(false);
+                    setShowSubmitOAuthAppModal(true);
                   }}
-                />
-              </div>
-            }
-            align="end"
-            openPopover={openPopover}
-            setOpenPopover={setOpenPopover}
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  Submit for review
+                </AppButton>
+              )}
+              <AppButton
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="w-full justify-start px-2 text-red-600 hover:bg-red-50"
+                onClick={() => {
+                  setShowRemoveOAuthAppModal(true);
+                }}
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                Remove application
+              </AppButton>
+            </div>
+          }
+          align="end"
+          openPopover={openPopover}
+          setOpenPopover={setOpenPopover}
+        >
+          <AppIconButton
+            type="button"
+            className="h-9 w-9"
+            onClick={() => setOpenPopover(!openPopover)}
+            disabled={!!permissionsError}
+            title={typeof permissionsError === "string" ? permissionsError : undefined}
           >
-            <Button
-              variant="outline"
-              className="flex w-8 rounded border border-neutral-100 px-2 transition-[border-color] duration-200"
-              icon={<ThreeDots className="h-5 w-5 shrink-0 text-neutral-500" />}
-              onClick={() => setOpenPopover(!openPopover)}
-              {...(permissionsError && {
-                disabledTooltip: permissionsError,
-              })}
-            />
-          </Popover>
-        </div>
-      </MaxWidthWrapper>
+            <ThreeDots className="h-5 w-5 shrink-0 text-neutral-500" />
+          </AppIconButton>
+        </Popover>
+      </div>
 
-      <MaxWidthWrapper className="max-w-screen-lg space-y-6">
+      <div className="border-t border-neutral-100 pt-6">
         {oAuthApp && (
-          <>
+          <div className="space-y-6">
             <OAuthAppCredentials
               clientId={oAuthApp.clientId}
               clientSecret={
@@ -176,11 +181,10 @@ export default function OAuthAppManagePageClient({ appId }: { appId: string }) {
               }
               partialClientSecret={oAuthApp.partialClientSecret}
             />
-            <hr />
             <AddOAuthAppForm oAuthApp={oAuthApp} />
-          </>
+          </div>
         )}
-      </MaxWidthWrapper>
-    </>
+      </div>
+    </div>
   );
 }

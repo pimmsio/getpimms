@@ -3,6 +3,7 @@
 import { cn, getUrlFromString, getParamsFromURL } from "@dub/utils";
 import { useState } from "react";
 import { toast } from "sonner";
+import { AppTextarea } from "@/ui/components/controls/app-textarea";
 
 export function BulkDestinationUrlInput({
   urls,
@@ -77,12 +78,12 @@ export function BulkDestinationUrlInput({
         <label className="block text-sm font-medium text-neutral-900">
           Destination URLs
         </label>
-        <textarea
+        <AppTextarea
           value={urlsText}
           onChange={(e) => setUrlsText(e.target.value)}
           onBlur={handleBlur}
           placeholder="Enter URLs, one per line"
-          className="h-48 w-full rounded-lg border border-neutral-300 p-3 text-sm font-mono placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0"
+          className="h-48 font-mono"
           autoFocus
         />
         <p className="text-xs text-neutral-500">
@@ -115,7 +116,7 @@ export function BulkDestinationUrlInput({
                 {urls[0]}
               </span>
               {urls.length > 1 && (
-                <span className="shrink-0 rounded-full bg-neutral-900 px-2 py-0.5 text-xs font-medium text-white">
+                <span className="shrink-0 rounded-md bg-neutral-900 px-2 py-0.5 text-xs font-medium text-white">
                   +{urls.length - 1}
                 </span>
               )}

@@ -21,7 +21,8 @@ export async function verifyPassword(_prevState: any, data: FormData) {
 
   if (validPassword) {
     // if the password is valid, set the cookie
-    cookies().set(`pimms_password_${link.id}`, password, {
+    const cookieStore = await cookies();
+    cookieStore.set(`pimms_password_${link.id}`, password, {
       path: `/${link.key}`,
       httpOnly: true,
       secure: true,

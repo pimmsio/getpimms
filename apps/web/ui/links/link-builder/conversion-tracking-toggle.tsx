@@ -35,7 +35,7 @@ export const ConversionTrackingToggle = memo(() => {
     <label className="flex items-center justify-between">
       <div className="flex items-center gap-2">
         {isNew && (
-          <div className="rounded-full border border-green-200 bg-green-100 px-2 py-0.5 text-[0.625rem] uppercase leading-none text-green-900">
+          <div className="rounded-md border border-green-200 bg-green-50 px-2 py-0.5 text-[0.625rem] uppercase leading-none text-green-900">
             New
           </div>
         )}

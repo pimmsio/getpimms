@@ -1,11 +1,12 @@
 import { redirect } from "next/navigation";
 
-export default function OldWorkspaceDomains({
+export default async function OldWorkspaceDomains({
   params,
 }: {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }) {
-  redirect(`/${params.slug}/settings/domains`);
+  const { slug } = await params;
+  redirect(`/${slug}/settings/domains`);
 }

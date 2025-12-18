@@ -4,15 +4,16 @@ import { redirect } from "next/navigation";
 export default async function OldLinksStatsPage({
   params,
 }: {
-  params: {
+  params: Promise<{
     key: string;
-  };
+  }>;
 }) {
+  const { key } = await params;
   const defaultWorkspace = await getDefaultWorkspace();
   if (!defaultWorkspace) {
     redirect("/");
   }
   redirect(
-    `/${defaultWorkspace.slug}/analytics?domain=pim.ms&key=${params.key}`,
+    `/${defaultWorkspace.slug}/analytics?domain=pim.ms&key=${key}`,
   );
 }

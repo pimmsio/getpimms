@@ -2,8 +2,6 @@ import { RESERVED_SLUGS } from "@dub/utils";
 
 const APP_REDIRECTS = {
   "/account": "/account/settings",
-  "/referrals": "/account/settings/referrals",
-  "/welcome": "/onboarding/tracking-familiarity",
 };
 
 export const appRedirect = (path: string) => {
@@ -24,16 +22,6 @@ export const appRedirect = (path: string) => {
   const customersRegex = /^\/([^\/]+)\/customers$/;
   if (customersRegex.test(path))
     return path.replace(customersRegex, "/$1/events?event=leads");
-
-  // Redirect "programs/[programId]/settings" to "programs/[programId]/settings/rewards" (first tab)
-  const programSettingsRegex = /\/programs\/([^\/]+)\/settings$/;
-  if (programSettingsRegex.test(path))
-    return path.replace(programSettingsRegex, "/programs/$1/settings/rewards");
-
-  // Redirect "/[slug]/programs/[programId]/sales" to "/[slug]/programs/[programId]/commissions"
-  const salesRegex = /^\/([^\/]+)\/programs\/([^\/]+)\/sales$/;
-  if (salesRegex.test(path))
-    return path.replace(salesRegex, "/$1/programs/$2/commissions");
 
   return null;
 };

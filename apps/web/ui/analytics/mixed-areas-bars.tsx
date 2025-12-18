@@ -52,9 +52,6 @@ function BarRounded({
     <path
       d={path}
       fill={fill}
-      style={{
-        filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1))',
-      }}
     />
   );
 }
@@ -355,9 +352,6 @@ export function MixedAreasAndBars() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     fill="transparent"
-                    style={{
-                      filter: 'drop-shadow(0 2px 4px rgba(57, 112, 255, 0.2))',
-                    }}
                   />
                 )}
               </Area>

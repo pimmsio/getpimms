@@ -1,6 +1,6 @@
 import { cn, truncate } from "@dub/utils";
 import { Command, useCommandState } from "cmdk";
-import { ChevronDown, ListFilter } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import {
   Fragment,
   PropsWithChildren,
@@ -56,10 +56,13 @@ export function FilterSelect({
 
   // Track main list container/dimensions to maintain size for loading spinner
   const listContainer = useRef<HTMLDivElement>(null);
-  const listDimensions = useRef<{
+  const listDimensions = useRef<
+    | {
     width: number;
     height: number;
-  }>();
+  }
+    | undefined
+  >(undefined);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -193,7 +196,7 @@ export function FilterSelect({
               selectedFilter?.multiple ? customFilter : undefined
             }
           >
-            <div className="flex items-center overflow-hidden rounded-t-lg border-b border-neutral-200">
+            <div className="flex items-center overflow-hidden rounded-t-lg border-b border-neutral-100 bg-white">
               <CommandInput
                 placeholder={`${selectedFilter?.label || "Filter"}...`}
                 value={search}
@@ -245,7 +248,7 @@ export function FilterSelect({
                           onSelect={() => openFilter(filter.key)}
                         />
                         {filter.separatorAfter && (
-                          <Command.Separator className="-mx-1 my-1 border-b border-neutral-200" />
+                          <Command.Separator className="-mx-1 my-1 border-b border-neutral-100" />
                         )}
                       </Fragment>
                     ))
@@ -302,11 +305,11 @@ export function FilterSelect({
       <button
         type="button"
         className={cn(
-          "group flex h-10 cursor-pointer appearance-none items-center rounded-full border px-4 text-sm font-medium outline-none transition-all duration-200",
-          "border-neutral-200 bg-white text-neutral-900 placeholder-neutral-400",
-          "hover:border-neutral-300 hover:shadow-sm",
-          "focus-visible:border-neutral-400 focus-visible:ring-2 focus-visible:ring-blue-500/10",
-          "data-[state=open]:border-neutral-400 data-[state=open]:ring-2 data-[state=open]:ring-blue-500/10",
+          // Minimal trigger: match the app’s control sizing + focus ring; avoid heavy borders.
+          "group inline-flex h-10 w-fit cursor-pointer appearance-none items-center justify-between rounded-md border border-neutral-200 bg-white px-3 text-sm font-medium text-neutral-700 outline-none transition-colors",
+          "hover:border-neutral-300 hover:bg-neutral-50 active:bg-neutral-100",
+          "focus-visible:ring-2 focus-visible:ring-neutral-300",
+          "data-[state=open]:ring-2 data-[state=open]:ring-neutral-300",
           hideIcon ? "gap-x-2" : "gap-x-2.5",
           className,
         )}
@@ -314,14 +317,11 @@ export function FilterSelect({
           minWidth: activeFilters?.length && !hideIcon ? '100px' : activeFilters?.length && hideIcon ? '85px' : undefined,
         }}
       >
-        {!hideIcon && (
-          <ListFilter className="size-4 shrink-0 text-neutral-600" />
-        )}
-        <span className="shrink-0 whitespace-nowrap text-left text-neutral-900">
+        <span className="shrink-0 whitespace-nowrap text-left text-neutral-700">
           {children ?? "Filter"}
         </span>
         {activeFilters?.length ? (
-          <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[0.625rem] font-bold text-white shadow-sm ml-1">
+          <div className="ml-1 flex size-5 shrink-0 items-center justify-center rounded-md bg-neutral-900 text-[0.625rem] font-bold text-white">
             {activeFilters.length}
           </div>
         ) : (
@@ -357,7 +357,7 @@ const CommandInput = (
         return rest;
       })()}
       size={1}
-      className="grow border-0 py-3 pl-4 pr-2 outline-none placeholder:text-neutral-400 focus:ring-0 sm:text-sm"
+      className="h-10 grow border-0 bg-white px-3 text-sm text-neutral-900 outline-none placeholder:text-neutral-400 focus-visible:ring-2 focus-visible:ring-neutral-300"
       onKeyDown={(e) => {
         props.onKeyDown?.(e);
 
@@ -387,9 +387,9 @@ const FilterScroll = forwardRef(
         >
           {children}
         </div>
-        {/* Bottom scroll fade */}
+        {/* Bottom scroll fade (no gradients; keep it subtle) */}
         <div
-          className="pointer-events-none absolute bottom-0 left-0 hidden h-16 w-full bg-gradient-to-t from-white sm:block"
+          className="pointer-events-none absolute bottom-0 left-0 hidden h-12 w-full bg-white/80 sm:block"
           style={{ opacity: 1 - Math.pow(scrollProgress, 2) }}
         ></div>
       </>

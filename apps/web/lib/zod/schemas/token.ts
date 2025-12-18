@@ -1,6 +1,5 @@
 import { SCOPES } from "@/lib/api/tokens/scopes";
 import z from "@/lib/zod";
-import { createPartnerSchema } from "./partners";
 
 // Schema to validate the request body when creating a new token
 export const createTokenSchema = z.object({
@@ -40,25 +39,4 @@ export const tokenSchema = z.object({
     image: z.string().nullable(),
     isMachine: z.boolean(),
   }),
-});
-
-export const createReferralsEmbedTokenSchema = z
-  .object({
-    programId: z.string(),
-    partnerId: z.string().optional(),
-    tenantId: z.string().optional(),
-    partner: createPartnerSchema.omit({ programId: true }).optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (!data.partnerId && !data.tenantId && !data.partner) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "You must provide either partnerId, tenantId, or partner.",
-      });
-    }
-  });
-
-export const ReferralsEmbedTokenSchema = z.object({
-  publicToken: z.string(),
-  expires: z.date(),
 });

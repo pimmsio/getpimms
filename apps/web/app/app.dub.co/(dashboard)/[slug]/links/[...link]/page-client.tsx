@@ -265,7 +265,7 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
             </>
           )}
         </div>
-        <div className="px-4 md:px-6 lg:bg-neutral-50 lg:px-0">
+        <div className="px-4 md:px-6 lg:px-0">
           <div className="mx-auto max-w-xl divide-neutral-200 lg:divide-y">
             <div className="py-4 lg:px-4 lg:py-6">
               <LinkBuilderFolderSelector />
@@ -340,7 +340,7 @@ function LoadingSkeleton() {
             )}
           </div>
         </div>
-        <div className="px-4 md:px-6 lg:bg-neutral-50 lg:px-0">
+        <div className="px-4 md:px-6 lg:px-0">
           <div className="mx-auto max-w-xl divide-neutral-200 lg:divide-y"></div>
         </div>
       </div>

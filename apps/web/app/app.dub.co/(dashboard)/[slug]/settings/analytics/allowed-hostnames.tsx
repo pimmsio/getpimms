@@ -2,9 +2,12 @@
 
 import { clientAccessCheck } from "@/lib/api/tokens/permissions";
 import useWorkspace from "@/lib/swr/use-workspace";
-import { Button, CardList, CircleCheck, LoadingSpinner, Trash } from "@dub/ui";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
+import { AppInput } from "@/ui/components/controls/app-input";
+import { text } from "@/ui/design/tokens";
+import { CardList, CircleCheck, LoadingSpinner, Trash } from "@dub/ui";
 import { cn, validDomainRegex } from "@dub/utils";
-import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -12,12 +15,10 @@ export const AllowedHostnames = () => {
   const { allowedHostnames, loading } = useWorkspace();
 
   return (
-    <div className="grid gap-5 rounded border border-neutral-100 p-5">
+    <div className="grid gap-5 rounded-lg bg-neutral-50/60 p-5">
       <div className="flex flex-col gap-1">
-        <h2 className="text-xl font-semibold tracking-tight text-black">
-          Allowed hostnames
-        </h2>
-        <p className="text-sm text-neutral-500">
+        <h2 className="text-xl font-semibold text-neutral-900">Allowed hostnames</h2>
+        <p className={cn(text.pageDescription, "text-sm")}>
           Add your hostnames to enable client-side conversion tracking.
           {/* <Link
             href="https://dub.co/docs/conversions/clicks/introduction#client-side-click-tracking"
@@ -30,11 +31,13 @@ export const AllowedHostnames = () => {
       </div>
       <div className="grid grid-cols-1 gap-3">
         <AddHostnameForm />
-        <CardList variant="compact" loading={loading}>
+        <div className="rounded-md bg-white">
+          <CardList variant="compact" loading={loading}>
           {allowedHostnames?.map((hostname) => (
             <AllowedHostnameCard key={hostname} hostname={hostname} />
           ))}
-        </CardList>
+          </CardList>
+        </div>
       </div>
     </div>
   );
@@ -100,29 +103,29 @@ const AddHostnameForm = () => {
         addHostname();
       }}
     >
-      <div className="relative mt-2 flex-1 rounded shadow-sm">
-        <input
+      <div className="mt-2 flex-1">
+        <AppInput
           type="text"
           required
           value={hostname}
           onChange={(e) => setHostname(e.target.value)}
           autoComplete="off"
           placeholder="example.com"
-          className={cn(
-            "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
-          )}
         />
       </div>
 
-      <Button
-        text="Add Hostname"
+      <AppButton
+        type="submit"
         variant="primary"
-        onClick={addHostname}
-        disabled={!isHostnameValid || hostname.length === 0}
         loading={processing}
+        disabled={!isHostnameValid || hostname.length === 0}
         className="w-40"
-        disabledTooltip={permissionsError || undefined}
-      />
+        title={
+          typeof permissionsError === "string" ? permissionsError : undefined
+        }
+      >
+        Add Hostname
+      </AppButton>
     </form>
   );
 };
@@ -182,22 +185,20 @@ const AllowedHostnameCard = ({ hostname }: { hostname: string }) => {
       </div>
 
       <div className="flex items-center gap-5 sm:gap-8 md:gap-12">
-        <Button
-          variant="outline"
-          className={cn(
-            "h-8 px-1.5 outline-none transition-all duration-200",
-            "border-transparent data-[state=open]:border-neutral-500 sm:group-hover/card:data-[state=closed]:border-neutral-200",
-          )}
-          icon={
-            processing ? (
-              <LoadingSpinner className="size-4 shrink-0" />
-            ) : (
-              <Trash className="size-4" />
-            )
-          }
+        <AppIconButton
+          type="button"
           onClick={deleteHostname}
-          disabledTooltip={permissionsError || undefined}
-        />
+          disabled={!!permissionsError}
+          title={
+            typeof permissionsError === "string" ? permissionsError : undefined
+          }
+        >
+          {processing ? (
+            <LoadingSpinner className="size-4 shrink-0" />
+          ) : (
+            <Trash className="size-4" />
+          )}
+        </AppIconButton>
       </div>
     </CardList.Card>
   );

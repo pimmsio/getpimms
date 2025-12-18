@@ -6,7 +6,6 @@ import { webhookPayloadSchema } from "../../webhook/schemas";
 import {
   ClickEventWebhookData,
   LeadEventWebhookData,
-  PartnerEventDataProps,
   SaleEventWebhookData,
 } from "../../webhook/types";
 
@@ -200,39 +199,6 @@ const createSaleTemplate = ({ data }: { data: SaleEventWebhookData }) => {
   };
 };
 
-const enrolledPartnerTemplate = ({ data }: { data: PartnerEventDataProps }) => {
-  const { name, email, country } = data;
-
-  return {
-    blocks: [
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `*New partner created* :tada:`,
-        },
-      },
-      {
-        type: "section",
-        fields: [
-          {
-            type: "mrkdwn",
-            text: `*Name*\n${name}`,
-          },
-          {
-            type: "mrkdwn",
-            text: `*Email*\n<mailto:${email}|${email}>`,
-          },
-          {
-            type: "mrkdwn",
-            text: `*Country*\n${country}`,
-          },
-        ],
-      },
-    ],
-  };
-};
-
 const slackTemplates: Record<WebhookTrigger, any> = {
   "link.created": createLinkTemplate,
   "link.updated": createLinkTemplate,
@@ -240,8 +206,6 @@ const slackTemplates: Record<WebhookTrigger, any> = {
   "link.clicked": clickLinkTemplate,
   "lead.created": createLeadTemplate,
   "sale.created": createSaleTemplate,
-  "partner.created": enrolledPartnerTemplate,
-  "partner.enrolled": enrolledPartnerTemplate,
 };
 
 export const formatEventForSlack = (

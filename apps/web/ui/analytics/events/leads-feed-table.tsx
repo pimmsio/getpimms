@@ -8,8 +8,8 @@ import {
   TABLE_CONTAINER_CLASS,
   TABLE_CLASS,
 } from "@/ui/shared/table-styles";
+import { AppButton } from "@/ui/components/controls/app-button";
 import {
-  Button,
   EmptyState,
   Table,
   Tooltip,
@@ -189,7 +189,16 @@ export default function LeadsFeedTable() {
           if (row.original.__skeleton) {
             return (
               <div className="px-2 py-1.5 sm:px-5 sm:py-3">
-                <LinksRowSkeleton showUtmRow={false} showMetrics={false} />
+                <div className="flex w-full items-center justify-between gap-4">
+                  <div className="flex min-w-0 flex-1 items-center gap-3">
+                    <div className="size-10 shrink-0 animate-pulse rounded-full bg-neutral-200" />
+                    <div className="min-w-0 flex-1">
+                      <div className="h-4 w-36 animate-pulse rounded bg-neutral-200" />
+                      <div className="mt-1 h-3 w-44 animate-pulse rounded bg-neutral-200/70" />
+                    </div>
+                  </div>
+                  <div className="h-4 w-12 shrink-0 animate-pulse rounded bg-neutral-200/70" />
+                </div>
               </div>
             );
           }
@@ -258,7 +267,7 @@ export default function LeadsFeedTable() {
             <div className="flex flex-col gap-0.5">
               <div className="flex items-center gap-2">
                 {label ? (
-                  <span className="inline-flex rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-700">
+                  <span className="inline-flex rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-xs font-medium text-neutral-700">
                     {label}
                   </span>
                 ) : null}
@@ -422,7 +431,7 @@ export default function LeadsFeedTable() {
     thClassName: () => cn(TABLE_HEADER_CLASS, "border-b-0"),
     tdClassName: (columnId) =>
       cn(
-        "bg-white transition-colors hover:bg-neutral-50/50 border-b border-neutral-200",
+        "bg-white transition-colors hover:bg-neutral-50/50 border-b border-neutral-100",
         !showSkeleton && "cursor-pointer",
         columnId === "customer" ? "p-0" : "px-3 py-1.5",
       ),
@@ -448,12 +457,11 @@ export default function LeadsFeedTable() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button
+          <AppButton
+            type="button"
             variant="secondary"
-            className="h-9 w-auto rounded-full px-3"
-            icon={<ClipboardCopy className="h-4 w-4 text-neutral-600" />}
-            text="Copy (Sheets)"
-            loading={copying}
+            size="sm"
+            className="w-auto"
             disabled={customers.length === 0 || copying}
             onClick={async () => {
               try {
@@ -466,15 +474,21 @@ export default function LeadsFeedTable() {
                 setCopying(false);
               }
             }}
-          />
-          <Button
+          >
+            <ClipboardCopy className="mr-2 h-4 w-4 text-neutral-500" />
+            Copy (Sheets)
+          </AppButton>
+          <AppButton
+            type="button"
             variant="secondary"
-            className="h-9 w-auto rounded-full px-3"
-            icon={<Download className="h-4 w-4 text-neutral-600" />}
-            text="Download CSV"
+            size="sm"
+            className="w-auto"
             disabled={customers.length === 0}
             onClick={() => downloadLeadsAsCSV(customers)}
-          />
+          >
+            <Download className="mr-2 h-4 w-4 text-neutral-500" />
+            Download CSV
+          </AppButton>
         </div>
       </div>
 

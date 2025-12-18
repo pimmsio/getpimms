@@ -8,11 +8,11 @@ export default function LinkPreviewTooltip({ data }: { data: LinkProps }) {
   const { domain, key, url, comments } = data;
 
   return (
-    <div 
-      className="relative flex w-80 items-center gap-x-2 px-3 py-2.5 bg-white rounded shadow-xl border-0"
+    <div
+      className="relative flex w-80 items-center gap-x-2 rounded-lg border border-neutral-100 bg-white px-3 py-2.5"
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="relative flex-none rounded-full border border-neutral-100 bg-gradient-to-t from-neutral-100 pr-0.5 sm:p-2">
+      <div className="relative flex-none rounded-md bg-neutral-50 pr-0.5 sm:p-2">
         <LinkLogo
           apexDomain={getApexDomain(url)}
           className="h-4 w-4 shrink-0 transition-[width,height] sm:h-6 sm:w-6 group-data-[variant=loose]/card-list:sm:h-5 group-data-[variant=loose]/card-list:sm:w-5"

@@ -232,7 +232,7 @@ function Docs() {
                   height={630}
                 />
               ) : (
-                <div className="aspect-video w-full rounded bg-neutral-300 shadow-sm" />
+                <div className="aspect-video w-full rounded bg-neutral-200" />
               )}
             </div>
             <span className="mt-4 flex items-center gap-2 px-2 text-left text-[0.8125rem] font-medium text-neutral-700">

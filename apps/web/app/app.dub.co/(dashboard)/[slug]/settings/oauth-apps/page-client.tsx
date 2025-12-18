@@ -5,8 +5,10 @@ import useWorkspace from "@/lib/swr/use-workspace";
 import { OAuthAppProps } from "@/lib/types";
 import OAuthAppCard from "@/ui/oauth-apps/oauth-app-card";
 import OAuthAppPlaceholder from "@/ui/oauth-apps/oauth-app-placeholder";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { text } from "@/ui/design/tokens";
 import EmptyState from "@/ui/shared/empty-state";
-import { Button, Cube, InfoTooltip, TooltipContent } from "@dub/ui";
+import { Cube } from "@dub/ui";
 import { fetcher } from "@dub/utils";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
@@ -29,9 +31,7 @@ export default function OAuthAppsPageClient() {
     <div className="grid gap-5">
       <div className="flex flex-wrap justify-between gap-6">
         <div className="flex items-center gap-x-2">
-          <h1 className="text-2xl font-semibold tracking-tight text-black">
-            OAuth Applications
-          </h1>
+          <div className={text.pageTitle}>OAuth Applications</div>
           {/* <InfoTooltip
             content={
               <TooltipContent
@@ -44,12 +44,15 @@ export default function OAuthAppsPageClient() {
           /> */}
         </div>
         <div className="flex w-full items-center gap-3 sm:w-auto">
-          <Button
-            className="flex h-10 items-center justify-center whitespace-nowrap rounded border px-4 text-sm"
-            text="Create OAuth App"
+          <AppButton
+            type="button"
+            variant="secondary"
             onClick={() => router.push(`/${slug}/settings/oauth-apps/new`)}
-            disabledTooltip={permissionsError}
-          />
+            disabled={!!permissionsError}
+            title={typeof permissionsError === "string" ? permissionsError : undefined}
+          >
+            Create OAuth App
+          </AppButton>
         </div>
       </div>
 
@@ -62,14 +65,14 @@ export default function OAuthAppsPageClient() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-4 rounded border border-neutral-100 py-10">
+            <div className="flex flex-col items-center gap-4 rounded-lg bg-neutral-50/60 py-10">
               <EmptyState icon={Cube} title={"No OAuth applications found"} />
             </div>
           )
         ) : (
           <div className="grid grid-cols-1 gap-3">
             {Array.from({ length: 3 }).map((_, idx) => (
-              <OAuthAppPlaceholder />
+              <OAuthAppPlaceholder key={idx} />
             ))}
           </div>
         )}

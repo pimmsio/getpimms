@@ -1,13 +1,14 @@
-import useWorkspace from "@/lib/swr/use-workspace";
-import { useRouterStuff, ToggleGroup, UTM_PARAMETERS } from "@dub/ui";
-import { TrendingUp } from "lucide-react";
 import { SINGULAR_ANALYTICS_ENDPOINTS } from "@/lib/analytics/constants";
+import useWorkspace from "@/lib/swr/use-workspace";
+import { ToggleGroup, useRouterStuff, UTM_PARAMETERS } from "@dub/ui";
+import { TrendingUp } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AnalyticsCard } from "./analytics-card";
-import { useAnalyticsFilterOption } from "./utils";
+import { AnalyticsEmptyState } from "./components/empty-states";
+import { useAnalyticsDashboard, useAnalyticsState } from "./hooks";
+import { getMetricValue, RANK_COLORS, sortByMetric } from "./lib";
 import { MetricsDisplay } from "./metrics-display";
-import { useAnalyticsState, useAnalyticsDashboard } from "./hooks";
-import { getMetricValue, sortByMetric, RANK_COLORS } from "./lib";
+import { useAnalyticsFilterOption } from "./utils";
 
 type UTMBreakdownMode = "campaign" | "source" | "medium";
 type UtmTuple = {
@@ -32,9 +33,9 @@ export default function UTM({
 
   // UTM analytics should respect the currently applied filters.
   // (We only exclude "self" for dropdown option lists in the filter bar, not for the card itself.)
-  const { data: combinationsData } = useAnalyticsFilterOption(
-    { groupBy: "utm_combinations" as any },
-  );
+  const { data: combinationsData } = useAnalyticsFilterOption({
+    groupBy: "utm_combinations" as any,
+  });
 
   const { data: sourcesData } = useAnalyticsFilterOption(
     { groupBy: "utm_sources" },
@@ -149,9 +150,7 @@ export default function UTM({
 
   return (
     <AnalyticsCard
-      tabs={[
-        { id: "utms", label: "UTM", icon: TrendingUp },
-      ]}
+      tabs={[{ id: "utms", label: "UTM", icon: TrendingUp }]}
       selectedTabId="utms"
       onSelectTab={() => {}}
       expandLimit={5}
@@ -194,7 +193,7 @@ export default function UTM({
 
         return (
           <div className="grid grid-cols-1 lg:grid-cols-3">
-            <div className="lg:col-span-2 border-b border-neutral-100 lg:border-b-0 lg:border-r lg:border-neutral-100">
+            <div className="border-b border-neutral-100 lg:col-span-2 lg:border-b-0 lg:border-r lg:border-neutral-100">
               <CombinationsColumn
                 data={utmCombinations}
                 selectedTab={selectedTab}
@@ -205,7 +204,7 @@ export default function UTM({
                 <div className="px-4 pb-3">
                   <button
                     onClick={() => setShowModal(true, "combos")}
-                    className="mt-2 w-full rounded-lg border border-neutral-200 bg-neutral-50 py-2 text-xs text-neutral-700 hover:bg-neutral-100 hover:border-neutral-300 font-medium transition-all"
+                    className="app-btn-muted mt-2 w-full"
                   >
                     View all {utmCombinations?.length} combinations →
                   </button>
@@ -226,7 +225,7 @@ export default function UTM({
                 <div className="px-4 pb-3">
                   <button
                     onClick={() => setShowModal(true, "breakdown")}
-                    className="mt-2 w-full rounded-lg border border-neutral-200 bg-neutral-50 py-2 text-xs text-neutral-700 hover:bg-neutral-100 hover:border-neutral-300 font-medium transition-all"
+                    className="app-btn-muted mt-2 w-full"
                   >
                     View all {sortedBreakdown?.length} →
                   </button>
@@ -252,13 +251,15 @@ function CombinationsColumn({
   limit?: number;
 }) {
   const shown = limit ? data?.slice(0, limit) : data;
+  const totalClicks = data?.reduce((sum, d) => sum + (d.clicks || 0), 0) || 0;
+  const totalLeads = data?.reduce((sum, d) => sum + (d.leads || 0), 0) || 0;
   const maxValue = Math.max(
     ...(data?.map((d) => getMetricValue(d, selectedTab as any) || 0) ?? [0]),
   );
 
   return (
     <div className="flex flex-col px-4 py-3">
-      <div className="flex items-center justify-between mb-2">
+      <div className="mb-2 flex items-center justify-between">
         <p className="text-xs font-medium text-neutral-500">Top combinations</p>
       </div>
 
@@ -276,6 +277,8 @@ function CombinationsColumn({
                 selectedTab={selectedTab}
                 queryParams={queryParams}
                 barWidth={barWidth}
+                totalClicks={totalClicks}
+                totalLeads={totalLeads}
               />
             );
           })}
@@ -311,27 +314,35 @@ function BreakdownColumn({
   ];
 
   const paramKey =
-    mode === "source" ? "utm_source" : mode === "medium" ? "utm_medium" : "utm_campaign";
+    mode === "source"
+      ? "utm_source"
+      : mode === "medium"
+        ? "utm_medium"
+        : "utm_campaign";
   const singularName =
-    SINGULAR_ANALYTICS_ENDPOINTS[`${paramKey}s` as keyof typeof SINGULAR_ANALYTICS_ENDPOINTS];
+    SINGULAR_ANALYTICS_ENDPOINTS[
+      `${paramKey}s` as keyof typeof SINGULAR_ANALYTICS_ENDPOINTS
+    ];
   const { icon: Icon } = UTM_PARAMETERS.find((p) => p.key === paramKey)!;
 
   const shown = limit ? data?.slice(0, limit) : data;
+  const totalClicks = data?.reduce((sum, d) => sum + (d.clicks || 0), 0) || 0;
+  const totalLeads = data?.reduce((sum, d) => sum + (d.leads || 0), 0) || 0;
   const maxValue = Math.max(
     ...(data?.map((d) => getMetricValue(d, selectedTab as any) || 0) ?? [0]),
   );
 
   return (
     <div className="flex flex-col px-4 py-3">
-      <div className="flex items-center justify-between mb-2">
+      <div className="mb-2 flex items-center justify-between">
         <p className="text-xs font-medium text-neutral-500">By UTM</p>
         <ToggleGroup
           options={options}
           selected={mode}
           selectAction={(value) => setMode(value as UTMBreakdownMode)}
-          className="flex items-center gap-0.5 rounded border border-neutral-200 bg-neutral-100 p-0.5"
-          optionClassName="h-7 flex flex-1 items-center justify-center rounded px-2 text-[11px] font-medium"
-          indicatorClassName="bg-white shadow-sm"
+          className="app-btn-secondary-sm h-9 gap-1 p-1"
+          optionClassName="h-7 flex flex-1 items-center justify-center rounded-md px-2.5 text-[11px] font-medium"
+          indicatorClassName="bg-white shadow-none"
         />
       </div>
 
@@ -344,28 +355,30 @@ function BreakdownColumn({
             return (
               <a
                 key={idx}
-                href={queryParams({
-                  set: { [singularName]: item[singularName] },
-                  getNewPath: true,
-                }) as string}
-                className="relative flex items-center gap-3 rounded-lg px-3 py-1.5 hover:bg-neutral-50 transition-all group border border-transparent hover:border-neutral-200 overflow-hidden"
+                href={
+                  queryParams({
+                    set: { [singularName]: item[singularName] },
+                    getNewPath: true,
+                  }) as string
+                }
+                className="app-row group relative overflow-hidden px-3 py-1.5"
               >
                 <div
-                  className="absolute inset-0 bg-gradient-to-r from-blue-100/30 to-transparent group-hover:from-blue-100/60 transition-all"
+                  className="pointer-events-none absolute inset-y-0 left-0 bg-neutral-100"
                   style={{ width: `${barWidth}%` }}
                 />
                 {idx < 3 && (
                   <div
-                    className={`relative flex h-6 w-6 items-center justify-center rounded-full ${RANK_COLORS[idx]} text-xs font-bold flex-shrink-0 shadow-sm`}
+                    className={`relative flex h-6 w-6 items-center justify-center rounded-md ${RANK_COLORS[idx]} flex-shrink-0 text-xs font-bold`}
                   >
                     {idx + 1}
                   </div>
                 )}
-                <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-neutral-100 flex-shrink-0">
+                <div className="relative flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-neutral-100">
                   <Icon className="h-4 w-4 text-neutral-600" />
                 </div>
-                <div className="relative flex-1 min-w-0">
-                  <p className="text-sm font-medium text-neutral-900 truncate">
+                <div className="relative min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-neutral-900">
                     {item[singularName] || "(not set)"}
                   </p>
                 </div>
@@ -374,6 +387,8 @@ function BreakdownColumn({
                   leads={item.leads}
                   sales={item.sales}
                   saleAmount={item.saleAmount}
+                  totalClicks={totalClicks}
+                  totalLeads={totalLeads}
                   primaryMetric={selectedTab}
                   className="relative text-xs"
                 />
@@ -396,12 +411,16 @@ function UTMCombinationRow({
   selectedTab,
   queryParams,
   barWidth,
+  totalClicks,
+  totalLeads,
 }: {
   combo: any;
   idx: number;
   selectedTab: "clicks" | "leads" | "sales";
   queryParams: any;
   barWidth: number;
+  totalClicks: number;
+  totalLeads: number;
 }) {
   // Build filter params from UTM combination
   const filterParams: Record<string, string> = {};
@@ -416,32 +435,40 @@ function UTMCombinationRow({
 
   return (
     <a
-      href={queryParams({
-        set: filterParams,
-        getNewPath: true,
-      }) as string}
-      className="relative flex items-center gap-3 rounded-lg px-3 py-1.5 hover:bg-neutral-50 transition-all group border border-transparent hover:border-neutral-200 overflow-hidden"
+      href={
+        queryParams({
+          set: filterParams,
+          getNewPath: true,
+        }) as string
+      }
+      className="app-row group relative overflow-hidden px-3 py-1.5"
     >
       <div
-        className="absolute inset-0 bg-gradient-to-r from-blue-100/30 to-transparent group-hover:from-blue-100/60 transition-all"
+        className="pointer-events-none absolute inset-y-0 left-0 bg-neutral-100"
         style={{ width: `${barWidth}%` }}
       />
       {idx < 3 && (
         <div
-          className={`relative flex h-6 w-6 items-center justify-center rounded-full ${RANK_COLORS[idx]} text-xs font-bold flex-shrink-0 shadow-sm`}
+          className={`relative flex h-6 w-6 items-center justify-center rounded-md ${RANK_COLORS[idx]} flex-shrink-0 text-xs font-bold`}
         >
           {idx + 1}
         </div>
       )}
-      <div className="relative flex-1 min-w-0">
-        <p className="text-sm font-medium text-neutral-900 truncate">{leftTitle}</p>
-        <p className="text-xs text-neutral-500 truncate font-mono">{leftSubtitle}</p>
+      <div className="relative min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-neutral-900">
+          {leftTitle}
+        </p>
+        <p className="truncate font-mono text-xs text-neutral-500">
+          {leftSubtitle}
+        </p>
       </div>
       <MetricsDisplay
         clicks={combo.clicks || 0}
         leads={combo.leads}
         sales={combo.sales}
         saleAmount={combo.saleAmount}
+        totalClicks={totalClicks}
+        totalLeads={totalLeads}
         primaryMetric={selectedTab}
         className="relative text-xs"
       />
@@ -449,18 +476,19 @@ function UTMCombinationRow({
   );
 }
 
-function UTMEmptyState({ slug, dashboardProps }: { slug?: string; dashboardProps?: any }) {
+function UTMEmptyState({
+  slug,
+  dashboardProps,
+}: {
+  slug?: string;
+  dashboardProps?: any;
+}) {
   return (
-    <div className="flex h-[220px] flex-col items-center justify-center gap-3 px-4 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-neutral-100 to-neutral-50 ring-1 ring-neutral-200/50">
-        <TrendingUp className="h-6 w-6 text-neutral-600" />
-      </div>
-      <div>
-        <p className="text-sm font-semibold text-neutral-900">No UTM data yet</p>
-        <p className="mt-1.5 text-xs text-neutral-500 leading-relaxed max-w-xs">
-          Add UTM parameters to your links to see top combinations and campaign performance.
-        </p>
-      </div>
-    </div>
+    <AnalyticsEmptyState
+      icon={TrendingUp}
+      title="No UTM data yet"
+      description="Add UTM parameters to your links to see top combinations and campaign performance."
+      className="h-[220px]"
+    />
   );
 }

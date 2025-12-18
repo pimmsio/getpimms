@@ -22,10 +22,10 @@ export const runtime = "edge";
 export async function generateMetadata({
   params,
 }: {
-  params: { domain: string; key: string };
+  params: Promise<{ domain: string; key: string }>;
 }) {
-  const domain = params.domain;
-  const key = decodeURIComponent(params.key).slice(0, -1);
+  const { domain, key: rawKey } = await params;
+  const key = decodeURIComponent(rawKey).slice(0, -1);
 
   const data = await getLinkViaEdge({ domain, key });
 
@@ -47,10 +47,10 @@ export async function generateMetadata({
 export default async function InspectPage({
   params,
 }: {
-  params: { domain: string; key: string };
+  params: Promise<{ domain: string; key: string }>;
 }) {
-  const domain = params.domain;
-  const key = decodeURIComponent(params.key).slice(0, -1);
+  const { domain, key: rawKey } = await params;
+  const key = decodeURIComponent(rawKey).slice(0, -1);
 
   const data = await getLinkViaEdge({ domain, key });
 

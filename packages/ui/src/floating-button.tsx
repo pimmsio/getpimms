@@ -1,7 +1,7 @@
 import { cn } from "@dub/utils";
 import { ReactNode } from "react";
-import { Plus } from "./icons";
 import { Tooltip } from "./tooltip";
+import { Button } from "./button";
 
 export interface FloatingActionButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -28,16 +28,15 @@ export function FloatingActionButton({
   ...props
 }: FloatingActionButtonProps) {
   const current = (
-    <button
+    <Button
       {...props}
       disabled={false}
-      className={cn(
-        "fixed bottom-6 right-4 rounded-full bg-[#3970ff] p-4 text-white shadow-lg transition hover:bg-[#3970ff]/90",
-        className,
-      )}
-    >
-      <Plus className="h-6 w-6" />
-    </button>
+      loading={loading}
+      variant="primary"
+      // fixed positioning is FAB-specific; visuals come from Button
+      className={cn("fixed bottom-6 right-4 h-12 w-12 px-0", className)}
+      text={icon ?? text}
+    />
   );
 
   if (disabledTooltip) {

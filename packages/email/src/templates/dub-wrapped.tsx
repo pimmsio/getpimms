@@ -1,5 +1,4 @@
-import { COUNTRIES, DUB_WORDMARK, smartTruncate } from "@dub/utils";
-import { nFormatter } from "@dub/utils/src/functions";
+import { COUNTRIES, DUB_WORDMARK, nFormatter, smartTruncate } from "@dub/utils";
 import {
   Body,
   Column,

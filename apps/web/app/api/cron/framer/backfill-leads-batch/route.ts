@@ -80,8 +80,8 @@ export const POST = withWorkspace(async ({ req, workspace }) => {
       }),
     ]);
 
-    let validEntries: PayloadItem[] = [];
-    let invalidEntries: (PayloadItem & { error: string })[] = [];
+    const validEntries: PayloadItem[] = [];
+    const invalidEntries: (PayloadItem & { error: string })[] = [];
 
     originalPayload.map((p, index) => {
       if (existsResults[index]) {
@@ -268,7 +268,7 @@ export const POST = withWorkspace(async ({ req, workspace }) => {
       // Cache the externalId:eventName pairs
       redis.sadd(
         CACHE_KEY,
-        ...dataArray.map(
+        dataArray.map(
           ({ payload: { externalId, eventName } }) =>
             `${externalId}:${eventName}`,
         ),

@@ -1,26 +1,41 @@
 "use client";
 
-import usePrograms from "@/lib/swr/use-programs";
 import { InvoiceProps } from "@/lib/types";
-import { PayoutStatusBadges } from "@/ui/partners/payout-status-badges";
 import { AnimatedEmptyState } from "@/ui/shared/animated-empty-state";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { text } from "@/ui/design/tokens";
 import {
-  Button,
-  buttonVariants,
   InvoiceDollar,
   Receipt2,
   StatusBadge,
-  TabSelect,
   useRouterStuff,
 } from "@dub/ui";
 import { cn, currencyFormatter, fetcher } from "@dub/utils";
 import { useParams } from "next/navigation";
 import useSWR from "swr";
 
+const invoiceStatusBadge = (status: string | null | undefined) => {
+  switch ((status || "").toLowerCase()) {
+    case "pending":
+      return { label: "Pending", variant: "pending" as const };
+    case "processing":
+      return { label: "Processing", variant: "new" as const };
+    case "paid":
+    case "completed":
+      return { label: "Paid", variant: "success" as const };
+    case "failed":
+      return { label: "Failed", variant: "error" as const };
+    case "canceled":
+    case "cancelled":
+      return { label: "Canceled", variant: "neutral" as const };
+    default:
+      return { label: status || "Unknown", variant: "neutral" as const };
+  }
+};
+
 export default function WorkspaceInvoicesClient() {
   const { slug } = useParams();
-  const { programs } = usePrograms();
-  const { searchParams, queryParams } = useRouterStuff();
+  const { searchParams } = useRouterStuff();
 
   const invoiceType = searchParams.get("type") || "subscription";
 
@@ -30,33 +45,16 @@ export default function WorkspaceInvoicesClient() {
   );
 
   return (
-    <div className="rounded border border-neutral-100 bg-white">
-      <div className="flex flex-col items-start justify-between gap-y-4 p-6 md:p-8 md:pb-2 lg:flex-row">
+    <div className="overflow-hidden rounded-lg bg-neutral-50/60">
+      <div className="flex flex-col items-start gap-1 px-4 py-3">
         <div>
-          <h2 className="text-xl font-medium">Invoices</h2>
-          <p className="text-balance text-sm leading-normal text-neutral-500">
+          <h2 className={cn(text.pageTitle, "text-xl")}>Invoices</h2>
+          <p className={cn(text.pageDescription, "text-sm")}>
             A history of all your PIMMS invoices
           </p>
         </div>
       </div>
-      {programs?.length && (
-        <TabSelect
-          className="px-4 md:px-5"
-          options={[
-            { id: "subscription", label: "Subscription" },
-            // { id: "payout", label: "Partner Payouts" },
-          ]}
-          selected={invoiceType}
-          onSelect={(id) => {
-            queryParams({
-              set: {
-                type: id,
-              },
-            });
-          }}
-        />
-      )}
-      <div className="grid divide-y divide-neutral-100 border-x border-neutral-100">
+      <div className="grid divide-y divide-neutral-100 rounded-md bg-white p-1">
         {invoices ? (
           invoices.length > 0 ? (
             invoices.map((invoice) => (
@@ -111,7 +109,7 @@ const InvoiceCard = ({ invoice }: { invoice: InvoiceProps }) => {
           </span>
           {invoice.status &&
             (() => {
-              const badge = PayoutStatusBadges[invoice.status];
+              const badge = invoiceStatusBadge(invoice.status);
               return (
                 <StatusBadge
                   icon={null}
@@ -130,25 +128,25 @@ const InvoiceCard = ({ invoice }: { invoice: InvoiceProps }) => {
           <a
             href={invoice.pdfUrl}
             target="_blank"
-            className={cn(
-              buttonVariants({ variant: "secondary" }),
-              "flex size-8 items-center justify-center rounded border text-sm sm:size-auto sm:h-9 sm:px-3",
-            )}
+            className="app-btn-secondary-sm flex size-8 items-center justify-center sm:size-auto sm:h-9 sm:px-3"
           >
             <p className="hidden sm:block">View invoice</p>
             <InvoiceDollar className="size-4 sm:hidden" />
           </a>
         ) : (
-          <Button
-            className="w-fit"
+          <AppButton
+            type="button"
             variant="secondary"
-            text="View invoice"
+            size="sm"
+            className="w-fit"
             disabled
-            disabledTooltip={
+            title={
               invoice.failedReason ||
               "Invoice not available. Contact support if you need assistance."
             }
-          />
+          >
+            View invoice
+          </AppButton>
         )}
       </div>
     </div>

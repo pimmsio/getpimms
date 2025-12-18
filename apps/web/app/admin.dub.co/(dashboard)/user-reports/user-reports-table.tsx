@@ -234,7 +234,9 @@ export default function UserReportsTable() {
   const workspaceReports = workspaceReportsResponse?.workspaces || [];
   const totalCount = workspaceReportsResponse?.totalCount || 0;
 
-  const { table, ...tableProps } = useTable({
+  // TS can hit "excessive stack depth" on complex generic inference here.
+  // Assigning to `any` first keeps build-time types fast/stable while preserving runtime behavior.
+  const tableConfig: any = {
     data: workspaceReports,
     loading: isLoading,
     error: error ? "Failed to fetch workspace reports." : undefined,
@@ -256,7 +258,7 @@ export default function UserReportsTable() {
     ],
     sortBy,
     sortOrder,
-    onSortChange: ({ sortBy, sortOrder }) =>
+    onSortChange: ({ sortBy, sortOrder }: any) =>
       queryParams({
         set: {
           ...(sortBy && { sortBy }),
@@ -270,8 +272,10 @@ export default function UserReportsTable() {
         description="Workspaces will appear here once they are created"
       />
     ),
-    resourceName: (plural) => `workspace${plural ? "s" : ""}`,
-  });
+    resourceName: (plural: boolean) => `workspace${plural ? "s" : ""}`,
+  };
+
+  const { table, ...tableProps } = useTable<WorkspaceReport>(tableConfig);
 
   return (
     <div className="space-y-4">

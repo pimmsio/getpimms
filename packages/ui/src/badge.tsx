@@ -2,7 +2,8 @@ import { cn } from "@dub/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const badgeVariants = cva(
-  "max-w-fit rounded-full border px-2 py-px text-xs font-medium whitespace-nowrap",
+  // Minimal badges: rounded-md (not pill), consistent padding/typography.
+  "max-w-fit rounded-md border px-2 py-0.5 text-xs font-medium whitespace-nowrap",
   {
     variants: {
       variant: {
@@ -15,10 +16,9 @@ const badgeVariants = cva(
         gray: "border-neutral-200 bg-neutral-100 text-neutral-800",
         neutral: "border-neutral-400 text-neutral-500",
         amber: "border-amber-800 bg-amber-800 text-white",
-        blueGradient:
-          "bg-gradient-to-r from-blue-100 via-blue-100/50 to-blue-100 border border-blue-200 text-blue-900",
-        rainbow:
-          "bg-gradient-to-r from-violet-600 to-pink-600 text-white border-transparent",
+        // Keep legacy variants but make them minimal (no gradients).
+        blueGradient: "border-blue-200 bg-blue-50 text-blue-900",
+        rainbow: "border-neutral-200 bg-neutral-900 text-white",
       },
     },
     defaultVariants: {

@@ -47,7 +47,7 @@ export function AnalyticsEmptyState({
     <div
       className={`flex flex-col items-center justify-center gap-3 px-4 text-center ${className}`}
     >
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-neutral-100 to-neutral-50 ring-1 ring-neutral-200/50">
+      <div className="app-empty-icon">
         <Icon className="h-6 w-6 text-neutral-600" />
       </div>
       <div>
@@ -59,7 +59,7 @@ export function AnalyticsEmptyState({
       {action && (
         <button
           onClick={action.onClick}
-          className="mt-2 rounded-lg border border-neutral-200 bg-white px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 transition-all"
+          className="app-btn-secondary-sm mt-2 h-auto px-4 py-2 text-xs font-medium"
         >
           {action.label}
         </button>
@@ -102,7 +102,7 @@ export function UpgradeRequiredEmptyState({
 }) {
   return (
     <div className="flex h-[380px] flex-col items-center justify-center gap-3 px-4 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-100 to-orange-50 ring-1 ring-orange-200/50">
+      <div className="app-empty-icon">
         <svg
           className="h-6 w-6 text-orange-600"
           fill="none"
@@ -123,7 +123,7 @@ export function UpgradeRequiredEmptyState({
           Upgrade your plan to access {feature}
         </p>
       </div>
-      <button className="mt-2 rounded-lg border border-orange-200 bg-orange-50 px-4 py-2 text-xs font-medium text-orange-700 hover:bg-orange-100 hover:border-orange-300 transition-all">
+      <button className="app-btn-secondary-sm mt-2 h-auto px-4 py-2 text-xs font-medium">
         Upgrade Now
       </button>
     </div>
@@ -142,7 +142,7 @@ export function ErrorEmptyState({
 }) {
   return (
     <div className="flex h-[380px] flex-col items-center justify-center gap-3 px-4 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-red-100 to-red-50 ring-1 ring-red-200/50">
+      <div className="app-empty-icon">
         <svg
           className="h-6 w-6 text-red-600"
           fill="none"
@@ -166,7 +166,7 @@ export function ErrorEmptyState({
       {onRetry && (
         <button
           onClick={onRetry}
-          className="mt-2 rounded-lg border border-neutral-200 bg-white px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 transition-all"
+          className="app-btn-secondary-sm mt-2 h-auto px-4 py-2 text-xs font-medium"
         >
           Try Again
         </button>

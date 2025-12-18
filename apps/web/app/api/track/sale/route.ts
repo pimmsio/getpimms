@@ -1,10 +1,8 @@
 import { convertCurrency } from "@/lib/analytics/convert-currency";
 import { DubApiError } from "@/lib/api/errors";
 import { includeTags } from "@/lib/api/links/include-tags";
-import { notifyPartnerSale } from "@/lib/api/partners/notify-partner-sale";
 import { parseRequestBody } from "@/lib/api/utils";
 import { withWorkspace } from "@/lib/auth";
-import { createPartnerCommission } from "@/lib/partners/create-partner-commission";
 import { getLeadEvent, recordSale } from "@/lib/tinybird";
 import { logConversionEvent } from "@/lib/tinybird/log-conversion-events";
 import { redis } from "@/lib/upstash";
@@ -235,31 +233,6 @@ export const POST = withWorkspace(
             body: JSON.stringify(body),
           }),
         ]);
-
-        // for program links
-        if (link.programId && link.partnerId) {
-          const commission = await createPartnerCommission({
-            event: "sale",
-            programId: link.programId,
-            partnerId: link.partnerId,
-            linkId: link.id,
-            eventId,
-            customerId: customer.id,
-            amount: saleData.amount,
-            quantity: 1,
-            invoiceId,
-            currency,
-          });
-
-          if (commission) {
-            waitUntil(
-              notifyPartnerSale({
-                link,
-                commission,
-              }),
-            );
-          }
-        }
 
         // Send workspace webhook
         const sale = transformSaleEventData({

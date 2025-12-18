@@ -1,21 +1,21 @@
 import AddEditIntegrationForm from "@/ui/oauth-apps/add-edit-integration-form";
 import { BackLink } from "@/ui/shared/back-link";
-import { MaxWidthWrapper } from "@dub/ui";
 import { notFound } from "next/navigation";
 
-export default function NewIntegrationsPage({
+export default async function NewIntegrationsPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  const { slug } = await params;
   // this is only available for PiMMs workspace for now
   // we might open this up to other workspaces in the future
-  if (params.slug !== "pimms" && params.slug !== "pimms-staging") {
+  if (slug !== "pimms" && slug !== "pimms-staging") {
     notFound();
   }
   return (
-    <MaxWidthWrapper className="grid max-w-screen-lg gap-8">
-      <BackLink href={`/${params.slug}/settings/integrations`}>
+    <div className="mx-auto grid w-full max-w-screen-lg gap-8">
+      <BackLink href={`/${slug}/settings/integrations`}>
         Back to integrations
       </BackLink>
 
@@ -34,6 +34,6 @@ export default function NewIntegrationsPage({
           updatedAt: new Date(),
         }}
       />
-    </MaxWidthWrapper>
+    </div>
   );
 }

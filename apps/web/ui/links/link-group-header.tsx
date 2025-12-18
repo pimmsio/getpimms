@@ -1,6 +1,5 @@
-import { MaxWidthWrapper } from "@dub/ui";
 import { cn, getPrettyUrl } from "@dub/utils";
-import { ChevronRight, Link2 } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 interface LinkGroupHeaderProps {
   groupValue: string;
@@ -20,99 +19,54 @@ export function LinkGroupHeader({
   // Format display value based on group type
   const displayValue = (() => {
     // For destination URLs, clean up the display
-    if (groupType === 'url' && !groupValue.startsWith('(No')) {
+    if (groupType === "url" && !groupValue.startsWith("(No")) {
       const prettyUrl = getPrettyUrl(groupValue);
       return prettyUrl || groupValue;
     }
     return groupValue;
   })();
 
-  // Check if it's a URL group for icon
-  const isUrlGroup = groupType === 'url' && !groupValue.startsWith('(No');
+  // Check if it's a URL group (used for typography only; avoid decorative icons)
+  const isUrlGroup = groupType === "url" && !groupValue.startsWith("(No");
 
   return (
-    <MaxWidthWrapper className="max-w-full px-2 sm:px-0 lg:px-0">
-      <button
-        onClick={onToggle}
-        className={cn(
-          "group relative flex w-full items-center gap-2.5 rounded-lg border px-4 py-3.5 text-left transition-all duration-200 sm:gap-3",
-          isExpanded
-            ? "border-blue-200 bg-gradient-to-r from-blue-50 to-transparent shadow-sm"
-            : "border-neutral-200 bg-white hover:border-blue-200 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-transparent hover:shadow-sm",
-        )}
-      >
-        {/* Left accent indicator */}
-        <div
-          className={cn(
-            "absolute left-0 top-0 bottom-0 w-0.5 transition-all duration-200",
-            isExpanded
-              ? "bg-blue-500"
-              : "bg-transparent group-hover:bg-blue-300",
-          )}
-        />
-        
-        {/* Chevron icon */}
+    <button
+      type="button"
+      onClick={onToggle}
+      className={cn(
+        "group flex w-full items-center justify-between gap-3 rounded-md px-2 py-2 text-left transition-[box-shadow,border-color] sm:px-5",
+        isExpanded
+          ? "ring-1 ring-neutral-200/60"
+          : "hover:ring-1 hover:ring-neutral-200/60",
+      )}
+    >
+      <div className="flex min-w-0 items-center gap-2">
         <ChevronRight
           className={cn(
-            "h-4 w-4 shrink-0 transition-all duration-200",
-            isExpanded
-              ? "rotate-90 text-blue-600"
-              : "text-neutral-400 group-hover:text-blue-500",
+            "h-4 w-4 shrink-0 text-neutral-400 transition-transform",
+            isExpanded && "rotate-90",
           )}
         />
-        
-        {/* Icon for URL groups */}
-        {isUrlGroup && (
-          <div className={cn(
-            "flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors duration-200",
-            isExpanded
-              ? "bg-blue-100"
-              : "bg-neutral-100 group-hover:bg-blue-50"
-          )}>
-            <Link2 className={cn(
-              "h-3.5 w-3.5 transition-colors duration-200",
-              isExpanded
-                ? "text-blue-600"
-                : "text-neutral-500 group-hover:text-blue-500"
-            )} />
-          </div>
-        )}
-        
-        {/* Content */}
-        <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <span
-              className={cn(
-                "block truncate font-medium transition-colors duration-200",
-                isExpanded
-                  ? "text-neutral-900"
-                  : "text-neutral-700 group-hover:text-neutral-900",
-                isUrlGroup ? "text-sm sm:text-base font-mono" : "text-sm sm:text-base"
-              )}
-            >
-              {displayValue}
-            </span>
-            {isUrlGroup && (
-              <span className="text-xs text-neutral-500 mt-0.5">
-                Destination URL
-              </span>
+        <div className="min-w-0">
+          <div
+            className={cn(
+              "truncate font-medium text-neutral-900",
+              isUrlGroup ? "font-mono text-sm sm:text-base" : "text-sm",
             )}
+          >
+            {displayValue}
           </div>
-          <div className="flex shrink-0 items-center gap-2">
-            <span
-              className={cn(
-                "rounded-full px-2.5 py-1 text-xs font-semibold tabular-nums transition-all duration-200",
-                isExpanded
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-neutral-100 text-neutral-600 group-hover:bg-blue-50 group-hover:text-blue-600",
-              )}
-            >
-              {count}
-            </span>
-          </div>
+          {isUrlGroup && (
+            <div className="mt-0.5 text-xs text-neutral-500">
+              Destination URL
+            </div>
+          )}
         </div>
-      </button>
-    </MaxWidthWrapper>
+      </div>
+
+      <span className="shrink-0 rounded-md border border-neutral-200 bg-white px-2 py-0.5 text-xs font-semibold tabular-nums text-neutral-700">
+        {count}
+      </span>
+    </button>
   );
 }
-

@@ -1,12 +1,17 @@
 import { LinkLogo, Tooltip, useRouterStuff } from "@dub/ui";
-import { ExternalLink } from "lucide-react";
 import { cn, getApexDomain } from "@dub/utils";
+import { ExternalLink } from "lucide-react";
 import { useMemo } from "react";
 import { AnalyticsCard } from "./analytics-card";
+import { AnalyticsEmptyState } from "./components/empty-states";
+import { useAnalyticsState } from "./hooks";
+import {
+  LINK_LOGO_IMAGE_PROPS,
+  LOGO_SIZE_CLASS_NAME,
+  RANK_COLORS,
+} from "./lib";
 import { MetricsDisplay } from "./metrics-display";
 import { useAnalyticsFilterOption } from "./utils";
-import { useAnalyticsState } from "./hooks";
-import { RANK_COLORS, LOGO_SIZE_CLASS_NAME, LINK_LOGO_IMAGE_PROPS } from "./lib";
 
 export default function DestinationUrls({
   dragHandleProps,
@@ -26,15 +31,15 @@ export default function DestinationUrls({
   // Format for display and sort by selected metric
   const groupedData = useMemo(() => {
     if (!rawData) return null;
-    
+
     const formatted = rawData.map((item) => {
-      const displayUrl = (item.url || '')
-        .replace(/^https?:\/\//, '')  // Remove protocol for display
-        .replace(/\/$/, '');  // Remove trailing slash
-      
+      const displayUrl = (item.url || "")
+        .replace(/^https?:\/\//, "") // Remove protocol for display
+        .replace(/\/$/, ""); // Remove trailing slash
+
       return {
-        url: item.url || '',  // Keep original with protocol for filtering
-        displayUrl,  // For display only
+        url: item.url || "", // Keep original with protocol for filtering
+        displayUrl, // For display only
         clicks: item.clicks || 0,
         leads: item.leads || 0,
         sales: item.sales || 0,
@@ -44,21 +49,41 @@ export default function DestinationUrls({
 
     // Sort by selected metric
     return formatted.sort((a, b) => {
-      const aValue = selectedTab === "sales" ? (a.saleAmount || 0) : selectedTab === "leads" ? (a.leads || 0) : (a.clicks || 0);
-      const bValue = selectedTab === "sales" ? (b.saleAmount || 0) : selectedTab === "leads" ? (b.leads || 0) : (b.clicks || 0);
+      const aValue =
+        selectedTab === "sales"
+          ? a.saleAmount || 0
+          : selectedTab === "leads"
+            ? a.leads || 0
+            : a.clicks || 0;
+      const bValue =
+        selectedTab === "sales"
+          ? b.saleAmount || 0
+          : selectedTab === "leads"
+            ? b.leads || 0
+            : b.clicks || 0;
       return bValue - aValue;
     });
   }, [rawData, selectedTab]);
 
   const singularTabName = "url";
 
+  const totalClicks = useMemo(
+    () => groupedData?.reduce((sum, d) => sum + (d.clicks || 0), 0) || 0,
+    [groupedData],
+  );
+
+  const totalLeads = useMemo(
+    () => groupedData?.reduce((sum, d) => sum + (d.leads || 0), 0) || 0,
+    [groupedData],
+  );
+
   return (
     <AnalyticsCard
       tabs={[
-        { 
-          id: "urls", 
-          label: "Destination URLs", 
-          icon: ExternalLink
+        {
+          id: "urls",
+          label: "Destination URLs",
+          icon: ExternalLink,
         },
       ]}
       selectedTabId="urls"
@@ -73,105 +98,150 @@ export default function DestinationUrls({
             groupedData.length > 0 ? (
               <div className="flex flex-col px-4 py-3">
                 <div className="space-y-2">
-                  {groupedData?.slice(0, isModal ? undefined : limit).map((d, idx) => {
-                    const domain = getApexDomain(d.url);
-                    const maxClicks = Math.max(...(groupedData?.map((item) => item.clicks || 0) || [0]));
-                    const barWidth = maxClicks > 0 ? (d.clicks / maxClicks) * 100 : 0;
-                    
-                    return (
-                      <Tooltip
-                        key={idx}
-                        content={
-                          <div className="max-w-xs p-2">
-                            <p className="text-xs font-semibold text-neutral-900 mb-1">Full URL:</p>
-                            <p className="text-xs text-neutral-600 break-all">{d.url}</p>
-                            <div className="mt-2 pt-2 border-t border-neutral-200">
-                              <p className="text-xs text-neutral-500">Click to filter by this destination</p>
+                  {groupedData
+                    ?.slice(0, isModal ? undefined : limit)
+                    .map((d, idx) => {
+                      const domain = getApexDomain(d.url);
+                      const maxClicks = Math.max(
+                        ...(groupedData?.map((item) => item.clicks || 0) || [
+                          0,
+                        ]),
+                      );
+                      const barWidth =
+                        maxClicks > 0 ? (d.clicks / maxClicks) * 100 : 0;
+
+                      return (
+                        <Tooltip
+                          key={idx}
+                          content={
+                            <div className="max-w-xs p-2">
+                              <p className="mb-1 text-xs font-semibold text-neutral-900">
+                                Full URL:
+                              </p>
+                              <p className="break-all text-xs text-neutral-600">
+                                {d.url}
+                              </p>
+                              <div className="mt-2 border-t border-neutral-100 pt-2">
+                                <p className="text-xs text-neutral-500">
+                                  Click to filter by this destination
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        }
-                      >
-                        <a
-                          href={queryParams({
-                            set: { url: d.url },
-                            getNewPath: true,
-                          }) as string}
-                          className="relative flex items-center gap-3 rounded-lg px-3 py-1.5 hover:bg-neutral-50 transition-all group border border-transparent hover:border-neutral-200 overflow-hidden"
+                          }
                         >
-                          {/* Progress bar background - always visible */}
-                          <div 
-                            className="absolute inset-0 bg-gradient-to-r from-blue-100/30 to-transparent group-hover:from-blue-100/60 transition-all"
-                            style={{ width: `${barWidth}%` }}
-                          />
-                          {idx < 3 && (
-                            <div className={`relative flex h-6 w-6 items-center justify-center rounded-full ${RANK_COLORS[idx]} text-xs font-bold flex-shrink-0 shadow-sm`}>
-                              {idx + 1}
-                            </div>
-                          )}
-                          <LinkLogo
-                            apexDomain={domain}
-                            className={cn(
-                              "relative shrink-0 transition-[width,height]",
-                              LOGO_SIZE_CLASS_NAME,
+                          <a
+                            href={
+                              queryParams({
+                                set: { url: d.url },
+                                getNewPath: true,
+                              }) as string
+                            }
+                            className="app-row group relative overflow-hidden px-3 py-1.5"
+                          >
+                            {/* minimal progress (subtle) */}
+                            <div
+                              className="pointer-events-none absolute inset-y-0 left-0 bg-neutral-100/60"
+                              style={{ width: `${barWidth}%` }}
+                            />
+                            {idx < 3 && (
+                              <div
+                                className={`relative flex h-6 w-6 items-center justify-center rounded-md ${RANK_COLORS[idx]} flex-shrink-0 text-xs font-bold`}
+                              >
+                                {idx + 1}
+                              </div>
                             )}
-                            imageProps={LINK_LOGO_IMAGE_PROPS}
-                          />
-                          <div className="relative flex-1 min-w-0">
-                            <p className="text-sm font-medium text-neutral-900 truncate">
-                              {domain}
-                            </p>
-                            <p className="text-xs text-neutral-500 truncate">
-                              {d.displayUrl}
-                            </p>
-                          </div>
-                          <MetricsDisplay
-                            clicks={d.clicks || 0}
-                            leads={d.leads}
-                            sales={d.sales}
-                            saleAmount={d.saleAmount}
-                            primaryMetric={selectedTab}
-                            className="relative"
-                          />
-                        </a>
-                      </Tooltip>
-                    );
-                  })}
+                            <LinkLogo
+                              apexDomain={domain}
+                              className={cn(
+                                "relative shrink-0 transition-[width,height]",
+                                LOGO_SIZE_CLASS_NAME,
+                              )}
+                              imageProps={LINK_LOGO_IMAGE_PROPS}
+                            />
+                            <div className="relative min-w-0 flex-1">
+                              <p className="truncate text-sm font-medium text-neutral-900">
+                                {domain}
+                              </p>
+                              <p className="truncate text-xs text-neutral-500">
+                                {d.displayUrl}
+                              </p>
+                            </div>
+                            <MetricsDisplay
+                              clicks={d.clicks || 0}
+                              leads={d.leads}
+                              sales={d.sales}
+                              saleAmount={d.saleAmount}
+                              totalClicks={totalClicks}
+                              totalLeads={totalLeads}
+                              primaryMetric={selectedTab}
+                              className="relative"
+                            />
+                          </a>
+                        </Tooltip>
+                      );
+                    })}
                 </div>
-              
-              {!isModal && (groupedData?.length ?? 0) > 8 && (
-                <button
-                  onClick={() => setShowModal(true)}
-                  className="mt-4 w-full rounded-lg border border-neutral-200 bg-neutral-50 py-2 text-xs text-neutral-700 hover:bg-neutral-100 hover:border-neutral-300 font-medium transition-all"
-                >
-                  View all {groupedData?.length} destinations →
-                </button>
-              )}
+
+                {!isModal && (groupedData?.length ?? 0) > 8 && (
+                  <button
+                    onClick={() => setShowModal(true)}
+                    className="app-btn-muted mt-4 w-full"
+                  >
+                    View all {groupedData?.length} destinations →
+                  </button>
+                )}
               </div>
             ) : (
-              <div className="flex h-[380px] flex-col items-center justify-center gap-3 px-4 text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-neutral-100 to-neutral-50 ring-1 ring-neutral-200/50">
-                  <ExternalLink className="h-6 w-6 text-neutral-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-neutral-900">No destination data yet</p>
-                  <p className="mt-1.5 text-xs text-neutral-500 leading-relaxed max-w-xs">
-                    Track which destination URLs get the most clicks
-                  </p>
-                </div>
-              </div>
+              <AnalyticsEmptyState
+                icon={ExternalLink}
+                title="No destination data yet"
+                description="Track which destination URLs get the most clicks"
+              />
             )
           ) : (
-            <div className="flex flex-col px-4 py-3 animate-pulse">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex items-center gap-3 px-3 py-2.5 mb-2">
-                  <div className="h-8 w-8 rounded-full bg-neutral-100 flex-shrink-0" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-3 bg-neutral-100 rounded w-2/3" />
-                    <div className="h-2 bg-neutral-50 rounded w-full" />
+            <div className="flex animate-pulse flex-col px-4 py-3">
+              <div className="space-y-2">
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="app-row group relative overflow-hidden px-3 py-1.5"
+                  >
+                    {/* subtle bar background (mimics the real minimal progress) */}
+                    <div
+                      className="pointer-events-none absolute inset-y-0 left-0 bg-neutral-100"
+                      style={{ width: `${Math.max(12, 78 - i * 12)}%` }}
+                    />
+
+                    {i < 3 ? (
+                      <div
+                        className={`relative flex h-6 w-6 items-center justify-center rounded-md ${RANK_COLORS[i]} flex-shrink-0`}
+                      >
+                        <div className="h-3 w-3 rounded bg-white/40" />
+                      </div>
+                    ) : null}
+
+                    <div
+                      className={cn(
+                        "relative shrink-0 rounded-md bg-neutral-100",
+                        LOGO_SIZE_CLASS_NAME,
+                      )}
+                    />
+
+                    <div className="relative min-w-0 flex-1">
+                      <div className="h-4 w-24 max-w-[70%] rounded bg-neutral-100" />
+                      <div className="mt-1 h-3 w-56 max-w-full rounded bg-neutral-50" />
+                    </div>
+
+                    <div className="relative flex items-center gap-2.5">
+                      <div className="h-4 w-10 rounded bg-neutral-100" />
+                      <div className="h-3 w-1 rounded bg-neutral-50" />
+                      <div className="h-4 w-10 rounded bg-neutral-100" />
+                      <div className="h-3 w-1 rounded bg-neutral-50" />
+                      <div className="h-4 w-14 rounded bg-neutral-100" />
+                    </div>
                   </div>
-                  <div className="h-3 w-12 bg-neutral-100 rounded" />
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </>

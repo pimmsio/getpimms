@@ -7,22 +7,22 @@
   "types": "./index.ts",
   "scripts": {
     "generate": "npx prisma generate --schema=./schema",
-    "push": "npx prisma db push --schema=./schema",
-    "studio": "npx prisma studio --schema=./schema --browser none",
+    "push": "tsx ./scripts/push.ts",
+    "studio": "tsx ./scripts/studio.ts",
     "prebuild": "pnpm run generate",
     "predev": "pnpm run generate",
     "format": "npx prisma format --schema=./schema"
   },
   "dependencies": {
-    "@planetscale/database": "^1.18.0",
-    "@prisma/adapter-planetscale": "^5.18.0",
-    "@prisma/client": "5.18.0"
+    "@planetscale/database": "^1.19.0",
+    "@prisma/adapter-planetscale": "^7.2.0",
+    "@prisma/client": "7.2.0"
   },
   "devDependencies": {
-    "@types/node": "18.11.9",
-    "prisma": "5.18.0",
+    "@types/node": "25.0.3",
+    "prisma": "7.2.0",
     "tsx": "^4.11.0",
-    "typescript": "5.2.2"
+    "typescript": "5.9.3"
   },
   "exports": {
     ".": "./index.ts",

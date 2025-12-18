@@ -1,6 +1,5 @@
 import { EventType } from "@/lib/analytics/types";
 import {
-  Button,
   Modal,
   Popover,
   TabSelect,
@@ -10,6 +9,7 @@ import {
 import { cn } from "@dub/utils";
 import { ChevronsUpDown, GripVertical } from "lucide-react";
 import {
+  createContext,
   Dispatch,
   ReactNode,
   SetStateAction,
@@ -17,12 +17,30 @@ import {
   useState,
 } from "react";
 import { AnalyticsContext } from "./analytics-provider";
+import { card } from "../design/tokens";
 
 const EVENT_LABELS = {
   sales: "Sales",
   leads: "Leads",
   clicks: "Clicks",
 };
+
+// When Analytics is rendered inside the main app shell, PageContent already owns the surface.
+// In that case, avoid wrapping each widget in its own card (no nested surfaces).
+const AnalyticsCanvasContext = createContext(false);
+export function AnalyticsCanvasProvider({
+  enabled,
+  children,
+}: {
+  enabled: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <AnalyticsCanvasContext.Provider value={enabled}>
+      {children}
+    </AnalyticsCanvasContext.Provider>
+  );
+}
 
 export function AnalyticsCard<T extends string>({
   tabs,
@@ -60,6 +78,7 @@ export function AnalyticsCard<T extends string>({
   dragHandleProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
 }) {
   const { selectedTab: event } = useContext(AnalyticsContext);
+  const embedded = useContext(AnalyticsCanvasContext);
 
   const [showModal, setShowModal] = useState(false);
   const [modalSection, setModalSection] = useState<string | undefined>();
@@ -81,17 +100,16 @@ export function AnalyticsCard<T extends string>({
         setShowModal={setShowModal}
         className="max-w-2xl px-0"
       >
-        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 bg-gradient-to-r from-neutral-50 to-white">
+        <div className="flex items-center justify-between border-b border-neutral-100 bg-white px-5 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-neutral-100 to-neutral-50 shadow-sm">
-              <SelectedTabIcon className="h-5 w-5 text-neutral-700" />
-            </div>
             <div>
-              <h1 className="text-base font-semibold text-neutral-900">{selectedTab?.label}</h1>
+              <div className="text-base font-semibold text-neutral-900">
+                {selectedTab?.label}
+              </div>
               <p className="text-xs text-neutral-500">All results</p>
             </div>
           </div>
-          <div className="rounded-full bg-neutral-900 px-3 py-1.5">
+          <div className="rounded-md bg-neutral-900 px-3 py-1.5">
             <p className="text-xs font-semibold text-white">{EVENT_LABELS[event]}</p>
           </div>
         </div>
@@ -108,25 +126,31 @@ export function AnalyticsCard<T extends string>({
       </Modal>
       <div
         className={cn(
-          "group relative z-0 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md flex flex-col",
+          "group relative z-0 flex flex-col overflow-hidden",
+          !embedded && card.base,
+          embedded && "bg-transparent",
           className || "h-[440px]",
         )}
       >
-        <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3.5 flex-shrink-0">
+        <div
+          className={cn(
+            "flex flex-shrink-0 items-center justify-between",
+            !embedded && card.header,
+            embedded && "px-4 py-3",
+            embedded && "border-b border-neutral-100",
+          )}
+        >
           <div className="flex items-center gap-2">
             {dragHandleProps && (
               <button
                 type="button"
                 aria-label="Reorder card"
-                className="text-neutral-400 hover:text-neutral-700 transition-colors cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100"
+                className="cursor-grab opacity-0 text-neutral-400 transition-colors hover:text-neutral-700 active:cursor-grabbing group-hover:opacity-100"
                 {...dragHandleProps}
               >
                 <GripVertical className="h-4 w-4" />
               </button>
             )}
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-neutral-100 to-neutral-50">
-              <SelectedTabIcon className="h-4 w-4 text-neutral-700" />
-            </div>
             <h3 className="text-sm font-semibold text-neutral-900">
               {selectedTab.label}
             </h3>
@@ -176,7 +200,7 @@ function SubTabs({
       }))}
       selected={selectedTab}
       selectAction={(period) => onSelectTab(period)}
-      className="flex w-full flex-wrap rounded-none border-x-0 border-t-0 border-neutral-100 bg-neutral-50 px-6 py-2.5 sm:flex-nowrap"
+      className="flex w-full flex-wrap rounded-none border-x-0 border-t-0 border-neutral-100 bg-white px-6 py-2.5 sm:flex-nowrap"
       optionClassName="text-xs px-2 font-normal hover:text-neutral-700"
       indicatorClassName="border-0 bg-neutral-200 rounded"
     />

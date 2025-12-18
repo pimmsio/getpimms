@@ -11,7 +11,7 @@ import {
   getParamsFromURL,
   truncate,
 } from "@dub/utils";
-import { linkConstructorSimple } from "@dub/utils/src/functions/link-constructor";
+import { linkConstructorSimple } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
 import { createId } from "../create-id";
 import { combineTagIds } from "../tags/combine-tag-ids";

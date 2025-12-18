@@ -259,7 +259,7 @@ export function InputSelect({
               ref={floatingRefs.setFloating}
               style={floatingStyles}
               {...getFloatingProps()}
-              className="z-20 flex w-full min-w-[160px] flex-col overflow-hidden rounded border border-neutral-200 bg-white shadow-md"
+              className="z-20 flex w-full min-w-[160px] flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-md"
             >
               <div
                 ref={scrollRef}
@@ -308,7 +308,8 @@ const InputGroup = forwardRef<HTMLLabelElement, InputGroupProps>(
       <label
         ref={ref}
         className={cn(
-          "group relative flex cursor-pointer gap-2 rounded border border-neutral-200 bg-white px-1 pl-3 transition-all focus-within:border-neutral-500 focus-within:ring-0",
+          "group relative flex cursor-pointer gap-2 rounded-lg border border-neutral-200 bg-white px-1 pl-3 transition-colors",
+          "focus-within:border-neutral-300 focus-within:ring-2 focus-within:ring-neutral-300",
           className,
         )}
         {...rest}

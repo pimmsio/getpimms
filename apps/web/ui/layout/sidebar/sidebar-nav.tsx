@@ -1,3 +1,4 @@
+import { radius } from "@/ui/design/tokens";
 import { AnimatedSizeContainer, ClientOnly, Icon, NavWordmark } from "@dub/ui";
 import { cn } from "@dub/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -15,7 +16,8 @@ export type NavItemCommon = {
 export type NavSubItemType = NavItemCommon;
 
 export type NavItemType = NavItemCommon & {
-  icon: Icon;
+  // Icon is kept optional for backwards-compat, but SidebarNav intentionally does not render it.
+  icon?: Icon;
   items?: NavSubItemType[];
 };
 
@@ -53,7 +55,7 @@ export function SidebarNav<T extends Record<any, any>>({
 }) {
   return (
     <ClientOnly className="scrollbar-hide relative flex h-full w-full flex-col overflow-y-auto overflow-x-hidden">
-      <nav className="relative flex grow flex-col px-3 text-neutral-500 sm:py-3">
+      <nav className="relative flex grow flex-col px-3 text-neutral-600 sm:py-3">
         <div className="relative mt-2 flex items-center justify-between gap-1">
           {Object.entries(areas).map(([area, areaConfig]) => {
             const { title, backHref } = areaConfig(data);
@@ -69,11 +71,10 @@ export function SidebarNav<T extends Record<any, any>>({
                     : "pointer-events-none absolute opacity-0",
                 )}
                 aria-hidden={area !== currentArea ? true : undefined}
-                {...(area !== currentArea ? { inert: true } : {})}
               >
                 {title && backHref && (
                   <div className="py group -my-1 -ml-1 flex items-center gap-2 py-2 pr-1 text-sm font-medium text-neutral-900">
-                    <ChevronLeft className="size-4 text-neutral-500 transition-transform duration-100 group-hover:-translate-x-0.5" />
+                    <ChevronLeft className="size-4 text-neutral-600 transition-transform duration-100 group-hover:-translate-x-0.5" />
                     {title}
                   </div>
                 )}
@@ -101,29 +102,23 @@ export function SidebarNav<T extends Record<any, any>>({
                       key={idx}
                       className={cn(
                         "flex flex-col",
-                        name ? "pt-3 first:pt-0" : "pt-0",
-                        name === "Customize" &&
-                          "mt-2 rounded-2xl border border-neutral-200/80 bg-neutral-50/70 p-2.5 pb-2",
+                        name ? "pt-5 first:pt-0" : "pt-0",
                       )}
                     >
                       {name && (
                         <div
                           className={cn(
-                            "mb-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-neutral-500",
-                            name === "Customize" && "mb-2 px-1 text-neutral-600",
+                            "mb-2 flex items-center justify-between px-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500",
                           )}
                         >
                           <span>{name}</span>
                         </div>
                       )}
-                      <div className="flex flex-col gap-0">
-                        {items.map((item, itemIdx) => (
+                      <div className="flex flex-col gap-1">
+                        {items.map((item) => (
                           <NavItem
                             key={item.name}
                             item={item}
-                            leading={
-                              name === "Customize" ? `${itemIdx + 1}` : undefined
-                            }
                           />
                         ))}
                       </div>
@@ -131,7 +126,7 @@ export function SidebarNav<T extends Record<any, any>>({
                   ))}
                 </div>
 
-                {/* {currentArea === "default" && <CreateProgramCard />} */}
+                {/* Programs removed */}
 
                 <AnimatePresence>
                   {showNews && (
@@ -155,7 +150,9 @@ export function SidebarNav<T extends Record<any, any>>({
         </div>
       </nav>
       {bottom && currentArea === "default" && (
-        <div className="relative mt-auto flex flex-col justify-end">{bottom}</div>
+        <div className="relative mt-auto flex flex-col justify-end">
+          {bottom}
+        </div>
       )}
       <div className="relative mx-auto flex items-center justify-between gap-1 pb-2 pt-1">
         <NavWordmark className="h-6" isInApp />
@@ -167,13 +164,14 @@ export function SidebarNav<T extends Record<any, any>>({
 function NavItem({
   item,
   leading,
+  level = 0,
 }: {
   item: NavItemType | NavSubItemType;
   leading?: string;
+  level?: 0 | 1;
 }) {
   const { name, href, exact } = item;
 
-  const Icon = "icon" in item ? item.icon : undefined;
   const items = "items" in item ? item.items : undefined;
   const enabled = "enabled" in item ? item.enabled : true;
 
@@ -196,39 +194,43 @@ function NavItem({
         href={href}
         data-active={isActive}
         className={cn(
-          "group relative flex items-center gap-2 rounded-full px-2 py-1 text-sm font-medium leading-none text-neutral-700 transition-all duration-100 hover:bg-neutral-50 active:bg-neutral-100 sm:px-2.5 sm:py-1.5",
+          // Inset rows so the active background doesn't look like a full-width "pill"
+          "group relative mx-1 flex items-center justify-between text-neutral-800 transition-colors duration-100 hover:bg-neutral-100 active:bg-neutral-200/60",
+          level === 0
+            ? "px-3 py-2 text-sm font-medium leading-5"
+            : "px-3 py-1.5 text-[13px] font-medium leading-4",
+          radius.lg,
           "outline-none focus-visible:ring-2 focus-visible:ring-neutral-300",
           isActive &&
             !items &&
-            "bg-zinc-700 font-semibold text-white shadow-sm hover:bg-zinc-600 active:bg-zinc-800",
+            "bg-neutral-100 font-semibold text-neutral-900 hover:bg-neutral-100 active:bg-neutral-200/60",
+          isActive && items && "bg-neutral-100 text-neutral-900",
         )}
       >
-        {leading ? (
-          <span
+        <div className="flex min-w-0 items-center gap-2">
+          {leading ? (
+            <span
+              className={cn(
+                "flex size-5 shrink-0 items-center justify-center rounded bg-neutral-100 text-[11px] font-semibold text-neutral-700",
+                isActive && "bg-neutral-200 text-neutral-900",
+              )}
+              aria-hidden="true"
+            >
+              {leading}
+            </span>
+          ) : null}
+          <span className="truncate">{name}</span>
+        </div>
+
+        {items ? (
+          <ChevronDown
             className={cn(
-              "flex size-7 shrink-0 items-center justify-center overflow-visible rounded-full bg-white p-1 text-[12px] font-semibold text-[#08272E] transition-all duration-100",
+              "size-3.5 shrink-0 text-neutral-600 transition-transform duration-75",
+              isActive && "rotate-180 text-neutral-700",
             )}
             aria-hidden="true"
-          >
-            {leading}
-          </span>
-        ) : (
-          Icon && (
-          <Icon
-            className={cn(
-              "size-7 shrink-0 overflow-visible rounded-full bg-white p-1 text-[#08272E] transition-all duration-100",
-            )}
           />
-          )
-        )}
-        <span className={cn(isActive && "tracking-tight")}>{name}</span>
-        {items && (
-          <div className="flex grow justify-end">
-            {items ? (
-              <ChevronDown className="size-3.5 text-neutral-500 transition-transform duration-75 group-data-[active=true]:rotate-180" />
-            ) : null}
-          </div>
-        )}
+        ) : null}
       </Link>
       {items && (
         <AnimatedSizeContainer
@@ -243,10 +245,10 @@ function NavItem({
             aria-hidden={!isActive}
           >
             <div className="pl-px pt-1">
-              <div className="pl-3.5">
-                <div className="flex flex-col gap-0 border-l border-neutral-200 pl-2">
+              <div className="pl-3">
+                <div className="flex flex-col gap-1 pl-2">
                   {items.map((item) => (
-                    <NavItem key={item.name} item={item} />
+                    <NavItem key={item.name} item={item} level={1} />
                   ))}
                 </div>
               </div>
@@ -268,14 +270,13 @@ export function Area({
       className={cn(
         "left-0 top-0 flex size-full flex-col md:transition-[opacity,transform] md:duration-300",
         visible
-          ? "opacity-1 relative"
+          ? "opacity-100 relative"
           : cn(
               "pointer-events-none absolute opacity-0",
               direction === "left" ? "-translate-x-full" : "translate-x-full",
             ),
       )}
       aria-hidden={!visible ? "true" : undefined}
-      {...(!visible ? { inert: true } : {})}
     >
       {children}
     </div>

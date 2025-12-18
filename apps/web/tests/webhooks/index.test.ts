@@ -11,7 +11,6 @@ import {
 import z from "@/lib/zod";
 import { CustomerSchema } from "@/lib/zod/schemas/customers";
 import { linkEventSchema } from "@/lib/zod/schemas/links";
-import { EnrolledPartnerSchema } from "@/lib/zod/schemas/partners";
 import { describe, expect, test } from "vitest";
 
 const webhook = {
@@ -32,14 +31,6 @@ const saleWebhookEventSchemaExtended = saleWebhookEventSchema.extend({
   customer: customerSchemaExtended,
 });
 
-const enrolledPartnerSchemaExtended = EnrolledPartnerSchema.extend({
-  createdAt: z.string().transform((str) => new Date(str)),
-  payoutsEnabledAt: z
-    .string()
-    .transform((str) => (str ? new Date(str) : null))
-    .nullable(),
-});
-
 const eventSchemas: Record<WebhookTrigger, z.ZodSchema> = {
   "link.created": linkEventSchema,
   "link.updated": linkEventSchema,
@@ -47,8 +38,6 @@ const eventSchemas: Record<WebhookTrigger, z.ZodSchema> = {
   "link.clicked": clickWebhookEventSchema,
   "lead.created": leadWebhookEventSchemaExtended,
   "sale.created": saleWebhookEventSchemaExtended,
-  "partner.created": enrolledPartnerSchemaExtended,
-  "partner.enrolled": enrolledPartnerSchemaExtended,
 };
 
 describe("Webhooks", () => {

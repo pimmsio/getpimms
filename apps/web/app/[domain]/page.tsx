@@ -3,11 +3,17 @@ import PlaceholderContent from "./placeholder";
 
 export const runtime = "edge";
 
-export function generateMetadata({ params }: { params: { domain: string } }) {
-  const title = `${params.domain.toUpperCase()} - A ${
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ domain: string }>;
+}) {
+  const { domain } = await params;
+
+  const title = `${domain.toUpperCase()} - A ${
     process.env.NEXT_PUBLIC_APP_NAME
   } Custom Domain`;
-  const description = `${params.domain.toUpperCase()} is a custom domain on ${
+  const description = `${domain.toUpperCase()} is a custom domain on ${
     process.env.NEXT_PUBLIC_APP_NAME
   } - an open-source link management tool for modern marketing teams to create, share, and track short links.`;
 

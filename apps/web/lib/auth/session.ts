@@ -25,11 +25,16 @@ export const withSession = (handler: WithSessionHandler) =>
   withAxiom(
     async (
       req: AxiomRequest,
-      { params = {} }: { params: Record<string, string> | undefined },
+      {
+        params,
+      }: {
+        params?: Record<string, string> | Promise<Record<string, string>>;
+      } = {},
     ) => {
       try {
         let session: Session | undefined;
         let headers = {};
+        const resolvedParams = await Promise.resolve(params ?? {});
 
         const authorizationHeader = req.headers.get("Authorization");
         if (authorizationHeader) {
@@ -113,9 +118,14 @@ export const withSession = (handler: WithSessionHandler) =>
         }
 
         const searchParams = getSearchParams(req.url);
-        return await handler({ req, params, searchParams, session });
+        return await handler({ req, params: resolvedParams, searchParams, session });
       } catch (error) {
-        req.log.error(error);
+        // Never allow logging itself to crash the handler (otherwise Next reports "No response returned").
+        try {
+          (req as any).log?.error?.(error);
+        } catch {
+          // ignore
+        }
         return handleAndReturnErrorResponse(error);
       }
     },

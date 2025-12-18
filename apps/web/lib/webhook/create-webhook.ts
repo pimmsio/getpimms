@@ -20,20 +20,12 @@ export async function createWebhook({
   receiver,
   installationId,
 }: z.infer<typeof createWebhookSchema> & {
-  workspace: Pick<Project, "id" | "plan" | "partnersEnabled">;
+  workspace: Pick<Project, "id" | "plan">;
   receiver: WebhookReceiver;
   installationId?: string;
 }) {
   // Webhooks are only supported on Pro plans and above
   if (["free", "starter"].includes(workspace.plan)) {
-    return;
-  }
-
-  const hasPartnersTrigger = triggers.some((trigger) =>
-    ["partner.created", "partner.enrolled"].includes(trigger),
-  );
-
-  if (hasPartnersTrigger && !workspace.partnersEnabled) {
     return;
   }
 

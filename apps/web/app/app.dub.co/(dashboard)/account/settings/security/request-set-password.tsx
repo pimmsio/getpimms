@@ -1,7 +1,8 @@
 "use client";
 
 import useUser from "@/lib/swr/use-user";
-import { Button } from "@dub/ui";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { text } from "@/ui/design/tokens";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -36,10 +37,10 @@ export const RequestSetPassword = () => {
   };
 
   return (
-    <div className="rounded border border-neutral-100 bg-white">
-      <div className="flex flex-col gap-3 border-b border-neutral-100 p-5 sm:p-10">
-        <h2 className="text-xl font-medium">Password</h2>
-        <p className="pb-2 text-sm text-neutral-500">
+    <div className="space-y-4">
+      <div className="border-b border-neutral-100 pb-3">
+        <h2 className={text.sectionTitle}>Password</h2>
+        <p className="mt-1 text-sm text-neutral-500">
           {user?.provider && (
             <>
               Your account is managed by{" "}
@@ -49,15 +50,15 @@ export const RequestSetPassword = () => {
           You can set a password to use with your PIMMS account.
         </p>
       </div>
-      <div className="p-5 sm:p-10">
-        <Button
-          text="Create account password"
-          onClick={sendPasswordSetRequest}
-          loading={sending}
-          disabled={sending}
-          className="w-fit"
-        />
-      </div>
+      <AppButton
+        type="button"
+        onClick={sendPasswordSetRequest}
+        loading={sending}
+        disabled={sending}
+        className="w-fit"
+      >
+        Create account password
+      </AppButton>
     </div>
   );
 };

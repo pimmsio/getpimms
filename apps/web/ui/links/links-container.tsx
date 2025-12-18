@@ -7,9 +7,6 @@ import useLinksCount from "@/lib/swr/use-links-count";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { ExpandedLinkProps, UserProps } from "@/lib/types";
 import {
-  buttonVariants,
-  CardList,
-  MaxWidthWrapper,
   useRouterStuff,
 } from "@dub/ui";
 import { CursorRays, Hyperlink } from "@dub/ui/icons";
@@ -18,19 +15,19 @@ import { useSearchParams } from "next/navigation";
 import {
   createContext,
   Dispatch,
+  type ReactElement,
   SetStateAction,
   useContext,
   useMemo,
   useState,
 } from "react";
 import { AnimatedEmptyState } from "../shared/animated-empty-state";
-import { LinkCard } from "./link-card";
 import LinkCardPlaceholder from "./link-card-placeholder";
 import { LinkGroupHeader } from "./link-group-header";
 import { LinkSelectionProvider } from "./link-selection-provider";
 import { LinksDisplayContext } from "./links-display-provider";
 import { LinksToolbar } from "./links-toolbar";
-import Link from "next/link";
+import { LinkRow } from "./link-card";
 
 export type ResponseLink = ExpandedLinkProps & {
   user: UserProps;
@@ -48,7 +45,7 @@ const UTM_KEYS: UtmKey[] = [
 export default function LinksContainer({
   CreateLinkButton,
 }: {
-  CreateLinkButton: () => JSX.Element;
+  CreateLinkButton: () => ReactElement;
 }) {
   const { defaultFolderId } = useWorkspace();
   const { searchParams, queryParams } = useRouterStuff();
@@ -78,7 +75,7 @@ export default function LinksContainer({
   });
 
   return (
-    <MaxWidthWrapper className="grid max-w-full min-w-0 gap-y-2 px-0 lg:px-0">
+    <div className="grid w-full min-w-0 gap-y-2 px-0">
       <LinksList
         CreateLinkButton={CreateLinkButton}
         links={links}
@@ -88,7 +85,7 @@ export default function LinksContainer({
         setGroupBy={setGroupBy}
         queryParams={queryParams}
       />
-    </MaxWidthWrapper>
+    </div>
   );
 }
 
@@ -109,7 +106,7 @@ function LinksList({
   setGroupBy,
   queryParams,
 }: {
-  CreateLinkButton: () => JSX.Element;
+  CreateLinkButton: () => ReactElement;
   links?: ResponseLink[];
   count?: number;
   loading?: boolean;
@@ -263,12 +260,15 @@ function LinksList({
               <>
                 {/* Group controls */}
                 {groupedData.length >= 1 && (
-                  <div key="group-controls" className={cn(
-                    "mx-auto w-full max-w-screen-xl flex items-center justify-between gap-3 bg-neutral-50 border border-neutral-200 rounded-lg py-2.5 px-3 lg:px-10 transition-opacity duration-200",
-                    loading && "opacity-40"
-                  )}>
+                  <div
+                    key="group-controls"
+                    className={cn(
+                      "flex items-center justify-between gap-3 py-1 text-xs text-neutral-600 transition-opacity duration-200",
+                      loading && "opacity-40",
+                    )}
+                  >
                     <div className="flex items-center gap-3">
-                      <div className="text-xs text-neutral-600">
+                      <div>
                         <span className="font-semibold text-neutral-900">
                           {groupedData.length}
                         </span>{" "}
@@ -280,7 +280,7 @@ function LinksList({
                         {flatLinks?.length === 1 ? "link" : "links"}
                       </div>
                       {groupedData.length > 1 && (
-                        <div className="flex items-center gap-2.5 text-xs">
+                        <div className="flex items-center gap-2.5">
                           <button
                             onClick={expandAll}
                             disabled={allExpanded}
@@ -288,7 +288,7 @@ function LinksList({
                               "font-medium transition-all",
                               allExpanded
                                 ? "cursor-not-allowed text-neutral-400"
-                                : "text-neutral-600 hover:text-blue-600",
+                                : "text-neutral-600 hover:text-neutral-900",
                             )}
                           >
                             Expand all
@@ -301,7 +301,7 @@ function LinksList({
                               "font-medium transition-all",
                               allCollapsed
                                 ? "cursor-not-allowed text-neutral-400"
-                                : "text-neutral-600 hover:text-blue-600",
+                                : "text-neutral-600 hover:text-neutral-900",
                             )}
                           >
                             Collapse all
@@ -316,7 +316,7 @@ function LinksList({
                           del: ["groupBy"],
                         });
                       }}
-                      className="flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 transition-all hover:border-red-300 hover:bg-red-50 hover:text-red-600"
+                      className="flex items-center gap-1.5 rounded-lg border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 transition-[border-color] hover:border-neutral-300"
                     >
                       <span>Clear grouping</span>
                       <span className="text-[11px]">✕</span>
@@ -335,38 +335,29 @@ function LinksList({
                       onToggle={() => toggleGroup(group.groupValue)}
                       groupType={groupBy || undefined}
                     />
-                    {expandedGroups.has(group.groupValue) && (
-                      <CardList loading={loading}>
-                        {group.links.map((link) => (
-                          <LinkCard key={link.id} link={link} utmVisibility={utmVisibility} />
-                        ))}
-                      </CardList>
-                    )}
+                {expandedGroups.has(group.groupValue) && (
+                  <div className={cn("divide-y divide-neutral-100 transition-opacity duration-200", loading && "opacity-40")}>
+                    {group.links.map((link) => (
+                      <LinkRow key={link.id} link={link} utmVisibility={utmVisibility} />
+                    ))}
+                  </div>
+                )}
                   </div>
                 ))}
               </>
             ) : (
               // Regular view
-              <CardList 
-                loading={false}
-                className={cn("transition-opacity duration-200", loading && links?.length && "opacity-40")}
-              >
+              <div className={cn("divide-y divide-neutral-100 transition-opacity duration-200", loading && links?.length && "opacity-40")}>
                 {links?.length
-                  ? // Link cards
-                    links.map((link) => (
-                      <LinkCard key={link.id} link={link} utmVisibility={utmVisibility} />
+                  ? links.map((link) => (
+                      <LinkRow key={link.id} link={link} utmVisibility={utmVisibility} />
                     ))
-                  : // Initial loading placeholder cards (no skeleton animation)
-                    Array.from({ length: 8 }).map((_, idx) => (
-                      <CardList.Card
-                        key={idx}
-                        outerClassName="pointer-events-none animate-pulse"
-                        innerClassName="flex items-center gap-4"
-                      >
+                  : Array.from({ length: 8 }).map((_, idx) => (
+                      <div key={idx} className="pointer-events-none animate-pulse px-2 py-2 sm:px-5 sm:py-3">
                         <LinkCardPlaceholder />
-                      </CardList.Card>
+                      </div>
                     ))}
-              </CardList>
+              </div>
             )}
           </>
         ) : (
@@ -377,6 +368,8 @@ function LinksList({
                 ? "Bummer! There are no links that match your filters. Adjust your filters to yield more results."
                 : "Start creating your first link."
             }
+            // Remove the default framed border for the links empty state
+            className="border-0"
             cardContent={
               <>
                 <Hyperlink className="size-4 text-neutral-700" />
@@ -385,19 +378,6 @@ function LinksList({
                   <CursorRays className="size-3.5" />
                 </div>
               </>
-            }
-            addButton={
-              <Link
-                href="https://pim.ms/dAXN6jl"
-                target="_blank"
-                className={cn(
-                  buttonVariants({ variant: "secondary" }),
-                  "font-bold transition-all duration-300 hover:scale-105",
-                  "mt-4 flex h-9 items-center justify-center rounded border px-4 text-sm",
-                )}
-              >
-                Book a demo call
-              </Link>
             }
           />
         )}

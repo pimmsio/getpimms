@@ -37,7 +37,6 @@ export default function AddEditWebhookForm({
     id: workspaceId,
     slug: workspaceSlug,
     role,
-    partnersEnabled,
   } = useWorkspace();
 
   const [data, setData] = useState<NewWebhook | WebhookProps>(
@@ -118,20 +117,7 @@ export default function AddEditWebhookForm({
     triggers.includes(trigger),
   );
 
-  const workspaceLevelTriggers = WORKSPACE_LEVEL_WEBHOOK_TRIGGERS.filter(
-    (trigger) => {
-      // Deprecated
-      if (trigger === "partner.created") {
-        return webhook ? webhook.triggers.includes("partner.created") : false;
-      }
-
-      if (trigger === "partner.enrolled") {
-        return partnersEnabled;
-      }
-
-      return true;
-    },
-  );
+  const workspaceLevelTriggers = WORKSPACE_LEVEL_WEBHOOK_TRIGGERS;
 
   return (
     <>
@@ -143,7 +129,7 @@ export default function AddEditWebhookForm({
           <label htmlFor="name" className="flex items-center space-x-2">
             <h2 className="text-sm font-medium text-neutral-900">Name</h2>
           </label>
-          <div className="relative mt-2 rounded shadow-sm">
+          <div className="relative mt-2 rounded">
             <input
               className={cn(
                 "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
@@ -166,7 +152,7 @@ export default function AddEditWebhookForm({
           <label htmlFor="url" className="flex items-center space-x-2">
             <h2 className="text-sm font-medium text-neutral-900">URL</h2>
           </label>
-          <div className="relative mt-2 rounded shadow-sm">
+          <div className="relative mt-2 rounded">
             <input
               className={cn(
                 "block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",

@@ -1,5 +1,3 @@
-import { getAll } from "@vercel/edge-config";
-
 export const isBlacklistedDomain = async (
   domain: string,
 ): Promise<boolean | "whitelisted"> => {
@@ -12,11 +10,16 @@ export const isBlacklistedDomain = async (
   }
 
   try {
+    const { getAll } = await import("@vercel/edge-config");
     const {
       domains: blacklistedDomains,
       terms: blacklistedTerms,
       whitelistedDomains,
-    } = await getAll(["domains", "terms", "whitelistedDomains"]);
+    } = (await getAll(["domains", "terms", "whitelistedDomains"])) as {
+      domains: string[];
+      terms: string[];
+      whitelistedDomains: string[];
+    };
 
     if (whitelistedDomains.includes(domain)) {
       console.log("Domain is whitelisted", domain);

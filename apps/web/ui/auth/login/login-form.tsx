@@ -15,13 +15,11 @@ import { toast } from "sonner";
 import { EmailSignIn } from "./email-sign-in";
 import { GitHubButton } from "./github-button";
 import { GoogleButton } from "./google-button";
-import { SSOSignIn } from "./sso-sign-in";
 
 export const authMethods = [
   "google",
   "github",
   "email",
-  "saml",
   "password",
 ] as const;
 

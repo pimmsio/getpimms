@@ -2,7 +2,7 @@
 
 import { useResizeObserver } from "@dub/ui";
 import { motion } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, type RefObject } from "react";
 import { ContactForm } from "./contact-form";
 import { HelpArticles } from "./help-articles";
 
@@ -10,7 +10,9 @@ export function HelpSection() {
   const [screen, setScreen] = useState<"main" | "contact">("contact");
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const resizeObserverEntry = useResizeObserver(containerRef);
+  const resizeObserverEntry = useResizeObserver(
+    containerRef as unknown as RefObject<Element>,
+  );
 
   return (
     <motion.div

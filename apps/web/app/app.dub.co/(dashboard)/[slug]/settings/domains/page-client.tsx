@@ -5,6 +5,8 @@ import useDomains from "@/lib/swr/use-domains";
 import useDomainsCount from "@/lib/swr/use-domains-count";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { DOMAINS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/domains";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { text } from "@/ui/design/tokens";
 import DomainCard from "@/ui/domains/domain-card";
 import DomainCardPlaceholder from "@/ui/domains/domain-card-placeholder";
 import { useAddEditDomainModal } from "@/ui/modals/add-edit-domain-modal";
@@ -12,9 +14,7 @@ import { useRegisterDomainModal } from "@/ui/modals/register-domain-modal";
 import { useRegisterDomainSuccessModal } from "@/ui/modals/register-domain-success-modal";
 import { AnimatedEmptyState } from "@/ui/shared/animated-empty-state";
 import EmptyState from "@/ui/shared/empty-state";
-import { SearchBoxPersisted } from "@/ui/shared/search-box";
 import {
-  Button,
   CursorRays,
   Globe,
   PaginationControls,
@@ -52,7 +52,7 @@ export default function WorkspaceDomainsClient() {
   const { AddEditDomainModal, AddDomainButton, setShowAddEditDomainModal } =
     useAddEditDomainModal({
       buttonProps: {
-        className: "h-9 rounded",
+        className: "h-9 rounded-lg",
       },
     });
 
@@ -96,21 +96,7 @@ export default function WorkspaceDomainsClient() {
       <RegisterDomainSuccessModal />
       <div className="grid gap-5">
         <div className="flex flex-wrap justify-between gap-6">
-          <div className="flex items-center gap-x-2">
-            <h1 className="text-2xl font-semibold tracking-tight text-black">
-              Domains
-            </h1>
-            {/* <InfoTooltip
-              content={
-                <TooltipContent
-                  title="Learn more about how to add, configure, and verify custom domains on PiMMs."
-                  href="https://dub.co/help/article/how-to-add-custom-domain"
-                  target="_blank"
-                  cta="Learn more"
-                />
-              }
-            /> */}
-          </div>
+          <div className={text.pageTitle}>Domains</div>
           <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
             {/* <div className="w-full sm:w-auto">
               <SearchBoxPersisted
@@ -137,13 +123,21 @@ export default function WorkspaceDomainsClient() {
               }
             />
 
-            <Button
+            <AppButton
+              type="button"
               variant="primary"
-              className="h-9 w-fit rounded"
-              text={<div className="flex items-center gap-2">Add domain</div>}
+              size="sm"
+              className="h-9 w-fit"
               onClick={() => setShowAddEditDomainModal(true)}
-              disabledTooltip={disabledTooltip}
-            />
+              disabled={!!disabledTooltip}
+              title={
+                typeof disabledTooltip === "string"
+                  ? disabledTooltip
+                  : undefined
+              }
+            >
+              <div className="flex items-center gap-2">Add domain</div>
+            </AppButton>
           </div>
         </div>
 
@@ -167,7 +161,7 @@ export default function WorkspaceDomainsClient() {
                 ))}
               </ul>
             ) : archived || search ? (
-              <div className="flex flex-col items-center gap-4 rounded border border-neutral-100 py-10">
+              <div className="flex flex-col items-center gap-4 rounded-xl bg-white py-10">
                 <EmptyState
                   icon={Globe}
                   title={
@@ -205,7 +199,7 @@ export default function WorkspaceDomainsClient() {
             </ul>
           )}
         </div>
-        <div className="sticky bottom-0 rounded-b-[inherit] border-x border-neutral-100 bg-white px-3.5 py-2">
+        <div className="sticky bottom-0 rounded-b-[inherit] bg-white px-3.5 py-2">
           <PaginationControls
             pagination={pagination}
             setPagination={setPagination}

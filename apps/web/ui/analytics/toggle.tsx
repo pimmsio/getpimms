@@ -25,7 +25,6 @@ import { FOLDERS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/folders";
 import { TAGS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/tags";
 import {
   BlurImage,
-  Button,
   ChartLine,
   DateRangePicker,
   ExpandingArrow,
@@ -71,6 +70,8 @@ import {
 } from "react";
 import { useDebounce } from "use-debounce";
 import { WebhookErrorsWarning } from "../layout/sidebar/webhook-errors-warning";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 import { LinkIcon } from "../links/link-icon";
 import TagBadge from "../links/tag-badge";
 import { FolderIcon } from "../folders/folder-icon";
@@ -1099,7 +1100,7 @@ export default function Toggle({
   const filterSelect = (
     <div className="flex w-full gap-2 md:w-fit">
       <Filter.Select
-        className="w-full md:w-fit md:min-w-[100px]"
+        className="app-btn-secondary w-full justify-between md:w-fit md:min-w-[100px]"
         filters={regularFilters}
         activeFilters={activeRegularFilters}
         onSearchChange={setSearch}
@@ -1112,7 +1113,7 @@ export default function Toggle({
         askAI
       />
       <Filter.Select
-        className="w-full md:w-fit"
+        className="app-btn-secondary w-full justify-between md:w-fit"
         filters={utmFilters}
         activeFilters={activeUtmFilters}
         onSearchChange={setUtmSearch}
@@ -1175,7 +1176,7 @@ export default function Toggle({
         }
 
         queryParams({
-          del: "preset",
+          del: "interval",
           set: {
             start: range.from.toISOString(),
             end: range.to.toISOString(),
@@ -1231,13 +1232,13 @@ export default function Toggle({
     <>
       <div
         className={cn("py-3 md:py-3", {
-          "sticky top-14 z-10 bg-neutral-50": dashboardProps,
-          "shadow-md": scrolled && dashboardProps,
+          "sticky top-14 z-10 bg-white/85 backdrop-blur-sm": dashboardProps,
+          "border-b border-neutral-100": scrolled && dashboardProps,
         })}
       >
         <div
           className={cn(
-            "mx-auto flex w-full max-w-screen-xl flex-col gap-2 px-3 lg:px-10",
+            "flex w-full flex-col gap-2 px-3 lg:px-10",
             {
               "md:h-10": key,
             },
@@ -1324,33 +1325,35 @@ export default function Toggle({
                     )}
                     {page === "events" && !partnerPage && (
                       <>
-                        <Button
+                        <AppButton
+                          type="button"
                           variant="secondary"
-                          className="w-fit"
-                          icon={
-                            <ChartLine className="h-4 w-4 text-neutral-600" />
-                          }
-                          text={isMobile ? undefined : "Switch to Analytics"}
+                          size="sm"
+                          className="w-fit gap-2"
                           onClick={() =>
                             router.push(buildAnalyticsUrl(`/${slug}/analytics`))
                           }
-                        />
+                        >
+                          <ChartLine className="h-4 w-4 text-neutral-500" />
+                          {!isMobile && <span>Switch to Analytics</span>}
+                        </AppButton>
                         {/* <EventsOptions /> */}
                       </>
                     )}
                     {page === "links" && !partnerPage && (
                       <>
-                        <Button
+                        <AppButton
+                          type="button"
                           variant="secondary"
-                          className="w-fit"
-                          icon={
-                            <ChartLine className="h-4 w-4 text-neutral-600" />
-                          }
-                          text={isMobile ? undefined : "Switch to Analytics"}
+                          size="sm"
+                          className="w-fit gap-2"
                           onClick={() =>
                             router.push(buildAnalyticsUrl(`/${slug}/analytics`))
                           }
-                        />
+                        >
+                          <ChartLine className="h-4 w-4 text-neutral-500" />
+                          {!isMobile && <span>Switch to Analytics</span>}
+                        </AppButton>
                       </>
                     )}
                   </div>
@@ -1361,7 +1364,7 @@ export default function Toggle({
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-screen-xl px-3 lg:px-10">
+      <div className="w-full px-3 lg:px-10">
         <Filter.List
           filters={filters}
           activeFilters={[
@@ -1415,28 +1418,11 @@ function HotLeadsFilter() {
   const buttonText = totalWarmHot > 0 ? `${totalWarmHot}` : "Hot";
 
   return (
-    <Button
+    <AppButton
+      type="button"
       variant={hasWarmHotFilter ? "primary" : "secondary"}
-      className={cn(
-        "h-9 w-auto rounded-full px-3 gap-1.5",
-        hasWarmHotFilter && "bg-blue-600 hover:bg-blue-700 border-blue-600 text-white",
-        !hasWarmHotFilter && "border-neutral-200 hover:border-blue-300",
-      )}
-      icon={
-        <div className="flex items-center gap-0.5">
-          {/* Orange flame for warm */}
-          <SingleFlameIcon 
-            className="h-4 w-4 shrink-0" 
-            score={50}
-          />
-          {/* Red flame for hot */}
-          <SingleFlameIcon 
-            className="h-4 w-4 shrink-0" 
-            score={67}
-          />
-        </div>
-      }
-      text={buttonText}
+      size="sm"
+      className="w-auto gap-1.5"
       onClick={() => {
         if (hasWarmHotFilter) {
           // Remove filter
@@ -1456,7 +1442,13 @@ function HotLeadsFilter() {
           });
         }
       }}
-    />
+    >
+      <span className="flex items-center gap-0.5">
+        <SingleFlameIcon className="h-4 w-4 shrink-0" score={50} />
+        <SingleFlameIcon className="h-4 w-4 shrink-0" score={67} />
+      </span>
+      <span>{buttonText}</span>
+    </AppButton>
   );
 }
 
@@ -1490,8 +1482,8 @@ function SortSelector() {
               className={cn(
                 "w-full flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium transition-all",
                 selectedTab === option.value
-                  ? "bg-blue-600 text-white"
-                  : "text-neutral-700 hover:bg-neutral-100"
+                  ? "bg-neutral-900 text-white hover:bg-neutral-800"
+                  : "text-neutral-700 hover:bg-neutral-50"
               )}
             >
               {option.icon}
@@ -1502,12 +1494,10 @@ function SortSelector() {
       }
       align="end"
     >
-      <Button
-        variant="secondary"
-        className="h-10 px-3 text-sm w-fit rounded-full"
-        icon={<ArrowUpDown className="h-4 w-4" />}
-        text={`Sort: ${currentSort.label}`}
-      />
+      <AppButton type="button" variant="secondary" size="md" className="w-fit gap-2">
+        <ArrowUpDown className="h-4 w-4 text-neutral-500" />
+        <span>{`Sort: ${currentSort.label}`}</span>
+      </AppButton>
     </Popover>
   );
 }
@@ -1671,20 +1661,14 @@ function RefreshButton() {
         />
       }
     >
-      <Button
-        variant="secondary"
-        className="h-10 px-3 w-fit rounded-full"
-        icon={
-          <RefreshCw 
-            className={cn(
-              "h-4 w-4",
-              isRefreshing && "animate-spin"
-            )} 
-          />
-        }
+      <AppIconButton
+        type="button"
         onClick={handleRefresh}
         disabled={isDisabled}
-      />
+        className="h-10 w-10"
+      >
+        <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
+      </AppIconButton>
     </Tooltip>
   );
 }

@@ -4,16 +4,17 @@ import { cn } from "@dub/utils";
   This Analytics component lives in several different places:
   1. Workspace analytics page, e.g. app.dub.co/dub/analytics
   2. Public stats page, e.g. app.dub.co/share/dash_6NSA6vNm017MZwfzt8SubNSZ
-  3. Partner program links page, e.g. partners.pimms.io/programs/dub/links/analytics
 */
 
-import { useContext } from "react";
+import useWorkspace from "@/lib/swr/use-workspace";
+import { useContext, useEffect, useMemo, useState } from "react";
 import AnalyticsProvider, {
   AnalyticsContext,
   AnalyticsDashboardProps,
 } from "./analytics-provider";
-import Channels from "./channels";
 import Channel from "./channel";
+import Channels from "./channels";
+import { DraggableRows, type LayoutRow } from "./components/draggable-rows";
 import DestinationUrls from "./destination-urls";
 import Devices from "./devices";
 import Locations from "./locations";
@@ -21,9 +22,7 @@ import Main from "./main";
 import Toggle from "./toggle";
 import TopLinks from "./top-links";
 import UTMDetector from "./utm-detector";
-import useWorkspace from "@/lib/swr/use-workspace";
-import { useEffect, useMemo, useState } from "react";
-import { DraggableRows, type LayoutRow } from "./components/draggable-rows";
+import { AnalyticsCanvasProvider } from "./analytics-card";
 
 export default function Analytics({
   adminPage,
@@ -36,22 +35,34 @@ export default function Analytics({
     <AnalyticsProvider {...{ adminPage, dashboardProps }}>
       <AnalyticsContext.Consumer>
         {({ dashboardProps }) => {
+          const standalone = Boolean(dashboardProps);
           return (
             <div
               className={cn(
-                "min-h-screen bg-gradient-to-br from-gray-50 to-gray-100/50 pb-16",
-                dashboardProps &&
-                  "bg-gradient-to-br from-neutral-50 to-neutral-100/50 pt-10",
+                // When embedded inside the main app shell, avoid competing backgrounds.
+                !standalone && "pb-16",
+                // When used standalone (e.g. public/share pages), keep a subtle background.
+                standalone && "min-h-screen bg-neutral-50 pb-16 pt-10",
               )}
             >
-              <div className="sticky top-0 z-40 border-b border-gray-200/50 bg-white/90 shadow-sm backdrop-blur-lg">
+              <div
+                className={cn(
+                  "sticky top-0 z-40 border-b border-neutral-100 backdrop-blur-sm",
+                  // Embedded: the page surface is already white (PageContent), so keep this neutral.
+                  !standalone && "bg-white/85",
+                  // Standalone pages own their own background.
+                  standalone && "bg-neutral-50/95",
+                )}
+              >
                 <Toggle />
               </div>
-              <div className="mx-auto max-w-screen-xl px-2 pt-5 sm:px-4 sm:pt-7 lg:px-8">
-                <div className="space-y-6 sm:space-y-8">
-                  <Main />
-                  <StatsGrid />
-                </div>
+              <div className="px-3 pt-5 sm:pt-7 lg:px-10">
+                <AnalyticsCanvasProvider enabled={!standalone}>
+                  <div className="space-y-6 sm:space-y-8">
+                    <Main />
+                    <StatsGrid />
+                  </div>
+                </AnalyticsCanvasProvider>
               </div>
             </div>
           );
@@ -92,9 +103,17 @@ function StatsGrid() {
     // If dashboardProps, we didn't include top_links; ensure locations/devices are present cleanly
     if (dashboardProps) {
       return [
-        { rowId: "row:channels-referrers", left: "channels", right: "referrers" },
+        {
+          rowId: "row:channels-referrers",
+          left: "channels",
+          right: "referrers",
+        },
         { rowId: "row:utm", left: "utm", right: null, fullWidth: true },
-        { rowId: "row:destination-locations", left: "destination_urls", right: "locations" },
+        {
+          rowId: "row:destination-locations",
+          left: "destination_urls",
+          right: "locations",
+        },
         { rowId: "row:devices", left: "devices", right: null },
       ];
     }
@@ -160,12 +179,22 @@ function StatsGrid() {
             // We'll add utm row later.
             if (left === "utm") {
               // keep other card if any
-              if (right && right !== "utm" && flatAllowed.has(right) && !used.has(right)) {
+              if (
+                right &&
+                right !== "utm" &&
+                flatAllowed.has(right) &&
+                !used.has(right)
+              ) {
                 used.add(right);
                 out.push({ rowId: `row:${right}`, left: right, right: null });
               }
             } else if (right === "utm") {
-              if (left && left !== "utm" && flatAllowed.has(left) && !used.has(left)) {
+              if (
+                left &&
+                left !== "utm" &&
+                flatAllowed.has(left) &&
+                !used.has(left)
+              ) {
                 used.add(left);
                 out.push({ rowId: `row:${left}`, left, right: null });
               }
@@ -173,8 +202,10 @@ function StatsGrid() {
             continue;
           }
 
-          const leftOk = left && flatAllowed.has(left) && !used.has(left) ? left : null;
-          const rightOk = right && flatAllowed.has(right) && !used.has(right) ? right : null;
+          const leftOk =
+            left && flatAllowed.has(left) && !used.has(left) ? left : null;
+          const rightOk =
+            right && flatAllowed.has(right) && !used.has(right) ? right : null;
 
           if (leftOk) used.add(leftOk);
           if (rightOk) used.add(rightOk);
@@ -189,11 +220,18 @@ function StatsGrid() {
         // Ensure utm exists as full-width row
         const hasUtm = flatAllowed.has("utm");
         if (hasUtm) {
-          out.unshift({ rowId: "row:utm", left: "utm", right: null, fullWidth: true });
+          out.unshift({
+            rowId: "row:utm",
+            left: "utm",
+            right: null,
+            fullWidth: true,
+          });
         }
 
         // Add missing items (pack into rows of 2)
-        const missing = Array.from(flatAllowed).filter((id) => id !== "utm" && !used.has(id));
+        const missing = Array.from(flatAllowed).filter(
+          (id) => id !== "utm" && !used.has(id),
+        );
         for (let i = 0; i < missing.length; i += 2) {
           out.push({
             rowId: `row:missing-${i}`,
@@ -230,7 +268,9 @@ function StatsGrid() {
       case "utm":
         return <UTMDetector dragHandleProps={dragHandleProps} />;
       case "top_links":
-        return dashboardProps ? null : <TopLinks dragHandleProps={dragHandleProps} />;
+        return dashboardProps ? null : (
+          <TopLinks dragHandleProps={dragHandleProps} />
+        );
       case "destination_urls":
         return <DestinationUrls dragHandleProps={dragHandleProps} />;
       case "locations":
@@ -251,4 +291,3 @@ function StatsGrid() {
     />
   );
 }
-

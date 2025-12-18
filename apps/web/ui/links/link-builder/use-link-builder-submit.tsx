@@ -1,6 +1,6 @@
 import { mutatePrefix } from "@/lib/swr/mutate";
 import { UpgradeRequiredToast } from "@/ui/shared/upgrade-required-toast";
-import { Button, useCopyToClipboard } from "@dub/ui";
+import { useCopyToClipboard } from "@dub/ui";
 import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
 import { useCallback } from "react";
@@ -8,6 +8,7 @@ import { useFormContext } from "react-hook-form";
 import { toast } from "sonner";
 import { mutate } from "swr";
 import { LinkFormData, useLinkBuilderContext } from "./link-builder-provider";
+import { AppButton } from "@/ui/components/controls/app-button";
 
 export function useLinkBuilderSubmit({
   onSuccess,
@@ -88,10 +89,11 @@ export function useLinkBuilderSubmit({
                   <p className="text-[0.8125rem] text-neutral-900">
                     Successfully created link!
                   </p>
-                  <Button
+                  <AppButton
                     type="button"
-                    className="-my-1 h-7 w-fit"
-                    text="Copy link"
+                    size="sm"
+                    variant="secondary"
+                    className="-my-1 h-7 w-fit px-2 text-xs"
                     onClick={async () => {
                       try {
                         await copyToClipboard(data.shortLink, {
@@ -103,7 +105,9 @@ export function useLinkBuilderSubmit({
                         console.error("Failed to copy with manual button", e);
                       }
                     }}
-                  />
+                  >
+                    Copy link
+                  </AppButton>
                 </div>,
                 {
                   duration: 5000,

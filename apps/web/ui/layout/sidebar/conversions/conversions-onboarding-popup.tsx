@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@dub/ui";
+import { AppButton } from "@/ui/components/controls/app-button";
 import {
   arrow,
   autoUpdate,
@@ -55,9 +55,8 @@ export function ConversionOnboardingPopup({
       <div
         ref={refs.setFloating}
         style={floatingStyles}
-        className="drop-shadow-sm"
       >
-        <div className="animate-slide-up-fade relative flex w-[240px] flex-col rounded border border-neutral-100 bg-white p-3 text-center">
+        <div className="animate-slide-up-fade relative flex w-[240px] flex-col rounded bg-white p-3 text-center">
           {/* <div className="relative">
             <Link
               href="https://d.to/conversions"
@@ -77,7 +76,7 @@ export function ConversionOnboardingPopup({
             <button
               type="button"
               onClick={onDismiss}
-              className="absolute right-2 top-2 rounded border border-neutral-100 bg-white p-1.5 shadow-sm transition-colors duration-75 hover:bg-neutral-50"
+              className="absolute right-2 top-2 rounded bg-white p-1.5 transition-colors duration-75 hover:bg-neutral-50"
             >
               <X className="size-4 text-neutral-500" />
             </button>
@@ -89,20 +88,24 @@ export function ConversionOnboardingPopup({
             Follow our guide to get set up and track your sales
           </p>
           <div className="grid-row-2 mt-4 grid w-full gap-2">
-            <Button
+            <AppButton
               type="button"
               variant="secondary"
-              className="h-7 text-xs"
-              text="Maybe later"
+              size="sm"
+              className="h-8 text-xs"
               onClick={onDismiss}
-            />
-            <Button
+            >
+              Maybe later
+            </AppButton>
+            <AppButton
               type="button"
               variant="primary"
-              className="h-7 text-xs"
-              text="View guide"
+              size="sm"
+              className="h-8 text-xs"
               onClick={onCTA}
-            />
+            >
+              View guide
+            </AppButton>
           </div>
           <FloatingArrow
             ref={arrowRef}

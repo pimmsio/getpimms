@@ -1,12 +1,6 @@
-import useFolder from "@/lib/swr/use-folder";
 import useWorkspace from "@/lib/swr/use-workspace";
-import {
-  CardList,
-  ExpandingArrow,
-  useIntersectionObserver,
-  useMediaQuery,
-} from "@dub/ui";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useIntersectionObserver, useMediaQuery } from "@dub/ui";
+import { useRouter } from "next/navigation";
 import {
   createContext,
   Dispatch,
@@ -24,8 +18,6 @@ import { LinkTests } from "./link-tests";
 import { LinkUtmColumns } from "./link-utm-columns";
 import { LinkCell } from "../shared/link-cell";
 import { ResponseLink } from "./links-container";
-import Link from "next/link";
-import { FolderIcon } from "../folders/folder-icon";
 
 type UtmKey = "utm_source" | "utm_medium" | "utm_campaign" | "utm_term" | "utm_content";
 type UtmVisibility = {
@@ -45,7 +37,7 @@ export function useLinkCardContext() {
   return context;
 }
 
-export const LinkCard = memo(
+export const LinkRow = memo(
   ({
     link,
     utmVisibility,
@@ -72,17 +64,11 @@ const LinkCardInner = memo(
   const { isMobile } = useMediaQuery();
   const ref = useRef<HTMLDivElement>(null);
 
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const { slug, defaultFolderId } = useWorkspace();
+  const { slug } = useWorkspace();
 
   const entry = useIntersectionObserver(ref);
   const isInView = entry?.isIntersecting;
-
-  const { folder } = useFolder({
-    folderId: link.folderId,
-    enabled: isInView,
-  });
 
   const editUrl = useMemo(
     () => `/${slug}/links/${link.domain}/${link.key}`,
@@ -93,51 +79,44 @@ const LinkCardInner = memo(
     if (isInView) router.prefetch(editUrl);
   }, [isInView, editUrl]);
 
+  const handleRowClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isMobile) return;
+    if (e.defaultPrevented) return;
+
+    const target = e.target as HTMLElement | null;
+    // If the click originated from an interactive element, let that element handle it.
+    if (
+      target?.closest(
+        [
+          "a",
+          "button",
+          "input",
+          "textarea",
+          "select",
+          "option",
+          '[role="button"]',
+          '[role="link"]',
+          '[role="menuitem"]',
+          '[role="checkbox"]',
+          '[data-row-click="ignore"]',
+        ].join(","),
+      )
+    ) {
+      return;
+    }
+
+    router.push(editUrl);
+  };
+
   return (
     <>
-      <CardList.Card
+      <div
         key={link.id}
-        onClick={!isMobile ? () => router.push(editUrl) : undefined}
-        outerClassName="overflow-hidden transition-all duration-200"
-        innerClassName="p-0"
-        {...(link.folderId &&
-          ![defaultFolderId, searchParams.get("folderId")].includes(
-            link.folderId,
-          ) && {
-            banner: (
-              <Link
-                href={`/${slug}/links?folderId=${folder?.id}`}
-                className="group flex items-center justify-between gap-2 rounded-t-xl border-b border-neutral-100 bg-neutral-50 px-5 py-2 text-xs transition-colors hover:bg-neutral-100"
-              >
-                <div className="flex items-center gap-1.5">
-                  {folder ? (
-                    <FolderIcon
-                      folder={folder}
-                      shape="square"
-                      className="rounded"
-                      innerClassName="p-0.5"
-                      iconClassName="size-3"
-                    />
-                  ) : (
-                    <div className="size-4 rounded bg-neutral-200" />
-                  )}
-                  {folder ? (
-                    <span className="font-medium text-neutral-900">
-                      {folder.name}
-                    </span>
-                  ) : (
-                    <div className="h-4 w-20 rounded bg-neutral-200" />
-                  )}
-                  <ExpandingArrow className="invisible -ml-1.5 size-3.5 text-neutral-500 group-hover:visible" />
-                </div>
-                <p className="text-neutral-500 underline transition-colors group-hover:text-neutral-800">
-                  Open folder
-                </p>
-              </Link>
-            ),
-          })}
+        role="row"
+        className="group"
+        onClick={handleRowClick}
       >
-        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-3 overflow-hidden px-2 py-1.5 text-sm sm:px-5 sm:py-3">
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-3 rounded-md px-2 py-2 text-sm transition-[box-shadow] group-hover:ring-1 group-hover:ring-neutral-200/60 sm:px-5 sm:py-3">
           <div ref={ref} className="min-w-0 overflow-hidden">
             <LinkCell
               link={link}
@@ -169,7 +148,7 @@ const LinkCardInner = memo(
           </div>
         </div>
         <LinkTests link={link} />
-      </CardList.Card>
+      </div>
     </>
   );
 });

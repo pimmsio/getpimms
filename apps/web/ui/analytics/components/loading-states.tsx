@@ -100,7 +100,7 @@ export function LocationLoadingSkeleton() {
 export function TableLoadingSkeleton({ rows = 5 }: { rows?: number }) {
   return (
     <div className="animate-pulse">
-      <div className="border-b border-neutral-200 bg-neutral-50 px-4 py-3">
+      <div className="border-b border-neutral-100 bg-neutral-50 px-4 py-3">
         <div className="flex gap-4">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="h-3 bg-neutral-200 rounded w-24" />

@@ -188,7 +188,9 @@ export const GET = withSession(async ({ session, params }) => {
             <Text style={tw("text-sm font-medium text-neutral-800")}>
               PIMMS
             </Text>
-            <Text style={tw("text-sm text-neutral-500 ")}>alexandre@pimms.io</Text>
+            <Text style={tw("text-sm text-neutral-500 ")}>
+              alexandre@pimms.io
+            </Text>
           </View>
         </View>
 
@@ -373,7 +375,7 @@ export const GET = withSession(async ({ session, params }) => {
     </Document>,
   );
 
-  return new Response(pdf, {
+  return new Response(new Uint8Array(pdf), {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `inline; filename="Invoice-${invoice.number}.pdf"`,

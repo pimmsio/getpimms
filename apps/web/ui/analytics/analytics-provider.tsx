@@ -4,7 +4,6 @@ import {
   ANALYTICS_SALE_UNIT,
   ANALYTICS_VIEWS,
   DUB_LINKS_ANALYTICS_INTERVAL,
-  DUB_PARTNERS_ANALYTICS_INTERVAL,
   EVENT_TYPES,
   VALID_ANALYTICS_FILTERS,
 } from "@/lib/analytics/constants";
@@ -14,7 +13,6 @@ import {
   EventType,
 } from "@/lib/analytics/types";
 import { combineTagIds } from "@/lib/api/tags/combine-tag-ids";
-import usePartnerProfile from "@/lib/swr/use-partner-profile";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { PlanProps } from "@/lib/types";
 import { useLocalStorage } from "@dub/ui";
@@ -93,13 +91,12 @@ export default function AnalyticsProvider({
 
   const [requiresUpgrade, setRequiresUpgrade] = useState(false);
 
-  const { dashboardId, programSlug } = useParams() as {
+  const { dashboardId } = useParams() as {
     dashboardId?: string;
-    programSlug?: string;
   };
 
-  const { partner } = usePartnerProfile();
-  const partnerPage = partner?.id && programSlug ? true : false;
+  // Programs/partners removed.
+  const partnerPage = false;
 
   const domainSlug = searchParams?.get("domain");
   // key can be a query param (stats pages in app) or passed as a staticKey (shared analytics dashboards)
@@ -140,9 +137,7 @@ export default function AnalyticsProvider({
 
   // Use 7d as default for events/conversions page, otherwise use standard default
   const isEventsPage = pathname?.includes("/conversions");
-  const defaultInterval = partnerPage
-    ? DUB_PARTNERS_ANALYTICS_INTERVAL
-    : isEventsPage
+  const defaultInterval = isEventsPage
     ? "7d"
     : DUB_LINKS_ANALYTICS_INTERVAL;
 
@@ -204,13 +199,6 @@ export default function AnalyticsProvider({
         eventsApiPath: `/api/events`,
         domain: domainSlug,
       };
-    } else if (partner?.id && programSlug) {
-      return {
-        basePath: `/api/partner-profile/programs/${programSlug}/analytics`,
-        baseApiPath: `/api/partner-profile/programs/${programSlug}/analytics`,
-        eventsApiPath: `/api/partner-profile/programs/${programSlug}/events`,
-        domain: domainSlug,
-      };
     } else if (dashboardId) {
       // Public stats page, e.g. app.dub.co/share/dsh_123
       return {
@@ -231,8 +219,6 @@ export default function AnalyticsProvider({
     pathname,
     dashboardProps?.domain,
     dashboardId,
-    partner?.id,
-    programSlug,
     domainSlug,
     key,
     selectedTab,
@@ -301,10 +287,8 @@ export default function AnalyticsProvider({
   useEffect(() => setRequiresUpgrade(false), [queryString]);
 
   // Determine workspace slug for cache scoping
-  const workspaceSlug = slug || 
-    (adminPage ? 'admin' : '') || 
-    (partner?.id && programSlug ? `partner-${partner.id}` : '') ||
-    (dashboardId ? `dashboard-${dashboardId}` : 'default');
+  const workspaceSlug =
+    slug || (adminPage ? "admin" : "") || (dashboardId ? `dashboard-${dashboardId}` : "default");
 
   // Cache clearing will be handled by the new AnalyticsCacheProvider instance
   // with the new workspaceSlug - previous cache remains in localStorage but won't be accessed

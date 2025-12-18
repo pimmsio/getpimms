@@ -177,8 +177,8 @@ export function MixedLineItem({
 
   const commonClassName = cn(
     `block min-w-0 border-l-3 border-transparent px-4 py-2.5 transition-all duration-300 ease-out`,
-    `hover:border-blue-400/60 hover:bg-gradient-to-r hover:from-blue-50/40 hover:to-blue-50/10`,
-    `hover:shadow-[0_2px_8px_rgba(59,130,246,0.08)] hover:translate-x-0.5`,
+    "hover:border-neutral-300 hover:bg-neutral-50",
+    "hover:translate-x-0.5",
     `active:translate-x-0 active:transition-none`,
     isModalView ? "group" : "",
     "rounded-r-full",
@@ -206,7 +206,7 @@ export function MixedLineItem({
 
   const tooltipContent = (
     <div
-      className="w-64 rounded border-0 bg-white p-3 shadow-xl"
+      className="w-64 rounded-lg border border-neutral-100 bg-white p-3"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="mb-2 text-sm font-semibold text-gray-900">

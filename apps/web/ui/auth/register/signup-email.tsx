@@ -3,11 +3,12 @@
 import { sendOtpAction } from "@/lib/actions/send-otp";
 import z from "@/lib/zod";
 import { signUpSchema } from "@/lib/zod/schemas/auth";
-import { CtaButton, Input } from "@dub/ui";
+import { CtaButton } from "@dub/ui";
 import { useAction } from "next-safe-action/hooks";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useRegisterContext } from "./context";
+import { AppInput } from "@/ui/components/controls/app-input";
 
 type SignUpProps = z.infer<typeof signUpSchema>;
 
@@ -44,25 +45,31 @@ export const SignUpEmail = () => {
   return (
     <form onSubmit={handleSubmit(async (data) => await executeAsync(data))}>
       <div className="flex flex-col space-y-4">
-        <Input
+        <AppInput
           type="email"
           placeholder="Work Email"
           autoComplete="email"
           required
           readOnly={!errors.email && lockEmail}
           {...register("email")}
-          error={errors.email?.message}
-          className="rounded-full"
         />
-        <Input
+        {errors.email?.message && (
+          <p className="text-sm text-red-500" role="alert">
+            {errors.email.message}
+          </p>
+        )}
+        <AppInput
           type="password"
           placeholder="Password"
           required
           {...register("password")}
-          error={errors.password?.message}
           minLength={8}
-          className="rounded-full"
         />
+        {errors.password?.message && (
+          <p className="text-sm text-red-500" role="alert">
+            {errors.password.message}
+          </p>
+        )}
         <CtaButton
           type="submit"
           loading={isPending}

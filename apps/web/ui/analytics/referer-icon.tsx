@@ -18,7 +18,7 @@ export default function RefererIcon({
       alt={display}
       width={20}
       height={20}
-      className={cn("h-4 w-4 rounded-full", className)}
+      className={cn("h-4 w-4 rounded-md", className)}
     />
   );
 }

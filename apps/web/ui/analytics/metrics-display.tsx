@@ -6,6 +6,8 @@ export function MetricsDisplay({
   leads,
   sales,
   saleAmount,
+  totalClicks,
+  totalLeads,
   primaryMetric,
   className,
 }: {
@@ -13,9 +15,14 @@ export function MetricsDisplay({
   leads?: number;
   sales?: number;
   saleAmount?: number;
+  totalClicks?: number;
+  totalLeads?: number;
   primaryMetric: "clicks" | "leads" | "sales";
   className?: string;
 }) {
+  const canShowClicksPct = typeof totalClicks === "number" && totalClicks > 0;
+  const canShowLeadsPct = typeof totalLeads === "number" && totalLeads > 0;
+
   return (
     <div className={cn("flex items-center gap-2.5 text-sm", className)}>
       <span
@@ -26,7 +33,14 @@ export function MetricsDisplay({
             : "text-neutral-500"
         )}
       >
-        {nFormatter(clicks, { full: true })}
+        <span className={canShowClicksPct ? "group-hover:hidden" : undefined}>
+          {nFormatter(clicks, { full: true })}
+        </span>
+        {canShowClicksPct && (
+          <span className="hidden group-hover:inline">
+            {((clicks / totalClicks) * 100).toFixed(1)}%
+          </span>
+        )}
       </span>
 
       <span className="text-neutral-300">|</span>
@@ -38,7 +52,14 @@ export function MetricsDisplay({
             : "text-neutral-500",
         )}
       >
-        {nFormatter(leads ?? 0, { full: true })}
+        <span className={canShowLeadsPct ? "group-hover:hidden" : undefined}>
+          {nFormatter(leads ?? 0, { full: true })}
+        </span>
+        {canShowLeadsPct && (
+          <span className="hidden group-hover:inline">
+            {(((leads ?? 0) / totalLeads) * 100).toFixed(1)}%
+          </span>
+        )}
       </span>
 
       <span className="text-neutral-300">|</span>

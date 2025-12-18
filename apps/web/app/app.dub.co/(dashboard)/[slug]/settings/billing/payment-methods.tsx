@@ -2,10 +2,11 @@
 
 import usePaymentMethods from "@/lib/swr/use-payment-methods";
 import useWorkspace from "@/lib/swr/use-workspace";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { text } from "@/ui/design/tokens";
 import { AnimatedEmptyState } from "@/ui/shared/animated-empty-state";
-import { Badge, Button, CreditCard, MoneyBill2 } from "@dub/ui";
+import { Badge, CreditCard, MoneyBill2 } from "@dub/ui";
 import { cn } from "@dub/utils";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Stripe } from "stripe";
@@ -13,7 +14,7 @@ import { PaymentMethodTypesList } from "./payment-method-types";
 
 export default function PaymentMethods() {
   const router = useRouter();
-  const { slug, stripeId, partnersEnabled, plan } = useWorkspace();
+  const { slug, stripeId, plan } = useWorkspace();
   const { paymentMethods } = usePaymentMethods();
 
   const regularPaymentMethods = paymentMethods?.filter(
@@ -44,25 +45,29 @@ export default function PaymentMethods() {
   }
 
   return (
-    <div className="rounded border border-neutral-100 bg-white">
-      <div className="flex flex-col items-start justify-between gap-y-4 p-6 md:flex-row md:items-center md:p-8">
+    <div className="overflow-hidden rounded-lg bg-neutral-50/60">
+      <div className="flex flex-col items-start gap-y-1.5 px-4 py-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-xl font-medium">Payment methods</h2>
-          <p className="text-balance text-sm leading-normal text-neutral-500">
+          <h2 className={cn(text.sectionTitle, "text-base")}>
+            Payment methods
+          </h2>
+          <p className={cn(text.pageDescription, "text-sm")}>
             Manage your payment methods on PIMMS
           </p>
         </div>
         {stripeId && (
-          <Button
+          <AppButton
             variant="secondary"
-            text="Manage"
-            className="h-9 w-fit"
+            size="sm"
+            className="w-fit"
             onClick={() => managePaymentMethods()}
             loading={isLoading}
-          />
+          >
+            Manage
+          </AppButton>
         )}
       </div>
-      <div className="grid gap-4 border-x border-neutral-100 bg-neutral-100 p-6">
+      <div className="grid gap-3 rounded-md bg-white p-1">
         {regularPaymentMethods ? (
           regularPaymentMethods.length > 0 ? (
             regularPaymentMethods.map((paymentMethod) => (
@@ -91,21 +96,7 @@ export default function PaymentMethods() {
             <PaymentMethodCardSkeleton />
           </>
         )}
-        {/* {partnersEnabled && (
-          <>
-            {achPaymentMethods && achPaymentMethods.length > 0 ? (
-              achPaymentMethods.map((paymentMethod) => (
-                <PaymentMethodCard
-                  key={paymentMethod.id}
-                  type={paymentMethod.type}
-                  paymentMethod={paymentMethod}
-                />
-              ))
-            ) : (
-              <PaymentMethodCard type="us_bank_account" />
-            )}
-          </>
-        )} */}
+        {/* ACH payout payment methods were for partner payouts (removed). */}
       </div>
     </div>
   );
@@ -146,7 +137,7 @@ const PaymentMethodCard = ({
 
   return (
     <RecommendedForPayoutsWrapper recommended={type === "us_bank_account"}>
-      <div className="flex items-center justify-between rounded border border-neutral-100 bg-white p-4 drop-shadow-sm">
+      <div className="flex items-center justify-between rounded-xl bg-white px-4 py-3">
         <div className="flex items-center gap-4">
           <div
             className={cn(
@@ -170,13 +161,15 @@ const PaymentMethodCard = ({
           </div>
         </div>
         {!paymentMethod && (
-          <Button
+          <AppButton
             variant="primary"
-            className="h-9 w-fit"
-            text="Connect"
+            size="sm"
+            className="w-fit"
             onClick={() => addPaymentMethod(type)}
             loading={isLoading}
-          />
+          >
+            Connect
+          </AppButton>
         )}
       </div>
     </RecommendedForPayoutsWrapper>
@@ -191,12 +184,12 @@ const RecommendedForPayoutsWrapper = ({
   children: React.ReactNode;
 }) => {
   return recommended ? (
-    <div className="rounded-[0.75rem] bg-neutral-200 p-1">
+    <div className="rounded-[0.75rem] bg-neutral-50 p-1">
       {children}
       <span className="flex items-center gap-2 px-3 pb-1 pt-1.5 text-xs text-neutral-800">
         <MoneyBill2 className="size-3.5 shrink-0" />
         <span>
-          Recommended for PIMMS Partner payouts.{" "}
+          Recommended for payouts.{" "}
           {/* <Link
             href="https://dub.co/help/article/how-to-set-up-bank-account"
             target="_blank"
@@ -214,7 +207,7 @@ const RecommendedForPayoutsWrapper = ({
 
 const PaymentMethodCardSkeleton = () => {
   return (
-    <div className="flex items-center justify-between rounded border border-neutral-100 p-4">
+    <div className="flex items-center justify-between rounded-xl bg-white px-4 py-3">
       <div className="flex items-center gap-4">
         <div className="flex size-12 animate-pulse items-center justify-center rounded bg-neutral-200" />
         <div>

@@ -8,7 +8,7 @@ import {
 } from "@dub/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, Paperclip, Trash2 } from "lucide-react";
-import { Dispatch, SetStateAction, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useRef, useState, type RefObject } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { toast } from "sonner";
 
@@ -83,7 +83,9 @@ export function ContactForm({
     "idle",
   );
 
-  const { handleKeyDown } = useEnterSubmit(formRef);
+  const { handleKeyDown } = useEnterSubmit(
+    formRef as unknown as RefObject<HTMLFormElement>,
+  );
 
   return (
     <div className="relative w-full px-3 pb-16 pt-5 sm:px-6">

@@ -25,6 +25,7 @@ import { useLinkSelection } from "./link-selection-provider";
 import { LinkUtmColumns } from "./link-utm-columns";
 import { LinksListContext, ResponseLink } from "./links-container";
 import { LinksDisplayContext } from "./links-display-provider";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 
 type UtmKey = "utm_source" | "utm_medium" | "utm_campaign" | "utm_term" | "utm_content";
 type UtmVisibility = {
@@ -71,7 +72,7 @@ export function LinkDetailsColumn({
       {/* Actions: Copy must be next to overflow */}
       <div className="flex shrink-0 items-center gap-1">
         <Tooltip content="Copy short link" delayDuration={150}>
-          <button
+          <AppIconButton
             type="button"
             onClick={(e) => {
               e.stopPropagation();
@@ -79,11 +80,11 @@ export function LinkDetailsColumn({
                 success: "Copied!",
               });
             }}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-700 transition-colors hover:bg-neutral-50 active:bg-neutral-100"
+            className="h-8 w-8"
             aria-label="Copy short link"
           >
             <Copy className="h-4 w-4" />
-          </button>
+          </AppIconButton>
         </Tooltip>
         <Controls link={link} />
       </div>
@@ -158,7 +159,7 @@ function LinkMetricsStrip({ link }: { link: ResponseLink }) {
       className={cn(
         "group flex items-center gap-2 px-2 py-1 text-[12px] text-neutral-700",
         "border-l border-neutral-200/70",
-        "hover:bg-neutral-50",
+        "transition-[box-shadow] hover:ring-1 hover:ring-neutral-200/60",
       )}
     >
       <Metric
@@ -318,7 +319,7 @@ const Controls = memo(({ link }: { link: ResponseLink }) => {
         openPopover={openPopover}
         setOpenPopover={setOpenPopover}
         shortcutsEnabled={openPopover || (hovered && openMenuLinkId === null)}
-        className="h-8 w-8 rounded-md border border-neutral-200 bg-white px-0 hover:bg-neutral-50 active:bg-neutral-100"
+        className="h-8 w-8 rounded-md border border-neutral-200 bg-white px-0 hover:border-neutral-300"
         iconClassName="size-4 text-neutral-700"
       />
     </div>

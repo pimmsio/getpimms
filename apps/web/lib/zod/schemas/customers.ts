@@ -1,8 +1,6 @@
 import z from "@/lib/zod";
-import { DiscountSchema } from "./discount";
 import { LinkSchema } from "./links";
 import { booleanQuerySchema, getPaginationQuerySchema } from "./misc";
-import { PartnerSchema } from "./partners";
 
 export const getCustomersQuerySchema = z.object({
   email: z
@@ -20,7 +18,7 @@ export const getCustomersQuerySchema = z.object({
   includeExpandedFields: booleanQuerySchema
     .optional()
     .describe(
-      "Whether to include expanded fields on the customer (`link`, `partner`, `discount`).",
+      "Whether to include expanded fields on the customer (`link`).",
     ),
 });
 
@@ -92,23 +90,14 @@ export const CustomerSchema = z.object({
   conversions: z.number().optional().describe("Number of conversion events (leads + sales) for this customer in the current query."),
 });
 
-// An extended schema that includes the customer's link, partner, and discount.
+// An extended schema that includes the customer's link.
 export const CustomerEnrichedSchema = CustomerSchema.extend({
   link: LinkSchema.pick({
     id: true,
     domain: true,
     key: true,
     shortLink: true,
-    programId: true,
   }).nullish(),
-  programId: z.string().nullish(),
-  partner: PartnerSchema.pick({
-    id: true,
-    name: true,
-    email: true,
-    image: true,
-  }).nullish(),
-  discount: DiscountSchema.nullish(),
 });
 
 export const CUSTOMERS_MAX_PAGE_SIZE = 100;

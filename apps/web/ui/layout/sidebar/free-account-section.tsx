@@ -14,16 +14,16 @@ export function FreeAccountSection() {
   }
 
   return (
-    <div className="mx-3 mb-3 rounded-lg border border-neutral-200 bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
+    <div className="mx-3 mb-3 rounded-lg bg-white p-4">
       <div className="mb-2">
         <h3 className="text-sm font-semibold text-neutral-900">Free Account</h3>
-        <p className="mt-1 text-xs text-neutral-600">
+        <p className="mt-1 text-xs text-neutral-500">
           Your free account is active.
         </p>
       </div>
       <Link
         href={`/${slug}/settings/billing/upgrade`}
-        className="mt-3 text-xs font-semibold text-neutral-600 hover:text-neutral-900"
+        className="mt-3 text-xs font-semibold text-neutral-700 hover:text-neutral-900"
       >
         Explore plans →
       </Link>

@@ -3,10 +3,19 @@ import type Stripe from "stripe";
 
 // Handle event "charge.refunded"
 export async function chargeRefunded(event: Stripe.Event) {
-  const charge = event.data.object as Stripe.Charge;
+  const charge = event.data.object as Stripe.Charge & {
+    // Stripe's Charge type no longer includes invoice in newer SDKs, but the webhook payload
+    // may still include it for invoice-backed charges.
+    invoice?: string | { id: string } | null;
+  };
   const stripeAccountId = event.account as string;
 
-  if (!charge.invoice) {
+  const invoiceId =
+    typeof charge.invoice === "string"
+      ? charge.invoice
+      : charge.invoice?.id ?? null;
+
+  if (!invoiceId) {
     return `Charge ${charge.id} has no invoice, skipping...`;
   }
 
@@ -32,7 +41,7 @@ export async function chargeRefunded(event: Stripe.Event) {
     where: {
       programId_invoiceId: {
         programId: workspace.programs[0].id,
-        invoiceId: charge.invoice as string,
+        invoiceId,
       },
     },
     select: {
@@ -44,7 +53,7 @@ export async function chargeRefunded(event: Stripe.Event) {
   });
 
   if (!commission) {
-    return `Commission not found for invoice ${charge.invoice}`;
+    return `Commission not found for invoice ${invoiceId}`;
   }
 
   if (commission.status === "paid") {

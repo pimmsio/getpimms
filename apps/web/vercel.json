@@ -21,18 +21,6 @@
       "schedule": "0 8 * * *"
     },
     {
-      "path": "/api/cron/payouts/clicks",
-      "schedule": "0 0,12 * * *"
-    },
-    {
-      "path": "/api/cron/payouts/leads",
-      "schedule": "0 * * * *"
-    },
-    {
-      "path": "/api/cron/payouts/sales",
-      "schedule": "0 * * * *"
-    },
-    {
       "path": "/api/cron/aggregate-clicks",
       "schedule": "0 0 * * *"
     }

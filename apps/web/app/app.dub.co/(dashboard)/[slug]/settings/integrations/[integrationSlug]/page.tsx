@@ -7,11 +7,12 @@ export const revalidate = 0;
 export default async function IntegrationPage({
   params,
 }: {
-  params: { slug: string; integrationSlug: string };
+  params: Promise<{ slug: string; integrationSlug: string }>;
 }) {
+  const { slug, integrationSlug } = await params;
   const integration = await prisma.integration.findUnique({
     where: {
-      slug: params.integrationSlug,
+      slug: integrationSlug,
     },
     include: {
       _count: {
@@ -22,7 +23,7 @@ export default async function IntegrationPage({
       installations: {
         where: {
           project: {
-            slug: params.slug,
+            slug,
           },
         },
         include: {
@@ -49,7 +50,7 @@ export default async function IntegrationPage({
   }
 
   if (integration.comingSoon) {
-    redirect(`/${params.slug}/settings/integrations`);
+    redirect(`/${slug}/settings/integrations`);
   }
 
   if (integration.guideUrl) {

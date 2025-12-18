@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@dub/ui";
+import { AppButton } from "@/ui/components/controls/app-button";
 import { useOnboardingProgress } from "@/lib/onboarding/use-onboarding-progress";
 import { useState } from "react";
 
@@ -47,12 +47,15 @@ export function Form() {
         </p>
       </div>
 
-      <Button
+      <AppButton
+        type="button"
         onClick={handleFinish}
-        text="Finish"
         loading={isSubmitting || isLoading}
-        className="w-full bg-blue-600 hover:bg-blue-700"
-      />
+        className="w-full"
+        variant="primary"
+      >
+        Finish
+      </AppButton>
     </div>
   );
 }

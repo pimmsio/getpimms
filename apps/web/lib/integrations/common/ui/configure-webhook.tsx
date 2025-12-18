@@ -11,8 +11,7 @@ import {
 import { Link } from "@/ui/shared/icons";
 import { LinksSelector } from "@/ui/webhooks/link-selector";
 import { Button, Checkbox } from "@dub/ui";
-import { fetcher } from "@dub/utils";
-import { cn } from "@dub/utils/src/functions";
+import { fetcher, cn } from "@dub/utils";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";

@@ -1,6 +1,7 @@
 "use client";
 
-import { Button } from "@dub/ui";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { AppTextarea } from "@/ui/components/controls/app-textarea";
 import { useMediaQuery } from "@dub/ui";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { useOnboardingProgress } from "@/lib/onboarding/use-onboarding-progress";
@@ -34,22 +35,24 @@ export function TrackingFamiliarityForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex w-full flex-col gap-6">
-      <textarea
+      <AppTextarea
         value={answer}
         onChange={(e) => setAnswer(e.target.value)}
         placeholder="e.g., I've used Google Analytics, I'm new to tracking, I've used UTM parameters before..."
         autoFocus={!isMobile}
-        className="block w-full rounded-lg border border-blue-200 bg-white px-4 py-4 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+        className="min-h-[140px]"
         rows={6}
         required
       />
-      <Button
+      <AppButton
         type="submit"
-        text="Continue →"
         loading={isSubmitting || isLoading}
         disabled={!answer.trim()}
-        className="w-full bg-blue-600 hover:bg-blue-700"
-      />
+        className="w-full"
+        variant="primary"
+      >
+        Continue →
+      </AppButton>
     </form>
   );
 }

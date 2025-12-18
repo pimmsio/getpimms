@@ -2,24 +2,16 @@
 
 import useCustomer from "@/lib/swr/use-customer";
 import useWorkspace from "@/lib/swr/use-workspace";
-import {
-  CommissionResponse,
-  CustomerActivityResponse,
-  CustomerEnriched,
-  SaleEvent,
-} from "@/lib/types";
+import { CustomerActivityResponse, CustomerEnriched } from "@/lib/types";
 import { CustomerDetailsColumn } from "@/ui/customers/customer-details-column";
-import { CustomerPartnerEarningsTable } from "@/ui/customers/customer-partner-earnings-table";
-import { CustomerSalesTable } from "@/ui/customers/customer-sales-table";
-import { UnifiedActivityList } from "@/ui/customers/unified-activity-list";
 import { LeadScoringDetails } from "@/ui/customers/lead-scoring-details";
-import { calculateCustomerHotness } from "@/lib/analytics/calculate-hotness";
+import { UnifiedActivityList } from "@/ui/customers/unified-activity-list";
+import { text } from "@/ui/design/tokens";
 import { BackLink } from "@/ui/shared/back-link";
-import { ArrowUpRight, CopyButton } from "@dub/ui";
+import { CopyButton } from "@dub/ui";
 import { OG_AVATAR_URL, fetcher } from "@dub/utils";
 import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
-import { memo } from "react";
 import useSWR from "swr";
 
 export function CustomerPageClient() {
@@ -69,7 +61,7 @@ export function CustomerPageClient() {
             <img
               src={customer.avatar || `${OG_AVATAR_URL}${customer.name}`}
               alt={customer.name}
-              className="size-14 rounded-full border border-neutral-200"
+              className="size-14 rounded-full"
             />
           </div>
         ) : (
@@ -78,7 +70,7 @@ export function CustomerPageClient() {
         <div className="flex flex-col gap-1">
           {customer ? (
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl font-bold leading-tight text-neutral-900">
+              <h1 className={text.pageTitle}>
                 {customer.name}
               </h1>
             </div>
@@ -89,7 +81,7 @@ export function CustomerPageClient() {
           {customer ? (
             customer.email && (
               <div className="flex items-center gap-1">
-                <span className="text-sm font-medium text-neutral-500">
+                <span className="text-sm text-neutral-500">
                   {customer.email}
                 </span>
                 <CopyButton
@@ -124,59 +116,20 @@ export function CustomerPageClient() {
               </h2>
               <Link
                 href={`/${slug}/conversions?customerId=${customerId}`}
-                className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                className="text-sm font-medium text-blue-600 hover:text-blue-800"
               >
                 View all →
               </Link>
             </div>
-            
+
             <UnifiedActivityList
               customerActivity={customerActivity}
               clickHistory={clickHistory}
-              isLoading={!customer || isCustomerActivityLoading || isClickHistoryLoading}
+              isLoading={
+                !customer || isCustomerActivityLoading || isClickHistoryLoading
+              }
             />
           </section>
-
-          {customer?.programId && customer.partner && (
-            <section className="flex flex-col">
-              <h2 className="py-3 text-lg font-semibold text-neutral-900">
-                Partner Earnings
-              </h2>
-              <div className="flex flex-col gap-4">
-                <Link
-                  href={`/${slug}/programs/${customer.programId}/partners?partnerId=${customer.partner.id}`}
-                  target="_blank"
-                  className="border-border-subtle group flex items-center justify-between overflow-hidden rounded border bg-neutral-100 px-4 py-3"
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <img
-                      src={
-                        customer.partner.image ||
-                        `${OG_AVATAR_URL}${customer.partner.name}`
-                      }
-                      alt={customer.partner.name}
-                      className="size-8 rounded-full"
-                    />
-                    <div className="min-w-0">
-                      <span className="block truncate text-xs font-semibold leading-tight text-neutral-900">
-                        {customer.partner.name}
-                      </span>
-                      {customer?.partner.email && (
-                        <span className="block min-w-0 truncate text-xs font-medium leading-tight text-neutral-500">
-                          {customer.partner.email}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <ArrowUpRight className="size-3 shrink-0 -translate-x-0.5 translate-y-0.5 opacity-0 transition-[transform,opacity] group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100" />
-                </Link>
-                <PartnerEarningsTable
-                  programId={customer.programId}
-                  customerId={customerId}
-                />
-              </div>
-            </section>
-          )}
         </div>
 
         {/* Right side details */}
@@ -191,31 +144,3 @@ export function CustomerPageClient() {
     </div>
   );
 }
-
-const PartnerEarningsTable = memo(
-  ({ programId, customerId }: { programId: string; customerId: string }) => {
-    const { id: workspaceId, slug } = useWorkspace();
-
-    const { data: commissions, isLoading: isComissionsLoading } = useSWR<
-      CommissionResponse[]
-    >(
-      `/api/programs/${programId}/commissions?customerId=${customerId}&workspaceId=${workspaceId}&pageSize=8`,
-      fetcher,
-    );
-
-    const { data: totalCommissions, isLoading: isTotalCommissionsLoading } =
-      useSWR<{ all: { count: number } }>(
-        `/api/programs/${programId}/commissions/count?customerId=${customerId}&workspaceId=${workspaceId}`,
-        fetcher,
-      );
-
-    return (
-      <CustomerPartnerEarningsTable
-        commissions={commissions}
-        totalCommissions={totalCommissions?.all?.count}
-        viewAllHref={`/${slug}/programs/${programId}/commissions?customerId=${customerId}`}
-        isLoading={isComissionsLoading || isTotalCommissionsLoading}
-      />
-    );
-  },
-);

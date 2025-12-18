@@ -1,8 +1,63 @@
+@import "tailwindcss";
+
+@config "../tailwind.config.ts";
+
 @import "../../../packages/tailwind-config/themes.css";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@layer base {
+  /* Tailwind v4 preflight keeps <button> at cursor: default; make interactive buttons feel clickable. */
+  button:not(:disabled),
+  input[type="button"]:not(:disabled),
+  input[type="submit"]:not(:disabled),
+  input[type="reset"]:not(:disabled),
+  summary,
+  [role="button"]:not([aria-disabled="true"]):not([data-disabled]) {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  /* Shared minimal “design system” utilities (use everywhere instead of ad-hoc class strings) */
+  .app-icon-btn {
+    @apply rounded-lg p-1.5 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300;
+  }
+
+  .app-btn-secondary {
+    @apply inline-flex h-10 items-center justify-center rounded-md border border-neutral-200 bg-white px-3 text-sm font-medium text-neutral-700 transition-colors hover:border-neutral-300 hover:bg-neutral-50 active:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300;
+  }
+
+  .app-btn-secondary-sm {
+    @apply inline-flex h-9 items-center justify-center rounded-md border border-neutral-200 bg-white px-3 text-sm font-medium text-neutral-700 transition-colors hover:border-neutral-300 hover:bg-neutral-50 active:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300;
+  }
+
+  .app-btn-muted {
+    @apply inline-flex h-9 items-center justify-center rounded-md border border-neutral-200 bg-neutral-100/60 px-3 text-sm font-medium text-neutral-700 transition-colors hover:border-neutral-300 hover:bg-neutral-100 active:bg-neutral-200/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300;
+  }
+
+  .app-input {
+    @apply h-10 w-full rounded-lg bg-white px-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300;
+  }
+
+  .app-row {
+    @apply flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 transition-colors hover:bg-neutral-50;
+  }
+
+  .app-empty-icon {
+    @apply flex h-12 w-12 items-center justify-center rounded-xl bg-white;
+  }
+
+  .app-card {
+    @apply rounded-xl bg-white;
+  }
+
+  .app-card-header {
+    @apply flex items-center justify-between bg-neutral-50 px-4 py-3;
+  }
+
+  .app-card-body {
+    @apply px-4 py-3;
+  }
+}
 
 /* Prevent overscroll/elastic scrolling on macOS */
 html {

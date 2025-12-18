@@ -1,8 +1,6 @@
 import { convertCurrency } from "@/lib/analytics/convert-currency";
 import { createId } from "@/lib/api/create-id";
 import { includeTags } from "@/lib/api/links/include-tags";
-import { notifyPartnerSale } from "@/lib/api/partners/notify-partner-sale";
-import { createPartnerCommission } from "@/lib/partners/create-partner-commission";
 import {
   getClickEvent,
   getLeadEvent,
@@ -296,31 +294,6 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
       },
     }),
   ]);
-
-  // for program links
-  if (link && link.programId && link.partnerId) {
-    const commission = await createPartnerCommission({
-      event: "sale",
-      programId: link.programId,
-      partnerId: link.partnerId,
-      linkId: link.id,
-      eventId,
-      customerId: customer.id,
-      amount: saleData.amount,
-      quantity: 1,
-      invoiceId,
-      currency: saleData.currency,
-    });
-
-    if (commission) {
-      waitUntil(
-        notifyPartnerSale({
-          link,
-          commission,
-        }),
-      );
-    }
-  }
 
   waitUntil(
     (async () => {

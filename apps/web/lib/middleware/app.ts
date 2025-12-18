@@ -8,6 +8,7 @@ import { getOnboardingStep } from "./utils/get-onboarding-step";
 import { getUserViaToken } from "./utils/get-user-via-token";
 import { isTopLevelSettingsRedirect } from "./utils/is-top-level-settings-redirect";
 import WorkspacesMiddleware from "./workspaces";
+import { redis } from "../upstash/redis";
 
 export default async function AppMiddleware(req: NextRequest) {
   const { path, fullPath, searchParamsString } = parse(req);
@@ -26,7 +27,6 @@ export default async function AppMiddleware(req: NextRequest) {
     path !== "/login" &&
     path !== "/forgot-password" &&
     path !== "/register" &&
-    path !== "/auth/saml" &&
     !path.startsWith("/auth/reset-password/") &&
     !path.startsWith("/share/")
   ) {
@@ -37,65 +37,17 @@ export default async function AppMiddleware(req: NextRequest) {
         req.url,
       ),
     );
+  }
 
-    // if there's a user
-  } else if (user) {
+  // if there's a user
+  if (user) {
     // /new is a special path that creates a new link (or workspace if the user doesn't have one yet)
     if (path === "/new") {
       return NewLinkMiddleware(req, user);
+    }
 
-      /* Onboarding redirects
-
-        - User was created less than a day ago
-        - User is not invited to a workspace (redirect straight to the workspace)
-        - The path does not start with /account
-        - The user has not completed the onboarding step
-      */
-    } else if (
-      (path === "/onboarding" || path.startsWith("/onboarding/")) &&
-      new Date(user.createdAt).getTime() > Date.now() - 60 * 60 * 24 * 1000 &&
-      !isWorkspaceInvite
-    ) {
-      // Always redirect /onboarding paths to dashboard with onboarding modal
-      const step = path === "/onboarding" ? "tracking-familiarity" : path.replace("/onboarding/", "");
-      const defaultWorkspace = await getDefaultWorkspace(user);
-      if (defaultWorkspace) {
-        // Set step if not already set
-        const currentStep = await getOnboardingStep(user);
-        if (!currentStep) {
-          const { redis } = await import("@/lib/upstash");
-          await redis.set(`onboarding-step:${user.id}`, step);
-        }
-        return NextResponse.redirect(
-          new URL(`/${defaultWorkspace}?onboarding=${step}`, req.url),
-        );
-      }
-    } else if (
-      new Date(user.createdAt).getTime() > Date.now() - 60 * 60 * 24 * 1000 &&
-      !isWorkspaceInvite &&
-      !path.startsWith("/account") &&
-      !req.nextUrl.searchParams.has("onboarding") && // Don't redirect if already on dashboard with onboarding
-      (await getOnboardingStep(user)) !== "completed"
-    ) {
-      const step = await getOnboardingStep(user);
-      const defaultWorkspace = await getDefaultWorkspace(user);
-      
-      if (!step && defaultWorkspace) {
-        const { redis } = await import("@/lib/upstash");
-        await redis.set(`onboarding-step:${user.id}`, "tracking-familiarity");
-        return NextResponse.redirect(
-          new URL(`/${defaultWorkspace}?onboarding=tracking-familiarity`, req.url),
-        );
-      }
-      
-      if (step && step !== "completed" && defaultWorkspace && path !== `/${defaultWorkspace}`) {
-        return NextResponse.redirect(
-          new URL(`/${defaultWorkspace}?onboarding=${step}`, req.url),
-        );
-      }
-
-      // if the path is / or /login or /register, redirect to the default workspace
-    } else if (
+    // if the path is / or /login or /register, redirect to the default workspace
+    if (
       [
         "/",
         "/login",
@@ -113,10 +65,36 @@ export default async function AppMiddleware(req: NextRequest) {
       isTopLevelSettingsRedirect(path)
     ) {
       return WorkspacesMiddleware(req, user);
-    } else if (appRedirect(path)) {
+    }
+
+    if (appRedirect(path)) {
       return NextResponse.redirect(
         new URL(`${appRedirect(path)}${searchParamsString}`, req.url),
       );
+    }
+
+    // Check onboarding on workspace routes (before rewrite)
+    // Only for new users (< 24h) to avoid unnecessary Redis calls
+    if (!isWorkspaceInvite && !path.startsWith("/account") && !req.nextUrl.searchParams.has("onboarding")) {
+      const isNewUser = new Date(user.createdAt).getTime() > Date.now() - 60 * 60 * 24 * 1000;
+      
+      if (isNewUser) {
+        let step = await getOnboardingStep(user);
+        const defaultWorkspace = await getDefaultWorkspace(user);
+        
+        // If no step, initialize it
+        if (defaultWorkspace && !step) {
+          const { redis } = await import("@/lib/upstash");
+          step = "tracking-familiarity";
+          await redis.set(`onboarding-step:${user.id}`, step);
+        }
+        
+        if (defaultWorkspace && step && step !== "completed") {
+          return NextResponse.redirect(
+            new URL(`/${defaultWorkspace}/today?onboarding=${step}`, req.url),
+          );
+        }
+      }
     }
   }
 

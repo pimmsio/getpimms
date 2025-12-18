@@ -64,7 +64,7 @@ function AdminLinks() {
               <div className="w-full md:w-56 lg:w-64">
                 <SearchBoxPersisted
                   loading={isValidating}
-                  inputClassName="h-10"
+                  inputClassName="app-input"
                 />
               </div>
             </div>
@@ -77,7 +77,7 @@ function AdminLinks() {
                   onRemove={onRegularFilterRemove}
                   onSearchChange={setSearch}
                   onSelectedFilterChange={setSelectedFilter}
-                  className="w-full min-w-[100px]"
+                  className="app-btn-secondary w-full min-w-[100px] justify-between"
                 />
                 <Filter.Select
                   filters={utmFilters}
@@ -86,7 +86,7 @@ function AdminLinks() {
                   onRemove={onUtmFilterRemove}
                   onSearchChange={setUtmSearch}
                   onSelectedFilterChange={setSelectedUtmFilter}
-                  className="w-full"
+                  className="app-btn-secondary w-full justify-between"
                   hideIcon
                 >
                   By UTM

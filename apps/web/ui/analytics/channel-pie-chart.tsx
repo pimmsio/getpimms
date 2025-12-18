@@ -235,11 +235,6 @@ export default function ChannelPieChart({
                       stroke="white"
                       strokeWidth={2}
                       className="transition-smooth cursor-pointer will-change-transform"
-                      style={{
-                        filter: isHovered
-                          ? `drop-shadow(0 0 8px ${arc.data.color}80) drop-shadow(0 0 16px ${arc.data.color}40)`
-                          : "none",
-                      }}
                       initial={{ opacity: 0, scale: 0 }}
                       animate={{
                         opacity: hoveredChannel ? (isHovered ? 1 : 0.7) : 1,

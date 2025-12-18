@@ -1,11 +1,13 @@
 "use client";
 
 import { requestPasswordResetAction } from "@/lib/actions/request-password-reset";
-import { Button, Input, useMediaQuery } from "@dub/ui";
+import { useMediaQuery } from "@dub/ui";
 import { useAction } from "next-safe-action/hooks";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { AppInput } from "@/ui/components/controls/app-input";
 
 export const ForgotPasswordForm = () => {
   const router = useRouter();
@@ -36,7 +38,7 @@ export const ForgotPasswordForm = () => {
         <div className="flex flex-col gap-8">
           <label>
             <span className="text-sm font-medium text-neutral-700">Email</span>
-            <Input
+            <AppInput
               type="email"
               autoFocus={!isMobile}
               value={email}
@@ -45,12 +47,13 @@ export const ForgotPasswordForm = () => {
               className="mt-1"
             />
           </label>
-          <Button
+          <AppButton
             type="submit"
-            text={isPending ? "Sending..." : "Send reset link"}
             loading={isPending}
             disabled={email.length < 3}
-          />
+          >
+            Send reset link
+          </AppButton>
         </div>
       </form>
     </div>

@@ -7,6 +7,8 @@ import {
 import { useIsMegaFolder } from "@/lib/swr/use-is-mega-folder";
 import useLinks from "@/lib/swr/use-links";
 import useWorkspace from "@/lib/swr/use-workspace";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 import { RequestFolderEditAccessButton } from "@/ui/folders/request-edit-button";
 import LinkDisplay from "@/ui/links/link-display";
 import LinksContainer from "@/ui/links/links-container";
@@ -18,16 +20,15 @@ import { useLinkBuilder } from "@/ui/modals/link-builder";
 import { ThreeDots } from "@/ui/shared/icons";
 import { SearchBoxPersisted } from "@/ui/shared/search-box";
 import {
-  Button,
   Filter,
   IconMenu,
-  MaxWidthWrapper,
   Popover,
   Tooltip,
   TooltipContent,
   useRouterStuff,
 } from "@dub/ui";
 import { Download, Globe, TableIcon, Tag } from "@dub/ui/icons";
+import { cn } from "@dub/utils";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
@@ -67,7 +68,7 @@ function WorkspaceLinks() {
     const domain = searchParams.get("domain");
     const key = searchParams.get("key");
     const referer = searchParams.get("referer");
-    
+
     if (domain || key || referer) {
       queryParams({
         del: ["domain", "key", "referer"],
@@ -110,131 +111,133 @@ function WorkspaceLinks() {
     <>
       <LinkBuilder />
       <AddEditTagModal />
-      {/* Subtle background gradient for depth */}
-      <div className="fixed inset-0 -z-10 bg-gradient-to-b from-neutral-50/40 via-white to-white pointer-events-none" />
-      <div className="flex w-full items-center pt-3 pb-1">
-        <MaxWidthWrapper className="flex flex-col gap-y-4">
-          {/* Enhanced Controls Bar with unified styling */}
-          <div className="rounded-xl border border-neutral-200/80 bg-gradient-to-b from-neutral-50/50 to-white/80 p-3 shadow-sm backdrop-blur-sm">
-            <div className="flex flex-wrap items-center justify-between gap-3 lg:flex-nowrap">
-              {/* Left side: Filter, Period, Create Link */}
-              <div className="flex grow gap-x-3 max-md:w-full">
-                {!isMegaFolder && (
-                  <div className="flex grow basis-0 gap-2 md:grow-0">
-                    <Filter.Select
-                      filters={regularFilters}
-                      activeFilters={activeRegularFilters}
-                      onSelect={onRegularFilterSelect}
-                      onRemove={onRegularFilterRemove}
-                      onSearchChange={setSearch}
-                      onSelectedFilterChange={setSelectedFilter}
-                      className="w-full h-10 min-w-[100px]"
-                      emptyState={{
-                        tagIds: (
-                          <div className="flex flex-col items-center gap-2 p-2 text-center text-sm">
-                            <div className="flex items-center justify-center rounded border border-neutral-200 bg-neutral-50 p-3">
-                              <Tag className="size-6 text-neutral-700" />
-                            </div>
-                            <p className="mt-2 font-medium text-neutral-950">
-                              No tags found
-                            </p>
-                            <p className="mx-auto mt-1 w-full max-w-[180px] text-neutral-700">
-                              Add tags to organize your links
-                            </p>
-                            <div>
-                              <Button
-                                className="mt-1 h-8"
-                                onClick={() => setShowAddEditTagModal(true)}
-                                text="Add tag"
-                              />
-                            </div>
+      <div className="flex flex-col gap-3 px-3 py-4 pb-10 lg:px-10">
+        <div className="flex flex-col gap-2 border-b border-neutral-100 pb-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 lg:flex-nowrap">
+            {/* Left side: Filters + Create Link */}
+            <div className="flex grow gap-x-3 max-md:w-full">
+              {!isMegaFolder && (
+                <div className="flex grow basis-0 gap-2 md:grow-0">
+                  <Filter.Select
+                    filters={regularFilters}
+                    activeFilters={activeRegularFilters}
+                    onSelect={onRegularFilterSelect}
+                    onRemove={onRegularFilterRemove}
+                    onSearchChange={setSearch}
+                    onSelectedFilterChange={setSelectedFilter}
+                    className="app-btn-secondary w-full min-w-[100px] justify-between"
+                    emptyState={{
+                      tagIds: (
+                        <div className="flex flex-col items-center gap-2 p-2 text-center text-sm">
+                          <div className="flex items-center justify-center rounded-lg bg-neutral-100/60 p-3">
+                            <Tag className="size-6 text-neutral-700" />
                           </div>
-                        ),
-                        domain: (
-                          <div className="flex flex-col items-center gap-2 p-2 text-center text-sm">
-                            <div className="flex items-center justify-center rounded border border-neutral-200 bg-neutral-50 p-3">
-                              <Globe className="size-6 text-neutral-700" />
-                            </div>
-                            <p className="mt-2 font-medium text-neutral-950">
-                              No domains found
-                            </p>
-                            <p className="mx-auto mt-1 w-full max-w-[180px] text-neutral-700">
-                              Add a custom domain to match your brand
-                            </p>
-                            <div>
-                              <Button
-                                className="mt-1 h-8"
-                                onClick={() =>
-                                  router.push(`/${slug}/settings/domains`)
-                                }
-                                text="Add domain"
-                              />
-                            </div>
+                          <p className="mt-2 font-medium text-neutral-950">
+                            No tags found
+                          </p>
+                          <p className="mx-auto mt-1 w-full max-w-[180px] text-neutral-700">
+                            Add tags to organize your links
+                          </p>
+                          <div>
+                            <AppButton
+                              type="button"
+                              size="sm"
+                              variant="secondary"
+                              className="mt-1 h-8"
+                              onClick={() => setShowAddEditTagModal(true)}
+                            >
+                              Add tag
+                            </AppButton>
                           </div>
-                        ),
-                      }}
-                    />
-                    <Filter.Select
-                      filters={utmFilters}
-                      activeFilters={activeUtmFilters}
-                      onSelect={onUtmFilterSelect}
-                      onRemove={onUtmFilterRemove}
-                      onSearchChange={setUtmSearch}
-                      onSelectedFilterChange={setSelectedUtmFilter}
-                      className="w-full h-10"
-                      hideIcon
-                    >
-                      By UTM
-                    </Filter.Select>
-                  </div>
-                )}
-                
-                {isLoading ? (
-                  <div className="flex grow-0 animate-pulse items-center space-x-2">
-                    <div className="h-11 w-32 rounded-full bg-neutral-200" />
-                  </div>
-                ) : canCreateLinks ? (
-                  <div className="hidden grow-0 sm:block">
-                    <CreateLinkButton />
-                  </div>
-                ) : (
-                  <div className="w-fit">
-                    <RequestFolderEditAccessButton
-                      folderId={folderId!}
-                      workspaceId={workspaceId!}
-                      variant="primary"
-                    />
-                  </div>
-                )}
-              </div>
+                        </div>
+                      ),
+                      domain: (
+                        <div className="flex flex-col items-center gap-2 p-2 text-center text-sm">
+                          <div className="flex items-center justify-center rounded-lg bg-neutral-100/60 p-3">
+                            <Globe className="size-6 text-neutral-700" />
+                          </div>
+                          <p className="mt-2 font-medium text-neutral-950">
+                            No domains found
+                          </p>
+                          <p className="mx-auto mt-1 w-full max-w-[180px] text-neutral-700">
+                            Add a custom domain to match your brand
+                          </p>
+                          <div>
+                            <AppButton
+                              type="button"
+                              size="sm"
+                              variant="secondary"
+                              className="mt-1 h-8"
+                              onClick={() =>
+                                router.push(`/${slug}/settings/domains`)
+                              }
+                            >
+                              Add domain
+                            </AppButton>
+                          </div>
+                        </div>
+                      ),
+                    }}
+                  />
+                  <Filter.Select
+                    filters={utmFilters}
+                    activeFilters={activeUtmFilters}
+                    onSelect={onUtmFilterSelect}
+                    onRemove={onUtmFilterRemove}
+                    onSearchChange={setUtmSearch}
+                    onSelectedFilterChange={setSelectedUtmFilter}
+                    className="app-btn-secondary w-full justify-between"
+                    hideIcon
+                  >
+                    By UTM
+                  </Filter.Select>
+                </div>
+              )}
 
-              {/* Right side: Search, Display */}
-              <div className="flex w-full gap-3 md:w-auto">
-                <div className="w-full md:w-44 xl:w-72">
-                  <SearchBoxPersisted
-                    loading={isValidating}
-                    inputClassName="h-10"
-                    placeholder="Search links..."
+              {isLoading ? (
+                <div className="flex grow-0 animate-pulse items-center space-x-2">
+                  <div className="h-10 w-32 rounded-lg bg-neutral-200" />
+                </div>
+              ) : canCreateLinks ? (
+                <div className="hidden grow-0 sm:block">
+                  <CreateLinkButton />
+                </div>
+              ) : (
+                <div className="w-fit">
+                  <RequestFolderEditAccessButton
+                    folderId={folderId!}
+                    workspaceId={workspaceId!}
+                    variant="primary"
                   />
                 </div>
-                <div className="grow basis-0 md:grow-0">
-                  <LinkDisplay />
-                </div>
+              )}
+            </div>
+
+            {/* Right side: Search + Display */}
+            <div className="flex w-full gap-3 md:w-auto">
+              <div className="w-full md:w-44 xl:w-72">
+                <SearchBoxPersisted
+                  loading={isValidating}
+                  inputClassName="app-input"
+                  placeholder="Search links..."
+                />
+              </div>
+              <div className="grow basis-0 md:grow-0">
+                <LinkDisplay />
               </div>
             </div>
           </div>
-          
-          {/* Active Filters */}
-          <Filter.List
-            filters={filters}
-            activeFilters={activeFilters}
-            onRemove={onRemove}
-            onRemoveAll={onRemoveAll}
-          />
-        </MaxWidthWrapper>
-      </div>
 
-      <div className="mt-3">
+          <div className="-mx-1">
+            <Filter.List
+              filters={filters}
+              activeFilters={activeFilters}
+              onRemove={onRemove}
+              onRemoveAll={onRemoveAll}
+            />
+          </div>
+        </div>
+
         <LinksContainer
           CreateLinkButton={canCreateLinks ? CreateLinkButton : () => <></>}
         />
@@ -366,12 +369,13 @@ const MoreLinkOptions = () => {
         setOpenPopover={setOpenPopover}
         align="end"
       >
-        <Button
+        <AppIconButton
+          type="button"
           onClick={() => setOpenPopover(!openPopover)}
-          variant="secondary"
-          className="w-auto px-1.5"
-          icon={<ThreeDots className="h-5 w-5 text-neutral-500" />}
-        />
+          className="h-9 w-9"
+        >
+          <ThreeDots className="h-5 w-5 text-neutral-500" />
+        </AppIconButton>
       </Popover>
     </>
   );

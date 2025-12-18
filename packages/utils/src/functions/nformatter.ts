@@ -24,12 +24,10 @@ export function nFormatter(
     { value: 1e15, symbol: "P" },
     { value: 1e18, symbol: "E" },
   ];
-  var item = lookup
+  const item = lookup
     .slice()
     .reverse()
-    .find(function (item) {
-      return num >= item.value;
-    });
+    .find((item) => num >= item.value);
   return item
     ? (num / item.value).toFixed(opts.digits).replace(rx, "$1") + item.symbol
     : "0";

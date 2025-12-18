@@ -1,5 +1,4 @@
 import {
-  Button,
   Github,
   Google,
   Label,
@@ -16,6 +15,8 @@ import { cn } from "@dub/utils";
 import { ChevronRight } from "lucide-react";
 import { useContext, useState } from "react";
 import { UserSurveyContext } from ".";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { AppInput } from "@/ui/components/controls/app-input";
 
 const options = [
   {
@@ -131,14 +132,14 @@ export default function SurveyForm({
         {source === "other" && (
           <div className="mt-3">
             <label>
-              <div className="mt-2 flex rounded shadow-sm">
-                <input
+              <div className="mt-2 flex rounded">
+                <AppInput
                   type="text"
                   required
                   maxLength={32}
                   autoFocus={!isMobile}
                   autoComplete="off"
-                  className="block w-full rounded border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
+                  className="w-full"
                   placeholder="Reddit, Indie Hackers, etc."
                   value={otherSource}
                   onChange={(e) => setOtherSource(e.target.value)}
@@ -148,18 +149,20 @@ export default function SurveyForm({
           </div>
         )}
         {source !== undefined && (
-          <Button
-            className="mt-4 h-9"
-            variant="primary"
+          <AppButton
             type="submit"
-            text="Submit"
+            variant="primary"
+            size="sm"
+            className="mt-4"
             loading={status === "loading"}
             disabled={
               status === "success" ||
               !source.length ||
               (source === "other" && !otherSource)
             }
-          />
+          >
+            Submit
+          </AppButton>
         )}
       </form>
     </div>

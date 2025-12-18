@@ -38,13 +38,8 @@ export function useOnboardingProgress() {
 
       const workspaceSlug = providedSlug || slug;
       if (workspaceSlug) {
-        // Navigate to dashboard with onboarding step in query
-        router.push(`/${workspaceSlug}?onboarding=${step}`);
-      } else {
-        const queryParams = PRE_WORKSPACE_STEPS.includes(step)
-          ? ""
-          : `?workspace=${workspaceSlug}`;
-        router.push(`/onboarding/${step}${queryParams}`);
+        // Navigate to /today with onboarding step in query
+        router.push(`/${workspaceSlug}/today?onboarding=${step}`);
       }
     },
     [execute, router, slug],

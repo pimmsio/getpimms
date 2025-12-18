@@ -20,33 +20,32 @@ import {
   LEGAL_WORKSPACE_ID,
   LOCALHOST_GEO_DATA,
   LOCALHOST_IP,
-  isDubDomain,
   isUnsupportedKey,
   nanoid,
   punyEncode,
 } from "@dub/utils";
 import { ipAddress } from "@vercel/functions";
-import { cookies } from "next/headers";
-import {
-  NextFetchEvent,
-  NextRequest,
-  NextResponse,
-  userAgent,
-} from "next/server";
+import { NextRequest, NextResponse, userAgent } from "next/server";
 import { linkCache } from "../api/links/cache";
 import { isCaseSensitiveDomain } from "../api/links/case-sensitivity";
 import { clickCache } from "../api/links/click-cache";
 import { getLinkViaEdge } from "../planetscale";
 import { getDomainViaEdge } from "../planetscale/get-domain-via-edge";
+import { normalizeSubstack } from "./utils/applink/extract-substack";
 import { hasEmptySearchParams } from "./utils/has-empty-search-params";
 import { resolveABTestURL } from "./utils/resolve-ab-test-url";
-import { normalizeSubstack } from "./utils/applink/extract-substack";
 
 export default async function LinkMiddleware(
   req: NextRequest,
-  ev: NextFetchEvent,
+  ctx?: { waitUntil?: (promise: Promise<unknown>) => void },
 ) {
-  let { domain, fullKey: originalKey, searchParamsObj } = parse(req);
+  const waitUntil =
+    ctx?.waitUntil ??
+    ((promise: Promise<unknown>) => {
+      void promise.catch(() => {});
+    });
+
+  const { domain, fullKey: originalKey, searchParamsObj } = parse(req);
 
   if (!domain) {
     return NextResponse.next();
@@ -86,7 +85,7 @@ export default async function LinkMiddleware(
   let cachedLink = await linkCache.get({ domain, key });
 
   if (!cachedLink) {
-    let linkData = await getLinkViaEdge({
+    const linkData = await getLinkViaEdge({
       domain,
       key,
     });
@@ -114,7 +113,7 @@ export default async function LinkMiddleware(
     // format link to fit the RedisLinkProps interface
     cachedLink = formatRedisLink(linkData as any);
     // cache in Redis
-    ev.waitUntil(linkCache.set(linkData as any));
+    waitUntil(linkCache.set(linkData as any));
   }
 
   const {
@@ -138,6 +137,7 @@ export default async function LinkMiddleware(
   const testUrl = resolveABTestURL({
     testVariants,
     testCompletedAt,
+    cookieStore: req.cookies,
   });
 
   let url = testUrl || cachedLink.url;
@@ -219,7 +219,7 @@ export default async function LinkMiddleware(
   const pimmsIdCookieName = `pimms_id_${domain}_${key}`;
   const pimmsAnonymousIdCookieName = `pimms_anonymous_id`;
 
-  const cookieStore = cookies();
+  const cookieStore = req.cookies;
 
   // Get or create persistent anonymous visitor ID
   let anonymousId = cookieStore.get(pimmsAnonymousIdCookieName)?.value;
@@ -254,7 +254,7 @@ export default async function LinkMiddleware(
 
   // for root domain links, if there's no destination URL, rewrite to placeholder page
   if (!url) {
-    ev.waitUntil(
+    waitUntil(
       recordClick({
         req,
         clickId,
@@ -286,7 +286,9 @@ export default async function LinkMiddleware(
   const isBot = detectBot(req);
 
   const { country } =
-    process.env.VERCEL === "1" && req.geo ? req.geo : LOCALHOST_GEO_DATA;
+    process.env.VERCEL === "1" && (req as any).geo
+      ? ((req as any).geo as typeof LOCALHOST_GEO_DATA)
+      : LOCALHOST_GEO_DATA;
 
   // rewrite to proxy page (/proxy/[domain]/[key]) if it's a bot and proxy is enabled
   if (isBot && proxy) {
@@ -309,7 +311,7 @@ export default async function LinkMiddleware(
     !isFromSameApp(ua.browser?.name, getMatchedApp(url)?.appName) &&
     !shouldIndex // we don't deeplink indexed links
   ) {
-    ev.waitUntil(
+    waitUntil(
       recordClick({
         req,
         clickId,
@@ -355,7 +357,7 @@ export default async function LinkMiddleware(
     );
     // rewrite to deeplink page if the link is a mailto: or tel:
   } else if (isSupportedDeeplinkProtocol(url) && !shouldIndex) {
-    ev.waitUntil(
+    waitUntil(
       recordClick({
         req,
         clickId,
@@ -393,7 +395,7 @@ export default async function LinkMiddleware(
 
     // rewrite to target URL if link cloaking is enabled
   } else if (rewrite) {
-    ev.waitUntil(
+    waitUntil(
       recordClick({
         req,
         clickId,
@@ -433,7 +435,7 @@ export default async function LinkMiddleware(
 
     // redirect to iOS link if it is specified and the user is on an iOS device
   } else if (ios && userAgent(req).os?.name === "iOS") {
-    ev.waitUntil(
+    waitUntil(
       recordClick({
         req,
         clickId,
@@ -467,7 +469,7 @@ export default async function LinkMiddleware(
 
     // redirect to Android link if it is specified and the user is on an Android device
   } else if (android && userAgent(req).os?.name === "Android") {
-    ev.waitUntil(
+    waitUntil(
       recordClick({
         req,
         clickId,
@@ -501,7 +503,7 @@ export default async function LinkMiddleware(
 
     // redirect to geo-specific link if it is specified and the user is in the specified country
   } else if (geo && country && country in geo) {
-    ev.waitUntil(
+    waitUntil(
       recordClick({
         req,
         clickId,
@@ -548,7 +550,7 @@ export default async function LinkMiddleware(
     console.log("ua.device.type", ua?.device?.type);
     console.log("shouldIndex", shouldIndex);
 
-    ev.waitUntil(
+    waitUntil(
       recordClick({
         req,
         clickId,
@@ -601,7 +603,7 @@ export default async function LinkMiddleware(
     !shallShowDirectPreview(req) &&
     !shouldIndex
   ) {
-    ev.waitUntil(
+    waitUntil(
       recordClick({
         req,
         clickId,
@@ -654,7 +656,7 @@ export default async function LinkMiddleware(
     );
     // direct link redirect
   } else {
-    ev.waitUntil(
+    waitUntil(
       recordClick({
         req,
         clickId,

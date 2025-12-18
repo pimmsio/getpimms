@@ -1,5 +1,4 @@
 import { ABTestVariantsSchema, MAX_TEST_COUNT } from "@/lib/zod/schemas/links";
-import { cookies } from "next/headers";
 import { z } from "zod";
 
 /**
@@ -8,9 +7,11 @@ import { z } from "zod";
 export const resolveABTestURL = ({
   testVariants,
   testCompletedAt,
+  cookieStore,
 }: {
   testVariants?: z.infer<typeof ABTestVariantsSchema>;
   testCompletedAt?: Date;
+  cookieStore?: { get: (name: string) => { value?: string } | undefined };
 }) => {
   try {
     if (
@@ -28,8 +29,7 @@ export const resolveABTestURL = ({
       return null;
     }
 
-    const cookieStore = cookies();
-    const urlFromCookie = cookieStore.get("pimms_test_url")?.value;
+    const urlFromCookie = cookieStore?.get("pimms_test_url")?.value;
 
     console.log("urlFromCookie", urlFromCookie);
     

@@ -21,11 +21,13 @@ const UTM_PARAMS = {
   utm_medium: "Expired Link Page",
 };
 
-export default function NotFoundLinkPage({
+export default async function NotFoundLinkPage({
   params,
 }: {
-  params: { domain: string };
+  params: Promise<{ domain: string }>;
 }) {
+  const { domain } = await params;
+
   return (
     <main className="flex flex-col justify-between">
       <Hero>
@@ -74,7 +76,7 @@ export default function NotFoundLinkPage({
         </div> */}
       </Hero>
       <div className="mt-20">
-        <FeaturesSection domain={params.domain} utmParams={UTM_PARAMS} />
+        <FeaturesSection domain={domain} utmParams={UTM_PARAMS} />
       </div>
       {/* <div className="mt-32">
         <CTA domain={params.domain} utmParams={UTM_PARAMS} />

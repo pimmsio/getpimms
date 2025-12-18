@@ -20,7 +20,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Button, Popover, useKeyboardShortcut, useRouterStuff } from "@dub/ui";
+import { Popover, useKeyboardShortcut, useRouterStuff } from "@dub/ui";
 import { ArrowsOppositeDirectionY, Sliders } from "@dub/ui/icons";
 import { cn } from "@dub/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -29,6 +29,7 @@ import { useContext, useState } from "react";
 import LinkGroupBy from "./link-group-by";
 import LinkSort from "./link-sort";
 import { LinksDisplayContext } from "./links-display-provider";
+import { AppButton } from "@/ui/components/controls/app-button";
 
 function SortableItem({
   property,
@@ -66,7 +67,7 @@ function SortableItem({
       {...listeners}
       className={cn(
         "flex cursor-grab items-center gap-2 rounded border-2 px-2.5 py-2 text-xs transition-all active:cursor-grabbing",
-        isDragging && "opacity-50 shadow-lg",
+        isDragging && "opacity-50",
         isActive
           ? "border-blue-200 bg-blue-50 text-blue-950"
           : "border-neutral-200 bg-neutral-50 text-neutral-700",
@@ -205,18 +206,12 @@ export default function LinkDisplay() {
                 className="overflow-hidden"
               >
                 <div className="flex items-center justify-end gap-2 p-2">
-                  <Button
-                    className="h-8 w-auto px-2"
-                    variant="outline"
-                    text="Reset to default"
-                    onClick={reset}
-                  />
-                  <Button
-                    className="h-8 w-auto px-2"
-                    variant="primary"
-                    text="Set as default"
-                    onClick={persist}
-                  />
+                  <AppButton type="button" variant="secondary" size="sm" onClick={reset}>
+                    Reset to default
+                  </AppButton>
+                  <AppButton type="button" variant="primary" size="sm" onClick={persist}>
+                    Set as default
+                  </AppButton>
                 </div>
               </motion.div>
             )}
@@ -226,34 +221,25 @@ export default function LinkDisplay() {
       openPopover={openPopover}
       setOpenPopover={setOpenPopover}
     >
-      <Button
+      <AppButton
+        type="button"
         variant="secondary"
-        className="h-10 rounded-full border-neutral-200 transition-all duration-200 hover:border-neutral-300 hover:bg-white hover:shadow-sm [&>div]:w-full"
-        textWrapperClassName="!overflow-visible"
-        text={
-          <div className="flex w-full items-center gap-2.5">
-            <div className="relative shrink-0">
-              <Sliders className="h-4 w-4 text-neutral-600" />
-              {isDirty && (
-                <div className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-[#3971ff]">
-                  <div className="h-full w-full animate-pulse rounded-full ring-2 ring-blue-500/40" />
-                </div>
-              )}
-            </div>
-            <span className="grow text-left font-medium">
-              Customize Results
-            </span>
-            <ChevronDown
-              className={cn(
-                "h-4 w-4 text-neutral-400 transition-all duration-200",
-                {
-                  "rotate-180": openPopover,
-                },
-              )}
-            />
+        size="md"
+        className="h-10 w-full px-4"
+      >
+        <div className="flex w-full items-center gap-2.5">
+          <div className="relative shrink-0">
+            <Sliders className="h-4 w-4 text-neutral-600" />
+            {isDirty && (
+              <div className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-neutral-900" />
+            )}
           </div>
-        }
-      />
+          <span className="grow text-left font-medium">Customize Results</span>
+          <ChevronDown
+            className={cn("h-4 w-4 text-neutral-400", openPopover && "rotate-180")}
+          />
+        </div>
+      </AppButton>
     </Popover>
   );
 }

@@ -50,9 +50,10 @@ export default function LinkSort() {
       <button
         onClick={() => setOpenPopover(!openPopover)}
         className={cn(
-          "group flex h-10 cursor-pointer appearance-none items-center gap-x-2 truncate rounded-full border px-3 text-sm outline-none transition-all",
-          "border-neutral-200 bg-white text-neutral-900 placeholder-neutral-400",
-          "focus-visible:border-neutral-500 data-[state=open]:border-neutral-500 data-[state=open]:ring-4 data-[state=open]:ring-transparent",
+          "group flex h-10 cursor-pointer appearance-none items-center gap-x-2 truncate rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none transition-colors",
+          "hover:bg-neutral-50",
+          "focus-visible:ring-2 focus-visible:ring-neutral-300",
+          "data-[state=open]:ring-2 data-[state=open]:ring-neutral-300",
         )}
       >
         <SortDesc className="h-4 w-4" />

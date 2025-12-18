@@ -1,8 +1,7 @@
 "use client";
 
-import { buttonVariants, EmptyState as EmptyStateBlock } from "@dub/ui";
-import { cn } from "@dub/utils";
-import Link from "next/link";
+import { AppButtonLink } from "@/ui/components/controls/app-button";
+import { EmptyState as EmptyStateBlock } from "@dub/ui";
 import { ComponentProps } from "react";
 
 export default function EmptyState({
@@ -16,16 +15,15 @@ export default function EmptyState({
   return (
     <EmptyStateBlock {...rest}>
       {buttonText && buttonLink && (
-        <Link
+        <AppButtonLink
           href={buttonLink}
           {...(buttonLink.startsWith("http") ? { target: "_blank" } : {})}
-          className={cn(
-            buttonVariants(),
-            "mt-4 flex h-9 items-center justify-center rounded border px-4 text-sm",
-          )}
+          variant="secondary"
+          size="sm"
+          className="mt-4"
         >
-            {buttonText}
-        </Link>
+          {buttonText}
+        </AppButtonLink>
       )}
     </EmptyStateBlock>
   );

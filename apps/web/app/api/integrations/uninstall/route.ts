@@ -5,8 +5,7 @@ import { uninstallSlackIntegration } from "@/lib/integrations/slack/uninstall";
 import { webhookCache } from "@/lib/webhook/cache";
 import { isLinkLevelWebhook } from "@/lib/webhook/utils";
 import { prisma } from "@dub/prisma";
-import { SLACK_INTEGRATION_ID } from "@dub/utils";
-import { CALENDLY_INTEGRATION_ID } from "@dub/utils/src";
+import { CALENDLY_INTEGRATION_ID, SLACK_INTEGRATION_ID } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
 import { NextResponse } from "next/server";
 

@@ -1,7 +1,6 @@
 import { createId } from "@/lib/api/create-id";
 import { includeTags } from "@/lib/api/links/include-tags";
 import { generateRandomName } from "@/lib/names";
-import { createPartnerCommission } from "@/lib/partners/create-partner-commission";
 import { getClickEvent, recordLead } from "@/lib/tinybird";
 import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
 import { sendWorkspaceWebhook } from "@/lib/webhook/publish";
@@ -108,18 +107,6 @@ export async function createNewCustomer(event: Stripe.Event) {
       },
     }),
   ]);
-
-  if (link.programId && link.partnerId) {
-    await createPartnerCommission({
-      event: "lead",
-      programId: link.programId,
-      partnerId: link.partnerId,
-      linkId: link.id,
-      eventId: leadData.event_id,
-      customerId: customer.id,
-      quantity: 1,
-    });
-  }
 
   waitUntil(
     (async () => {

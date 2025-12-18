@@ -3,7 +3,10 @@ import { cn } from "@dub/utils";
 
 export type UtmType = "source" | "medium" | "campaign";
 
-const UTM_CONFIG: Record<UtmType, { label: string; bg: string; border: string; text: string }> = {
+const UTM_CONFIG: Record<
+  UtmType,
+  { label: string; bg: string; border: string; text: string }
+> = {
   source: {
     label: "Source",
     bg: "bg-gray-50",
@@ -42,11 +45,11 @@ export function UtmBadge({
     <span
       onClick={onClick}
       className={cn(
-        "inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs font-medium w-[80px] xl:w-[110px]",
+        "inline-flex w-[80px] items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium xl:w-[110px]",
         config.bg,
         config.border,
         config.text,
-        onClick && "cursor-pointer transition-all hover:opacity-80 hover:shadow-sm",
+        onClick && "cursor-pointer transition-all hover:opacity-80",
         className,
       )}
     >

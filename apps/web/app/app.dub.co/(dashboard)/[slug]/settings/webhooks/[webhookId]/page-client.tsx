@@ -6,7 +6,6 @@ import { WebhookEventProps } from "@/lib/types";
 import { WebhookEventListSkeleton } from "@/ui/webhooks/loading-events-skelton";
 import { NoEventsPlaceholder } from "@/ui/webhooks/no-events-placeholder";
 import { WebhookEventList } from "@/ui/webhooks/webhook-events";
-import { MaxWidthWrapper } from "@dub/ui";
 import { fetcher } from "@dub/utils";
 import { redirect } from "next/navigation";
 import useSWR from "swr";
@@ -37,7 +36,7 @@ export default function WebhookLogsPageClient({
   );
 
   return (
-    <MaxWidthWrapper className="max-w-screen-lg space-y-6">
+    <div className="mx-auto w-full max-w-screen-lg space-y-6">
       {isLoading ? (
         <WebhookEventListSkeleton />
       ) : events && events.length === 0 ? (
@@ -45,6 +44,6 @@ export default function WebhookLogsPageClient({
       ) : (
         <WebhookEventList events={events || []} />
       )}
-    </MaxWidthWrapper>
+    </div>
   );
 }

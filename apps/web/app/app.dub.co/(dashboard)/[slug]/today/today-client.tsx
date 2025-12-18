@@ -1,19 +1,15 @@
 "use client";
 
 import useWorkspace from "@/lib/swr/use-workspace";
-import { useLinkBuilder } from "@/ui/modals/link-builder";
-import { BlurImage, CardList, Table, useTable } from "@dub/ui";
-import { LoadingSpinner } from "@dub/ui/icons";
-import { cn, fetcher, timeAgo, formatDate, COUNTRIES } from "@dub/utils";
-import {
-  BookOpen,
-  ChevronRight,
-  LineChart,
-  Flame,
-} from "lucide-react";
 import { SingleFlameIcon } from "@/ui/analytics/events/hot-score-icons";
-import Link from "next/link";
+import { AppButtonLink } from "@/ui/components/controls/app-button";
+import { useLinkBuilder } from "@/ui/modals/link-builder";
+import { BlurImage, Table, useTable } from "@dub/ui";
+import { LoadingSpinner } from "@dub/ui/icons";
+import { cn, COUNTRIES, fetcher, formatDate, formatDateTimeSmart, timeAgo } from "@dub/utils";
+import { BookOpen, ChevronRight } from "lucide-react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useMemo } from "react";
 import useSWR from "swr";
 
@@ -177,164 +173,149 @@ export default function TodayClient() {
     <>
       <LinkBuilder />
 
-      <div className="fixed inset-0 -z-10 bg-gradient-to-b from-neutral-50/40 via-white to-white pointer-events-none" />
-
-      <div className="mx-auto max-w-screen-xl px-3 pb-10 lg:px-10">
-        <div className="flex flex-col gap-3 py-3 md:flex-row md:items-center md:justify-between md:py-4">
-          <div className="min-w-0">
-            <div className="text-sm font-medium text-neutral-600">
-              Welcome {firstName}
-            </div>
-            <div className="mt-0.5 text-xl font-semibold text-neutral-900">
-              Here’s what’s happening today
-            </div>
+      {/* Header */}
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="min-w-0">
+          <div className="text-sm font-medium text-neutral-600">
+            Welcome {firstName}
           </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <CreateLinkButton />
-            <Link
-              href={`/${slug}/links`}
-              className={cn(
-                "inline-flex h-10 items-center justify-center rounded-lg border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-800 shadow-sm transition-colors hover:bg-neutral-50",
-              )}
-            >
-              View links
-              <ChevronRight className="ml-1 size-4 text-neutral-500" />
-            </Link>
+          <div className="mt-0.5 text-xl font-semibold text-neutral-900">
+            Here's what's happening today
           </div>
         </div>
 
-        {/*
-          Video section intentionally hidden for now.
-          Re-enable once the videos + onboarding content are ready.
-        */}
+        <div className="flex flex-wrap items-center gap-2">
+          <CreateLinkButton />
+          <AppButtonLink href={`/${slug}/links`} variant="secondary" size="md">
+            View links
+          </AppButtonLink>
+          <AppButtonLink
+            href="https://pim.ms/dAXN6jl"
+            target="_blank"
+            variant="secondary"
+            size="md"
+          >
+            Book a demo call
+          </AppButtonLink>
+        </div>
+      </div>
 
+      {/* Sections */}
+      <div className="mt-5 border-t border-neutral-100 pt-5">
         {/* Metrics */}
-        <div className="mt-4 rounded-xl border border-neutral-200 bg-white shadow-sm">
-          <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3">
-            <div className="text-sm font-semibold text-neutral-900">
-              Metrics
-            </div>
-            <Link
-              href={`/${slug}/analytics`}
-              className={cn(
-                "inline-flex h-9 items-center justify-center rounded-lg border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-800 hover:bg-neutral-50",
-              )}
-            >
+        <div className="mb-6">
+          <div className="mb-3 flex items-center justify-between">
+            <div className="text-sm font-semibold text-neutral-900">Metrics</div>
+            <AppButtonLink href={`/${slug}/analytics`} variant="secondary" size="sm">
               Analytics
-              <ChevronRight className="ml-1 size-4 text-neutral-500" />
-            </Link>
+            </AppButtonLink>
           </div>
 
-          <div className="p-4">
-            <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
-              <IntervalMetrics
-                label="Today"
-                loading={todayLoading}
-                error={Boolean(todayError)}
-                clicks={todayClicks}
-                leads={todayLeads}
-                revenue={todayRevenue}
-                cvr={todayCvr}
-              />
-              <IntervalMetrics
-                label="7d"
-                loading={last7dLoading}
-                error={Boolean(last7dError)}
-                clicks={last7dClicks}
-                leads={last7dLeads}
-                revenue={last7dRevenue}
-                cvr={last7dCvr}
-              />
-              <IntervalMetrics
-                label="30d"
-                loading={last30dLoading}
-                error={Boolean(last30dError)}
-                clicks={last30dClicks}
-                leads={last30dLeads}
-                revenue={last30dRevenue}
-                cvr={last30dCvr}
-              />
-            </div>
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+            <IntervalMetrics
+              label="Today"
+              loading={todayLoading}
+              error={Boolean(todayError)}
+              clicks={todayClicks}
+              leads={todayLeads}
+              revenue={todayRevenue}
+              cvr={todayCvr}
+            />
+            <IntervalMetrics
+              label="7d"
+              loading={last7dLoading}
+              error={Boolean(last7dError)}
+              clicks={last7dClicks}
+              leads={last7dLeads}
+              revenue={last7dRevenue}
+              cvr={last7dCvr}
+            />
+            <IntervalMetrics
+              label="30d"
+              loading={last30dLoading}
+              error={Boolean(last30dError)}
+              clicks={last30dClicks}
+              leads={last30dLeads}
+              revenue={last30dRevenue}
+              cvr={last30dCvr}
+            />
           </div>
         </div>
 
         {/* Lead Signal Activity */}
-        <LeadSignalActivitySection slug={slug} />
+        <div className="border-t border-neutral-100 pt-5">
+          <LeadSignalActivitySection slug={slug} />
+        </div>
 
         {/* Latest guides */}
-        <div className="mt-4 rounded-xl border border-neutral-200 bg-white shadow-sm">
-          <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3">
-            <div className="text-sm font-semibold text-neutral-900">Latest guides</div>
-            <a
+        <div className="mt-6 border-t border-neutral-100 pt-5">
+          <div className="mb-3 flex items-center justify-between">
+            <div className="text-sm font-semibold text-neutral-900">
+              Latest guides
+            </div>
+            <AppButtonLink
               href="https://pimms.io/guides"
               target="_blank"
               rel="noreferrer"
-              className={cn(
-                "inline-flex h-9 items-center justify-center rounded-lg border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-800 hover:bg-neutral-50",
-              )}
+              variant="secondary"
+              size="sm"
             >
               View all
-              <ChevronRight className="ml-1 size-4 text-neutral-500" />
-            </a>
+            </AppButtonLink>
           </div>
 
-          <div className="p-2">
-            {guidesLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <LoadingSpinner />
-              </div>
-            ) : guidesResponse && !guidesResponse.ok ? (
-              <div className="px-3 py-6 text-sm text-neutral-600">
-                Failed to load guides.
-              </div>
-            ) : guides.length === 0 ? (
-              <div className="px-3 py-6 text-sm text-neutral-600">No guides found.</div>
-            ) : (
-              <CardList>
-                {guides.slice(0, 12).map((g) => (
-                  <a
-                    key={g.href}
-                    href={g.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group flex items-center justify-between rounded-lg border border-neutral-100 bg-white px-3 py-2.5 hover:bg-neutral-50"
-                  >
-                    <div className="flex min-w-0 items-center gap-3">
-                      {g.thumbnail ? (
-                        <div className="relative size-12 shrink-0 overflow-hidden rounded-md bg-neutral-100">
-                          <BlurImage
-                            src={g.thumbnail}
-                            alt=""
-                            className="size-full object-cover"
-                            width={240}
-                            height={126}
-                          />
-                        </div>
-                      ) : (
-                        <div className="flex size-12 shrink-0 items-center justify-center rounded-md bg-neutral-100">
-                          <BookOpen className="size-4 text-neutral-600" />
-                        </div>
-                      )}
-                      <div className="min-w-0">
-                        <div className="truncate text-sm font-semibold text-neutral-900">
-                          {g.title}
-                        </div>
-                        <div className="mt-0.5 truncate text-xs text-neutral-500">
-                          Guides
-                          {g.date ? ` · ${g.date}` : ""}
-                        </div>
+          {guidesLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <LoadingSpinner />
+            </div>
+          ) : guidesResponse && !guidesResponse.ok ? (
+            <div className="py-6 text-sm text-neutral-600">
+              Failed to load guides.
+            </div>
+          ) : guides.length === 0 ? (
+            <div className="py-6 text-sm text-neutral-600">No guides found.</div>
+          ) : (
+            <div className="divide-y divide-neutral-100 rounded-lg bg-neutral-50/50 p-1">
+              {guides.slice(0, 12).map((g) => (
+                <a
+                  key={g.href}
+                  href={g.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group flex items-center justify-between rounded-md px-2 py-2 transition-colors hover:bg-white"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    {g.thumbnail ? (
+                      <div className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-neutral-100">
+                        <BlurImage
+                          src={g.thumbnail}
+                          alt=""
+                          className="size-full object-cover"
+                          width={240}
+                          height={126}
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-neutral-100">
+                        <BookOpen className="size-4 text-neutral-600" />
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <div className="truncate text-sm font-semibold text-neutral-900">
+                        {g.title}
+                      </div>
+                      <div className="mt-0.5 truncate text-xs text-neutral-500">
+                        Guides
+                        {g.date ? ` · ${g.date}` : ""}
                       </div>
                     </div>
-                    <ChevronRight className="size-4 text-neutral-300 group-hover:text-neutral-500" />
-                  </a>
-                ))}
-              </CardList>
-            )}
-          </div>
+                  </div>
+                  <ChevronRight className="size-4 text-neutral-300 group-hover:text-neutral-500" />
+                </a>
+              ))}
+            </div>
+          )}
         </div>
-
-        <div className="h-2" />
       </div>
     </>
   );
@@ -352,9 +333,11 @@ function Metric({
   decimals?: number;
 }) {
   const formatted =
-    decimals !== undefined ? value.toFixed(decimals) : Math.round(value).toString();
+    decimals !== undefined
+      ? value.toFixed(decimals)
+      : Math.round(value).toString();
   return (
-    <div className="rounded-lg border border-neutral-100 bg-neutral-50 px-3 py-2">
+    <div className="rounded-lg bg-neutral-50 px-3 py-2">
       <div className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">
         {label}
       </div>
@@ -380,14 +363,10 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
     return `/api/customers/leads-feed?${qs.toString()}`;
   }, [workspaceId]);
 
-  const { data: leadsData, isLoading } = useSWR<any>(
-    leadsFeedQuery,
-    fetcher,
-    {
-      keepPreviousData: true,
-      revalidateOnFocus: false,
-    },
-  );
+  const { data: leadsData, isLoading } = useSWR<any>(leadsFeedQuery, fetcher, {
+    keepPreviousData: true,
+    revalidateOnFocus: false,
+  });
 
   const leads = (leadsData?.customers?.slice(0, 5) || []) as Array<{
     id: string;
@@ -395,12 +374,14 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
     email?: string | null;
     hotScore?: number | null;
     lastEventAt?: string | null;
+    lastActivityType?: "click" | "lead" | "sale" | null;
     totalClicks?: number | null;
     createdAt?: string | null;
     country?: string | null;
   }>;
 
-  const columns = useMemo(() => [
+  const columns = useMemo(
+    () => [
       {
         id: "customer",
         header: "Customer",
@@ -424,22 +405,22 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
           return (
             <Link
               href={`/${slug}/customers/${lead.id}`}
-              className="flex items-center gap-3 group"
+              className="group flex items-center gap-3"
             >
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex shrink-0 items-center gap-2">
                 <SingleFlameIcon className="h-5 w-5" score={score} />
                 <span className="text-xs font-semibold tabular-nums text-neutral-900">
                   {score}
                 </span>
               </div>
-              <div className="h-6 w-px bg-neutral-200 shrink-0" />
+              <div className="h-6 w-px shrink-0 bg-neutral-200" />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <div className="truncate text-sm font-medium text-neutral-900 group-hover:text-blue-600">
                     {lead.name || "Anonymous"}
                   </div>
                   {country && country !== "Unknown" && (
-                    <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex shrink-0 items-center gap-1.5">
                       <img
                         alt={country}
                         src={`https://hatscripts.github.io/circle-flags/flags/${country.toLowerCase()}.svg`}
@@ -452,7 +433,10 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
                   )}
                 </div>
                 {email && lead.name && (
-                  <div className="truncate text-xs text-neutral-500" title={email}>
+                  <div
+                    className="truncate text-xs text-neutral-500"
+                    title={email}
+                  >
                     {email}
                   </div>
                 )}
@@ -488,12 +472,50 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
                 <Link
                   href={`/${slug}/customers/${customerId}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="flex shrink-0 items-center gap-1 text-xs font-medium text-blue-600 transition-transform group-hover:translate-x-1 whitespace-nowrap"
+                  className="flex shrink-0 items-center gap-1 whitespace-nowrap text-xs font-medium text-blue-600 transition-transform group-hover:translate-x-1"
                 >
                   <span>See timeline</span>
                   <ChevronRight className="size-3" />
                 </Link>
               )}
+            </div>
+          );
+        },
+      },
+      {
+        id: "lastActivityAt",
+        header: "Last activity",
+        minSize: 140,
+        size: 160,
+        maxSize: 200,
+        cell: ({ row }: { row: any }) => {
+          const lead = row.original as {
+            lastEventAt?: string | null;
+            lastActivityType?: "click" | "lead" | "sale" | null;
+          };
+          const ts = lead.lastEventAt;
+          const kind = lead.lastActivityType;
+
+          const label =
+            kind === "click"
+              ? "Click"
+              : kind === "lead"
+                ? "Opt-in"
+                : kind === "sale"
+                  ? "Sale"
+                  : null;
+          return (
+            <div className="flex flex-col gap-0.5">
+              <div className="flex items-center gap-2">
+                {label ? (
+                  <span className="inline-flex rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-xs font-medium text-neutral-700">
+                    {label}
+                  </span>
+                ) : null}
+              </div>
+              <div className="text-xs text-neutral-500">
+                {ts ? formatDateTimeSmart(ts) : "-"}
+              </div>
             </div>
           );
         },
@@ -521,7 +543,9 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
           );
         },
       },
-    ], [slug]);
+    ],
+    [slug],
+  );
 
   const { table, ...tableProps } = useTable({
     data: leads,
@@ -529,30 +553,29 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
   });
 
   if (!slug) return null;
-  
+
   return (
-    <div className="mt-4">
-      <div className="flex items-center justify-between mb-3">
+    <div className="mt-6">
+      <div className="mb-3 flex items-center justify-between">
         <div className="text-sm font-semibold text-neutral-900">
           Last Lead Signals
         </div>
-        <Link
+        <AppButtonLink
           href={`/${slug}/conversions?interval=7d`}
-          className={cn(
-            "inline-flex h-8 items-center justify-center rounded-lg border border-neutral-200 bg-white px-2.5 text-xs font-semibold text-neutral-800 hover:bg-neutral-50",
-          )}
+          variant="secondary"
+          size="sm"
         >
           View all
           <ChevronRight className="ml-1 size-3 text-neutral-500" />
-        </Link>
+        </AppButtonLink>
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-6 rounded border border-neutral-200 bg-white">
+        <div className="flex items-center justify-center rounded-lg bg-neutral-50 py-6">
           <LoadingSpinner />
         </div>
       ) : leads.length === 0 ? (
-        <div className="py-6 text-center text-sm text-neutral-500 rounded border border-neutral-200 bg-white">
+        <div className="rounded-lg bg-neutral-50 py-6 text-center text-sm text-neutral-500">
           No lead signals
         </div>
       ) : (
@@ -580,8 +603,8 @@ function IntervalMetrics({
   cvr: number;
 }) {
   return (
-    <div className="rounded-lg border border-neutral-100 bg-neutral-50 p-3">
-      <div className="text-xs font-semibold text-neutral-700 mb-2">{label}</div>
+    <div className="rounded-lg bg-neutral-50 p-3">
+      <div className="mb-2 text-xs font-semibold text-neutral-700">{label}</div>
 
       {loading ? (
         <div className="flex items-center justify-center py-6">
@@ -599,4 +622,3 @@ function IntervalMetrics({
     </div>
   );
 }
-

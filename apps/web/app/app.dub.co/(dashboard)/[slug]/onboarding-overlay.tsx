@@ -68,7 +68,14 @@ export function OnboardingOverlay() {
     }
   };
 
+  const stepContent = renderStep();
+
+  // Don't render modal if step content is null (unknown step)
+  if (!stepContent) {
+    return null;
+  }
+
   return (
-    <OnboardingModalWrapper>{renderStep()}</OnboardingModalWrapper>
+    <OnboardingModalWrapper>{stepContent}</OnboardingModalWrapper>
   );
 }

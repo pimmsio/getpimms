@@ -34,7 +34,8 @@ export function ToggleGroup({
       <motion.div
         layout
         className={cn(
-          "border-border-subtle bg-bg-default relative z-0 inline-flex items-center gap-1 rounded border p-1",
+          // Minimal segmented control (match dashboard controls)
+          "relative z-0 inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-neutral-100/60 p-1",
           className,
         )}
         style={style}
@@ -45,9 +46,9 @@ export function ToggleGroup({
             type="button"
             data-selected={option.value === selected}
             className={cn(
-              "text-content-emphasis relative z-10 flex items-center gap-2 px-3 py-1 text-sm font-medium capitalize",
+              "relative z-10 flex h-7 items-center gap-2 rounded-md px-2.5 text-[11px] font-medium text-neutral-700 transition-colors",
               {
-                "hover:text-content-subtle z-[11] transition-colors":
+                "z-[11] hover:bg-white/70 hover:text-neutral-900":
                   option.value !== selected,
               },
               optionClassName,
@@ -64,7 +65,7 @@ export function ToggleGroup({
               <motion.div
                 layoutId={layoutGroupId}
                 className={cn(
-                  "border-border-subtle bg-bg-muted absolute left-0 top-0 -z-[1] h-full w-full rounded border",
+                  "absolute left-0 top-0 -z-[1] h-full w-full rounded-md border border-neutral-200 bg-white shadow-sm",
                   indicatorClassName,
                 )}
                 transition={{ duration: 0.25 }}

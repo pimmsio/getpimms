@@ -3,7 +3,6 @@ import useWorkspace from "@/lib/swr/use-workspace";
 import { LinkFormData } from "@/ui/links/link-builder/link-builder-provider";
 import { QRCode } from "@/ui/shared/qr-code";
 import {
-  Button,
   InfoTooltip,
   ShimmerDots,
   SimpleTooltipContent,
@@ -14,11 +13,12 @@ import {
 import { Pen2, QRCode as QRCodeIcon } from "@dub/ui/icons";
 import { DUB_QR_LOGO, linkConstructor } from "@dub/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, type RefObject } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { useDebounce } from "use-debounce";
 import { QRCodeDesign, useLinkQRModal } from "../../modals/link-qr-modal";
 import { useLinkBuilderKeyboardShortcut } from "./use-link-builder-keyboard-shortcut";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 
 export function QRCodePreview() {
   const { isMobile } = useMediaQuery();
@@ -34,7 +34,7 @@ export function QRCodePreview() {
   const [domain] = useDebounce(rawDomain, 500);
 
   const ref = useRef<HTMLDivElement>(null);
-  const isVisible = useInViewport(ref);
+  const isVisible = useInViewport(ref as unknown as RefObject<Element>);
 
   const { logo: domainLogo } = useDomain({
     slug: rawDomain,
@@ -88,14 +88,14 @@ export function QRCodePreview() {
           /> */}
         </div>
       </div>
-      <div className="relative z-0 mt-2 h-48 overflow-hidden rounded border border-neutral-200 bg-white">
-        <Button
+      <div className="relative z-0 mt-2 h-48 overflow-hidden rounded-xl bg-white">
+        <AppIconButton
           type="button"
-          variant="secondary"
-          icon={<Pen2 className="mx-px size-4" />}
-          className="absolute right-2 top-2 z-10 h-8 w-fit bg-white px-1.5"
+          className="absolute right-2 top-2 z-10 h-8 w-8 bg-white"
           onClick={() => setShowLinkQRModal(true)}
-        />
+        >
+          <Pen2 className="mx-px size-4" />
+        </AppIconButton>
         {/* {!isMobile && (
           <ShimmerDots className="opacity-30" />
         )} */}

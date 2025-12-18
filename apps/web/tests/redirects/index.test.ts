@@ -1,4 +1,4 @@
-import { REDIRECTION_QUERY_PARAM } from "@dub/utils/src/constants";
+import { REDIRECTION_QUERY_PARAM } from "@dub/utils";
 import { describe, expect, test } from "vitest";
 import { env } from "../utils/env";
 import { IntegrationHarness } from "../utils/integration";

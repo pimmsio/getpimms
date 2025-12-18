@@ -39,7 +39,7 @@ export function BulkDomainSelector({
               className="fixed inset-0 z-10"
               onClick={() => setIsOpen(false)}
             />
-            <div className="absolute top-full z-20 mt-1 w-full overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-lg">
+            <div className="absolute top-full z-20 mt-1 w-full overflow-hidden rounded-lg border border-neutral-100 bg-white">
               {domains.map((domain) => (
                 <button
                   key={domain.slug}

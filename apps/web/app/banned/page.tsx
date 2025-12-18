@@ -22,8 +22,9 @@ const UTM_PARAMS = {
 export default async function BannedPage({
   params,
 }: {
-  params: { domain: string };
+  params: Promise<{ domain: string }>;
 }) {
+  const { domain } = await params;
   return (
     <main className="flex min-h-screen flex-col justify-between">
       <NavMobile />
@@ -74,10 +75,10 @@ export default async function BannedPage({
           </div> */}
         </Hero>
         <div className="mt-20">
-          <FeaturesSection domain={params.domain} utmParams={UTM_PARAMS} />
+          <FeaturesSection domain={domain} utmParams={UTM_PARAMS} />
         </div>
         {/* <div className="mt-32">
-          <CTA domain={params.domain} utmParams={UTM_PARAMS} />
+          <CTA domain={domain} utmParams={UTM_PARAMS} />
         </div> */}
       </div>
       <Footer className="max-w-screen-lg border-0 bg-transparent lg:px-4 xl:px-0" />

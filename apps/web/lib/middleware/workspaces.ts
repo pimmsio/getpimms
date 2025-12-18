@@ -31,6 +31,7 @@ export default async function WorkspacesMiddleware(
       ),
     );
   } else {
-    return NextResponse.redirect(new URL("/onboarding/workspace", req.url));
+    // Should never happen - workspace is auto-created on signup
+    return NextResponse.redirect(new URL("/", req.url));
   }
 }

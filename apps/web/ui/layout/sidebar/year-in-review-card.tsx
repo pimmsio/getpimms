@@ -17,7 +17,7 @@ export function YearInReviewCard() {
     <Link
       href={`/${slug}/wrapped/2024`}
       className={cn(
-        "group m-3 mt-8 h-44 select-none gap-2 overflow-hidden rounded border border-neutral-200 bg-white p-3 text-[0.8125rem] transition-[height] duration-200 hover:h-52",
+        "group m-3 mt-8 h-44 select-none gap-2 overflow-hidden rounded bg-white p-3 text-sm transition-[height] duration-200 hover:h-52",
         pathname.endsWith("/wrapped/2024") && "h-52",
       )}
     >
@@ -32,7 +32,7 @@ export function YearInReviewCard() {
       <div className="relative mt-3 aspect-[16/9] w-full shrink-0 overflow-hidden rounded border border-neutral-200 bg-neutral-100">
         <div
           className={cn(
-            "absolute z-10 h-36 w-full bg-gradient-to-b from-transparent to-white transition-[opacity] duration-200 group-hover:opacity-0",
+            "absolute z-10 h-36 w-full bg-white/70 transition-[opacity] duration-200 group-hover:opacity-0",
             pathname.endsWith("/wrapped/2024") && "opacity-0",
           )}
         />

@@ -16,7 +16,7 @@ export function UrlModeToggle({
         className={cn(
           "rounded-md px-3 py-1.5 text-xs font-medium transition-all",
           mode === "single"
-            ? "bg-white text-neutral-900 shadow-sm"
+            ? "bg-white text-neutral-900"
             : "text-neutral-600 hover:text-neutral-900",
         )}
       >
@@ -26,7 +26,8 @@ export function UrlModeToggle({
         side="bottom"
         content={
           <div className="max-w-xs px-4 py-2 text-center text-xs text-neutral-700">
-            Create multiple short links at once by combining URLs with UTM templates.
+            Create multiple short links at once by combining URLs with UTM
+            templates.
           </div>
         }
       >
@@ -36,7 +37,7 @@ export function UrlModeToggle({
           className={cn(
             "rounded-md px-3 py-1.5 text-xs font-medium transition-all",
             mode === "bulk"
-              ? "bg-white text-neutral-900 shadow-sm"
+              ? "bg-white text-neutral-900"
               : "text-neutral-600 hover:text-neutral-900",
           )}
         >
@@ -46,4 +47,3 @@ export function UrlModeToggle({
     </div>
   );
 }
-

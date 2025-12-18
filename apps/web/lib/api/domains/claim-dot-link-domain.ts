@@ -11,8 +11,8 @@ import {
   APP_DOMAIN_WITH_NGROK,
   DEFAULT_LINK_PROPS,
 } from "@dub/utils";
-import { get } from "@vercel/edge-config";
 import { waitUntil } from "@vercel/functions";
+import { edgeConfigGet } from "@/lib/edge-config/safe-get";
 import { addDomainToVercel } from "./add-domain-vercel";
 import { markDomainAsDeleted } from "./mark-domain-deleted";
 
@@ -45,7 +45,7 @@ export async function claimDotLinkDomain({
     });
   }
 
-  const customDomainTerms = await get("customDomainTerms");
+  const customDomainTerms = await edgeConfigGet<string[]>("customDomainTerms");
 
   if (customDomainTerms && Array.isArray(customDomainTerms)) {
     const customDomainTermsRegex = new RegExp(

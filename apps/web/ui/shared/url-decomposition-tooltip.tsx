@@ -176,7 +176,7 @@ export function UrlDecompositionTooltip({
             <div
               onClick={() => applyFilter(part)}
               className={cn(
-                "group relative cursor-pointer rounded border-l-2 bg-gray-50 px-2 py-1.5 text-xs transition-all hover:shadow-sm",
+                "group relative cursor-pointer rounded border-l-2 bg-gray-50 px-2 py-1.5 text-xs transition-colors",
                 part.type === "base" && "border-blue-400 bg-blue-50 hover:bg-blue-100",
                 part.type === "utm" && "border-green-400 bg-green-50 hover:bg-green-100",
                 part.type === "query" && "border-purple-400 bg-purple-50 hover:bg-purple-100",
@@ -184,7 +184,7 @@ export function UrlDecompositionTooltip({
             >
               <span className="break-all text-gray-700">{part.value}</span>
               <div className="absolute inset-0 flex items-center justify-center rounded bg-black/5 opacity-0 transition-opacity group-hover:opacity-100">
-                <span className="flex items-center gap-1 rounded bg-white/90 px-2 py-1 text-xs font-medium text-gray-700 shadow-sm">
+                <span className="flex items-center gap-1 rounded bg-white/90 px-2 py-1 text-xs font-medium text-gray-700">
                   <Filter className="h-3 w-3" />
                   Filter
                 </span>

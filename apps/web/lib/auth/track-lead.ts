@@ -3,8 +3,9 @@ import { User } from "next-auth";
 import { cookies } from "next/headers";
 
 export const trackLead = async (user: User) => {
+  const cookieStore = await cookies();
   const clickId =
-    cookies().get("pimms_id")?.value || cookies().get("dclid")?.value;
+    cookieStore.get("pimms_id")?.value || cookieStore.get("dclid")?.value;
   
   if (!clickId) {
     console.log("No clickId cookie found, skipping lead tracking...");

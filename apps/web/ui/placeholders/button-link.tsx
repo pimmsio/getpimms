@@ -1,23 +1,27 @@
 "use client";
 
-import { ButtonProps, buttonVariants } from "@dub/ui";
-import { cn } from "@dub/utils";
+import { AppButtonLink } from "@/ui/components/controls/app-button";
 import Link from "next/link";
-import { ComponentProps } from "react";
+import { ComponentProps, ReactNode } from "react";
 
 export function ButtonLink({
   variant,
   className,
+  children,
   ...rest
-}: Pick<ButtonProps, "variant"> & ComponentProps<typeof Link>) {
+}: {
+  variant?: "primary" | "secondary" | "muted" | "ghost";
+  className?: string;
+  children: ReactNode;
+} & ComponentProps<typeof Link>) {
   return (
-    <Link
+    <AppButtonLink
       {...rest}
-      className={cn(
-        "flex h-10 w-fit items-center whitespace-nowrap rounded border px-5 text-base",
-        buttonVariants({ variant }),
-        className,
-      )}
-    />
+      variant={variant ?? "secondary"}
+      size="md"
+      className={className}
+    >
+      {children}
+    </AppButtonLink>
   );
 }

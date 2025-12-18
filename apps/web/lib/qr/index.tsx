@@ -3,8 +3,8 @@
  * Copyright (c) Paul O'Shannessy
  * SPDX-License-Identifier: ISC
  */
-import { DUB_QR_LOGO } from "@dub/utils/src/constants";
-import { useEffect, useRef, useState } from "react";
+import { DUB_QR_LOGO } from "@dub/utils";
+import { useEffect, useRef, useState, type ReactElement } from "react";
 import qrcodegen from "./codegen";
 import {
   DEFAULT_BGCOLOR,
@@ -130,7 +130,7 @@ export function QRCodeCanvas(props: QRPropsCanvas) {
   }, [imgSrc]);
 
   const canvasStyle = { height: size, width: size, ...style };
-  let img: JSX.Element | null = null;
+  let img: ReactElement | null = null;
   if (imgSrc != null) {
     img = (
       <img

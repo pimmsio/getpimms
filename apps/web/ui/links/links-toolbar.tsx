@@ -2,20 +2,18 @@ import { getPlanCapabilities } from "@/lib/plan-capabilities";
 import { useFolderPermissions } from "@/lib/swr/use-folder-permissions";
 import { useIsMegaFolder } from "@/lib/swr/use-is-mega-folder";
 import useWorkspace from "@/lib/swr/use-workspace";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 import {
   AnimatedSizeContainer,
   BoxArchive,
-  Button,
   CircleCheck,
   CircleDollar,
-  Folder,
   Icon,
   LoadingSpinner,
   PaginationControls,
   Popover,
   Tag,
-  TooltipContent,
-  Trash,
   useKeyboardShortcut,
   usePagination,
 } from "@dub/ui";
@@ -233,37 +231,38 @@ export const LinksToolbar = memo(
         <div className="fixed bottom-0 left-0 w-full md:left-[240px] md:w-[calc(100%-240px)]">
           <div
             className={cn(
-              "relative w-full px-4",
+              "relative w-full px-3 lg:px-10",
               // "max-[1330px]:left-0 max-[1330px]:translate-x-0",
             )}
           >
-            <div className="rounded-t-xl border border-b-0 border-neutral-200 bg-white p-0 shadow-lg">
+            <div className="rounded-t-xl border-t border-neutral-100 bg-white/95 p-0 backdrop-blur">
               <AnimatedSizeContainer height>
                 <div
                   className={cn(
-                    "relative px-2 sm:px-5 py-2.5 sm:py-4 transition-[opacity,transform] duration-100",
+                    "relative px-2 py-2.5 transition-[opacity,transform] duration-100 sm:px-5 sm:py-4",
                     isSelecting &&
                       "pointer-events-none absolute inset-0 translate-y-1/2 opacity-0",
                   )}
                 >
                   <div className="flex w-full items-center justify-between gap-2">
                     {/* Mobile: Select button on the left */}
-                    <div className="flex items-center gap-2 md:hidden shrink-0">
-                      <Button
-                        variant="secondary"
-                        className="h-8 w-fit px-2"
-                        icon={<CircleCheck className="size-4" />}
+                    <div className="flex shrink-0 items-center gap-2 md:hidden">
+                      <AppIconButton
+                        type="button"
+                        className="h-8 w-8"
                         onClick={() => setIsSelectMode(true)}
-                      />
+                      >
+                        <CircleCheck className="size-4" />
+                      </AppIconButton>
                     </div>
-                    
+
                     <PaginationControls
                       pagination={pagination}
                       setPagination={setPagination}
                       totalCount={linksCount}
                       unit={(plural) => `${plural ? "links" : "link"}`}
                       showTotalCount={!isMegaFolder}
-                      className="flex-1 min-w-0"
+                      className="min-w-0 flex-1"
                     >
                       {!isMegaFolder && (
                         <>
@@ -275,20 +274,23 @@ export const LinksToolbar = memo(
                             </div>
                           )}
                           <div className="hidden md:block">
-                            <Button
+                            <AppButton
+                              type="button"
                               variant="secondary"
-                              className="h-9 w-fit px-3 sm:px-4 font-medium border-neutral-200 hover:border-neutral-300 hover:shadow-sm transition-all"
-                              icon={<CircleCheck className="size-4" />}
-                              text="Select"
+                              size="sm"
+                              className="w-auto px-3 sm:px-4"
                               onClick={() => setIsSelectMode(true)}
-                            />
+                            >
+                              <CircleCheck className="mr-2 size-4 text-neutral-500" />
+                              Select
+                            </AppButton>
                           </div>
                         </>
                       )}
                     </PaginationControls>
-                    
+
                     {/* Mobile: New Link button on the right */}
-                    <div className="flex items-center gap-2 md:hidden shrink-0">
+                    <div className="flex shrink-0 items-center gap-2 md:hidden">
                       <CreateLinkButton />
                     </div>
                   </div>
@@ -296,23 +298,23 @@ export const LinksToolbar = memo(
 
                 <div
                   className={cn(
-                    "relative px-2 sm:px-5 py-2.5 sm:py-4 transition-[opacity,transform] duration-100",
+                    "relative px-2 py-2.5 transition-[opacity,transform] duration-100 sm:px-5 sm:py-4",
                     !isSelecting &&
                       "pointer-events-none absolute inset-0 translate-y-1/2 opacity-0",
                   )}
                 >
                   <div className="flex flex-wrap items-center gap-2">
                     <div className="flex items-center gap-2">
-                      <button
+                      <AppIconButton
                         type="button"
                         onClick={() => {
                           setSelectedLinkIds([]);
                           setIsSelectMode(false);
                         }}
-                        className="rounded p-1.5 transition-colors duration-75 hover:bg-neutral-50 active:bg-neutral-100"
+                        className="h-8 w-8"
                       >
                         <X className="size-4 text-neutral-900" />
-                      </button>
+                      </AppIconButton>
                       <span className="whitespace-nowrap text-sm font-medium text-neutral-600">
                         <strong className="font-semibold">
                           {selectedLinkIds.length}
@@ -329,7 +331,7 @@ export const LinksToolbar = memo(
                             setSelectedLinkIds(links.map((l) => l.id));
                           }
                         }}
-                        className="whitespace-nowrap text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors"
+                        className="whitespace-nowrap text-sm font-medium text-neutral-600 transition-colors hover:text-neutral-900"
                       >
                         {selectedLinkIds.length === links.length
                           ? "Clear all"
@@ -340,7 +342,7 @@ export const LinksToolbar = memo(
                     {/* Mobile screen controls */}
                     <div
                       className={cn(
-                        "flex md:hidden items-center gap-2 transition-[transform,opacity] duration-150",
+                        "flex items-center gap-2 transition-[transform,opacity] duration-150 md:hidden",
                         selectedLinkIds.length > 0
                           ? "translate-y-0 opacity-100"
                           : "pointer-events-none translate-y-1/2 opacity-0",
@@ -348,21 +350,26 @@ export const LinksToolbar = memo(
                     >
                       {/* Tags button */}
                       {tagsAction && (
-                        <Button
+                        <AppIconButton
                           type="button"
-                          variant="secondary"
-                          className="h-8 w-8 p-0 shrink-0"
-                          icon={<tagsAction.icon className="size-4" />}
+                          className="h-8 w-8 shrink-0 p-0"
                           onClick={tagsAction.action}
-                          disabledTooltip={
-                            tagsAction.disabledTooltip ||
-                            (!hasAllFolderPermissions
-                              ? "You don't have permission to perform this action."
-                              : undefined)
+                          disabled={
+                            !!tagsAction.disabledTooltip ||
+                            !hasAllFolderPermissions
                           }
-                        />
+                          title={
+                            typeof tagsAction.disabledTooltip === "string"
+                              ? tagsAction.disabledTooltip
+                              : !hasAllFolderPermissions
+                                ? "You don't have permission to perform this action."
+                                : undefined
+                          }
+                        >
+                          <tagsAction.icon className="size-4" />
+                        </AppIconButton>
                       )}
-                      
+
                       {/* Actions dropdown menu */}
                       {dropdownActions.length > 0 && (
                         <Popover
@@ -370,43 +377,54 @@ export const LinksToolbar = memo(
                             <div className="w-56 p-1.5">
                               <div className="grid gap-0.5">
                                 {dropdownActions.map(
-                                  ({
-                                    label,
-                                    icon: Icon,
-                                    action,
-                                    disabledTooltip,
-                                  },
-                                  idx,
-                                ) => (
-                                  <button
-                                    key={idx}
-                                    type="button"
-                                    onClick={() => {
-                                      if (!disabledTooltip && hasAllFolderPermissions) {
-                                        action();
-                                        setOpenMorePopover(false);
+                                  (
+                                    {
+                                      label,
+                                      icon: Icon,
+                                      action,
+                                      disabledTooltip,
+                                    },
+                                    idx,
+                                  ) => (
+                                    <button
+                                      key={idx}
+                                      type="button"
+                                      onClick={() => {
+                                        if (
+                                          !disabledTooltip &&
+                                          hasAllFolderPermissions
+                                        ) {
+                                          action();
+                                          setOpenMorePopover(false);
+                                        }
+                                      }}
+                                      disabled={
+                                        !!disabledTooltip ||
+                                        !hasAllFolderPermissions
                                       }
-                                    }}
-                                    disabled={!!disabledTooltip || !hasAllFolderPermissions}
-                                    className={cn(
-                                      "flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors",
-                                      disabledTooltip || !hasAllFolderPermissions
-                                        ? "cursor-not-allowed text-neutral-400 bg-neutral-50/50"
-                                        : "text-neutral-900 hover:bg-neutral-100 active:bg-neutral-200",
-                                    )}
-                                  >
-                                    <div className={cn(
-                                      "flex h-8 w-8 items-center justify-center rounded-md",
-                                      disabledTooltip || !hasAllFolderPermissions
-                                        ? "bg-neutral-100"
-                                        : "bg-neutral-100 group-hover:bg-neutral-200",
-                                    )}>
-                                      <Icon className="size-4" />
-                                    </div>
-                                    <span className="flex-1">{label}</span>
-                                  </button>
-                                ),
-                              )}
+                                      className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors",
+                                        disabledTooltip ||
+                                          !hasAllFolderPermissions
+                                          ? "cursor-not-allowed bg-neutral-50/50 text-neutral-400"
+                                          : "text-neutral-900 hover:bg-neutral-100 active:bg-neutral-200",
+                                      )}
+                                    >
+                                      <div
+                                        className={cn(
+                                          "flex h-8 w-8 items-center justify-center rounded-md",
+                                          disabledTooltip ||
+                                            !hasAllFolderPermissions
+                                            ? "bg-neutral-100"
+                                            : "bg-neutral-100 group-hover:bg-neutral-200",
+                                        )}
+                                      >
+                                        <Icon className="size-4" />
+                                      </div>
+                                      <span className="flex-1">{label}</span>
+                                    </button>
+                                  ),
+                                )}
                               </div>
                             </div>
                           }
@@ -414,13 +432,13 @@ export const LinksToolbar = memo(
                           setOpenPopover={setOpenMorePopover}
                           align="end"
                         >
-                          <Button
+                          <AppIconButton
                             type="button"
-                            variant="secondary"
-                            className="h-8 px-3 gap-1.5 shrink-0 font-medium w-fit"
-                            icon={<ThreeDots className="size-4" />}
                             onClick={() => setOpenMorePopover(!openMorePopover)}
-                          />
+                            className="h-8 w-8"
+                          >
+                            <ThreeDots className="size-4 text-neutral-600" />
+                          </AppIconButton>
                         </Popover>
                       )}
                     </div>
@@ -428,40 +446,49 @@ export const LinksToolbar = memo(
                     {/* Large screen controls */}
                     <div
                       className={cn(
-                        "hidden md:flex xs:gap-2 items-center gap-1.5 transition-[transform,opacity] duration-150",
+                        "xs:gap-2 hidden items-center gap-1.5 transition-[transform,opacity] duration-150 md:flex",
                         selectedLinkIds.length > 0
                           ? "translate-y-0 opacity-100"
                           : "pointer-events-none translate-y-1/2 opacity-0",
                       )}
                     >
                       {bulkActions.map(
-                        ({
-                          label,
-                          icon: Icon,
-                          action,
-                          disabledTooltip,
-                          keyboardShortcut,
-                        },
-                        idx,
-                      ) => (
-                        <Button
-                          key={idx}
-                          type="button"
-                          variant="secondary"
-                          className="xs:px-2.5 h-7 gap-1.5 px-2 text-xs min-[1120px]:pr-1.5"
-                          textWrapperClassName="max-[1120px]:hidden"
-                            icon={<Icon className="size-3.5" />}
-                            text={label}
+                        (
+                          {
+                            label,
+                            icon: Icon,
+                            action,
+                            disabledTooltip,
+                            keyboardShortcut,
+                          },
+                          idx,
+                        ) => (
+                          <AppButton
+                            key={idx}
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            className="h-8 gap-1.5 bg-white px-2 text-xs hover:border-neutral-300"
                             onClick={action}
-                            disabledTooltip={
-                              disabledTooltip ||
-                              (!hasAllFolderPermissions
-                                ? "You don't have permission to perform this action."
-                                : undefined)
+                            disabled={
+                              !!disabledTooltip || !hasAllFolderPermissions
                             }
-                            shortcut={keyboardShortcut?.toUpperCase()}
-                            shortcutClassName="py-px px-1 text-[0.625rem] leading-snug md:hidden min-[1120px]:inline-block"
-                          />
+                            title={
+                              typeof disabledTooltip === "string"
+                                ? disabledTooltip
+                                : !hasAllFolderPermissions
+                                  ? "You don't have permission to perform this action."
+                                  : undefined
+                            }
+                          >
+                            <Icon className="size-3.5" />
+                            <span className="max-[1120px]:hidden">{label}</span>
+                            {keyboardShortcut && (
+                              <kbd className="px-1 py-px text-[0.625rem] leading-snug md:hidden min-[1120px]:inline-block">
+                                {keyboardShortcut.toUpperCase()}
+                              </kbd>
+                            )}
+                          </AppButton>
                         ),
                       )}
                     </div>

@@ -16,8 +16,8 @@ import ConfirmEmailChangePageClient from "./page-client";
 export const runtime = "nodejs";
 
 interface PageProps {
-  params: { token: string };
-  searchParams: { cancel?: string };
+  params: Promise<{ token: string }>;
+  searchParams: Promise<{ cancel?: string }>;
 }
 
 export default async function ConfirmEmailChangePage(props: PageProps) {
@@ -38,10 +38,9 @@ export default async function ConfirmEmailChangePage(props: PageProps) {
   );
 }
 
-const VerifyEmailChange = async ({
-  params: { token },
-  searchParams,
-}: PageProps) => {
+const VerifyEmailChange = async ({ params, searchParams }: PageProps) => {
+  const { token } = await params;
+  const { cancel } = await searchParams;
   const tokenFound = await prisma.verificationToken.findUnique({
     where: {
       token: await hashToken(token, { secret: true }),
@@ -59,8 +58,6 @@ const VerifyEmailChange = async ({
   }
 
   // Cancel the email change request (?cancel=true)
-  const { cancel } = searchParams;
-
   if (cancel && cancel === "true") {
     await deleteRequest(tokenFound);
 
