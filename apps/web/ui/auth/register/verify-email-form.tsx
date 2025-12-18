@@ -32,7 +32,7 @@ export const VerifyEmailForm = () => {
       });
 
       if (response?.ok) {
-        router.push("/onboarding");
+        router.push("/");
       } else {
         toast.error(
           "Failed to sign in with credentials. Please try again or contact support.",

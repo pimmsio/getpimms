@@ -15,6 +15,11 @@ export function OnboardingModalWrapper({ children }: PropsWithChildren) {
     return;
   };
 
+  // Don't render modal if there's no content
+  if (!children) {
+    return null;
+  }
+
   return (
     <Modal
       showModal={showModal}

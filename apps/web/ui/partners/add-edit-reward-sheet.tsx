@@ -496,9 +496,6 @@ function RewardSheetContent({
                             : "h-0 opacity-0",
                         )}
                         aria-hidden={commissionStructure !== "recurring"}
-                        {...{
-                          ...(commissionStructure !== "recurring" ? { inert: true } : {}),
-                        }}
                       >
                         <div>
                           <label

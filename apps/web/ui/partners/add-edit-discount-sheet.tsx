@@ -225,9 +225,6 @@ function DiscountSheetContent({
                         "space-y-4 transition-opacity duration-200",
                       )}
                       aria-hidden={!isRecurring}
-                      {...{
-                        ...(!isRecurring ? { inert: true } : {}),
-                      }}
                     >
                       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                         {discountTypes.map(

@@ -16,8 +16,8 @@ export default function UpdateDefaultWorkspace() {
       ? workspaces.map((workspace) => {
           // Display "your workspace" for auto-created workspaces
           const displayName =
-            (workspace.store as any)?.autoWorkspace === true
-              ? "your workspace"
+            workspace.store?.autoWorkspace === true
+              ? "Your workspace"
               : workspace.name;
           return {
             id: workspace.slug,
