@@ -23,6 +23,23 @@ export default function useLinks(
     }
   }, []);
 
+  const swrKey = workspaceId
+    ? `/api/links${getQueryString(
+        {
+          workspaceId,
+          includeUser: "true",
+          includeWebhooks: "true",
+          includeDashboard: "true",
+          ...opts,
+        },
+        {
+          exclude: ["import", "upgrade", "newLink"],
+        },
+      )}`
+    : admin
+      ? `/api/admin/links${getQueryString(opts)}`
+      : null;
+
   const {
     data: links,
     isValidating,
@@ -31,31 +48,12 @@ export default function useLinks(
     (ExpandedLinkProps & {
       user: UserProps;
     })[]
-  >(
-    workspaceId
-      ? `/api/links${getQueryString(
-          {
-            workspaceId,
-            includeUser: "true",
-            includeWebhooks: "true",
-            includeDashboard: "true",
-            ...opts,
-          },
-          {
-            exclude: ["import", "upgrade", "newLink"],
-          },
-        )}`
-      : admin
-        ? `/api/admin/links${getQueryString(opts)}`
-        : null,
-    fetcher,
-    {
-      dedupingInterval: 60000,
-      revalidateOnFocus: false,
-      keepPreviousData: true,
-      ...swrOpts,
-    },
-  );
+  >(swrKey, fetcher, {
+    dedupingInterval: 60000,
+    revalidateOnFocus: false,
+    keepPreviousData: true,
+    ...swrOpts,
+  });
 
   return {
     links,

@@ -142,6 +142,22 @@ export async function recordClick({
     referer_url: referer || "(direct)",
   };
 
+  // Lightweight “recent activity” feed (used by onboarding UX).
+  // We keep a short rolling window in Redis so we can render a real-time list
+  // without needing a dedicated Tinybird pipe for workspace-wide click events.
+  const clickFeedItem = workspaceId
+    ? {
+        timestamp: clickData.timestamp,
+        clickId,
+        linkId,
+        domain,
+        key,
+        device: clickData.device,
+        referer: clickData.referer,
+        identityHash: clickData.identity_hash,
+      }
+    : null;
+
   const hasWebhooks = webhookIds && webhookIds.length > 0;
 
   const [, , , , workspaceRows, ] = await Promise.allSettled([
@@ -165,6 +181,15 @@ export async function recordClick({
       redis.set(`clickCache:${clickId}`, clickData, {
         ex: 60 * 5,
       }),
+
+    // Push to workspace click feed (keep last 50).
+    clickFeedItem
+      ? (async () => {
+          const listKey = `workspace:click-feed:${workspaceId}`;
+          await redis.lpush(listKey, JSON.stringify(clickFeedItem));
+          await redis.ltrim(listKey, 0, 49);
+        })()
+      : null,
 
     // increment the click count for the link (based on their ID)
     // we have to use planetscale connection directly (not prismaEdge) because of connection pooling

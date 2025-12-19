@@ -32,6 +32,7 @@ export function useWorkspaceStore<T>(
   };
 
   const mutateWorkspace = () => {
+    if (!slug) return;
     mutate(`/api/workspaces/${slug}`);
   };
 

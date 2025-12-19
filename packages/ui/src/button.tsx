@@ -28,7 +28,8 @@ export const buttonVariants = cva("transition-all", {
 });
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   text?: ReactNode | string;
   textWrapperClassName?: string;
@@ -85,7 +86,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             {shortcut && (
               <kbd
                 className={cn(
-                  "rounded hidden px-2 py-0.5 text-xs font-light transition-all duration-75 md:inline-block",
+                  "hidden rounded px-2 py-0.5 text-xs font-light transition-all duration-75 md:inline-block",
                   {
                     "bg-neutral-100": variant?.endsWith("outline"),
                   },
@@ -105,7 +106,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         // if onClick is passed, it's a "button" type, otherwise it's being used in a form, hence "submit"
         type={props.onClick ? "button" : "submit"}
         className={cn(
-          "group flex h-10 w-full cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-neutral-200 px-3 text-sm font-semibold",
+          "group flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-neutral-200 px-3 text-sm font-semibold whitespace-nowrap focus-visible:ring-2 focus-visible:ring-neutral-300 focus-visible:outline-none",
           props.disabled || loading
             ? "cursor-not-allowed border-neutral-200 bg-neutral-100 text-neutral-400"
             : buttonVariants({ variant }),
@@ -129,10 +130,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {shortcut && (
           <kbd
             className={cn(
-              "rounded hidden px-2 py-0.5 text-xs font-light transition-all duration-75 md:inline-block",
+              "hidden rounded px-2 py-0.5 text-xs font-light transition-all duration-75 md:inline-block",
               {
-                "bg-brand-primary-light text-black":
-                  variant === "primary",
+                "bg-brand-primary-light text-black": variant === "primary",
                 "bg-neutral-200 text-neutral-400 group-hover:bg-neutral-100 group-hover:text-neutral-500":
                   variant === "secondary",
                 "bg-neutral-100 text-neutral-500 group-hover:bg-neutral-200":

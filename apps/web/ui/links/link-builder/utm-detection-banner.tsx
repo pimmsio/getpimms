@@ -275,10 +275,10 @@ export function UtmDetectionBanner() {
   }
 
   return (
-    <div className="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-3">
-      <AlertCircle className="mt-0.5 size-4 shrink-0 text-blue-600" />
+    <div className="flex items-start gap-3 rounded-xl bg-neutral-50 p-3 ring-1 ring-neutral-200/60">
+      <AlertCircle className="mt-0.5 size-4 shrink-0 text-neutral-600" />
       <div className="flex-1">
-        <p className="text-sm text-blue-900">
+        <p className="text-sm text-neutral-900">
           Your URL contains UTM parameters. Would you like to extract them to save in your library?
         </p>
         <div className="mt-2 flex gap-2">
@@ -286,7 +286,7 @@ export function UtmDetectionBanner() {
             type="button"
             onClick={handleExtract}
             disabled={isExtracting}
-            className="flex items-center gap-1.5 rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex items-center gap-1.5 rounded-md bg-neutral-900 px-3 py-1 text-xs font-medium text-white hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isExtracting && <Loader2 className="size-3 animate-spin" />}
             Extract
@@ -295,7 +295,7 @@ export function UtmDetectionBanner() {
             type="button"
             onClick={handleDiscard}
             disabled={isExtracting}
-            className="rounded-md border border-blue-300 bg-white px-3 py-1 text-xs font-medium text-blue-900 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-md border border-neutral-200 bg-white px-3 py-1 text-xs font-medium text-neutral-800 outline-none transition hover:border-neutral-300 hover:bg-neutral-50 focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200/60 disabled:cursor-not-allowed disabled:opacity-60"
           >
             Discard
           </button>
@@ -304,7 +304,7 @@ export function UtmDetectionBanner() {
       <button
         type="button"
         onClick={handleDismiss}
-        className="shrink-0 text-blue-600 hover:text-blue-800"
+        className="shrink-0 text-neutral-500 hover:text-neutral-700"
       >
         <X className="size-4" />
       </button>

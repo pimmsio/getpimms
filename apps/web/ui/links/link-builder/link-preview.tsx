@@ -1,10 +1,11 @@
 import useWorkspace from "@/lib/swr/use-workspace";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 import {
   LinkFormData,
   useLinkBuilderContext,
 } from "@/ui/links/link-builder/link-builder-provider";
 import { useOGModal } from "@/ui/modals/link-builder/og-modal";
-import { FileUpload, Icon, Switch, useMediaQuery } from "@dub/ui";
+import { FileUpload, Icon, useMediaQuery } from "@dub/ui";
 import {
   Facebook,
   GlobePointer,
@@ -30,9 +31,9 @@ import { useFormContext, useWatch } from "react-hook-form";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
+import { HelpTooltip } from "./help-tooltip";
 import { useLinkBuilderKeyboardShortcut } from "./use-link-builder-keyboard-shortcut";
 import { useMetatags } from "./use-metatags";
-import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 
 const tabs = ["default", "x", "linkedin", "facebook"] as const;
 type Tab = (typeof tabs)[number];
@@ -70,7 +71,15 @@ export const LinkPreview = memo(() => {
   const { control, setValue } = useFormContext<LinkFormData>();
   const [proxy, doIndex, title, description, image, url, password] = useWatch({
     control,
-    name: ["proxy", "doIndex", "title", "description", "image", "url", "password"],
+    name: [
+      "proxy",
+      "doIndex",
+      "title",
+      "description",
+      "image",
+      "url",
+      "password",
+    ],
   });
 
   const [debouncedUrl] = useDebounce(url, 500);
@@ -118,6 +127,10 @@ export const LinkPreview = memo(() => {
               </button>
             )}
           </h2>
+          <HelpTooltip
+            label="Help: Custom preview"
+            content="Customize the title, description and image shown when your link is shared."
+          />
           {/* <InfoTooltip
             content={
               <SimpleTooltipContent
@@ -173,7 +186,12 @@ export const LinkPreview = memo(() => {
         })}
       </div> */}
       <div className="relative z-0 mt-2">
-        <div className={cn("absolute right-2 top-2 z-10 flex gap-1", doIndex && "hidden")}>
+        <div
+          className={cn(
+            "absolute top-2 right-2 z-10 flex gap-1",
+            doIndex && "hidden",
+          )}
+        >
           <AppIconButton
             type="button"
             className="h-8 w-fit px-1.5"
@@ -181,7 +199,9 @@ export const LinkPreview = memo(() => {
             disabled={!url || generatingMetatags}
             title="Refresh preview from URL"
           >
-            <Refresh2 className={cn("size-4", generatingMetatags && "animate-spin")} />
+            <Refresh2
+              className={cn("size-4", generatingMetatags && "animate-spin")}
+            />
           </AppIconButton>
           <AppIconButton
             type="button"
@@ -328,13 +348,12 @@ function DefaultOGPreview({
   hostname,
   children,
 }: OGPreviewProps) {
-  const { plan } = useWorkspace();
   const { watch, setValue } = useFormContext<LinkFormData>();
   const { proxy, doIndex } = watch();
 
   return (
     <div>
-      <div className="group relative overflow-hidden rounded border border-neutral-200">
+      <div className="group relative overflow-hidden rounded-xl bg-white ring-1 ring-neutral-200/60">
         {children}
       </div>
       <ReactTextareaAutosize
@@ -364,7 +383,7 @@ function DefaultOGPreview({
         }}
       />
       {hostname && (
-        <p className="mt-2 text-xs text-[#606770]">
+        <p className="mt-2 text-xs text-neutral-600">
           {proxy ? SHORT_DOMAIN : hostname || "domain.com"}
         </p>
       )}
@@ -378,18 +397,17 @@ function FacebookOGPreview({
   hostname,
   children,
 }: OGPreviewProps) {
-  const { plan } = useWorkspace();
   const { watch, setValue } = useFormContext<LinkFormData>();
   const { proxy, doIndex } = watch();
 
   return (
     <div>
-      <div className="relative border border-neutral-300">
+      <div className="relative overflow-hidden rounded-xl bg-white ring-1 ring-neutral-200/60">
         {children}
         {(hostname || title || description) && (
-          <div className="grid gap-1 border-t border-neutral-300 bg-[#f2f3f5] p-2">
+          <div className="grid gap-1 border-t border-neutral-200/70 bg-neutral-50 p-2">
             <input
-              className="truncate border-none bg-transparent p-0 text-xs font-semibold text-[#1d2129] outline-none focus:ring-0"
+              className="truncate border-none bg-transparent p-0 text-xs font-semibold text-neutral-900 outline-none focus:ring-0"
               value={title || "Add a title..."}
               disabled={!!doIndex}
               onChange={(e) => {
@@ -402,7 +420,7 @@ function FacebookOGPreview({
               }}
             />
             <ReactTextareaAutosize
-              className="mb-1 line-clamp-2 w-full resize-none rounded border-none bg-neutral-200 bg-transparent p-0 text-xs text-[#606770] outline-none focus:ring-0"
+              className="mb-1 line-clamp-2 w-full resize-none rounded border-none bg-transparent p-0 text-xs text-neutral-600 outline-none focus:ring-0"
               value={description || "Add a description..."}
               maxRows={2}
               disabled={!!doIndex}
@@ -416,7 +434,7 @@ function FacebookOGPreview({
               }}
             />
             {hostname && (
-              <p className="text-xs uppercase text-[#606770]">
+              <p className="text-xs text-neutral-600 uppercase">
                 {proxy ? SHORT_DOMAIN : hostname || "domain.com"}
               </p>
             )}
@@ -428,12 +446,11 @@ function FacebookOGPreview({
 }
 
 function LinkedInOGPreview({ title, hostname, children }: OGPreviewProps) {
-  const { plan } = useWorkspace();
   const { watch, setValue } = useFormContext<LinkFormData>();
   const { proxy, doIndex } = watch();
 
   return (
-    <div className="flex items-center gap-3 rounded border border-[#8c8c8c33] px-4 py-3">
+    <div className="flex items-center gap-3 rounded-xl bg-white px-4 py-3 ring-1 ring-neutral-200/60">
       <div
         className="relative w-32 shrink-0 overflow-hidden rounded"
         style={{ "--aspect": "128/72" } as any}
@@ -442,7 +459,7 @@ function LinkedInOGPreview({ title, hostname, children }: OGPreviewProps) {
       </div>
       <div className="grid gap-2">
         <ReactTextareaAutosize
-          className="line-clamp-2 w-full resize-none border-none p-0 text-sm font-semibold text-[#000000E6] outline-none focus:ring-0"
+          className="line-clamp-2 w-full resize-none border-none p-0 text-sm text-neutral-900 outline-none focus:ring-0"
           value={title || "Add a title..."}
           maxRows={2}
           disabled={!!doIndex}
@@ -455,7 +472,7 @@ function LinkedInOGPreview({ title, hostname, children }: OGPreviewProps) {
             // }
           }}
         />
-        <p className="text-xs text-[#00000099]">
+        <p className="text-xs text-neutral-600">
           {proxy ? SHORT_DOMAIN : hostname || "domain.com"}
         </p>
       </div>
@@ -469,7 +486,7 @@ function XOGPreview({ title, hostname, children }: OGPreviewProps) {
 
   return (
     <div>
-      <div className="group relative overflow-hidden rounded border border-neutral-300">
+      <div className="group relative overflow-hidden rounded-xl bg-white ring-1 ring-neutral-200/60">
         {children}
         <div className="absolute bottom-2 left-0 w-full px-2">
           <div className="w-fit max-w-full rounded bg-black/[0.77] px-1.5 py-px">
@@ -480,7 +497,7 @@ function XOGPreview({ title, hostname, children }: OGPreviewProps) {
         </div>
       </div>
       {hostname && (
-        <p className="mt-1 text-xs text-[#606770]">
+        <p className="mt-1 text-xs text-neutral-600">
           From {proxy ? SHORT_DOMAIN : hostname || "domain.com"}
         </p>
       )}

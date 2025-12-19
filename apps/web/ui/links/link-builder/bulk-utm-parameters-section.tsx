@@ -73,7 +73,7 @@ export function BulkUTMParametersSection({
   };
 
   return (
-    <div className="rounded-lg border border-neutral-200 bg-neutral-50 p-4">
+    <div className="rounded-xl bg-neutral-50 p-4 ring-1 ring-neutral-200/60">
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <div className="text-sm font-medium text-neutral-900">

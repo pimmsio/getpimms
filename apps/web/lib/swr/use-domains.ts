@@ -22,31 +22,36 @@ export default function useDomains({
   const { id: workspaceId } = useWorkspace();
   const { getQueryString } = useRouterStuff();
 
-  const { data, error, mutate } = useSWR<DomainProps[]>(
+  const swrKey =
     workspaceId &&
-      `/api/domains${
-        ignoreParams
-          ? "?" +
-            new URLSearchParams({
-              ...opts,
-              workspaceId,
-            }).toString()
-          : getQueryString({
-              ...opts,
-              workspaceId,
-            })
-      }`,
-    fetcher,
-    {
-      dedupingInterval: 60000,
-      revalidateOnFocus: false,
-      keepPreviousData: true,
-    },
-  );
+    `/api/domains${
+      ignoreParams
+        ? "?" +
+          new URLSearchParams({
+            ...opts,
+            workspaceId,
+          }).toString()
+        : getQueryString({
+            ...opts,
+            workspaceId,
+          })
+    }`;
+
+  const { data, error, mutate } = useSWR<DomainProps[]>(swrKey, fetcher, {
+    dedupingInterval: 60000,
+    revalidateOnFocus: false,
+    keepPreviousData: true,
+  });
   const {
     defaultDomains: workspaceDefaultDomains,
     loading: loadingDefaultDomains,
   } = useDefaultDomains(opts);
+
+  const hasEnabledWorkspaceDefaultDomains =
+    Array.isArray(workspaceDefaultDomains) &&
+    workspaceDefaultDomains.some(
+      (d: any) => typeof d?.slug === "string" && d.slug.length > 0,
+    );
 
   const allWorkspaceDomains = useMemo(() => data || [], [data]);
   const activeWorkspaceDomains = useMemo(
@@ -56,12 +61,12 @@ export default function useDomains({
 
   const activeDefaultDomains = useMemo(
     () =>
-      (workspaceDefaultDomains &&
-        DUB_DOMAINS.filter((d) => 
-          workspaceDefaultDomains?.some((wd: any) => wd.slug === d.slug)
+      (hasEnabledWorkspaceDefaultDomains &&
+        DUB_DOMAINS.filter((d) =>
+          workspaceDefaultDomains?.some((wd: any) => wd.slug === d.slug),
         )) ||
       DUB_DOMAINS,
-    [workspaceDefaultDomains],
+    [hasEnabledWorkspaceDefaultDomains, workspaceDefaultDomains],
   );
 
   const allDomains = useMemo(
@@ -87,9 +92,13 @@ export default function useDomains({
   const allDomainsForPage = useMemo(() => {
     // Check if viewing archived domains (allWorkspaceDomains would be filtered by the API based on archived query param)
     const isViewingArchived = allWorkspaceDomains.some((d) => d.archived);
-    
+
     // Don't show default domains on archived tab
-    if (!workspaceDefaultDomains || workspaceId === prefixWorkspaceId(DUB_WORKSPACE_ID) || isViewingArchived) {
+    if (
+      !hasEnabledWorkspaceDefaultDomains ||
+      workspaceId === prefixWorkspaceId(DUB_WORKSPACE_ID) ||
+      isViewingArchived
+    ) {
       return allWorkspaceDomains;
     }
 
@@ -98,13 +107,15 @@ export default function useDomains({
 
     // Get default domains with their metadata
     // First enabled default domain is primary if no custom domain is primary
-    const defaultDomainsForPage = workspaceDefaultDomains.map((d: any, index: number) => ({
-      slug: d.slug,
-      primary: !hasCustomPrimary && index === 0, // First enabled default domain is primary
-      isDefaultDomain: true,
-      verified: true,
-      archived: false,
-    }));
+    const defaultDomainsForPage = workspaceDefaultDomains.map(
+      (d: any, index: number) => ({
+        slug: d.slug,
+        primary: !hasCustomPrimary && index === 0, // First enabled default domain is primary
+        isDefaultDomain: true,
+        verified: true,
+        archived: false,
+      }),
+    );
 
     // Sort: primary first, then workspace domains, then default domains
     const sortedDomains = [
@@ -124,19 +135,26 @@ export default function useDomains({
 
   const primaryDomain = useMemo(() => {
     // Check if a workspace domain is primary
-    const primaryWorkspaceDomain = activeWorkspaceDomains?.find(({ primary }) => primary);
+    const primaryWorkspaceDomain = activeWorkspaceDomains?.find(
+      ({ primary }) => primary,
+    );
     if (primaryWorkspaceDomain) {
       return primaryWorkspaceDomain.slug;
     }
-    
+
     // If no custom domain is primary, use the first enabled default domain
-    if (workspaceDefaultDomains && workspaceDefaultDomains.length > 0) {
+    if (hasEnabledWorkspaceDefaultDomains) {
       return workspaceDefaultDomains[0].slug;
     }
-    
+
     // Fallback to SHORT_DOMAIN (pim.ms)
     return SHORT_DOMAIN;
-  }, [activeDefaultDomains, activeWorkspaceDomains, workspaceDefaultDomains]);
+  }, [
+    hasEnabledWorkspaceDefaultDomains,
+    activeDefaultDomains,
+    activeWorkspaceDomains,
+    workspaceDefaultDomains,
+  ]);
 
   return {
     activeWorkspaceDomains, // active workspace domains

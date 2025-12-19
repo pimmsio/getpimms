@@ -1,22 +1,22 @@
 "use client";
 
 import useWorkspace from "@/lib/swr/use-workspace";
-import { Button, ButtonProps } from "@dub/ui";
+import { AppButton, AppButtonProps } from "@/ui/components/controls/app-button";
 import { cn } from "@dub/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function ManageSubscriptionButton(props: ButtonProps) {
+export default function ManageSubscriptionButton(
+  props: Omit<AppButtonProps, "children"> & { text?: string },
+) {
   const { id: workspaceId } = useWorkspace();
   const [clicked, setClicked] = useState(false);
   const router = useRouter();
 
   return (
-    <Button
+    <AppButton
       {...props}
-      text={props.text || "Manage Subscription"}
-      variant={props.variant || "secondary"}
       className={cn(props.className, "h-9")}
       onClick={() => {
         setClicked(true);
@@ -34,6 +34,8 @@ export default function ManageSubscriptionButton(props: ButtonProps) {
         });
       }}
       loading={clicked}
-    />
+    >
+      {props.text || "Manage Subscription"}
+    </AppButton>
   );
 }

@@ -8,9 +8,7 @@ import TagBadge from "@/ui/links/tag-badge";
 import {
   AnimatedSizeContainer,
   Combobox,
-  InfoTooltip,
   Magic,
-  SimpleTooltipContent,
   Tag,
   Tooltip,
 } from "@dub/ui";
@@ -23,6 +21,7 @@ import { toast } from "sonner";
 import { mutate } from "swr";
 import { useDebounce } from "use-debounce";
 import { MultiTagsIcon } from "./multi-tags-icon";
+import { HelpTooltip } from "./help-tooltip";
 import { useLinkBuilderKeyboardShortcut } from "./use-link-builder-keyboard-shortcut";
 
 function getTagOption(tag: TagProps) {
@@ -156,15 +155,10 @@ export const TagSelect = memo(() => {
       <div className="mb-1 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <p className="text-sm font-medium text-neutral-700">Tags</p>
-          {/* <InfoTooltip
-            content={
-              <SimpleTooltipContent
-                title={`Tags are used to organize your links in your ${process.env.NEXT_PUBLIC_APP_NAME} dashboard.`}
-                cta="Learn more."
-                href="https://dub.co/help/article/how-to-use-tags"
-              />
-            }
-          /> */}
+          <HelpTooltip
+            label="Help: Tags"
+            content="Tags help you organize and group your links in the dashboard."
+          />
         </div>
         <a
           href={`/${slug}/settings/library/tags`}
@@ -198,7 +192,7 @@ export const TagSelect = memo(() => {
         shortcutHint="T"
         buttonProps={{
           className: cn(
-            "h-auto py-1.5 px-2.5 w-full text-neutral-700 border-neutral-300 items-start",
+            "h-auto w-full items-start px-2.5 py-1.5 text-neutral-700 border-neutral-200",
             selectedTags.length === 0 && "text-neutral-400",
           ),
         }}

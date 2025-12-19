@@ -100,6 +100,8 @@ export const POST = withSession(async ({ req, session }) => {
             id: createWorkspaceId(),
             name,
             slug,
+            // Conversion tracking is enabled by default for all new workspaces.
+            conversionEnabled: true,
             users: {
               create: {
                 userId: session.user.id,

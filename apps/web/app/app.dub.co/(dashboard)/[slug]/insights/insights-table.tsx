@@ -15,7 +15,8 @@ import {
   TABLE_LINK_CELL_CLASS,
   TABLE_UTM_CELL_CLASS,
   TABLE_CONTAINER_CLASS,
-  TABLE_CLASS
+  TABLE_CLASS,
+  StickyColumnStyles,
 } from "@/ui/shared/table-styles";
 import { cn, currencyFormatter, nFormatter } from "@dub/utils";
 import NumberFlow from "@number-flow/react";
@@ -258,30 +259,7 @@ function GridInsightsTable({
 
   return (
     <div className="relative">
-      <style jsx global>{`
-        @media (min-width: 768px) {
-          .insights-table td:first-child {
-            position: sticky !important;
-            left: 0 !important;
-            z-index: 20 !important;
-            background: white !important;
-            border-right: 1px solid #f5f5f5 !important;
-          }
-          .insights-table th:first-child {
-            z-index: 21 !important;
-          }
-          .insights-table tr.totals-row td:first-child {
-            background: #f8fafc !important;
-            z-index: 22 !important;
-          }
-        }
-        .insights-table tr.totals-row {
-          position: sticky !important;
-          bottom: 0 !important;
-          z-index: 15 !important;
-          box-shadow: none !important;
-        }
-      `}</style>
+      <StickyColumnStyles tableClass="insights-table" />
 
       <div className={TABLE_CONTAINER_CLASS}>
         <table className={`insights-table ${TABLE_CLASS}`}>

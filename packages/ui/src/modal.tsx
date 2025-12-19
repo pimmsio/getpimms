@@ -17,6 +17,7 @@ export function Modal({
   desktopOnly,
   preventDefaultClose,
   drawerRootProps,
+  overlayClassName,
 }: {
   children: React.ReactNode;
   className?: string;
@@ -26,6 +27,7 @@ export function Modal({
   desktopOnly?: boolean;
   preventDefaultClose?: boolean;
   drawerRootProps?: ComponentProps<typeof Drawer.Root>;
+  overlayClassName?: string;
 }) {
   const router = useRouter();
 
@@ -47,6 +49,10 @@ export function Modal({
   const { isMobile } = useMediaQuery();
 
   if (isMobile && !desktopOnly) {
+    const mobileOverlayClassName = cn(
+      "fixed inset-0 z-50",
+      overlayClassName ?? "bg-neutral-100 bg-opacity-10 backdrop-blur",
+    );
     return (
       <Drawer.Root
         open={setShowModal ? showModal : true}
@@ -58,7 +64,7 @@ export function Modal({
         {...drawerRootProps}
       >
         <Drawer.Portal>
-          <Drawer.Overlay className="fixed inset-0 z-50 bg-neutral-100 bg-opacity-10 backdrop-blur" />
+          <Drawer.Overlay className={mobileOverlayClassName} />
           <Drawer.Content
             onPointerDownOutside={(e) => {
               // Prevent dismissal when clicking inside a toast
@@ -90,6 +96,11 @@ export function Modal({
     );
   }
 
+  const desktopOverlayClassName = cn(
+    "animate-fade-in fixed inset-0 z-40",
+    overlayClassName ?? "bg-neutral-100 bg-opacity-50 backdrop-blur-md",
+  );
+
   return (
     <Dialog.Root
       open={setShowModal ? showModal : true}
@@ -103,7 +114,7 @@ export function Modal({
         <Dialog.Overlay
           // for detecting when there's an active opened modal
           id="modal-backdrop"
-          className="animate-fade-in fixed inset-0 z-40 bg-neutral-100 bg-opacity-50 backdrop-blur-md"
+          className={desktopOverlayClassName}
         />
         <Dialog.Content
           onOpenAutoFocus={(e) => e.preventDefault()}

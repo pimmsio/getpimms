@@ -7,6 +7,8 @@ import { useCallback } from "react";
 import { toast } from "sonner";
 
 const PRE_WORKSPACE_STEPS: OnboardingStep[] = [];
+// UI can navigate to any onboarding step string (we validate server-side).
+type UIOnboardingStep = OnboardingStep | (string & {});
 
 export function useOnboardingProgress() {
   const router = useRouter();
@@ -28,12 +30,10 @@ export function useOnboardingProgress() {
   );
 
   const continueTo = useCallback(
-    async (
-      step: OnboardingStep,
-      { slug: providedSlug }: { slug?: string } = {},
-    ) => {
+    async (step: string, { slug: providedSlug }: { slug?: string } = {}) => {
       execute({
-        onboardingStep: step,
+        // NOTE: keep UI steps flexible; backend validates via z.enum(ONBOARDING_STEPS)
+        onboardingStep: step as any,
       });
 
       const workspaceSlug = providedSlug || slug;

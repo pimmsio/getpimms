@@ -60,10 +60,13 @@ export function WorkspaceDropdown() {
 
       // return personal account selector if there's no workspace or error (user doesn't have access to workspace)
     } else {
+      const fallbackEmail = session?.user?.email || session?.user?.name || "user";
+      const avatarUrl = getUserAvatarUrl(session?.user);
       return {
         name: session?.user?.name || session?.user?.email,
         slug: "/",
-        image: getUserAvatarUrl(session?.user),
+        // `getUserAvatarUrl` can be an empty string; ensure we never pass an empty `src`
+        image: avatarUrl || `https://avatar.vercel.sh/${encodeURIComponent(fallbackEmail)}`,
         plan: "free",
       };
     }

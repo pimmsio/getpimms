@@ -20,19 +20,19 @@ export default function RegisterPageClient() {
 function SignUp() {
   return (
     <>
-      <div className="w-full max-w-md overflow-hidden border border-zinc-200 rounded-3xl sm:shadow-sm">
-        <div className="bg-white pb-6 pt-8 text-center">
+      <div className="w-full max-w-md overflow-hidden rounded-3xl">
+        <div className="bg-white pt-8 pb-6 text-center">
           <h3 className="text-lg font-semibold">Get started with PIMMS</h3>
         </div>
         <div className="bg-neutral-50 px-4 py-8 sm:px-16">
           <SignUpForm methods={["email", "google"]} />
         </div>
       </div>
-      <p className="mt-4 text-center text-sm">
+      <p className="mt-4 text-center text-sm text-neutral-500">
         Already have an account?&nbsp;
         <Link
           href="/login"
-          className="font-semibold underline underline-offset-2 transition-colors hover:text-black"
+          className="font-semibold text-neutral-500 underline underline-offset-2 transition-colors hover:text-black"
         >
           Sign in
         </Link>
@@ -46,10 +46,10 @@ function Verify() {
 
   return (
     <>
-      <div className="w-full max-w-md overflow-hidden border-y border-neutral-200 sm:rounded sm:border sm:shadow-sm">
-        <div className="flex flex-col items-center justify-center gap-3 border-b border-neutral-100 bg-white px-4 pb-6 pt-8 text-center sm:px-16">
+      <div className="w-full max-w-md overflow-hidden rounded-3xl">
+        <div className="bg-white pt-8 pb-6 text-center">
           <h3 className="text-xl font-semibold">Verify your email address</h3>
-          <p className="text-sm">
+          <p className="mt-3 px-4 text-sm sm:px-16">
             Enter the six digit verification code sent to{" "}
             <strong className="font-medium text-neutral-600" title={email}>
               {truncate(email, 30)}
@@ -60,11 +60,11 @@ function Verify() {
           <VerifyEmailForm />
         </div>
       </div>
-      <p className="mt-4 text-center text-sm">
+      <p className="mt-4 text-center text-sm text-neutral-500">
         Already have an account?&nbsp;
         <Link
           href="/login"
-          className="font-semibold underline underline-offset-2 transition-colors hover:text-black"
+          className="font-semibold text-neutral-500 underline underline-offset-2 transition-colors hover:text-black"
         >
           Sign in
         </Link>

@@ -78,9 +78,7 @@ function StatsGrid() {
   const { plan } = workspace || {};
   const { slug: workspaceSlug } = useWorkspace();
 
-  const hide =
-    (selectedTab === "leads" || selectedTab === "sales" || view === "funnel") &&
-    plan === "free";
+  const hide = false;
 
   const enableReorder = Boolean(!dashboardProps && !adminPage && workspaceSlug);
 

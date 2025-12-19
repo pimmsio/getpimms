@@ -1,6 +1,8 @@
-import { mutatePrefix } from "@/lib/swr/mutate";
+import { mutatePrefix, optimisticPrependToPrefix } from "@/lib/swr/mutate";
+import { AppButton } from "@/ui/components/controls/app-button";
 import { UpgradeRequiredToast } from "@/ui/shared/upgrade-required-toast";
 import { useCopyToClipboard } from "@dub/ui";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
 import { useCallback } from "react";
@@ -8,7 +10,6 @@ import { useFormContext } from "react-hook-form";
 import { toast } from "sonner";
 import { mutate } from "swr";
 import { LinkFormData, useLinkBuilderContext } from "./link-builder-provider";
-import { AppButton } from "@/ui/components/controls/app-button";
 
 export function useLinkBuilderSubmit({
   onSuccess,
@@ -16,6 +17,7 @@ export function useLinkBuilderSubmit({
   onSuccess?: (data: LinkFormData) => void;
 } = {}) {
   const router = useRouter();
+  const { data: session } = useSession();
   const { workspace, props } = useLinkBuilderContext();
   const { getValues, setError } = useFormContext<LinkFormData>();
 
@@ -63,6 +65,23 @@ export function useLinkBuilderSubmit({
           const data = await res.json();
           onSuccess?.(data);
 
+          // Optimistically update SWR caches for links lists so the new link appears immediately,
+          // then revalidate for correctness.
+          if (session?.user && data && typeof (data as any).id === "string") {
+            const sessionUser = {
+              id: (session.user as any)["id"],
+              name: session.user.name,
+              email: session.user.email,
+              image: (session.user as any).image,
+            };
+
+            // Only apply optimistic update if we have the minimal user info needed by the links list UI.
+            if (typeof sessionUser.id === "string") {
+              const optimistic = { ...(data as any), user: sessionUser };
+              await optimisticPrependToPrefix("/api/links", optimistic);
+            }
+          }
+
           // for editing links, if domain / key is changed, push to new url
           if (
             props &&
@@ -76,6 +95,7 @@ export function useLinkBuilderSubmit({
             // if updating root domain link, mutate domains as well
             ...(getValues("key") === "_root" ? ["/api/domains"] : []),
           ]);
+
           posthog.capture(props ? "link_updated" : "link_created", data);
 
           // copy shortlink to clipboard when adding a new link
@@ -154,6 +174,7 @@ export function useLinkBuilderSubmit({
       }
     },
     [
+      session?.user,
       workspace.id,
       workspace.slug,
       workspace.nextPlan,

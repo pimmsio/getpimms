@@ -100,6 +100,7 @@ function LinkBuilderInner({
   // Bulk mode state
   const [urlMode, setUrlMode] = useState<"single" | "bulk">("single");
   const [bulkUrls, setBulkUrls] = useState<string[]>([]);
+  const autoExpandUtm = showLinkBuilder && searchParams.has("utmFocus");
 
   const [domain, key] = useWatch({
     control,
@@ -236,7 +237,7 @@ function LinkBuilderInner({
 
                     <LinkBuilderShortLinkInput />
 
-                    <UTMParametersSection />
+                    <UTMParametersSection autoExpand={autoExpandUtm} />
 
                     <TagSelect />
 
@@ -271,9 +272,8 @@ function LinkBuilderInner({
               </div>
             </div>
             <div className="scrollbar-hide px-2 md:overflow-auto md:px-6 md:pl-0 md:pr-4">
-              <div className="relative">
-                <div className="absolute inset-0 rounded-3xl border-neutral-200 bg-neutral-50"></div>
-                <div className="relative flex flex-col gap-6 px-4 py-3">
+              <div className="rounded-3xl bg-neutral-50 px-4 py-3 ring-1 ring-neutral-200/60">
+                <div className="flex flex-col gap-6">
                   <LinkBuilderFolderSelector />
                   <LinkPreview />
                   <QRCodePreview />
@@ -281,7 +281,7 @@ function LinkBuilderInner({
               </div>
             </div>
           </div>
-          <div className="sticky bottom-0 z-10 flex items-center gap-6 border-t border-neutral-100 bg-neutral-50 p-4">
+          <div className="sticky bottom-0 z-10 flex items-center gap-6 bg-white p-4 ring-1 ring-neutral-200/60">
             <LinkFeatureButtons />
             {homepageDemo ? (
               <AppButton
@@ -403,12 +403,21 @@ export function CreateLinkButton({
     );
   }
 
+  const disabledTooltip = exceededLinks ? (
+    <TooltipContent
+      title="Your workspace has exceeded its monthly links limit. We're still collecting data on your existing links, but you need to upgrade to add more links."
+      cta={nextPlan ? `Upgrade to ${nextPlan.name}` : "Contact support"}
+      href={`/${slug}/upgrade`}
+    />
+  ) : undefined;
+
   return (
     <AppButton
       type="button"
       variant="primary"
       size="md"
       disabled={exceededLinks}
+      disabledTooltip={disabledTooltip}
       onClick={() => setShowLinkBuilder(true)}
       className={cn(buttonProps.className)}
     >

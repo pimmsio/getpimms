@@ -27,7 +27,7 @@ export function BulkDomainSelector({
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex h-10 w-full items-center justify-between rounded-lg border border-neutral-300 bg-white px-3 text-sm hover:bg-neutral-50"
+          className="flex h-10 w-full items-center justify-between rounded-lg border border-neutral-200 bg-white px-3 text-sm outline-none transition hover:bg-neutral-50 focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200/60"
         >
           <span className="font-mono">{selected?.slug || "Select domain"}</span>
           <ChevronDown className="size-4 text-neutral-400" />
@@ -39,7 +39,7 @@ export function BulkDomainSelector({
               className="fixed inset-0 z-10"
               onClick={() => setIsOpen(false)}
             />
-            <div className="absolute top-full z-20 mt-1 w-full overflow-hidden rounded-lg border border-neutral-100 bg-white">
+            <div className="absolute top-full z-20 mt-1 w-full overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-neutral-200/60">
               {domains.map((domain) => (
                 <button
                   key={domain.slug}

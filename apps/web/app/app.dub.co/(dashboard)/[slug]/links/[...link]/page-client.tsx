@@ -10,7 +10,11 @@ import { LinkBuilderFolderSelector } from "@/ui/links/link-builder/controls/link
 import { LinkBuilderShortLinkInput } from "@/ui/links/link-builder/controls/link-builder-short-link-input";
 import { LinkCommentsInput } from "@/ui/links/link-builder/controls/link-comments-input";
 import { ConversionTrackingToggle } from "@/ui/links/link-builder/conversion-tracking-toggle";
-import { DraftControls, DraftControlsHandle } from "@/ui/links/link-builder/draft-controls";
+import { DisableDeeplinkToggle } from "@/ui/links/link-builder/disable-deeplink-toggle";
+import {
+  DraftControls,
+  DraftControlsHandle,
+} from "@/ui/links/link-builder/draft-controls";
 import { LinkActionBar } from "@/ui/links/link-builder/link-action-bar";
 import { LinkBuilderHeader } from "@/ui/links/link-builder/link-builder-header";
 import {
@@ -23,15 +27,11 @@ import { MoreOptionsSection } from "@/ui/links/link-builder/more-options-section
 import { OptionsList } from "@/ui/links/link-builder/options-list";
 import { QRCodePreview } from "@/ui/links/link-builder/qr-code-preview";
 import { SearchEngineIndexingToggle } from "@/ui/links/link-builder/search-engine-indexing-toggle";
-import { DisableDeeplinkToggle } from "@/ui/links/link-builder/disable-deeplink-toggle";
 import { TagSelect } from "@/ui/links/link-builder/tag-select";
-import { UTMParametersSection } from "@/ui/links/link-builder/utm-parameters-section";
 import { useLinkBuilderSubmit } from "@/ui/links/link-builder/use-link-builder-submit";
+import { UTMParametersSection } from "@/ui/links/link-builder/utm-parameters-section";
 import { LinkControls } from "@/ui/links/link-controls";
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
   Button,
   Check,
   Copy,
@@ -40,7 +40,6 @@ import {
   useMediaQuery,
 } from "@dub/ui";
 import { cn } from "@dub/utils";
-import { Info } from "lucide-react";
 import { notFound, useParams, useRouter } from "next/navigation";
 import { memo, useEffect, useRef, useState } from "react";
 import { useFormContext, useFormState } from "react-hook-form";
@@ -133,7 +132,7 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
 
   return (
     <div className="flex min-h-[calc(100vh-8px)] flex-col rounded-t-[inherit] bg-white">
-      <div className="py-2 pl-4 pr-5">
+      <div className="py-2 pr-5 pl-4">
         <LinkBuilderHeader
           onSelectLink={(selectedLink) => {
             if (selectedLink.id === link.id) return;
@@ -213,7 +212,7 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="relative flex min-h-full flex-col px-4 pb-20 md:px-6 lg:pb-24">
-          <div className="relative mx-auto flex w-full max-w-xl flex-col gap-7 pb-4 pt-10 lg:pb-10">
+          <div className="relative mx-auto flex w-full max-w-xl flex-col gap-7 pt-10 pb-4 lg:pb-10">
             <LinkBuilderDestinationUrlInput />
 
             <LinkBuilderShortLinkInput />
@@ -225,25 +224,6 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
             <LinkCommentsInput />
 
             <ConversionTrackingToggle />
-
-            {!customersCount || customersCount === 0 ? (
-              <Alert>
-                <Info className="mr-3 mt-2 h-5 w-5 text-green-500" />
-                <AlertTitle className="mb-1 mt-0 text-sm text-neutral-600">
-                  Get started with advanced tracking
-                </AlertTitle>
-                <AlertDescription className="text-neutral-500">
-                  Use our guides:{" "}
-                  <a
-                    href={`/${workspace.slug}/settings/integrations`}
-                    target="_blank"
-                    className="font-medium underline underline-offset-4 hover:text-black"
-                  >
-                    Read more
-                  </a>
-                </AlertDescription>
-              </Alert>
-            ) : null}
 
             <MoreOptionsSection />
 
@@ -318,7 +298,7 @@ const Controls = memo(({ link }: { link: ExpandedLinkProps }) => {
 function LoadingSkeleton() {
   return (
     <div className="flex min-h-[calc(100vh-8px)] flex-col rounded-t-[inherit] bg-white">
-      <div className="flex items-center justify-between gap-4 py-2.5 pl-4 pr-5">
+      <div className="flex items-center justify-between gap-4 py-2.5 pr-5 pl-4">
         <div className="h-8 w-64 max-w-full animate-pulse rounded bg-neutral-100" />
         <div className="h-7 w-32 max-w-full animate-pulse rounded bg-neutral-100" />
       </div>
@@ -329,7 +309,7 @@ function LoadingSkeleton() {
         )}
       >
         <div className="relative flex min-h-full flex-col px-4 md:px-6">
-          <div className="relative mx-auto flex w-full max-w-xl flex-col gap-7 pb-4 pt-10 lg:pb-10">
+          <div className="relative mx-auto flex w-full max-w-xl flex-col gap-7 pt-10 pb-4 lg:pb-10">
             {["h-[66px]", "h-[66px]", "h-[64px]", "h-[104px]"].map(
               (className, idx) => (
                 <div key={idx} className={cn("flex flex-col gap-2", className)}>

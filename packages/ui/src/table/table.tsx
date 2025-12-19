@@ -33,10 +33,13 @@ import { LoadingSpinner, SortOrder } from "../icons";
 
 const tableCellClassName = (columnId: string, clickable?: boolean) =>
   cn([
-    "py-2.5 text-left text-sm leading-6 whitespace-nowrap border-border-subtle px-4 relative",
-    "border-l border-b",
-    columnId === "menu" && "bg-bg-default border-l-transparent py-0 px-1",
-    clickable && "group-hover/row:bg-bg-muted transition-colors duration-75",
+    // Minimalist defaults (surface-less, subtle separators)
+    "relative whitespace-nowrap text-left text-sm text-neutral-700",
+    "border-b border-neutral-100",
+    "px-3 py-2",
+    // Preserve the existing "menu" affordance (icon-only / compact)
+    columnId === "menu" && "px-1 py-0",
+    clickable && "transition-colors duration-75 group-hover/row:bg-neutral-50/50",
   ]);
 
 const resizingClassName = cn([
@@ -233,7 +236,7 @@ const ResizableTableRow = memo(
             key={cell.id}
             className={cn(
               tableCellClassName(cell.column.id, !!onRowClick),
-              "text-content-default group",
+              "group",
               getCommonPinningClassNames(
                 cell.column,
                 row.index === table.getRowModel().rows.length - 1,
@@ -310,24 +313,24 @@ export function Table<T>({
   return (
     <div
       className={cn(
-        "relative rounded border border-neutral-200 bg-white",
+        // IMPORTANT: keep tables surface-less by default.
+        // The page/caller should own the surface (card, border, background).
+        "relative w-full",
         containerClassName,
       )}
     >
       {(!error && !!data?.length) || loading ? (
         <div
           className={cn(
-            "relative min-h-[400px] overflow-x-auto rounded-[inherit]",
+            // Keep wrapper minimal; callers can add their own min-height if needed.
+            "relative w-full overflow-x-auto",
             scrollWrapperClassName,
           )}
         >
           <table
             className={cn(
               [
-                "group/table w-full border-separate border-spacing-0 transition-[border-spacing,margin-top]",
-                "[&_tr>*:first-child]:border-l-transparent",
-                "[&_tr>*:last-child]:border-r-transparent",
-                "[&_tr>*:last-child]:border-r-transparent",
+                "group/table w-full min-w-full border-separate border-spacing-0",
                 "[&_th]:relative [&_th]:select-none",
                 enableColumnResizing && "[&_th]:group/resize",
               ],
@@ -354,7 +357,8 @@ export function Table<T>({
                         colSpan={header.colSpan}
                         className={cn(
                           tableCellClassName(header.id),
-                          "text-content-emphasis select-none font-medium",
+                          "bg-neutral-50 text-[11px] font-medium uppercase tracking-wide text-neutral-500",
+                          "border-b border-neutral-100",
                           getCommonPinningClassNames(
                             header.column,
                             !table.getRowModel().rows.length,
@@ -457,7 +461,7 @@ export function Table<T>({
                         key={cell.id}
                         className={cn(
                           tableCellClassName(cell.column.id, !!onRowClick),
-                          "text-content-default group",
+                          "group",
                           getCommonPinningClassNames(
                             cell.column,
                             row.index === table.getRowModel().rows.length - 1,
@@ -492,14 +496,14 @@ export function Table<T>({
           {children}
         </div>
       ) : (
-        <div className="text-content-subtle flex h-96 w-full items-center justify-center text-sm">
+        <div className="flex w-full items-center justify-center py-12 text-sm text-neutral-500">
           {error ||
             emptyState ||
             `No ${resourceName?.(true) || "items"} found.`}
         </div>
       )}
       {pagination && !error && !!data?.length && !!rowCount && (
-        <div className="border-border-subtle bg-bg-default text-content-default sticky bottom-0 mx-auto -mt-px flex w-full max-w-full items-center justify-between rounded-b-[inherit] border-t px-4 py-3.5 text-sm leading-6">
+        <div className="sticky bottom-0 mx-auto -mt-px flex w-full max-w-full items-center justify-between border-t border-neutral-100 bg-white/80 px-4 py-3.5 text-sm leading-6 text-neutral-700 backdrop-blur">
           <div>
             <span className="hidden sm:inline-block">Viewing</span>{" "}
             <span className="font-medium">
@@ -543,7 +547,7 @@ export function Table<T>({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="bg-bg-default/50 absolute inset-0 flex h-[50vh] items-center justify-center rounded"
+            className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur"
           >
             <LoadingSpinner />
           </motion.div>

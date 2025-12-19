@@ -12,6 +12,11 @@ export interface AnalyticsEmptyStateProps {
    */
   icon: React.ComponentType<SVGProps<SVGSVGElement>>;
   /**
+   * Whether to show the icon (defaults to false to avoid visual clutter when
+   * multiple analytics cards are empty on the same page).
+   */
+  showIcon?: boolean;
+  /**
    * Title text
    */
   title: string;
@@ -38,6 +43,7 @@ export interface AnalyticsEmptyStateProps {
  */
 export function AnalyticsEmptyState({
   icon: Icon,
+  showIcon = false,
   title,
   description,
   action,
@@ -47,9 +53,11 @@ export function AnalyticsEmptyState({
     <div
       className={`flex flex-col items-center justify-center gap-3 px-4 text-center ${className}`}
     >
-      <div className="app-empty-icon">
-        <Icon className="h-6 w-6 text-neutral-600" />
-      </div>
+      {showIcon && (
+        <div className="app-empty-icon">
+          <Icon className="h-6 w-6 text-neutral-600" />
+        </div>
+      )}
       <div>
         <p className="text-sm font-semibold text-neutral-900">{title}</p>
         <p className="mt-1.5 text-xs text-neutral-500 leading-relaxed max-w-xs">

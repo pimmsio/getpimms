@@ -1,6 +1,6 @@
-import { InfoTooltip, SimpleTooltipContent } from "@dub/ui";
 import { memo } from "react";
 import { Controller } from "react-hook-form";
+import { HelpTooltip } from "../help-tooltip";
 
 export const LinkCommentsInput = memo(() => {
   return (
@@ -12,15 +12,11 @@ export const LinkCommentsInput = memo(() => {
         >
           Title
         </label>
-        {/* <InfoTooltip
-          content={
-            <SimpleTooltipContent
-              title="Add a custom title to your short link for easy identification."
-              cta="Learn more."
-              href="https://dub.co/help/article/link-comments"
-            />
-          }
-        /> */}
+        <HelpTooltip
+          label="Help: Title"
+          content="Internal title to help you identify this link in the dashboard."
+          className="hidden sm:inline-flex"
+        />
       </div>
       <Controller
         name="comments"
@@ -29,7 +25,7 @@ export const LinkCommentsInput = memo(() => {
             id="comments"
             name="comments"
             type="text"
-            className="mt-2 block w-full rounded-xl border border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm"
+            className="mt-2 block w-full rounded-lg border border-neutral-200 bg-white text-neutral-900 placeholder-neutral-400 focus:border-neutral-400 focus:outline-none focus:ring-0 sm:text-sm"
             placeholder="Add a title"
             value={field.value ?? ""}
             onChange={(e) => field.onChange(e.target.value)}

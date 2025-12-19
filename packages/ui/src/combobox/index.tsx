@@ -258,7 +258,7 @@ export function Combobox({
                     {search.length > 0 && onCreate && (
                       <CommandItem
                         className={cn(
-                          "flex cursor-pointer items-center gap-3 whitespace-nowrap rounded px-3 py-2 text-left text-sm text-neutral-700",
+                          "flex cursor-pointer items-center gap-3 rounded px-3 py-2 text-left text-sm whitespace-nowrap text-neutral-700",
                           "data-[selected=true]:bg-neutral-100",
                           optionClassName,
                         )}
@@ -311,7 +311,7 @@ export function Combobox({
         {...buttonProps}
         className={cn(
           // Enforce consistent trigger styling (even when Button defaults drift)
-          "!h-10 !rounded-lg !bg-white !px-3 !text-sm !font-semibold !text-neutral-800 hover:!bg-neutral-50 focus-visible:!outline-none focus-visible:!ring-2 focus-visible:!ring-neutral-300",
+          "!h-10 !rounded-lg !bg-white !px-3 !text-sm !font-normal !text-neutral-800 hover:!bg-neutral-50 focus-visible:!ring-2 focus-visible:!ring-neutral-300 focus-visible:!outline-none",
           buttonProps?.className,
           "flex gap-2",
         )}
@@ -393,7 +393,7 @@ function Option({
       <DisabledTooltip disabledTooltip={option.disabledTooltip}>
         <Command.Item
           className={cn(
-            "flex cursor-pointer items-center gap-3 whitespace-nowrap rounded px-3 py-2 text-left text-sm",
+            "flex cursor-pointer items-center gap-3 rounded px-3 py-2 text-left text-sm whitespace-nowrap",
             "data-[selected=true]:bg-neutral-100",
             Boolean(option.disabledTooltip) && "cursor-not-allowed opacity-50",
             className,

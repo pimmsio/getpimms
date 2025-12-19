@@ -29,7 +29,6 @@ export const SignUpOAuth = ({
         <Button
           variant="secondary"
           text="Continue with Google"
-          className="rounded-full"
           onClick={() => {
             setClickedGoogle(true);
             signIn("google", {

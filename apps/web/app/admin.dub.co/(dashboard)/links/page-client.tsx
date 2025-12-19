@@ -64,7 +64,7 @@ function AdminLinks() {
               <div className="w-full md:w-56 lg:w-64">
                 <SearchBoxPersisted
                   loading={isValidating}
-                  inputClassName="app-input"
+                  inputClassName="app-input border border-neutral-200 hover:border-neutral-300"
                 />
               </div>
             </div>

@@ -1,5 +1,8 @@
 export const ONBOARDING_STEPS = [
   "tracking-familiarity",
+  "deeplinks",
+  "tracking",
+  "utm",
   "utm-conversion",
   "complete",
   "domain",

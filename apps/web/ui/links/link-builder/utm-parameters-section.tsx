@@ -12,7 +12,11 @@ import useSWR from "swr";
 import { UtmSectionProvider } from "./utm-section-context";
 import { Badge } from "@dub/ui";
 
-export function UTMParametersSection() {
+export function UTMParametersSection({
+  autoExpand,
+}: {
+  autoExpand?: boolean;
+} = {}) {
   const { id: workspaceId } = useWorkspace();
   const { control, setValue } = useFormContext<LinkFormData>();
   const [url, utm_campaign, utm_medium, utm_source, utm_content, utm_term] =
@@ -28,22 +32,11 @@ export function UTMParametersSection() {
       ],
     });
 
-  // Get visibility state from localStorage
-  const [isVisible, setIsVisible] = useState(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("utm-params-visible");
-      return stored !== null ? stored === "true" : true; // Default to visible
-    }
-    return true;
-  });
+  // Default to collapsed (no persistence).
+  const [isVisible, setIsVisible] = useState(false);
 
-  // Store visibility state in localStorage
   const toggleVisibility = () => {
-    const newValue = !isVisible;
-    setIsVisible(newValue);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("utm-params-visible", String(newValue));
-    }
+    setIsVisible((v) => !v);
   };
 
   // Memoized context value for expanding the section
@@ -51,13 +44,15 @@ export function UTMParametersSection() {
     () => ({
       expandUtmSection: () => {
         setIsVisible(true);
-        if (typeof window !== "undefined") {
-          localStorage.setItem("utm-params-visible", "true");
-        }
       },
     }),
     [],
   );
+
+  // Allow parent to request expansion (e.g. when opening from an onboarding CTA).
+  useEffect(() => {
+    if (autoExpand) setIsVisible(true);
+  }, [autoExpand]);
 
   // Selected template state
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
@@ -170,46 +165,37 @@ export function UTMParametersSection() {
       <div className="space-y-3">
         {/* Toggle header */}
         <button
-        type="button"
-        onClick={toggleVisibility}
-        className={cn(
-          "group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 transition-all hover:border-neutral-300",
-          isVisible && "border-neutral-300",
-        )}
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="text-left">
-              <div className="text-sm font-medium text-neutral-700">
-                <Badge variant={hasUtmParams ? "green" : "neutral"} className="text-sm font-medium text-neutral-700">?utm_</Badge> parameters
-              </div>
-            </div>
-          </div>
+          type="button"
+          onClick={toggleVisibility}
+          className={cn(
+            "group flex w-full items-center justify-between rounded-xl bg-neutral-50 px-3 py-2.5 text-left transition-colors hover:bg-neutral-100",
+            isVisible && "bg-neutral-100",
+          )}
+        >
           <div className="flex items-center gap-2">
+            <div className="text-sm font-medium text-neutral-800">
+              <Badge variant="neutral" className="text-sm font-medium">
+                ?utm_
+              </Badge>{" "}
+              parameters
+            </div>
             {hasUtmParams && (
-              <span
-                className={cn(
-                  "inline-flex items-center rounded-md border border-neutral-200 bg-white px-2 py-0.5 text-xs font-medium text-neutral-600",
-                  (selectedTemplate || hasUtmParams) &&
-                    "border-green-200 bg-green-50 text-green-900",
-                )}
-              >
+              <span className="inline-flex items-center rounded-md bg-neutral-200/70 px-2 py-0.5 text-xs font-medium text-neutral-700">
                 {selectedTemplate ? "Template" : "Active"}
               </span>
             )}
-            <ChevronDown
-              className={cn(
-                "size-4 text-neutral-400 transition-transform duration-200",
-                isVisible && "rotate-180",
-              )}
-            />
           </div>
-        </div>
-      </button>
+          <ChevronDown
+            className={cn(
+              "size-4 text-neutral-400 transition-transform duration-200",
+              isVisible && "rotate-180",
+            )}
+          />
+        </button>
 
       {/* Preview URL - Always visible when UTMs exist */}
       {previewUrl && (
-        <div className="rounded-lg border border-neutral-200 bg-white px-3 py-2.5">
+        <div className="rounded-lg bg-neutral-50 px-3 py-2.5">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <span className="text-xs font-medium text-neutral-600 shrink-0">
@@ -226,7 +212,7 @@ export function UTMParametersSection() {
               title="Copy preview URL"
             >
               {copied ? (
-                <Check className="size-3.5 text-green-600" />
+                <Check className="size-3.5 text-neutral-700" />
               ) : (
                 <Copy className="size-3.5" />
               )}
@@ -237,7 +223,7 @@ export function UTMParametersSection() {
 
       {/* Collapsible content */}
       {isVisible && (
-        <div className="rounded-lg border border-neutral-200 bg-white p-4">
+        <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-neutral-200/60">
           <div className="space-y-4">
             {/* Template selector */}
             <div>
@@ -265,7 +251,7 @@ export function UTMParametersSection() {
             </div>
 
             {/* Divider */}
-            <div className="border-t border-neutral-200" />
+            <div className="border-t border-neutral-200/70" />
 
             {/* UTM inputs */}
             <div className="space-y-3">

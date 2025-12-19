@@ -11,9 +11,11 @@ export const metadata = constructMetadata({
 export default function LoginPage() {
   return (
     <AuthLayout>
-      <div className="w-full max-w-md overflow-hidden border rounded-3xl">
-        <div className="bg-white pb-6 pt-8 text-center">
-          <h3 className="text-lg font-semibold">Sign in to your PIMMS account</h3>
+      <div className="w-full max-w-md overflow-hidden rounded-3xl">
+        <div className="bg-white pt-8 pb-6 text-center">
+          <h3 className="text-lg font-semibold">
+            Sign in to your PIMMS account
+          </h3>
         </div>
         <div className="bg-neutral-50 px-4 py-8 sm:px-16">
           <LoginForm />

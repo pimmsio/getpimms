@@ -17,7 +17,9 @@ export default function RootLayout({
       className={cn(inter.variable, jakarta.variable, geistMono.variable)}
     >
       <body className="font-inter antialiased">
-        <RootProviders>{children}</RootProviders>
+        <div id="app-root">
+          <RootProviders>{children}</RootProviders>
+        </div>
 
         <Script id="set-theme" strategy="beforeInteractive">
           {`

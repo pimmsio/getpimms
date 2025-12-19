@@ -1,6 +1,7 @@
 import { FolderDropdown } from "@/ui/folders/folder-dropdown";
 import { useFormContext, useWatch } from "react-hook-form";
 import { LinkFormData } from "../link-builder-provider";
+import { HelpTooltip } from "../help-tooltip";
 
 export function LinkBuilderFolderSelector() {
   const { setValue } = useFormContext<LinkFormData>();
@@ -10,6 +11,10 @@ export function LinkBuilderFolderSelector() {
     <div>
       <div className="mb-1 flex items-center gap-2">
         <h2 className="text-sm font-medium text-neutral-700">Folder</h2>
+        <HelpTooltip
+          label="Help: Folder"
+          content="Folders are separate collections to organize links into different spaces."
+        />
       </div>
       <FolderDropdown
         variant="input"

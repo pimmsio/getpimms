@@ -10,6 +10,13 @@ export function OnboardingModalWrapper({ children }: PropsWithChildren) {
     setShowModal(true);
   }, []);
 
+  useEffect(() => {
+    document.documentElement.setAttribute("data-onboarding-blur", "true");
+    return () => {
+      document.documentElement.removeAttribute("data-onboarding-blur");
+    };
+  }, []);
+
   const handleClose = () => {
     // Prevent closing during onboarding
     return;
@@ -26,9 +33,10 @@ export function OnboardingModalWrapper({ children }: PropsWithChildren) {
       setShowModal={setShowModal}
       onClose={handleClose}
       preventDefaultClose
-      className="max-w-2xl"
+      className="max-w-2xl max-h-[85vh]"
+      overlayClassName="onboarding-glass-overlay"
     >
-      <div className="bg-white rounded-2xl p-8">{children}</div>
+      <div className="bg-white rounded-2xl p-6 sm:p-8">{children}</div>
     </Modal>
   );
 }

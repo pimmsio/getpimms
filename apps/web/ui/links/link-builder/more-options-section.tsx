@@ -64,62 +64,61 @@ export function MoreOptionsSection() {
       <PasswordModal />
       <ExpirationModal />
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         {/* Toggle header */}
         <button
           type="button"
           onClick={toggleExpanded}
           className={cn(
-            "group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 transition-all hover:border-neutral-300",
-            isExpanded && "border-neutral-300",
+            "group flex w-full items-center justify-between rounded-xl bg-neutral-50 px-3 py-2.5 text-left transition-colors hover:bg-neutral-100",
+            isExpanded && "bg-neutral-100",
           )}
         >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-md bg-neutral-100 transition-colors group-hover:bg-neutral-200">
-                <Settings2 className="size-4 text-neutral-600" />
-              </div>
-              <div className="text-left">
-                <div className="text-sm font-medium text-neutral-900">
-                  Advanced Options
-                </div>
-                <div className="text-xs text-neutral-500">
-                  Targeting, testing, security & expiration
-                </div>
-              </div>
+          <div className="flex items-center gap-2">
+            <div className="text-sm font-medium text-neutral-800">
+              Advanced options
             </div>
-            <ChevronDown
-              className={cn(
-                "size-4 text-neutral-400 transition-transform duration-200",
-                isExpanded && "rotate-180",
-              )}
-            />
+            {(targetingEnabled ||
+              abTestingEnabled ||
+              passwordEnabled ||
+              expirationEnabled) && (
+              <span className="inline-flex items-center rounded-md bg-neutral-200/70 px-2 py-0.5 text-xs font-medium text-neutral-700">
+                Active
+              </span>
+            )}
           </div>
+          <ChevronDown
+            className={cn(
+              "size-4 text-neutral-400 transition-transform duration-200",
+              isExpanded && "rotate-180",
+            )}
+          />
         </button>
 
         {/* Collapsible content */}
         {isExpanded && (
-          <div ref={contentRef} className="space-y-2">
+          <div
+            ref={contentRef}
+            className="rounded-xl bg-white shadow-sm ring-1 ring-neutral-200/60"
+          >
             {/* App Stores Targeting */}
             <button
               type="button"
               onClick={() => setShowTargetingModal(true)}
-              className="group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-left transition-all hover:border-neutral-300"
+              className="group w-full rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-neutral-50"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3">
                   <div
                     className={cn(
                       "flex size-8 shrink-0 items-center justify-center rounded-md transition-colors",
-                      targetingEnabled
-                        ? "bg-blue-100"
-                        : "bg-neutral-100 group-hover:bg-neutral-200",
+                      "bg-neutral-100 group-hover:bg-neutral-200",
                     )}
                   >
                     <Smartphone
                       className={cn(
                         "size-4",
-                        targetingEnabled ? "text-blue-600" : "text-neutral-600",
+                        "text-neutral-600",
                       )}
                     />
                   </div>
@@ -129,7 +128,7 @@ export function MoreOptionsSection() {
                         App Stores
                       </div>
                       {targetingEnabled && (
-                        <span className="inline-flex items-center rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+                        <span className="inline-flex items-center rounded-md bg-neutral-200/70 px-2 py-0.5 text-xs font-medium text-neutral-700">
                           Active
                         </span>
                       )}
@@ -150,24 +149,20 @@ export function MoreOptionsSection() {
               <button
                 type="button"
                 onClick={() => setShowABTestingModal(true)}
-                className="group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-left transition-all hover:border-neutral-300"
+                className="group w-full rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-neutral-50"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">
                     <div
                       className={cn(
                         "flex size-8 shrink-0 items-center justify-center rounded-md transition-colors",
-                        abTestingEnabled
-                          ? "bg-purple-100"
-                          : "bg-neutral-100 group-hover:bg-neutral-200",
+                        "bg-neutral-100 group-hover:bg-neutral-200",
                       )}
                     >
                       <Flask
                         className={cn(
                           "size-4",
-                          abTestingEnabled
-                            ? "text-purple-600"
-                            : "text-neutral-600",
+                          "text-neutral-600",
                         )}
                       />
                     </div>
@@ -177,7 +172,7 @@ export function MoreOptionsSection() {
                           A/B Testing
                         </div>
                         {abTestingEnabled && (
-                          <span className="inline-flex items-center rounded-md border border-purple-200 bg-purple-50 px-2 py-0.5 text-xs font-medium text-purple-700">
+                          <span className="inline-flex items-center rounded-md bg-neutral-200/70 px-2 py-0.5 text-xs font-medium text-neutral-700">
                             Active
                           </span>
                         )}
@@ -198,22 +193,20 @@ export function MoreOptionsSection() {
             <button
               type="button"
               onClick={() => setShowPasswordModal(true)}
-              className="group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-left transition-all hover:border-neutral-300"
+              className="group w-full rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-neutral-50"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3">
                   <div
                     className={cn(
                       "flex size-8 shrink-0 items-center justify-center rounded-md transition-colors",
-                      passwordEnabled
-                        ? "bg-amber-100"
-                        : "bg-neutral-100 group-hover:bg-neutral-200",
+                      "bg-neutral-100 group-hover:bg-neutral-200",
                     )}
                   >
                     <Lock
                       className={cn(
                         "size-4",
-                        passwordEnabled ? "text-amber-600" : "text-neutral-600",
+                        "text-neutral-600",
                       )}
                     />
                   </div>
@@ -223,7 +216,7 @@ export function MoreOptionsSection() {
                         Password Protection
                       </div>
                       {passwordEnabled && (
-                        <span className="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
+                        <span className="inline-flex items-center rounded-md bg-neutral-200/70 px-2 py-0.5 text-xs font-medium text-neutral-700">
                           Active
                         </span>
                       )}
@@ -243,24 +236,20 @@ export function MoreOptionsSection() {
             <button
               type="button"
               onClick={() => setShowExpirationModal(true)}
-              className="group w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-left transition-all hover:border-neutral-300"
+              className="group w-full rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-neutral-50"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3">
                   <div
                     className={cn(
                       "flex size-8 shrink-0 items-center justify-center rounded-md transition-colors",
-                      expirationEnabled
-                        ? "bg-green-100"
-                        : "bg-neutral-100 group-hover:bg-neutral-200",
+                      "bg-neutral-100 group-hover:bg-neutral-200",
                     )}
                   >
                     <Clock
                       className={cn(
                         "size-4",
-                        expirationEnabled
-                          ? "text-green-600"
-                          : "text-neutral-600",
+                        "text-neutral-600",
                       )}
                     />
                   </div>
@@ -270,7 +259,7 @@ export function MoreOptionsSection() {
                         Link Expiration
                       </div>
                       {expirationEnabled && (
-                        <span className="inline-flex items-center rounded-md border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
+                        <span className="inline-flex items-center rounded-md bg-neutral-200/70 px-2 py-0.5 text-xs font-medium text-neutral-700">
                           Active
                         </span>
                       )}

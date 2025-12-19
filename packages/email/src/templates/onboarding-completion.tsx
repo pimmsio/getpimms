@@ -23,46 +23,60 @@ export function OnboardingCompletionEmail({
   workspaceName: string;
   answers: {
     trackingFamiliarity?: string;
+    trackingSetup?: {
+      firstGoals?: string[];
+    };
     utmConversion?: {
-      utm?: {
-        planToUse?: boolean;
-        alreadyHasPlan?: boolean;
-        wantsBulkUtm?: boolean;
-        wantsTemplates?: boolean;
-        wantsEnforceParams?: boolean;
-      };
-      conversion?: {
-        contentToTrack?: string[];
-        websitePlatform?: string;
-        otherContent?: string;
-      };
+      trackingGoal?: string;
+      conversionTypes?: string[];
+      linkVolume?: string;
+    };
+    deepLinks?: {
+      wantsDeepLinks?: string;
+    };
+    utmClicks?: {
+      utmComfort?: string;
+      linksPerMonth?: string;
+      orgNeeds?: string[];
     };
   };
 }) {
-  const formatUtmAnswers = () => {
-    if (!answers.utmConversion?.utm) return "None";
-    const utm = answers.utmConversion.utm;
-    const items: string[] = [];
-    if (utm.planToUse) items.push("Plans to use UTM");
-    if (utm.alreadyHasPlan) items.push("Already has UTM plan");
-    if (utm.wantsBulkUtm) items.push("Wants bulk UTM");
-    if (utm.wantsTemplates) items.push("Wants UTM templates");
-    if (utm.wantsEnforceParams) items.push("Wants UTM enforce params");
-    return items.length > 0 ? items.join(", ") : "None";
+  const formatUtmConversionAnswers = () => {
+    const utm = answers.utmConversion;
+    if (!utm) return "None";
+    const parts: string[] = [];
+    if (utm.trackingGoal) parts.push(`Tracking goal: ${utm.trackingGoal}`);
+    if (utm.linkVolume) parts.push(`Link volume: ${utm.linkVolume}`);
+    if (utm.conversionTypes && utm.conversionTypes.length > 0) {
+      parts.push(`Conversions: ${utm.conversionTypes.join(", ")}`);
+    }
+    return parts.length > 0 ? parts.join("\n") : "None";
   };
 
-  const formatConversionAnswers = () => {
-    if (!answers.utmConversion?.conversion) return "None";
-    const conv = answers.utmConversion.conversion;
+  const formatDeepLinksAnswers = () => {
+    const dl = answers.deepLinks;
+    if (!dl) return "None";
     const parts: string[] = [];
-    if (conv.contentToTrack && conv.contentToTrack.length > 0) {
-      parts.push(`Content to track: ${conv.contentToTrack.join(", ")}`);
-    }
-    if (conv.websitePlatform) {
-      parts.push(`Website platform: ${conv.websitePlatform}`);
-    }
-    if (conv.otherContent) {
-      parts.push(`Other content: ${conv.otherContent}`);
+    if (dl.wantsDeepLinks) parts.push(`Wants deep links: ${dl.wantsDeepLinks}`);
+    return parts.length > 0 ? parts.join("\n") : "None";
+  };
+
+  const formatTrackingSetupAnswers = () => {
+    const t = answers.trackingSetup;
+    if (!t) return "None";
+    return t.firstGoals && t.firstGoals.length > 0
+      ? `First capture: ${t.firstGoals.join(", ")}`
+      : "None";
+  };
+
+  const formatUtmClicksAnswers = () => {
+    const u = answers.utmClicks;
+    if (!u) return "None";
+    const parts: string[] = [];
+    if (u.utmComfort) parts.push(`UTM usage: ${u.utmComfort}`);
+    if (u.linksPerMonth) parts.push(`Links / month: ${u.linksPerMonth}`);
+    if (u.orgNeeds && u.orgNeeds.length > 0) {
+      parts.push(`Org needs: ${u.orgNeeds.join(", ")}`);
     }
     return parts.length > 0 ? parts.join("\n") : "None";
   };
@@ -97,19 +111,37 @@ export function OnboardingCompletionEmail({
 
             <Section className="my-6">
               <Heading className="mx-0 my-4 p-0 text-base font-medium text-black">
-                UTM Tracking
+                Quick Check-in
               </Heading>
               <Text className="text-sm leading-6 text-black whitespace-pre-wrap">
-                {formatUtmAnswers()}
+                {formatUtmConversionAnswers()}
               </Text>
             </Section>
 
             <Section className="my-6">
               <Heading className="mx-0 my-4 p-0 text-base font-medium text-black">
-                Conversion Tracking
+                Deep Links
               </Heading>
               <Text className="text-sm leading-6 text-black whitespace-pre-wrap">
-                {formatConversionAnswers()}
+                {formatDeepLinksAnswers()}
+              </Text>
+            </Section>
+
+            <Section className="my-6">
+              <Heading className="mx-0 my-4 p-0 text-base font-medium text-black">
+                Tracking Setup
+              </Heading>
+              <Text className="text-sm leading-6 text-black whitespace-pre-wrap">
+                {formatTrackingSetupAnswers()}
+              </Text>
+            </Section>
+
+            <Section className="my-6">
+              <Heading className="mx-0 my-4 p-0 text-base font-medium text-black">
+                UTM Setup
+              </Heading>
+              <Text className="text-sm leading-6 text-black whitespace-pre-wrap">
+                {formatUtmClicksAnswers()}
               </Text>
             </Section>
           </Container>

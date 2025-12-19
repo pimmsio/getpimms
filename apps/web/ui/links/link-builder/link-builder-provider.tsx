@@ -47,8 +47,6 @@ export function LinkBuilderProvider({
   children,
   ...rest
 }: PropsWithChildren<LinkBuilderProps>) {
-  const { conversionEnabled } = rest.workspace || {};
-
   const [generatingMetatags, setGeneratingMetatags] = useState(
     Boolean(rest.props),
   );
@@ -57,7 +55,8 @@ export function LinkBuilderProvider({
     defaultValues: rest.props ||
       rest.duplicateProps || {
         ...DEFAULT_LINK_PROPS,
-        trackConversion: conversionEnabled ?? false,
+        // Conversion tracking is enabled by default for all accounts.
+        trackConversion: true,
       },
   });
 

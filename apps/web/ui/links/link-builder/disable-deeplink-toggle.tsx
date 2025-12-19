@@ -32,7 +32,7 @@ export const DisableDeeplinkToggle = memo(() => {
           {!proxy ? (
             <span>disabled</span>
           ) : (
-            <span className="text-green-500">enabled</span>
+            <span className="text-neutral-900">enabled</span>
           )}
           <InfoTooltip content="Deep linking opens links in official apps (YouTube, Twitter, etc.) instead of in browser. When enabled, search engine indexing is disabled." />
         </span>

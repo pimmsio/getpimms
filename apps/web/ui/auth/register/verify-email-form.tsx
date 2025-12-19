@@ -105,15 +105,16 @@ export const VerifyEmailForm = () => {
               </p>
             )}
 
-            <AppButton
-              className="mt-8"
-              type="submit"
-              variant="primary"
-              loading={isPending || isRedirecting}
-              disabled={!code || code.length < 6}
-            >
-              Continue
-            </AppButton>
+            <div className="mt-8 flex justify-center">
+              <AppButton
+                type="submit"
+                variant="primary"
+                loading={isPending || isRedirecting}
+                disabled={!code || code.length < 6}
+              >
+                Continue
+              </AppButton>
+            </div>
           </div>
         </form>
 

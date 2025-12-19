@@ -1,7 +1,6 @@
 "use client";
 
 import { X } from "@/ui/shared/icons";
-import { ConversionTrackingToggleSwitch } from "@/ui/workspaces/conversion-tracking-toggle";
 import {
   AnimatedSizeContainer,
   BlurImage,
@@ -12,12 +11,14 @@ import {
 } from "@dub/ui";
 import { cn } from "@dub/utils";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   createContext,
   CSSProperties,
   Dispatch,
   ReactNode,
   SetStateAction,
+  useEffect,
   useContext,
   useId,
   useState,
@@ -69,11 +70,22 @@ function ConversionOnboardingModal({
   showConversionOnboardingModal: boolean;
   setShowConversionOnboardingModal: Dispatch<SetStateAction<boolean>>;
 }) {
+  useEffect(() => {
+    if (!showConversionOnboardingModal) {
+      return;
+    }
+    document.documentElement.setAttribute("data-onboarding-blur", "true");
+    return () => {
+      document.documentElement.removeAttribute("data-onboarding-blur");
+    };
+  }, [showConversionOnboardingModal]);
+
   return (
     <Modal
       showModal={showConversionOnboardingModal}
       setShowModal={setShowConversionOnboardingModal}
       className="max-h-[calc(100dvh-100px)] max-w-xl"
+      overlayClassName="onboarding-glass-overlay"
     >
       <ConversionOnboardingModalInner
         setShowConversionOnboardingModal={setShowConversionOnboardingModal}
@@ -247,18 +259,13 @@ function Docs() {
           <SquareChart className="size-5" />
         </div>
         <div>
-          <label
-            htmlFor={`${id}-switch`}
-            className="block select-none text-pretty text-sm font-semibold text-neutral-900"
-          >
-            Enable conversion tracking for future links
-          </label>
+          <div className="block select-none text-pretty text-sm font-semibold text-neutral-900">
+            Conversion tracking is enabled by default
+          </div>
           <p className="mt-1 text-xs text-neutral-500">
-            This only affects links made with the link builder. You can update
-            this behavior later in your workspace settings.
+            Every new link collects conversions. Connect your source to turn clicks into leads and sales.
           </p>
         </div>
-        <ConversionTrackingToggleSwitch id={`${id}-switch`} />
       </div>
       <div className="mt-6 flex justify-center">
         <button
@@ -278,6 +285,22 @@ function Docs() {
 export function useConversionOnboardingModal() {
   const [showConversionOnboardingModal, setShowConversionOnboardingModal] =
     useState(false);
+
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    const ctSetup = searchParams.get("ctSetup");
+    if (ctSetup !== "1") return;
+
+    setShowConversionOnboardingModal(true);
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("ctSetup");
+    const next = params.toString();
+    router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false });
+  }, [searchParams, pathname, router]);
 
   return {
     setShowConversionOnboardingModal,

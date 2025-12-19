@@ -27,16 +27,14 @@ export default function WebhooksPageClient() {
 
   if (needsHigherPlan) {
     return (
-      <div className="rounded-lg bg-neutral-50/60 p-6 md:p-10">
-        <EmptyState
-          icon={Webhook}
-          title="Webhooks"
-          description="Webhooks allow you to receive HTTP requests whenever a specific event (eg: someone clicked your link) occurs in PIMMS."
-          // learnMore="https://d.to/webhooks"
-          buttonText="Upgrade to Pro"
-          buttonLink={`/${slug}/upgrade`}
-        />
-      </div>
+      <EmptyState
+        icon={Webhook}
+        title="Webhooks"
+        description="Webhooks allow you to receive HTTP requests whenever a specific event (eg: someone clicked your link) occurs in PIMMS."
+        // learnMore="https://d.to/webhooks"
+        buttonText="Upgrade to Pro"
+        buttonLink={`/${slug}/upgrade`}
+      />
     );
   }
 
@@ -79,14 +77,12 @@ export default function WebhooksPageClient() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-4 rounded-lg bg-neutral-50/60 py-10">
-              <EmptyState
-                icon={Webhook}
-                title="You haven't set up any webhooks yet."
-                description="Webhooks allow you to receive HTTP requests whenever a specific event (eg: someone clicked your link) occurs in PIMMS."
-                // learnMore="https://d.to/webhooks"
-              />
-            </div>
+            <EmptyState
+              icon={Webhook}
+              title="You haven't set up any webhooks yet."
+              description="Webhooks allow you to receive HTTP requests whenever a specific event (eg: someone clicked your link) occurs in PIMMS."
+              // learnMore="https://d.to/webhooks"
+            />
           )
         ) : (
           <div className="grid grid-cols-1 gap-3">

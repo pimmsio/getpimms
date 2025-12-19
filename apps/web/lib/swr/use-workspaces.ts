@@ -5,8 +5,9 @@ import useSWR from "swr";
 
 export default function useWorkspaces() {
   const { data: session } = useSession();
+  const swrKey = session?.user ? "/api/workspaces" : null;
   const { data: workspaces, error } = useSWR<WorkspaceProps[]>(
-    session?.user && "/api/workspaces",
+    swrKey,
     fetcher,
     {
       dedupingInterval: 60000,

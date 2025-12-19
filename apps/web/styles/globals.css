@@ -138,3 +138,41 @@ code .line::before {
 .dark .glass-subtle {
   background-color: rgba(0, 0, 0, 0.97);
 }
+
+/* Onboarding modal overlay - heavy glass blur (keep dashboard visible but strongly blurred) */
+.onboarding-glass-overlay {
+  /* Higher tint to make the overlay visibly "glass" even if blur support is flaky */
+  background-color: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+}
+
+.dark .onboarding-glass-overlay {
+  background-color: rgba(0, 0, 0, 0.45);
+}
+
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .onboarding-glass-overlay {
+    background-color: rgba(255, 255, 255, 0.65);
+  }
+
+  .dark .onboarding-glass-overlay {
+    background-color: rgba(0, 0, 0, 0.65);
+  }
+}
+
+/*
+ * Absolute guarantee: make underlying app content unreadable during onboarding.
+ * We blur the main app tree but exclude Radix portals (where the modal lives).
+ */
+html[data-onboarding-blur="true"] body > :not([data-radix-portal]) {
+  /* Deprecated: replaced by #app-root targeting below to avoid blurring modals/drawers. */
+}
+
+html[data-onboarding-blur="true"] #app-root {
+  filter: blur(14px);
+  will-change: filter;
+  pointer-events: none;
+}

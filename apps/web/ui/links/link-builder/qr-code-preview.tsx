@@ -3,12 +3,8 @@ import useWorkspace from "@/lib/swr/use-workspace";
 import { LinkFormData } from "@/ui/links/link-builder/link-builder-provider";
 import { QRCode } from "@/ui/shared/qr-code";
 import {
-  InfoTooltip,
-  ShimmerDots,
-  SimpleTooltipContent,
   useInViewport,
   useLocalStorage,
-  useMediaQuery,
 } from "@dub/ui";
 import { Pen2, QRCode as QRCodeIcon } from "@dub/ui/icons";
 import { DUB_QR_LOGO, linkConstructor } from "@dub/utils";
@@ -21,7 +17,6 @@ import { useLinkBuilderKeyboardShortcut } from "./use-link-builder-keyboard-shor
 import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 
 export function QRCodePreview() {
-  const { isMobile } = useMediaQuery();
   const {
     id: workspaceId,
     logo: workspaceLogo,
@@ -88,10 +83,10 @@ export function QRCodePreview() {
           /> */}
         </div>
       </div>
-      <div className="relative z-0 mt-2 h-48 overflow-hidden rounded-xl bg-white">
+      <div className="relative z-0 mt-2 h-48 overflow-hidden rounded-xl bg-white ring-1 ring-neutral-200/60">
         <AppIconButton
           type="button"
-          className="absolute right-2 top-2 z-10 h-8 w-8 bg-white"
+          className="absolute right-2 top-2 z-10 h-8 w-8 bg-white/90 backdrop-blur-sm"
           onClick={() => setShowLinkQRModal(true)}
         >
           <Pen2 className="mx-px size-4" />

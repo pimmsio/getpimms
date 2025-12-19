@@ -102,8 +102,10 @@ export function BulkDestinationUrlInput({
         type="button"
         onClick={() => setIsExpanded(true)}
         className={cn(
-          "flex w-full items-center justify-between rounded-lg border bg-white px-4 py-3 text-left transition-colors hover:border-neutral-400",
-          error ? "border-red-500" : "border-neutral-300",
+          "flex w-full items-center justify-between rounded-lg border bg-white px-4 py-3 text-left outline-none transition",
+          error
+            ? "border-red-300 focus:border-red-400 focus:ring-2 focus:ring-red-100"
+            : "border-neutral-200 hover:border-neutral-300 focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200/60",
           urls.length === 0 && "text-neutral-400",
         )}
       >

@@ -6,9 +6,7 @@ import useLinks from "@/lib/swr/use-links";
 import useLinksCount from "@/lib/swr/use-links-count";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { ExpandedLinkProps, UserProps } from "@/lib/types";
-import {
-  useRouterStuff,
-} from "@dub/ui";
+import { useRouterStuff } from "@dub/ui";
 import { CursorRays, Hyperlink } from "@dub/ui/icons";
 import { cn, getParamsFromURL } from "@dub/utils";
 import { useSearchParams } from "next/navigation";
@@ -22,18 +20,23 @@ import {
   useState,
 } from "react";
 import { AnimatedEmptyState } from "../shared/animated-empty-state";
+import { LinkRow } from "./link-card";
 import LinkCardPlaceholder from "./link-card-placeholder";
 import { LinkGroupHeader } from "./link-group-header";
 import { LinkSelectionProvider } from "./link-selection-provider";
 import { LinksDisplayContext } from "./links-display-provider";
 import { LinksToolbar } from "./links-toolbar";
-import { LinkRow } from "./link-card";
 
 export type ResponseLink = ExpandedLinkProps & {
   user: UserProps;
 };
 
-type UtmKey = "utm_source" | "utm_medium" | "utm_campaign" | "utm_term" | "utm_content";
+type UtmKey =
+  | "utm_source"
+  | "utm_medium"
+  | "utm_campaign"
+  | "utm_term"
+  | "utm_content";
 const UTM_KEYS: UtmKey[] = [
   "utm_source",
   "utm_medium",
@@ -140,14 +143,16 @@ function LinksList({
     if (!links || !groupBy) return null;
 
     // Check if the data actually has group markers that match current groupBy
-    const hasGroupMarkers = links.some((item: any) => item._group !== undefined);
+    const hasGroupMarkers = links.some(
+      (item: any) => item._group !== undefined,
+    );
     if (!hasGroupMarkers) return null; // Don't show groups during transition
 
     const groups: {
       groupValue: string;
       links: ResponseLink[];
     }[] = [];
-    let currentGroup: typeof groups[0] | null = null;
+    let currentGroup: (typeof groups)[0] | null = null;
 
     links.forEach((item: any) => {
       if (item._group !== undefined) {
@@ -218,7 +223,9 @@ function LinksList({
     }
 
     const visibleUtmKeys = UTM_KEYS.filter((k) => visible[k]);
-    const showTagsColumn = (flatLinks || []).some((l: any) => (l?.tags?.length || 0) > 0);
+    const showTagsColumn = (flatLinks || []).some(
+      (l: any) => (l?.tags?.length || 0) > 0,
+    );
 
     return { visibleUtmKeys, showTagsColumn };
   }, [flatLinks]);
@@ -324,10 +331,13 @@ function LinksList({
                   </div>
                 )}
                 {groupedData.map((group) => (
-                  <div key={group.groupValue} className={cn(
-                    "min-w-0 space-y-2 transition-opacity duration-200",
-                    loading && "opacity-40"
-                  )}>
+                  <div
+                    key={group.groupValue}
+                    className={cn(
+                      "min-w-0 space-y-2 transition-opacity duration-200",
+                      loading && "opacity-40",
+                    )}
+                  >
                     <LinkGroupHeader
                       groupValue={group.groupValue}
                       count={group.links.length}
@@ -335,25 +345,46 @@ function LinksList({
                       onToggle={() => toggleGroup(group.groupValue)}
                       groupType={groupBy || undefined}
                     />
-                {expandedGroups.has(group.groupValue) && (
-                  <div className={cn("divide-y divide-neutral-100 transition-opacity duration-200", loading && "opacity-40")}>
-                    {group.links.map((link) => (
-                      <LinkRow key={link.id} link={link} utmVisibility={utmVisibility} />
-                    ))}
-                  </div>
-                )}
+                    {expandedGroups.has(group.groupValue) && (
+                      <div
+                        className={cn(
+                          "divide-y divide-neutral-100 transition-opacity duration-200",
+                          loading && "opacity-40",
+                        )}
+                      >
+                        {group.links.map((link, idx) => (
+                          <LinkRow
+                            key={`${link.id}:${link.domain}:${link.key}:${idx}`}
+                            link={link}
+                            utmVisibility={utmVisibility}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </>
             ) : (
               // Regular view
-              <div className={cn("divide-y divide-neutral-100 transition-opacity duration-200", loading && links?.length && "opacity-40")}>
+              <div
+                className={cn(
+                  "divide-y divide-neutral-100 transition-opacity duration-200",
+                  loading && links?.length && "opacity-40",
+                )}
+              >
                 {links?.length
-                  ? links.map((link) => (
-                      <LinkRow key={link.id} link={link} utmVisibility={utmVisibility} />
+                  ? links.map((link, idx) => (
+                      <LinkRow
+                        key={`${link.id}:${link.domain}:${link.key}:${idx}`}
+                        link={link}
+                        utmVisibility={utmVisibility}
+                      />
                     ))
                   : Array.from({ length: 8 }).map((_, idx) => (
-                      <div key={idx} className="pointer-events-none animate-pulse px-2 py-2 sm:px-5 sm:py-3">
+                      <div
+                        key={idx}
+                        className="pointer-events-none animate-pulse px-2 py-2 sm:px-5 sm:py-3"
+                      >
                         <LinkCardPlaceholder />
                       </div>
                     ))}
@@ -387,7 +418,9 @@ function LinksList({
           <LinksToolbar
             loading={!!loading}
             links={flatLinks || []}
-            linksCount={isMegaFolder ? Infinity : totalLinksCount ?? links?.length ?? 0}
+            linksCount={
+              isMegaFolder ? Infinity : (totalLinksCount ?? links?.length ?? 0)
+            }
           />
         )}
       </LinkSelectionProvider>

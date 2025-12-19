@@ -5,8 +5,8 @@ import { cn } from "@dub/utils";
 import Link from "next/link";
 import { ComponentProps, forwardRef, ReactNode } from "react";
 
-type AppButtonVariant = "primary" | "secondary" | "muted" | "ghost";
-type AppButtonSize = "sm" | "md";
+export type AppButtonVariant = "primary" | "secondary" | "muted" | "ghost";
+export type AppButtonSize = "sm" | "md";
 
 const base =
   "inline-flex cursor-pointer items-center justify-center whitespace-nowrap rounded-lg text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50";
@@ -36,7 +36,7 @@ function Spinner({ className }: { className?: string }) {
   );
 }
 
-type AppButtonProps = {
+export type AppButtonProps = {
   variant?: AppButtonVariant;
   size?: AppButtonSize;
   className?: string;
@@ -92,7 +92,7 @@ export const AppButton = forwardRef<HTMLButtonElement, AppButtonProps>(
 );
 AppButton.displayName = "AppButton";
 
-type AppButtonLinkProps = {
+export type AppButtonLinkProps = {
   variant?: AppButtonVariant;
   size?: AppButtonSize;
   className?: string;

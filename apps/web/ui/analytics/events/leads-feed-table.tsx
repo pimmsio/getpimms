@@ -8,9 +8,8 @@ import {
   TABLE_CONTAINER_CLASS,
   TABLE_CLASS,
 } from "@/ui/shared/table-styles";
-import { AppButton } from "@/ui/components/controls/app-button";
+import { AppButton, AppButtonLink } from "@/ui/components/controls/app-button";
 import {
-  EmptyState,
   Table,
   Tooltip,
   usePagination,
@@ -33,6 +32,7 @@ import {
   downloadLeadsAsCSV,
 } from "./leads-export";
 import { LinksRowSkeleton } from "@/ui/shared/links-row";
+import { AnonymousVisitorsTeaser } from "@/ui/conversions/anonymous-visitors-teaser";
 
 
 type LeadLink = {
@@ -436,15 +436,25 @@ export default function LeadsFeedTable() {
         columnId === "customer" ? "p-0" : "px-3 py-1.5",
       ),
     emptyState: (
-      <EmptyState
-        icon={Flame}
-        title={hasWarmHotFilter ? "No warm/hot leads yet" : "No leads yet"}
-        description={
-          hasWarmHotFilter
-            ? "Warm and hot leads will appear once contacts start interacting with your links."
-            : "Leads will appear here as soon as contacts interact and convert."
-        }
-      />
+      <div className="px-4 py-6 sm:px-6">
+        <div className="max-w-2xl text-left">
+          <div className="text-sm font-semibold text-neutral-900">
+            {hasWarmHotFilter ? "No warm/hot leads yet" : "No leads yet"}
+          </div>
+          <div className="mt-1 text-sm text-neutral-600">
+            Without conversion tracking, visitors stay anonymous. Set it up to turn clicks into leads and sales.
+          </div>
+          <AppButtonLink
+            href={`/${slug}/conversions?ctSetup=1`}
+            variant="primary"
+            size="sm"
+            className="mt-3 w-fit"
+          >
+            Reveal leads
+          </AppButtonLink>
+          <AnonymousVisitorsTeaser variant="plain" className="mt-3" />
+        </div>
+      </div>
     ),
     resourceName: (plural) => `lead${plural ? "s" : ""}`,
   });

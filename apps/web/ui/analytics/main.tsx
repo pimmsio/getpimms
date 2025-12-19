@@ -55,8 +55,7 @@ export default function Main() {
 
   const tab = tabs.find(({ id }) => id === selectedTab) ?? tabs[0];
 
-  const showPaywall =
-    (tab.id === "sales" || view === "funnel") && plan === "free";
+  const showPaywall = false;
 
 
   return (

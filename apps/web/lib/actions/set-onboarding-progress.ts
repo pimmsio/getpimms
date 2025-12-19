@@ -56,7 +56,22 @@ export const setOnboardingProgress = authUserActionClient
               const onboardingAnswers =
                 ((workspace.store as any)?.onboardingAnswers as {
                   trackingFamiliarity?: string;
-                  utmConversion?: any;
+                  utmConversion?: {
+                    trackingGoal?: string;
+                    conversionTypes?: string[];
+                    linkVolume?: string;
+                  };
+                  deepLinks?: {
+                    wantsDeepLinks?: string;
+                  };
+                  trackingSetup?: {
+                    firstGoals?: string[];
+                  };
+                  utmClicks?: {
+                    utmComfort?: string;
+                    linksPerMonth?: string;
+                    orgNeeds?: string[];
+                  };
                 }) || {};
 
               // Send email to Alexandre

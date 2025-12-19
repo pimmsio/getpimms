@@ -45,7 +45,7 @@ export async function createLink(link: ProcessedLinkProps) {
   // Use UTM values from form fields (not from URL)
   const { utm_source, utm_medium, utm_campaign, utm_term, utm_content } = link;
 
-  const { tagId, tagIds, tagNames, webhookIds, ...rest } = link;
+  const { tagId, tagIds, tagNames, webhookIds, trackConversion, ...rest } = link;
 
   key = encodeKeyIfCaseSensitive({
     domain: link.domain,
@@ -63,6 +63,8 @@ export async function createLink(link: ProcessedLinkProps) {
       // if it's an uploaded image, make this null first because we'll update it later
       image: proxy && image && !isStored(image) ? null : image,
       baseUrl: normalizeUrl(url),
+      // Conversion tracking is enabled by default for all accounts.
+      trackConversion: trackConversion ?? true,
       utm_source,
       utm_medium,
       utm_campaign,

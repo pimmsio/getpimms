@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import { ExpandedWorkspaceProps } from "@/lib/types";
 import { PRO_PLAN, fetcher, getNextPlan } from "@dub/utils";
@@ -36,18 +36,18 @@ export default function useWorkspace({
     slug = searchParams?.get("slug") || searchParams?.get("workspace") || null;
   }
 
+  // SWR expects a stable key or `null` (to pause). Avoid passing `undefined`
+  // because it can lead to intermittent argument parsing issues in some setups.
+  const swrKey = slug ? `/api/workspaces/${slug}` : null;
+
   const {
     data: workspace,
     error,
     mutate,
-  } = useSWR<ExpandedWorkspaceProps>(
-    slug && `/api/workspaces/${slug}`,
-    fetcher,
-    {
-      dedupingInterval: 60000,
-      ...swrOpts,
-    },
-  );
+  } = useSWR<ExpandedWorkspaceProps>(swrKey, fetcher, {
+    dedupingInterval: 60000,
+    ...swrOpts,
+  });
 
   return {
     ...(workspace ?? {}),
@@ -62,6 +62,6 @@ export default function useWorkspace({
     error,
     defaultFolderId: workspace?.users && workspace.users[0].defaultFolderId,
     mutate,
-    loading: slug && !workspace && !error ? true : false,
+    loading: Boolean(swrKey && !workspace && !error),
   };
 }

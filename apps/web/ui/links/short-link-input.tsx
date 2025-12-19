@@ -29,7 +29,6 @@ import { useParams, usePathname } from "next/navigation";
 import {
   forwardRef,
   HTMLProps,
-  useCallback,
   useEffect,
   useId,
   useMemo,
@@ -37,6 +36,7 @@ import {
 } from "react";
 import { useDebounce } from "use-debounce";
 import { AlertCircleFill } from "../shared/icons";
+import { HelpTooltip } from "./link-builder/help-tooltip";
 import { useAvailableDomains } from "./use-available-domains";
 
 type ShortLinkInputProps = {
@@ -72,11 +72,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
     const inputId = useId();
     const randomLinkedInNonce = useMemo(() => nanoid(8), []);
 
-    const {
-      id: workspaceId,
-      slug,
-      nextPlan,
-    } = useWorkspace();
+    const { id: workspaceId, slug, nextPlan } = useWorkspace();
 
     const [lockKey, setLockKey] = useState(existingLink);
     const [generatingRandomKey, setGeneratingRandomKey] = useState(false);
@@ -167,7 +163,6 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
     //   if (completion) onChange?.({ key: completion });
     // }, [completion]);
 
-
     const shortLink = useMemo(() => {
       return linkConstructor({
         key,
@@ -183,12 +178,18 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
     return (
       <div>
         <div className="flex items-center justify-between">
-          <label
-            htmlFor={inputId}
-            className="block text-sm font-medium text-neutral-700"
-          >
-            Short link
-          </label>
+          <div className="flex items-center gap-2">
+            <label
+              htmlFor={inputId}
+              className="block text-sm font-medium text-neutral-700"
+            >
+              Short link
+            </label>
+            <HelpTooltip
+              label="Help: Short link"
+              content="This is the short URL people will click. You can customize the last part."
+            />
+          </div>
           {lockKey ? (
             <button
               className="flex h-6 items-center space-x-2 text-sm text-neutral-500 transition-all duration-75 hover:text-black active:scale-95"
@@ -209,7 +210,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
                   content: "Generate a random key",
                 }}
                 onClick={generateRandomKey}
-                disabled={generatingRandomKey/* || generatingAIKey*/}
+                disabled={generatingRandomKey /* || generatingAIKey*/}
               >
                 {generatingRandomKey ? (
                   <LoadingCircle />
@@ -272,14 +273,14 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
             autoComplete="off"
             autoCapitalize="none"
             className={cn(
-              "block w-full rounded-r-lg border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 sm:text-sm",
+              "block w-full rounded-r-lg border border-neutral-200 bg-white px-3 py-2 text-neutral-900 placeholder-neutral-400 transition outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200/60 sm:text-sm",
               "z-0 focus:z-[1]",
               {
                 "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0":
                   error,
                 "border-amber-300 pr-10 text-amber-900 placeholder-amber-300 focus:border-amber-500 focus:ring-amber-500":
                   isLongLink,
-                "cursor-not-allowed border border-neutral-300 bg-neutral-100 text-neutral-500":
+                "cursor-not-allowed border border-neutral-200 bg-neutral-100 text-neutral-500":
                   lockKey,
               },
             )}
@@ -307,7 +308,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
                       </p>
                       <div className="mt-2 flex items-center space-x-2">
                         <LinkedIn className="h-4 w-4" />
-                        <p className="cursor-pointer text-sm font-semibold text-[#4783cf] hover:underline">
+                        <p className="cursor-pointer text-sm text-neutral-800 hover:underline">
                           {linkConstructor({
                             domain: "lnkd.in",
                             key: randomLinkedInNonce,
@@ -318,7 +319,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
                       {isLongLink && (
                         <div className="mt-1 flex items-center space-x-2">
                           <Twitter className="h-4 w-4" />
-                          <p className="cursor-pointer text-sm text-[#34a2f1] hover:underline">
+                          <p className="cursor-pointer text-sm text-neutral-700 hover:underline">
                             {truncate(shortLink, 19)}
                           </p>
                         </div>
@@ -328,7 +329,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
                 )
               }
             >
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3 z-50">
+              <div className="absolute inset-y-0 right-0 z-50 flex items-center pr-3">
                 {error ? (
                   <AlertCircleFill
                     className="h-5 w-5 text-red-500"
@@ -498,14 +499,12 @@ function DomainCombobox({
       }}
       options={options}
       caret={true}
-      placeholder={
-        <div className="h-4 w-3/4 animate-pulse rounded-lg bg-neutral-200" />
-      }
+      placeholder={<div className="h-4 w-3/4 animate-pulse bg-neutral-200" />}
       searchPlaceholder="Search domains..."
       shortcutHint="D"
       buttonProps={{
         className: cn(
-          "w-32 sm:w-40 h-full rounded-l-lg rounded-r-none border-r-transparent justify-start px-2.5",
+          "w-32 sm:w-40 h-full rounded-l-lg !rounded-r-none border-r-transparent justify-start px-2.5",
           "data-[state=open]:ring-0 data-[state=open]:ring-neutral-500 data-[state=open]:border-neutral-500",
           "focus:ring-0 focus:ring-0 focus:border-neutral-500 transition-none",
         ),

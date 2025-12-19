@@ -1,7 +1,7 @@
 "use client";
 
 import useWorkspace from "@/lib/swr/use-workspace";
-import { Button, ButtonProps } from "@dub/ui";
+import { AppButton, AppButtonProps } from "@/ui/components/controls/app-button";
 import { APP_DOMAIN, capitalize, cn, SELF_SERVE_PAID_PLANS } from "@dub/utils";
 import { usePlausible } from "next-plausible";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -12,11 +12,13 @@ export function UpgradePlanButton({
   plan,
   period,
   className,
+  text,
   ...rest
 }: {
   plan: string;
   period: "monthly" | "yearly";
-} & Partial<ButtonProps>) {
+  text?: string;
+} & Partial<AppButtonProps>) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -36,19 +38,9 @@ export function UpgradePlanButton({
   const isCurrentPlan = currentPlan === selectedPlan.name.toLowerCase();
 
   return (
-    <Button
-      variant="secondary"
-      text={
-        isCurrentPlan
-          ? "Your current plan"
-          : currentPlan === "free"
-            ? `Get started with ${selectedPlan.name} ${capitalize(period)}`
-            : `Switch to ${selectedPlan.name} ${capitalize(period)}`
-      }
-      className={cn(
-        "text-sm rounded-lg !border-transparent !bg-neutral-900 !text-white hover:!bg-neutral-800",
-        className,
-      )}
+    <AppButton
+      type="button"
+      className={cn("text-sm", className)}
       loading={clicked}
       disabled={!workspaceSlug || isCurrentPlan}
       onClick={() => {
@@ -101,6 +93,13 @@ export function UpgradePlanButton({
           });
       }}
       {...rest}
-    />
+    >
+      {text ??
+        (isCurrentPlan
+          ? "Your current plan"
+          : currentPlan === "free"
+            ? `Get started with ${selectedPlan.name} ${capitalize(period)}`
+            : `Switch to ${selectedPlan.name} ${capitalize(period)}`)}
+    </AppButton>
   );
 }

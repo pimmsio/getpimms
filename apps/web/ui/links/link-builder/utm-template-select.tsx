@@ -73,7 +73,7 @@ export function UtmTemplateSelect({
                 setIsOpen(false);
                 setShowAddEditUtmTemplateModal(true);
               }}
-              className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-500"
+              className="mt-2 text-sm font-medium text-neutral-700 underline-offset-2 hover:text-neutral-900 hover:underline"
             >
               Create new template
             </button>

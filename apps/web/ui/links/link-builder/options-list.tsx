@@ -63,7 +63,7 @@ export function OptionsList() {
                   typeof item.enabled === "function" &&
                   // @ts-ignore - useWatch returns a deep partial, should be fixed in a future react-hook-form release
                   item.enabled(data) && {
-                    icon: <item.icon className="size-3.5 text-blue-500" />,
+                    icon: <item.icon className="size-3.5 text-neutral-600" />,
                   })}
                 onRemove={() =>
                   "remove" in item && typeof item.remove === "function"
@@ -134,9 +134,9 @@ function LinkCloakingToggleBadge({
           isLoading ? (
             <LoadingSpinner className="size-3.5" />
           ) : !data ? null : data.iframeable ? (
-            <CheckCircleFill className="size-3.5 text-green-500" />
+            <CheckCircleFill className="size-3.5 text-neutral-700" />
           ) : (
-            <AlertCircleFill className="size-3.5 text-amber-500" />
+            <AlertCircleFill className="size-3.5 text-neutral-700" />
           )
         }
       />

@@ -14,6 +14,9 @@ import {
 } from "./unified-analytics-tooltip";
 import { useTimeseriesData, useAnalyticsState, useAnalyticsWorkspace } from "./hooks";
 import { aggregateMetrics, calculateDerivedMetrics } from "./lib";
+import { useAnalyticsFilterOption } from "./utils";
+import useSWR from "swr";
+import { fetcher } from "@dub/utils";
 
 export default function MixedAnalyticsChart({
   demo: demoFromProps,
@@ -36,6 +39,26 @@ export default function MixedAnalyticsChart({
 
   // Use the new timeseries hook - handles fetching, formatting, and grouping
   const { data: chartData, rawData } = useTimeseriesData({ demo: demoFromProps });
+
+  // Clicks saved = Mobile + Tablet clicks (based on device breakdown)
+  const { data: devicesData } = useAnalyticsFilterOption("devices");
+  const clicksSaved = useMemo(() => {
+    return (
+      devicesData?.reduce((sum, d: any) => {
+        const device = d.device;
+        if (device === "Mobile" || device === "Tablet") return sum + (d.clicks || 0);
+        return sum;
+      }, 0) ?? 0
+    );
+  }, [devicesData]);
+
+  // UTM coverage (links created with any UTM / total links created) - interval-mapped
+  const utmInterval = interval === "30d" ? "30d" : "7d";
+  const { data: utmCoverage } = useSWR<any>(
+    workspace?.id && !demoFromProps ? `/api/utm-coverage?interval=${utmInterval}` : null,
+    fetcher,
+    { revalidateOnFocus: false, keepPreviousData: true },
+  );
 
   // Mixed series: clicks as line, leads and sales as absolute values for bars
   const series = [
@@ -133,6 +156,34 @@ export default function MixedAnalyticsChart({
     <>
       {chartData ? (
         <div className="mx-4 mb-4 mt-4 grid grid-cols-3 gap-1 sm:grid-cols-4 sm:gap-2 xl:flex xl:grid-cols-8 xl:gap-2 xl:overflow-x-auto">
+          {/* Clicks saved (deeplink) */}
+          {clicksSaved > 0 ? (
+            <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
+                <span>Clicks saved</span>
+                <InfoTooltip content="Mobile + tablet clicks." />
+              </div>
+              <div className="text-sm font-bold text-gray-800 sm:text-xl">
+                {clicksSaved > 999
+                  ? (clicksSaved / 1000).toFixed(1) + "k"
+                  : clicksSaved.toLocaleString()}
+              </div>
+            </div>
+          ) : null}
+
+          {/* UTM coverage */}
+          {utmCoverage?.totalLinks ? (
+            <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
+              <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
+                <span>UTM</span>
+                <InfoTooltip content="Share of new links tagged." />
+              </div>
+              <div className="text-sm font-bold text-gray-800 sm:text-xl">
+                {utmCoverage.coveragePct}%
+              </div>
+            </div>
+          ) : null}
+
           {/* Clicks Card - Always show */}
           <div className="bg-brand-primary-light border-brand-primary/10 rounded-lg border px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
             <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
@@ -183,7 +234,7 @@ export default function MixedAnalyticsChart({
               <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
                 <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-gray-400 sm:h-2 sm:w-2"></div>
                 <span>Recent</span>
-                <InfoTooltip content="Recent visitors - Number of visitors in the last 2 hours" />
+                <InfoTooltip content="Visitors in the last 2 hours." />
               </div>
               <div className="text-sm font-bold text-gray-800 sm:text-xl">
                 {additionalMetrics.recentVisitors}

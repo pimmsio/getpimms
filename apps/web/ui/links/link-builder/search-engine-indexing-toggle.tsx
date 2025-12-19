@@ -39,7 +39,7 @@ export const SearchEngineIndexingToggle = memo(() => {
     <label className="flex items-center justify-between">
       <div className="flex items-center gap-2">
         {isNew && (
-          <div className="rounded-md border border-green-200 bg-green-50 px-2 py-0.5 text-[0.625rem] uppercase leading-none text-green-900">
+          <div className="rounded-md bg-neutral-200/70 px-2 py-0.5 text-[0.625rem] uppercase leading-none text-neutral-700">
             New
           </div>
         )}
@@ -48,7 +48,7 @@ export const SearchEngineIndexingToggle = memo(() => {
           {!doIndex ? (
             <span>disabled</span>
           ) : (
-            <span className="text-green-500">enabled</span>
+            <span className="text-neutral-900">enabled</span>
           )}
           <InfoTooltip content="Transfers PageRank to the destination URL. Only use this feature on your website or blog links to boost your SEO. When active, custom preview and deep linking are disabled." />
         </span>

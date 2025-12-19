@@ -2,11 +2,17 @@
 
 import useWorkspace from "@/lib/swr/use-workspace";
 import { UtmTemplateWithUserProps } from "@/lib/types";
-import UtmTemplateBadge from "@/ui/links/utm-template-badge";
-import { useAddEditUtmTemplateModal } from "@/ui/modals/add-edit-utm-template.modal";
 import { AppButton } from "@/ui/components/controls/app-button";
 import { AppIconButton } from "@/ui/components/controls/app-icon-button";
+import UtmTemplateBadge from "@/ui/links/utm-template-badge";
+import { useAddEditUtmTemplateModal } from "@/ui/modals/add-edit-utm-template.modal";
 import { Delete, ThreeDots } from "@/ui/shared/icons";
+import { TableHeader } from "@/ui/shared/table-header";
+import {
+  TABLE_CLASS,
+  TABLE_CONTAINER_CLASS,
+  TABLE_HEADER_CLASS,
+} from "@/ui/shared/table-styles";
 import { Avatar, IconMenu, Popover, Tooltip } from "@dub/ui";
 import {
   DiamondTurnRight,
@@ -37,60 +43,66 @@ export function TemplateTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl bg-white">
-      <table className="w-full">
-        <thead className="border-b border-neutral-100 bg-neutral-50">
+    <div className={TABLE_CONTAINER_CLASS}>
+      <table
+        className={cn("w-full border-separate border-spacing-0", TABLE_CLASS)}
+      >
+        <thead className="bg-neutral-50">
           <tr>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-600">
+            <th className={TABLE_HEADER_CLASS}>
               <div className="flex items-center gap-2">
                 <DiamondTurnRight className="size-4" />
-                Template
+                <TableHeader>Template</TableHeader>
               </div>
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-600">
+            <th className={TABLE_HEADER_CLASS}>
               <div className="flex items-center gap-2">
                 <Flag6 className="size-4" />
-                Campaign
+                <TableHeader>Campaign</TableHeader>
               </div>
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-600">
+            <th className={TABLE_HEADER_CLASS}>
               <div className="flex items-center gap-2">
                 <SatelliteDish className="size-4" />
-                Medium
+                <TableHeader>Medium</TableHeader>
               </div>
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-600">
+            <th className={TABLE_HEADER_CLASS}>
               <div className="flex items-center gap-2">
                 <GlobePointer className="size-4" />
-                Source
+                <TableHeader>Source</TableHeader>
               </div>
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-600">
+            <th className={TABLE_HEADER_CLASS}>
               <div className="flex items-center gap-2">
                 <Page2 className="size-4" />
-                Content
+                <TableHeader>Content</TableHeader>
               </div>
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-600">
+            <th className={TABLE_HEADER_CLASS}>
               <div className="flex items-center gap-2">
                 <InputSearch className="size-4" />
-                Term
+                <TableHeader>Term</TableHeader>
               </div>
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-600">
-              Updated
+            <th className={TABLE_HEADER_CLASS}>
+              <TableHeader>Updated</TableHeader>
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-600">
-              By
+            <th className={TABLE_HEADER_CLASS}>
+              <TableHeader>By</TableHeader>
             </th>
-            <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-neutral-600">
-              Actions
+            <th className={cn(TABLE_HEADER_CLASS, "text-right")}>
+              <TableHeader>Actions</TableHeader>
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-neutral-100">
+        <tbody className="bg-white">
           {templates?.map((template) => (
-            <TemplateRow key={template.id} template={template} mutate={mutate} />
+            <TemplateRow
+              key={template.id}
+              template={template}
+              mutate={mutate}
+            />
           ))}
         </tbody>
       </table>
@@ -98,10 +110,10 @@ export function TemplateTable({
   );
 }
 
-function TemplateRow({ 
+function TemplateRow({
   template,
   mutate,
-}: { 
+}: {
   template: UtmTemplateWithUserProps;
   mutate: () => Promise<any>;
 }) {
@@ -158,7 +170,7 @@ function TemplateRow({
         </td>
         <td className="px-4 py-3 text-sm text-neutral-600">
           {template.utm_campaign ? (
-            <code className="rounded bg-neutral-100 px-2 py-1 text-xs font-mono">
+            <code className="rounded bg-neutral-100 px-2 py-1 font-mono text-xs">
               {template.utm_campaign}
             </code>
           ) : (
@@ -167,7 +179,7 @@ function TemplateRow({
         </td>
         <td className="px-4 py-3 text-sm text-neutral-600">
           {template.utm_medium ? (
-            <code className="rounded bg-neutral-100 px-2 py-1 text-xs font-mono">
+            <code className="rounded bg-neutral-100 px-2 py-1 font-mono text-xs">
               {template.utm_medium}
             </code>
           ) : (
@@ -176,7 +188,7 @@ function TemplateRow({
         </td>
         <td className="px-4 py-3 text-sm text-neutral-600">
           {template.utm_source ? (
-            <code className="rounded bg-neutral-100 px-2 py-1 text-xs font-mono">
+            <code className="rounded bg-neutral-100 px-2 py-1 font-mono text-xs">
               {template.utm_source}
             </code>
           ) : (
@@ -185,7 +197,7 @@ function TemplateRow({
         </td>
         <td className="px-4 py-3 text-sm text-neutral-600">
           {template.utm_content ? (
-            <code className="rounded bg-neutral-100 px-2 py-1 text-xs font-mono">
+            <code className="rounded bg-neutral-100 px-2 py-1 font-mono text-xs">
               {template.utm_content}
             </code>
           ) : (
@@ -194,7 +206,7 @@ function TemplateRow({
         </td>
         <td className="px-4 py-3 text-sm text-neutral-600">
           {template.utm_term ? (
-            <code className="rounded bg-neutral-100 px-2 py-1 text-xs font-mono">
+            <code className="rounded bg-neutral-100 px-2 py-1 font-mono text-xs">
               {template.utm_term}
             </code>
           ) : (
@@ -221,7 +233,10 @@ function TemplateRow({
                   }}
                   className="w-full justify-start"
                 >
-                  <IconMenu text="Edit" icon={<PenWriting className="h-4 w-4" />} />
+                  <IconMenu
+                    text="Edit"
+                    icon={<PenWriting className="h-4 w-4" />}
+                  />
                 </AppButton>
                 <AppButton
                   type="button"
@@ -229,7 +244,10 @@ function TemplateRow({
                   onClick={handleDelete}
                   className="w-full justify-start text-red-600 hover:bg-red-50"
                 >
-                  <IconMenu text="Delete" icon={<Delete className="h-4 w-4" />} />
+                  <IconMenu
+                    text="Delete"
+                    icon={<Delete className="h-4 w-4" />}
+                  />
                 </AppButton>
               </div>
             }
@@ -240,7 +258,7 @@ function TemplateRow({
             <AppIconButton
               type="button"
               className={cn(
-                "h-8 px-1.5 outline-none transition-all duration-200",
+                "h-8 px-1.5 transition-all duration-200 outline-none",
                 "data-[state=open]:bg-neutral-100",
               )}
               onClick={(e) => {
@@ -289,58 +307,60 @@ function UserAvatar({ template }: { template: UtmTemplateWithUserProps }) {
 
 function TemplateTableSkeleton() {
   return (
-    <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-      <table className="w-full">
-        <thead className="border-b border-neutral-200 bg-neutral-50">
+    <div className={TABLE_CONTAINER_CLASS}>
+      <table
+        className={cn("w-full border-separate border-spacing-0", TABLE_CLASS)}
+      >
+        <thead className="bg-neutral-50">
           <tr>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-600">
+            <th className={TABLE_HEADER_CLASS}>
               <div className="flex items-center gap-2">
                 <DiamondTurnRight className="size-4" />
-                Template
+                <TableHeader>Template</TableHeader>
               </div>
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-600">
+            <th className={TABLE_HEADER_CLASS}>
               <div className="flex items-center gap-2">
                 <Flag6 className="size-4" />
-                Campaign
+                <TableHeader>Campaign</TableHeader>
               </div>
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-600">
+            <th className={TABLE_HEADER_CLASS}>
               <div className="flex items-center gap-2">
                 <SatelliteDish className="size-4" />
-                Medium
+                <TableHeader>Medium</TableHeader>
               </div>
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-600">
+            <th className={TABLE_HEADER_CLASS}>
               <div className="flex items-center gap-2">
                 <GlobePointer className="size-4" />
-                Source
+                <TableHeader>Source</TableHeader>
               </div>
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-600">
+            <th className={TABLE_HEADER_CLASS}>
               <div className="flex items-center gap-2">
                 <Page2 className="size-4" />
-                Content
+                <TableHeader>Content</TableHeader>
               </div>
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-600">
+            <th className={TABLE_HEADER_CLASS}>
               <div className="flex items-center gap-2">
                 <InputSearch className="size-4" />
-                Term
+                <TableHeader>Term</TableHeader>
               </div>
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-600">
-              Updated
+            <th className={TABLE_HEADER_CLASS}>
+              <TableHeader>Updated</TableHeader>
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-600">
-              By
+            <th className={TABLE_HEADER_CLASS}>
+              <TableHeader>By</TableHeader>
             </th>
-            <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-neutral-600">
-              Actions
+            <th className={cn(TABLE_HEADER_CLASS, "text-right")}>
+              <TableHeader>Actions</TableHeader>
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-neutral-100">
+        <tbody className="bg-white">
           {Array.from({ length: 5 }).map((_, idx) => (
             <tr key={idx}>
               <td className="px-4 py-3">
@@ -377,4 +397,3 @@ function TemplateTableSkeleton() {
     </div>
   );
 }
-

@@ -21,7 +21,6 @@ export function GoogleButton({ next }: { next?: string }) {
   return (
     <Button
       text="Continue with Google"
-      className="rounded-full"
       variant="secondary"
       onClick={() => {
         setClickedMethod("google");

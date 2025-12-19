@@ -25,7 +25,7 @@ export function TrackingFamiliarityForm() {
     setIsSubmitting(true);
     try {
       await saveOnboardingAnswer("trackingFamiliarity", answer, slug);
-      continueTo("utm-conversion");
+      continueTo("deeplinks");
     } catch (error) {
       console.error("Failed to save answer:", error);
     } finally {

@@ -101,6 +101,10 @@ export async function processLink<T extends Record<string, any>>({
     testVariants,
   } = payload;
 
+  // Conversion tracking is enabled by default for all accounts.
+  // We keep this pinned on so the product doesn’t branch into “tracking on/off” mental models.
+  trackConversion = true;
+
   let expiresAt: string | Date | null | undefined = payload.expiresAt;
   let testCompletedAt: string | Date | null | undefined =
     payload.testCompletedAt;

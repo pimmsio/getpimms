@@ -3,10 +3,17 @@
 import useWorkspace from "@/lib/swr/use-workspace";
 import { SingleFlameIcon } from "@/ui/analytics/events/hot-score-icons";
 import { AppButtonLink } from "@/ui/components/controls/app-button";
+import { AnonymousVisitorsTeaser } from "@/ui/conversions/anonymous-visitors-teaser";
 import { useLinkBuilder } from "@/ui/modals/link-builder";
-import { BlurImage, Table, useTable } from "@dub/ui";
+import { BlurImage, InfoTooltip, Table, useTable } from "@dub/ui";
 import { LoadingSpinner } from "@dub/ui/icons";
-import { cn, COUNTRIES, fetcher, formatDate, formatDateTimeSmart, timeAgo } from "@dub/utils";
+import {
+  COUNTRIES,
+  fetcher,
+  formatDate,
+  formatDateTimeSmart,
+  timeAgo,
+} from "@dub/utils";
 import { BookOpen, ChevronRight } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -18,6 +25,19 @@ type AnalyticsCount = {
   leads: number;
   sales: number;
   saleAmount: number; // cents
+};
+
+type DeviceBreakdownRow = {
+  device: string;
+  clicks?: number;
+};
+
+type UtmCoverageResponse = {
+  interval: "7d" | "30d";
+  totalLinks: number;
+  taggedLinks: number;
+  coverage: number;
+  coveragePct: number;
 };
 
 type GuidesApiResponse =
@@ -33,13 +53,13 @@ type GuidesApiResponse =
   | { ok: false; error: string; guides: [] };
 
 // TODO: re-enable video section once content is ready.
-// const featuredVideo = {
-//   title: "How to get started with conversion tracking",
-//   href: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-//   thumbnail: "https://assets.pimms.io/conversion-tracking-1.png",
-//   description:
-//     "Watch the fast setup overview and start attributing leads + sales to your links.",
-// } as const;
+const featuredVideo = {
+  title: "Deep links on Pimms (opens the official app)",
+  href: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  thumbnail: "https://assets.pimms.io/blog/new-link-builder.jpg",
+  description:
+    "1 minute. See how Pimms links open YouTube/Instagram in the official app on mobile.",
+} as const;
 
 // TODO: re-enable onboarding section once videos are ready.
 // const onboardingVideos = [
@@ -103,6 +123,18 @@ export default function TodayClient() {
     return `/api/analytics?${qs.toString()}`;
   }, [workspaceId, timezone]);
 
+  const last7dDevicesQuery = useMemo(() => {
+    if (!workspaceId) return null;
+    const qs = new URLSearchParams({
+      workspaceId,
+      groupBy: "devices",
+      event: "composite",
+      interval: "7d",
+      timezone,
+    });
+    return `/api/analytics?${qs.toString()}`;
+  }, [workspaceId, timezone]);
+
   const last30dQuery = useMemo(() => {
     if (!workspaceId) return null;
     const qs = new URLSearchParams({
@@ -133,6 +165,21 @@ export default function TodayClient() {
     revalidateOnFocus: false,
   });
 
+  const { data: last7dDevices } = useSWR<DeviceBreakdownRow[]>(
+    last7dDevicesQuery,
+    fetcher,
+    {
+      keepPreviousData: true,
+      revalidateOnFocus: false,
+    },
+  );
+
+  const { data: utmCoverage } = useSWR<UtmCoverageResponse>(
+    workspaceId ? `/api/utm-coverage?interval=7d` : null,
+    fetcher,
+    { revalidateOnFocus: false, keepPreviousData: true },
+  );
+
   const {
     data: last30dAnalytics,
     isLoading: last30dLoading,
@@ -160,6 +207,8 @@ export default function TodayClient() {
   const last7dRevenue = last7dSaleAmount / 100;
   const last7dClicks = last7dAnalytics?.clicks ?? 0;
   const last7dLeads = last7dAnalytics?.leads ?? 0;
+  const last7dSales = last7dAnalytics?.sales ?? 0;
+  const last7dSignals = last7dLeads + last7dSales;
   const last7dCvr = last7dClicks > 0 ? (last7dLeads / last7dClicks) * 100 : 0;
 
   const last30dSaleAmount = last30dAnalytics?.saleAmount ?? 0;
@@ -168,6 +217,14 @@ export default function TodayClient() {
   const last30dLeads = last30dAnalytics?.leads ?? 0;
   const last30dCvr =
     last30dClicks > 0 ? (last30dLeads / last30dClicks) * 100 : 0;
+
+  const clicksSaved7d =
+    last7dDevices?.reduce((sum, d) => {
+      if (d.device === "Mobile" || d.device === "Tablet") {
+        return sum + (d.clicks || 0);
+      }
+      return sum;
+    }, 0) ?? 0;
 
   return (
     <>
@@ -202,13 +259,73 @@ export default function TodayClient() {
 
       {/* Sections */}
       <div className="mt-5 border-t border-neutral-100 pt-5">
+        {/* Deep links video */}
+        {/* <div className="mb-6">
+          <a
+            href={featuredVideo.href}
+            target="_blank"
+            rel="noreferrer"
+            className="group block overflow-hidden rounded-xl border border-neutral-200 bg-white"
+          >
+            <div className="relative aspect-[16/6] w-full bg-neutral-100">
+              <BlurImage
+                src={featuredVideo.thumbnail}
+                alt=""
+                className="h-full w-full object-cover"
+                width={1200}
+                height={450}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+              <div className="absolute bottom-3 left-3 flex items-center gap-2">
+                <PlayCircle className="size-6 text-white" />
+                <div className="text-sm font-semibold text-white">
+                  {featuredVideo.title}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center justify-between gap-3 px-4 py-3">
+              <div className="min-w-0">
+                <div className="truncate text-sm font-semibold text-neutral-900">
+                  {featuredVideo.description}
+                </div>
+                <div className="mt-0.5 text-xs text-neutral-500">
+                  Watch → then create your first “opens the official app” link
+                </div>
+              </div>
+              <ChevronRight className="size-4 shrink-0 text-neutral-300 group-hover:text-neutral-500" />
+            </div>
+          </a>
+        </div> */}
+
         {/* Metrics */}
         <div className="mb-6">
           <div className="mb-3 flex items-center justify-between">
-            <div className="text-sm font-semibold text-neutral-900">Metrics</div>
-            <AppButtonLink href={`/${slug}/analytics`} variant="secondary" size="sm">
+            <div className="text-sm font-semibold text-neutral-900">
+              Metrics
+            </div>
+            <AppButtonLink
+              href={`/${slug}/analytics`}
+              variant="secondary"
+              size="sm"
+            >
               Analytics
             </AppButtonLink>
+          </div>
+
+          <div className="mb-3 rounded-lg bg-neutral-50 px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
+                Clicks saved
+                <InfoTooltip content="Mobile + tablet clicks (7d). Deeplinks help open the official app on mobile." />
+              </div>
+              <div className="text-lg font-semibold text-neutral-900 tabular-nums">
+                {clicksSaved7d.toLocaleString()}
+              </div>
+            </div>
+            <div className="mt-1 text-sm text-neutral-600">
+              Use our deeplinks that open the official apps on mobile to save
+              clicks from in-app browser chaos.
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
@@ -273,7 +390,9 @@ export default function TodayClient() {
               Failed to load guides.
             </div>
           ) : guides.length === 0 ? (
-            <div className="py-6 text-sm text-neutral-600">No guides found.</div>
+            <div className="py-6 text-sm text-neutral-600">
+              No guides found.
+            </div>
           ) : (
             <div className="divide-y divide-neutral-100 rounded-lg bg-neutral-50/50 p-1">
               {guides.slice(0, 12).map((g) => (
@@ -338,10 +457,10 @@ function Metric({
       : Math.round(value).toString();
   return (
     <div className="rounded-lg bg-neutral-50 px-3 py-2">
-      <div className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">
+      <div className="text-[11px] font-semibold tracking-wide text-neutral-500 uppercase">
         {label}
       </div>
-      <div className="mt-0.5 text-lg font-semibold tabular-nums text-neutral-900">
+      <div className="mt-0.5 text-lg font-semibold text-neutral-900 tabular-nums">
         {prefix}
         {formatted}
       </div>
@@ -409,7 +528,7 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
             >
               <div className="flex shrink-0 items-center gap-2">
                 <SingleFlameIcon className="h-5 w-5" score={score} />
-                <span className="text-xs font-semibold tabular-nums text-neutral-900">
+                <span className="text-xs font-semibold text-neutral-900 tabular-nums">
                   {score}
                 </span>
               </div>
@@ -472,7 +591,7 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
                 <Link
                   href={`/${slug}/customers/${customerId}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="flex shrink-0 items-center gap-1 whitespace-nowrap text-xs font-medium text-blue-600 transition-transform group-hover:translate-x-1"
+                  className="flex shrink-0 items-center gap-1 text-xs font-medium whitespace-nowrap text-blue-600 transition-transform group-hover:translate-x-1"
                 >
                   <span>See timeline</span>
                   <ChevronRight className="size-3" />
@@ -558,7 +677,7 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
     <div className="mt-6">
       <div className="mb-3 flex items-center justify-between">
         <div className="text-sm font-semibold text-neutral-900">
-          Last Lead Signals
+          Latest leads
         </div>
         <AppButtonLink
           href={`/${slug}/conversions?interval=7d`}
@@ -575,8 +694,21 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
           <LoadingSpinner />
         </div>
       ) : leads.length === 0 ? (
-        <div className="rounded-lg bg-neutral-50 py-6 text-center text-sm text-neutral-500">
-          No lead signals
+        <div className="rounded-lg bg-neutral-50/50 p-4">
+          <p className="text-sm font-semibold text-neutral-900">No leads yet</p>
+          <p className="mt-1 text-sm text-neutral-600">
+            Without conversion tracking, visitors stay anonymous. Set it up to
+            turn clicks into leads and sales.
+          </p>
+          <AppButtonLink
+            href={`/${slug}/conversions?ctSetup=1`}
+            variant="primary"
+            size="sm"
+            className="mt-3 w-fit"
+          >
+            Reveal leads
+          </AppButtonLink>
+          <AnonymousVisitorsTeaser variant="plain" className="mt-3" />
         </div>
       ) : (
         <Table {...tableProps} table={table} />
