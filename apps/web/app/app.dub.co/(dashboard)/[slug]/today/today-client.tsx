@@ -32,13 +32,6 @@ type DeviceBreakdownRow = {
   clicks?: number;
 };
 
-type UtmCoverageResponse = {
-  interval: "7d" | "30d";
-  totalLinks: number;
-  taggedLinks: number;
-  coverage: number;
-  coveragePct: number;
-};
 
 type GuidesApiResponse =
   | {
@@ -174,11 +167,6 @@ export default function TodayClient() {
     },
   );
 
-  const { data: utmCoverage } = useSWR<UtmCoverageResponse>(
-    workspaceId ? `/api/utm-coverage?interval=7d` : null,
-    fetcher,
-    { revalidateOnFocus: false, keepPreviousData: true },
-  );
 
   const {
     data: last30dAnalytics,

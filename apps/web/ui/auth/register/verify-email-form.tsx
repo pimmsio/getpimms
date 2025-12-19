@@ -23,7 +23,7 @@ export const VerifyEmailForm = () => {
 
   const { executeAsync, isPending } = useAction(createUserAccountAction, {
     async onSuccess() {
-      toast.success("Account created! Redirecting to dashboard...");
+      toast.success("Account created! Signing you in...");
       setIsRedirecting(true);
 
       const response = await signIn("credentials", {
@@ -33,8 +33,11 @@ export const VerifyEmailForm = () => {
       });
 
       if (response?.ok) {
-        router.push("/");
+        // Use window.location for a full page reload to ensure session cookie is set
+        // and middleware can properly redirect to onboarding
+        window.location.href = "/";
       } else {
+        setIsRedirecting(false);
         toast.error(
           "Failed to sign in with credentials. Please try again or contact support.",
         );

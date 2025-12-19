@@ -47,32 +47,46 @@ export default async function AppMiddleware(req: NextRequest) {
     }
 
     // Check onboarding for new users (< 24h) before workspace redirects
-    // Skip if already in onboarding flow or explicit onboarding query is present
-    if (
-      !isWorkspaceInvite &&
-      !path.startsWith("/account") &&
-      !path.startsWith("/onboarding") &&
-      !req.nextUrl.searchParams.has("onboarding")
-    ) {
-      const createdAtMs = (user as any)?.createdAt
-        ? new Date((user as any).createdAt).getTime()
-        : NaN;
-      const isNewUser =
-        Number.isFinite(createdAtMs) &&
-        createdAtMs > Date.now() - 60 * 60 * 24 * 1000;
+    const createdAtMs = (user as any)?.createdAt
+      ? new Date((user as any).createdAt).getTime()
+      : NaN;
+    const isNewUser =
+      Number.isFinite(createdAtMs) &&
+      createdAtMs > Date.now() - 60 * 60 * 24 * 1000;
 
-      if (isNewUser) {
-        let step = await getOnboardingStep(user);
-        const defaultWorkspace = await getDefaultWorkspace(user);
+    if (isNewUser && !isWorkspaceInvite && !path.startsWith("/account")) {
+      const defaultWorkspace = await getDefaultWorkspace(user);
+      let step = await getOnboardingStep(user);
 
-        // If no step, initialize it
-        if (defaultWorkspace && !step) {
-          const { redis } = await import("@/lib/upstash");
-          step = "tracking-familiarity";
-          await redis.set(`onboarding-step:${user.id}`, step);
+      // If no step, initialize it
+      if (defaultWorkspace && !step) {
+        step = "tracking-familiarity";
+        await redis.set(`onboarding-step:${user.id}`, step);
+      }
+
+      // If onboarding is completed, allow access
+      if (step === "completed") {
+        // Allow access, but remove onboarding query param if present
+        const onboardingParam = req.nextUrl.searchParams.get("onboarding");
+        if (onboardingParam) {
+          const newUrl = new URL(req.url);
+          newUrl.searchParams.delete("onboarding");
+          return NextResponse.redirect(newUrl);
         }
+      } else if (defaultWorkspace && step) {
+        const onboardingParam = req.nextUrl.searchParams.get("onboarding");
 
-        if (defaultWorkspace && step && step !== "completed") {
+        // If there's an onboarding query param, validate it matches the stored step
+        if (onboardingParam) {
+          if (onboardingParam !== step) {
+            // Query param doesn't match stored step - redirect to correct step
+            return NextResponse.redirect(
+              new URL(`/${defaultWorkspace}/today?onboarding=${step}`, req.url),
+            );
+          }
+          // Query param matches, allow access
+        } else if (!path.startsWith("/onboarding")) {
+          // No query param but user is in onboarding - redirect to current step
           return NextResponse.redirect(
             new URL(`/${defaultWorkspace}/today?onboarding=${step}`, req.url),
           );

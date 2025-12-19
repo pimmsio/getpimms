@@ -52,13 +52,6 @@ export default function MixedAnalyticsChart({
     );
   }, [devicesData]);
 
-  // UTM coverage (links created with any UTM / total links created) - interval-mapped
-  const utmInterval = interval === "30d" ? "30d" : "7d";
-  const { data: utmCoverage } = useSWR<any>(
-    workspace?.id && !demoFromProps ? `/api/utm-coverage?interval=${utmInterval}` : null,
-    fetcher,
-    { revalidateOnFocus: false, keepPreviousData: true },
-  );
 
   // Mixed series: clicks as line, leads and sales as absolute values for bars
   const series = [
@@ -171,18 +164,6 @@ export default function MixedAnalyticsChart({
             </div>
           ) : null}
 
-          {/* UTM coverage */}
-          {utmCoverage?.totalLinks ? (
-            <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
-              <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
-                <span>UTM</span>
-                <InfoTooltip content="Share of new links tagged." />
-              </div>
-              <div className="text-sm font-bold text-gray-800 sm:text-xl">
-                {utmCoverage.coveragePct}%
-              </div>
-            </div>
-          ) : null}
 
           {/* Clicks Card - Always show */}
           <div className="bg-brand-primary-light border-brand-primary/10 rounded-lg border px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
