@@ -2,6 +2,7 @@ import { clientAccessCheck } from "@/lib/api/tokens/permissions";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { DomainProps } from "@/lib/types";
 import { AddEditDomainForm } from "@/ui/domains/add-edit-domain-form";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import { Button, ButtonProps, Modal, TooltipContent } from "@dub/ui";
 import { capitalize, pluralize } from "@dub/utils";
 import {
@@ -51,7 +52,8 @@ function AddDomainButton({
   setShowAddEditDomainModal: Dispatch<SetStateAction<boolean>>;
   buttonProps?: Partial<ButtonProps>;
 }) {
-  const { slug, plan, role, domainsLimit, exceededDomains } = useWorkspace();
+  const { plan, role, domainsLimit, exceededDomains } = useWorkspace();
+  const { openUpgradeModal } = useUpgradeModal();
 
   const permissionsError = clientAccessCheck({
     action: "domains.write",
@@ -67,7 +69,7 @@ function AddDomainButton({
             <TooltipContent
               title={`You can only add up to ${domainsLimit} ${pluralize("domain", domainsLimit || 0)} on the ${capitalize(plan)} plan. Upgrade to add more domains`}
               cta="Upgrade"
-              href={`/${slug}/upgrade`}
+              onClick={openUpgradeModal}
             />
           ) : (
             permissionsError || undefined

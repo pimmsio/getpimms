@@ -3,7 +3,7 @@ import { useLinkBuilderKeyboardShortcut } from "@/ui/links/link-builder/use-link
 import { ProBadgeTooltip } from "@/ui/shared/pro-badge-tooltip";
 import {
   Button,
-  InfoTooltip,
+  HelpTooltip,
   Modal,
   SimpleTooltipContent,
   Tooltip,

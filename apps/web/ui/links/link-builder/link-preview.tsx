@@ -31,7 +31,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
-import { HelpTooltip } from "./help-tooltip";
+import { HelpTooltip } from "@dub/ui";
 import { useLinkBuilderKeyboardShortcut } from "./use-link-builder-keyboard-shortcut";
 import { useMetatags } from "./use-metatags";
 

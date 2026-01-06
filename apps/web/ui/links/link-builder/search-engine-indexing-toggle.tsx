@@ -1,9 +1,10 @@
 import useWorkspace from "@/lib/swr/use-workspace";
 import { LinkFormData } from "@/ui/links/link-builder/link-builder-provider";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import {
   CrownSmall,
   FlaskSmall,
-  InfoTooltip,
+  HelpTooltip,
   Switch,
   TooltipContent,
 } from "@dub/ui";
@@ -16,7 +17,8 @@ const isNew =
   new Date().getTime() - new Date("2025-01-13").getTime() < 30 * 86_400_000;
 
 export const SearchEngineIndexingToggle = memo(() => {
-  const { slug, plan } = useWorkspace();
+  const { plan } = useWorkspace();
+  const { openUpgradeModal } = useUpgradeModal();
   const { control, setValue } = useFormContext<LinkFormData>();
 
   const [doIndex] = useWatch({
@@ -50,7 +52,7 @@ export const SearchEngineIndexingToggle = memo(() => {
           ) : (
             <span className="text-neutral-900">enabled</span>
           )}
-          <InfoTooltip content="Transfers PageRank to the destination URL. Only use this feature on your website or blog links to boost your SEO. When active, custom preview and deep linking are disabled." />
+          <HelpTooltip content="Transfers PageRank to the destination URL. Only use this feature on your website or blog links to boost your SEO. When active, custom preview and deep linking are disabled." />
         </span>
       </div>
       <Switch
@@ -64,7 +66,7 @@ export const SearchEngineIndexingToggle = memo(() => {
         disabledTooltip={requiresUpgrade ? <TooltipContent
           title="Search engine indexing is only available on Pro plans and above."
           cta="Upgrade to Pro"
-          href={`/${slug}/upgrade`}
+          onClick={openUpgradeModal}
         /> : undefined}
         thumbIcon={
           requiresUpgrade ? <CrownSmall className="size-full text-neutral-500" /> : undefined

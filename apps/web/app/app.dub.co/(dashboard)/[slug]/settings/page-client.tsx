@@ -5,7 +5,7 @@ import useWorkspace from "@/lib/swr/use-workspace";
 import DeleteWorkspace from "@/ui/workspaces/delete-workspace";
 import UploadLogo from "@/ui/workspaces/upload-logo";
 import WorkspaceId from "@/ui/workspaces/workspace-id";
-import { Form } from "@dub/ui";
+import { Form, SelectForm } from "@dub/ui";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -13,7 +13,7 @@ import { mutate } from "swr";
 
 export default function WorkspaceSettingsClient() {
   const router = useRouter();
-  const { id, name, slug, role } = useWorkspace();
+  const { id, name, slug, role, currency } = useWorkspace();
 
   const permissionsError = clientAccessCheck({
     action: "workspaces.write",
@@ -84,6 +84,36 @@ export default function WorkspaceSettingsClient() {
                 update();
               }
               toast.success("Successfully updated workspace slug!");
+            } else {
+              const { error } = await res.json();
+              toast.error(error.message);
+            }
+          })
+        }
+      />
+      <SelectForm
+        title="Workspace currency"
+        description="This only changes the currency symbol shown across your workspace. No conversion is performed."
+        selectAttrs={{
+          name: "currency",
+          defaultValue: currency ?? "EUR",
+        }}
+        options={[
+          { value: "EUR", label: "Euro (EUR)" },
+          { value: "USD", label: "US Dollar (USD)" },
+        ]}
+        disabledTooltip={permissionsError || undefined}
+        handleSubmit={(data) =>
+          fetch(`/api/workspaces/${id}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          }).then(async (res) => {
+            if (res.status === 200) {
+              await Promise.all([mutate("/api/workspaces"), mutate(`/api/workspaces/${id}`)]);
+              toast.success("Successfully updated workspace currency!");
             } else {
               const { error } = await res.json();
               toast.error(error.message);

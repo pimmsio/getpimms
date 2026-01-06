@@ -37,9 +37,9 @@ export function IntegrationInstalled({
 }) {
   return (
     <Html>
-      <Head />
-      <Preview>An integration has been added to your workspace</Preview>
       <Tailwind>
+        <Head />
+        <Preview>An integration has been added to your workspace</Preview>
         <Body className="mx-auto my-auto bg-white font-sans">
           <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border border-solid border-neutral-100 px-10 py-5">
             <Section className="my-8">

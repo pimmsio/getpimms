@@ -7,7 +7,7 @@ export function useWorkspaceFilters() {
 
   // Available plan options - extract just the plan names
   const planOptions = useMemo(() => {
-    const planNames = ["free", "starter", "pro", "business", "enterprise"];
+    const planNames = ["free", "pro", "business"];
     return planNames.map((planName) => ({
       value: planName,
       label: planName.charAt(0).toUpperCase() + planName.slice(1),

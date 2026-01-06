@@ -10,7 +10,7 @@ import {
   AnimatedSizeContainer,
   Button,
   ButtonProps,
-  InfoTooltip,
+  HelpTooltip,
   Label,
   Modal,
   RadioGroup,
@@ -197,7 +197,7 @@ function AddEditTokenModal({
                     className="flex flex-1 cursor-pointer items-center justify-between space-x-1 p-3 pl-0"
                   >
                     <p className="text-neutral-600">You</p>
-                    <InfoTooltip content="This API key will be tied to your user account – if you are removed from the workspace, it will be deleted." />
+                    <HelpTooltip content="This API key will be tied to your user account – if you are removed from the workspace, it will be deleted." />
                   </Label>
                 </div>
                 <div
@@ -224,7 +224,7 @@ function AddEditTokenModal({
                     )}
                   >
                     <p className="text-neutral-600">Machine</p>
-                    <InfoTooltip
+                    <HelpTooltip
                       content={
                         isOwner
                           ? "A new bot member will be added to your workspace, and the key will be associated with it. Since the key is not tied to your account, it will not be deleted even if you leave the workspace."
@@ -280,7 +280,7 @@ function AddEditTokenModal({
                       <span className="text-sm font-medium text-neutral-800">
                         {resource.name}
                       </span>
-                      <InfoTooltip content={resource.description} />
+                      <HelpTooltip content={resource.description} />
                     </div>
                     <div>
                       <RadioGroup

@@ -33,7 +33,7 @@ export function LinkAnalyticsBadge({
   url?: string;
   sharingEnabled?: boolean;
 }) {
-  const { slug, plan } = useWorkspace();
+  const { slug, plan, currency } = useWorkspace();
   const { domain, key, trackConversion, clicks, leads, saleAmount } = link;
 
   const { isMobile } = useMediaQuery();
@@ -102,7 +102,7 @@ export function LinkAnalyticsBadge({
               >
                 <span className="font-medium text-neutral-950">
                   {tab === "sales"
-                    ? currencyFormatter(value / 100)
+                    ? currencyFormatter(value / 100, { currency: currency ?? "EUR" })
                     : nFormatter(value, { full: value < INFINITY_NUMBER })}
                 </span>{" "}
                 {tab === "sales" ? "total " : ""}
@@ -205,7 +205,7 @@ export function LinkAnalyticsBadge({
                       <div className="flow-col flex gap-1">
                         <span className="text-xs sm:text-sm">
                           {tab === "sales"
-                            ? currencyFormatter(value / 100)
+                            ? currencyFormatter(value / 100, { currency: currency ?? "EUR" })
                             : nFormatter(value)}
                         </span>
                       </div>

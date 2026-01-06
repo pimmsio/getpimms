@@ -8,7 +8,7 @@ import {
   WEBHOOK_TRIGGER_DESCRIPTIONS,
   WORKSPACE_LEVEL_WEBHOOK_TRIGGERS,
 } from "@/lib/webhook/constants";
-import { Button, Checkbox, CopyButton, InfoTooltip } from "@dub/ui";
+import { Button, Checkbox, CopyButton, HelpTooltip } from "@dub/ui";
 import { cn } from "@dub/utils";
 import { useRouter } from "next/navigation";
 import { FormEvent, useMemo, useState } from "react";
@@ -175,7 +175,7 @@ export default function AddEditWebhookForm({
             <h2 className="text-sm font-medium text-neutral-900">
               Signing secret
             </h2>
-            <InfoTooltip content="A secret token used to sign the webhook payload." />
+            <HelpTooltip content="A secret token used to sign the webhook payload." />
           </label>
           <div className="flex items-center justify-between rounded border border-neutral-200 bg-white px-3 py-1">
             <p className="text-nowrap font-mono text-sm text-neutral-500">

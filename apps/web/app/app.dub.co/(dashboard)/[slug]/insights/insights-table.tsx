@@ -18,11 +18,12 @@ import {
   TABLE_CLASS,
   StickyColumnStyles,
 } from "@/ui/shared/table-styles";
+import useWorkspace from "@/lib/swr/use-workspace";
 import { cn, currencyFormatter, nFormatter } from "@dub/utils";
 import NumberFlow from "@number-flow/react";
 import { endOfDay, format, isAfter, startOfDay } from "date-fns";
 import { BarChart } from "lucide-react";
-import React, { ReactNode, useMemo } from "react";
+import React, { useMemo } from "react";
 
 export type LinkInsight = {
   link: string;
@@ -55,12 +56,7 @@ export type LinkInsight = {
 };
 
 export default function InsightsTable({
-  requiresUpgrade,
-  upgradeOverlay,
-}: {
-  requiresUpgrade?: boolean;
-  upgradeOverlay?: ReactNode;
-} = {}) {
+}: {} = {}) {
   // Fetch links insights data (days only)
   const { data: combinedData, loading: isLoading, effectiveInterval } = useLinkInsights();
   
@@ -255,6 +251,7 @@ function GridInsightsTable({
     periodTotals: { clicks: number; leads: number; saleAmount: number }[];
   };
 }) {
+  const { currency } = useWorkspace();
   const rows = data.length ? data : Array.from({ length: 8 }).map((_, idx) => ({ __skeleton: true, id: `s-${idx}` })) as any[];
 
   return (
@@ -415,7 +412,10 @@ function GridInsightsTable({
                             <span className="text-neutral-300 text-sm">—</span>
                           ) : (
                             <span className={cn("text-sm font-semibold tabular-nums", (periodData?.saleAmount || 0) === 0 && "text-neutral-400")}>
-                              {currencyFormatter((periodData?.saleAmount || 0) / 100, { maximumFractionDigits: 0 })}
+                              {currencyFormatter((periodData?.saleAmount || 0) / 100, {
+                                currency: currency ?? "EUR",
+                                maximumFractionDigits: 0,
+                              })}
                             </span>
                           )}
                         </td>
@@ -458,7 +458,10 @@ function GridInsightsTable({
                     </td>
                     <td className="bg-neutral-50 px-3 py-2 text-center">
                       <div className={cn("text-sm font-semibold tabular-nums", pt.saleAmount === 0 && "text-neutral-400")}>
-                        {currencyFormatter(pt.saleAmount / 100, { maximumFractionDigits: 0 })}
+                        {currencyFormatter(pt.saleAmount / 100, {
+                          currency: currency ?? "EUR",
+                          maximumFractionDigits: 0,
+                        })}
                       </div>
                     </td>
                   </React.Fragment>

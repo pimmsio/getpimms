@@ -4,7 +4,7 @@ import {
   Button,
   Checkbox,
   DateRangePicker,
-  InfoTooltip,
+  HelpTooltip,
   Logo,
   Modal,
   Switch,
@@ -227,7 +227,7 @@ function ExportLinksModal({
             <div className="flex items-center justify-between gap-2">
               <span className="flex select-none items-center gap-2 text-sm font-medium text-neutral-600 group-hover:text-neutral-800">
                 Apply current filters
-                <InfoTooltip content="Filter exported links by your currently selected filters" />
+                <HelpTooltip content="Filter exported links by your currently selected filters" />
               </span>
               <Switch checked={field.value} fn={field.onChange} />
             </div>

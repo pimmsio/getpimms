@@ -12,7 +12,7 @@ export default function NewWebhookPageClient({
 }) {
   const { slug, plan } = useWorkspace();
 
-  const needsHigherPlan = plan === "free" || plan === "starter";
+  const needsHigherPlan = plan === "free";
 
   if (needsHigherPlan) {
     redirect(`/${slug}/settings/webhooks`);

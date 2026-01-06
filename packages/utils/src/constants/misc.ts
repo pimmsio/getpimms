@@ -11,6 +11,7 @@ export const DEFAULT_LINK_PROPS: any = {
   image: null,
   video: null,
   trackConversion: false,
+  leadMagnetEnabled: false,
   proxy: false,
   rewrite: false,
   expiresAt: null,

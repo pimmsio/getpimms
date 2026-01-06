@@ -2,10 +2,11 @@
 
 import useWorkspace from "@/lib/swr/use-workspace";
 import { STORE_KEYS, useWorkspaceStore } from "@/lib/swr/use-workspace-store";
+import { ModalContext } from "@/ui/modals/modal-provider";
 import { X } from "@/ui/shared/icons";
 import { Book2Small, useMediaQuery } from "@dub/ui";
-import { useConversionOnboardingModal } from "./conversions-onboarding-modal";
 import { ConversionOnboardingPopup } from "./conversions-onboarding-popup";
+import { useContext } from "react";
 
 export function ConversionsOnboarding({
   referenceElement,
@@ -26,8 +27,7 @@ export function ConversionsOnboarding({
     STORE_KEYS.conversionsOnboarding,
   );
 
-  const { setShowConversionOnboardingModal, conversionOnboardingModal } =
-    useConversionOnboardingModal();
+  const { setShowConversionOnboardingModal } = useContext(ModalContext);
 
   const showConversionsOnboarding =
     !loading &&
@@ -43,7 +43,6 @@ export function ConversionsOnboarding({
 
   return (
     <>
-      {conversionOnboardingModal}
       {showPopup ? (
         <ConversionOnboardingPopup
           referenceElement={referenceElement}

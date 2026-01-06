@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Controller } from "react-hook-form";
-import { HelpTooltip } from "../help-tooltip";
+import { HelpTooltip } from "@dub/ui";
 
 export const LinkCommentsInput = memo(() => {
   return (

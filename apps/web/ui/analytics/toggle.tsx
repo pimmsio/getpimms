@@ -72,6 +72,7 @@ import { useDebounce } from "use-debounce";
 import { WebhookErrorsWarning } from "../layout/sidebar/webhook-errors-warning";
 import { AppButton } from "@/ui/components/controls/app-button";
 import { AppIconButton } from "@/ui/components/controls/app-icon-button";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import { LinkIcon } from "../links/link-icon";
 import TagBadge from "../links/tag-badge";
 import { FolderIcon } from "../folders/folder-icon";
@@ -1680,15 +1681,14 @@ function UpgradeTooltip({
   rangeLabel: string;
   plan?: string;
 }) {
-  const { slug } = useWorkspace();
-
+  const { openUpgradeModal } = useUpgradeModal();
   const isAllTime = rangeLabel === "All Time";
 
   return (
     <TooltipContent
       title={`${rangeLabel} can only be viewed on a ${isAllTime ? "Business" : getNextPlan(plan).name} plan or higher. Upgrade now to view more stats.`}
       cta={`Upgrade to ${isAllTime ? "Business" : getNextPlan(plan).name}`}
-      href={slug ? `/${slug}/upgrade` : APP_DOMAIN}
+      onClick={openUpgradeModal}
     />
   );
 }

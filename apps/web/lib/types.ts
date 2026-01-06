@@ -72,6 +72,7 @@ export interface RedisLinkProps {
   id: string;
   url?: string;
   trackConversion?: boolean;
+  leadMagnetEnabled?: boolean;
   password?: boolean;
   proxy?: boolean;
   rewrite?: boolean;
@@ -203,17 +204,7 @@ export type ProcessedLinkProps = Omit<NewLinkProps, ProcessedLinkOverrides> &
     id?: string;
   };
 
-export const plans = [
-  "free",
-  "starter",
-  "pro",
-  "business",
-  "business plus",
-  "business extra",
-  "business max",
-  "advanced",
-  "enterprise",
-] as const;
+export const plans = ["free", "pro", "business"] as const;
 
 export const roles = ["owner", "member"] as const;
 

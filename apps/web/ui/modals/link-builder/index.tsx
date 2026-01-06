@@ -13,6 +13,7 @@ import { LinkBuilderShortLinkInput } from "@/ui/links/link-builder/controls/link
 import { LinkCommentsInput } from "@/ui/links/link-builder/controls/link-comments-input";
 import { ConversionTrackingToggle } from "@/ui/links/link-builder/conversion-tracking-toggle";
 import { DraftControls, DraftControlsHandle } from "@/ui/links/link-builder/draft-controls";
+import { LeadMagnetToggle } from "@/ui/links/link-builder/lead-magnet-toggle";
 import { LinkBuilderHeader } from "@/ui/links/link-builder/link-builder-header";
 import {
   LinkBuilderProps,
@@ -30,6 +31,7 @@ import { useLinkBuilderSubmit } from "@/ui/links/link-builder/use-link-builder-s
 import { bulkCreateLinks } from "@/ui/links/link-builder/use-bulk-create-links";
 import { useMetatags } from "@/ui/links/link-builder/use-metatags";
 import { useAvailableDomains } from "@/ui/links/use-available-domains";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import {
   ArrowTurnLeft,
   Modal,
@@ -192,7 +194,7 @@ function LinkBuilderInner({
         onClose={() => {
           if (searchParams.has("newLink"))
             queryParams({
-              del: ["newLink", "newLinkDomain"],
+              del: ["newLink", "newLinkDomain", "leadMagnet"],
             });
           draftControlsRef.current?.onClose();
         }}
@@ -203,7 +205,7 @@ function LinkBuilderInner({
               setShowLinkBuilder(false);
               if (searchParams.has("newLink")) {
                 queryParams({
-                  del: ["newLink"],
+                  del: ["newLink", "leadMagnet"],
                 });
               }
               draftControlsRef.current?.onClose();
@@ -242,6 +244,8 @@ function LinkBuilderInner({
                     <TagSelect />
 
                     <LinkCommentsInput />
+
+                    <LeadMagnetToggle />
 
                     <ConversionTrackingToggle />
 
@@ -370,11 +374,12 @@ export function CreateLinkButton({
   }, []);
 
   if (floating) {
+    const { openUpgradeModal } = useUpgradeModal();
     const disabledTooltip = exceededLinks ? (
       <TooltipContent
         title="Your workspace has exceeded its monthly links limit. We're still collecting data on your existing links, but you need to upgrade to add more links."
         cta={`Upgrade to ${nextPlan.name}`}
-        href={`/${slug}/upgrade`}
+        onClick={openUpgradeModal}
       />
     ) : undefined;
 
@@ -403,11 +408,12 @@ export function CreateLinkButton({
     );
   }
 
+  const { openUpgradeModal } = useUpgradeModal();
   const disabledTooltip = exceededLinks ? (
     <TooltipContent
       title="Your workspace has exceeded its monthly links limit. We're still collecting data on your existing links, but you need to upgrade to add more links."
       cta={nextPlan ? `Upgrade to ${nextPlan.name}` : "Contact support"}
-      href={`/${slug}/upgrade`}
+      onClick={openUpgradeModal}
     />
   ) : undefined;
 

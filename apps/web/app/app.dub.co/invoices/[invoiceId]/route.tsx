@@ -128,10 +128,13 @@ export const GET = withSession(async ({ session, params }) => {
     },
   ];
 
+  const workspaceCurrency = ("EUR" as "EUR" | "USD");
+
   const invoiceSummaryDetails = [
     {
       label: "Invoice amount",
       value: currencyFormatter(invoice.amount / 100, {
+        currency: workspaceCurrency,
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }),
@@ -139,6 +142,7 @@ export const GET = withSession(async ({ session, params }) => {
     {
       label: `Platform fees (${Math.round((invoice.fee / invoice.amount) * 100)}%)`,
       value: `${currencyFormatter(invoice.fee / 100, {
+        currency: workspaceCurrency,
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })}`,
@@ -146,6 +150,7 @@ export const GET = withSession(async ({ session, params }) => {
     {
       label: "Invoice total",
       value: currencyFormatter(invoice.total / 100, {
+        currency: workspaceCurrency,
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }),

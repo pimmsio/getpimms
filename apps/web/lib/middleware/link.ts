@@ -120,6 +120,7 @@ export default async function LinkMiddleware(
     id: linkId,
     password,
     trackConversion,
+    leadMagnetEnabled,
     proxy,
     rewrite,
     expiresAt,
@@ -284,6 +285,37 @@ export default async function LinkMiddleware(
   url = normalizeSubstack(url);
 
   const isBot = detectBot(req);
+
+  // Lead magnet gate: show email capture page (humans only), then redirect to destination.
+  if (!isBot && leadMagnetEnabled) {
+    waitUntil(
+      recordClick({
+        req,
+        clickId,
+        linkId,
+        domain,
+        key,
+        url,
+        webhookIds,
+        workspaceId,
+        trackConversion,
+        anonymousId,
+      }),
+    );
+
+    const leadUrl = new URL(`/lead/${linkId}`, req.url);
+    leadUrl.searchParams.set("cid", clickId);
+
+    return createResponseWithCookies(
+      NextResponse.rewrite(leadUrl, {
+        headers: {
+          ...DUB_HEADERS,
+          "X-Robots-Tag": "googlebot: noindex",
+        },
+      }),
+      cookieData,
+    );
+  }
 
   const { country } =
     process.env.VERCEL === "1" && (req as any).geo

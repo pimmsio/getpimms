@@ -7,6 +7,7 @@ import useWorkspace from "@/lib/swr/use-workspace";
 import { UtmTemplateWithUserProps } from "@/lib/types";
 import { CheckCircleFill, ThreeDots } from "@/ui/shared/icons";
 import { AppButton } from "@/ui/components/controls/app-button";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import {
   Popover,
   Tooltip,
@@ -38,6 +39,7 @@ function OnboardingButtonInner({
   onHideForever: () => void;
 }) {
   const { slug } = useParams() as { slug: string };
+  const { openUpgradeModal } = useUpgradeModal();
 
   if (!slug) {
     return null;
@@ -97,8 +99,7 @@ function OnboardingButtonInner({
         display: "Collect a first Lead",
         cta: `/${slug}/conversions`,
         checked: customersCount && customersCount > 0,
-        premium: "starter",
-        feature: "Lead tracking",
+        // Tracking is available on all plans; keep as a normal onboarding task.
       },
       // {
       //   display: "Collect a first Sale",
@@ -160,7 +161,7 @@ function OnboardingButtonInner({
           </div>
           <div className="p-3">
             <div className="grid divide-y divide-neutral-100 rounded border border-neutral-100 bg-white">
-              {tasks.map(({ display, cta, checked, premium, feature }) => {
+              {tasks.map(({ display, cta, checked, premium, feature }: any) => {
                 return (
                   <Link
                     key={display}
@@ -182,7 +183,7 @@ function OnboardingButtonInner({
                                 <TooltipContent
                                   title={`${feature} is only available on ${premium} plans and above.`}
                                   cta={`Upgrade to ${premium}`}
-                                  href={`/${slug}/upgrade`}
+                                  onClick={openUpgradeModal}
                                 />
                               }
                             >

@@ -20,7 +20,7 @@ export function PlanFeatures({
 }) {
   const selectedPlan =
     SELF_SERVE_PAID_PLANS.find(
-      (p) => p.name.toLowerCase() === plan.toLowerCase(),
+      (p) => p.name.toLowerCase() === plan,
     ) ?? SELF_SERVE_PAID_PLANS[0];
 
   return (

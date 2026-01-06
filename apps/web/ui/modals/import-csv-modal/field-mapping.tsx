@@ -1,7 +1,7 @@
 "use client";
 
 import { generateCsvMapping } from "@/lib/ai/generate-csv-mapping";
-import { Button, IconMenu, InfoTooltip, Popover, Tooltip } from "@dub/ui";
+import { Button, IconMenu, HelpTooltip, Popover, Tooltip } from "@dub/ui";
 import {
   ArrowRight,
   Check,
@@ -223,7 +223,7 @@ function FieldRow({
           {label} {required && <span className="text-red-700">*</span>}
         </span>
         {field === "tags" && (
-          <InfoTooltip content="Tags may be comma-separated as long as they're escaped properly in the CSV file." />
+          <HelpTooltip content="Tags may be comma-separated as long as they're escaped properly in the CSV file." />
         )}
       </span>
     </>

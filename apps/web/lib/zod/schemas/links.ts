@@ -284,6 +284,12 @@ export const createLinkBodySchema = z.object({
     .describe(
       "Whether to track conversions for the short link. Defaults to `false` if not provided.",
     ),
+  leadMagnetEnabled: z
+    .boolean()
+    .optional()
+    .describe(
+      "Whether to show an email capture page before redirecting. Defaults to `false` if not provided.",
+    ),
   archived: z
     .boolean()
     .optional()

@@ -1,4 +1,5 @@
 import { CustomerActivityResponse, CustomerProps } from "@/lib/types";
+import useWorkspace from "@/lib/swr/use-workspace";
 import { ArrowUpRight, CopyButton, UTM_PARAMETERS } from "@dub/ui";
 import {
   capitalize,
@@ -22,6 +23,7 @@ export function CustomerDetailsColumn({
   customerActivity?: CustomerActivityResponse;
   isCustomerActivityLoading: boolean;
 }) {
+  const { currency } = useWorkspace();
   const { slug, programSlug } = useParams();
 
   const link = customerActivity?.link;
@@ -156,6 +158,7 @@ export function CustomerDetailsColumn({
           <span>
             {customerActivity?.ltv !== undefined
               ? currencyFormatter(customerActivity.ltv / 100, {
+                  currency: currency ?? "EUR",
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })

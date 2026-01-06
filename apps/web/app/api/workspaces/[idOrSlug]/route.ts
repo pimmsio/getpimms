@@ -58,7 +58,7 @@ export const GET = withWorkspace(
 // PATCH /api/workspaces/[idOrSlug] – update a specific workspace by id or slug
 export const PATCH = withWorkspace(
   async ({ req, workspace }) => {
-    const { name, slug, logo, conversionEnabled, allowedHostnames } =
+    const { name, slug, logo, conversionEnabled, allowedHostnames, currency } =
       await updateWorkspaceSchema.parseAsync(await parseRequestBody(req));
 
     // if (["free"].includes(workspace.plan) && conversionEnabled) {
@@ -89,6 +89,7 @@ export const PATCH = withWorkspace(
           ...(slug && { slug }),
           ...(logoUploaded && { logo: logoUploaded.url }),
           ...(conversionEnabled !== undefined && { conversionEnabled }),
+          ...(currency && { currency }),
           ...(validHostnames !== undefined && {
             allowedHostnames: validHostnames,
           }),

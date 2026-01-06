@@ -14,16 +14,18 @@ import {
 
 export function FreePlanRedirectAttemptEmail({
   url,
-  redirectCount,
+  hopsFollowed,
   redirectChain,
+  apexDomains,
   userEmail,
   userName,
   workspaceName,
   workspaceSlug,
 }: {
   url: string;
-  redirectCount: number;
+  hopsFollowed: number;
   redirectChain: string[];
+  apexDomains: string[];
   userEmail?: string;
   userName?: string;
   workspaceName?: string;
@@ -52,10 +54,16 @@ export function FreePlanRedirectAttemptEmail({
               </Text>
               <Text className="my-2 text-sm text-black">{url}</Text>
               <Text className="my-2 text-sm font-semibold text-black">
-                Redirect Count:
+                Redirect hops checked:
               </Text>
               <Text className="my-2 text-sm text-black">
-                {redirectCount} redirect{redirectCount !== 1 ? 's' : ''} detected
+                {hopsFollowed} hop{hopsFollowed !== 1 ? "s" : ""}
+              </Text>
+              <Text className="my-2 text-sm font-semibold text-black">
+                Apex domains detected:
+              </Text>
+              <Text className="my-2 text-sm text-black">
+                {apexDomains.length ? apexDomains.join(", ") : "(unknown)"}
               </Text>
               <Text className="my-2 text-sm font-semibold text-black">
                 Redirect Chain:

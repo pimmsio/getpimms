@@ -5,7 +5,12 @@ import { cn } from "@dub/utils";
 import Link from "next/link";
 import { ComponentProps, forwardRef, ReactNode } from "react";
 
-export type AppButtonVariant = "primary" | "secondary" | "muted" | "ghost";
+export type AppButtonVariant =
+  | "primary"
+  | "secondary"
+  | "outline"
+  | "muted"
+  | "ghost";
 export type AppButtonSize = "sm" | "md";
 
 const base =
@@ -20,6 +25,8 @@ const variants: Record<AppButtonVariant, string> = {
   // Strong primary = brand blue (use for main CTAs like “Create link”).
   primary: "bg-brand-primary text-white hover:bg-brand-primary-hover",
   secondary: "bg-white text-neutral-900 hover:bg-neutral-50",
+  outline:
+    "border border-neutral-200 bg-white text-neutral-900 hover:bg-neutral-50",
   muted: "bg-neutral-100/60 text-neutral-900 hover:bg-neutral-100",
   ghost: "bg-transparent text-neutral-900 hover:bg-neutral-100/60",
 };

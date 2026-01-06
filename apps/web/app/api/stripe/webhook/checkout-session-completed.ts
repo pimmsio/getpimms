@@ -30,10 +30,33 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
     return;
   }
 
-  const subscription = await stripe.subscriptions.retrieve(
-    checkoutSession.subscription as string,
-  );
-  const priceId = subscription.items.data[0].price.id;
+  // For one-time payments (lifetime), get price ID from line items
+  // For subscriptions, get price ID from subscription
+  let priceId: string;
+  if (checkoutSession.mode === "payment") {
+    // One-time payment - retrieve the checkout session with line items
+    const sessionWithLineItems = await stripe.checkout.sessions.retrieve(
+      checkoutSession.id,
+      {
+        expand: ["line_items"],
+      },
+    );
+    const lineItem = sessionWithLineItems.line_items?.data[0];
+    if (!lineItem?.price?.id) {
+      await log({
+        message: `Missing price ID in checkout.session.completed event for one-time payment: ${checkoutSession.id}`,
+        type: "errors",
+      });
+      return;
+    }
+    priceId = lineItem.price.id;
+  } else {
+    // Subscription payment
+    const subscription = await stripe.subscriptions.retrieve(
+      checkoutSession.subscription as string,
+    );
+    priceId = subscription.items.data[0].price.id;
+  }
 
   const plan = getPlanFromPriceId(priceId);
 

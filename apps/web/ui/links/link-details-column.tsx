@@ -93,7 +93,7 @@ export function LinkDetailsColumn({
 }
 
 function LinkMetricsStrip({ link }: { link: ResponseLink }) {
-  const { slug } = useWorkspace();
+  const { slug, currency } = useWorkspace();
   const canManageLink = useCheckFolderPermission(
     link.folderId,
     "folders.links.write",
@@ -180,7 +180,11 @@ function LinkMetricsStrip({ link }: { link: ResponseLink }) {
       <div className="h-6 w-px bg-neutral-200/70" />
       <Metric
         label="REV"
-        value={trackConversion ? currencyFormatter(saleAmount / 100) : "—"}
+        value={
+          trackConversion
+            ? currencyFormatter(saleAmount / 100, { currency: currency ?? "EUR" })
+            : "—"
+        }
         muted={!revenueActive}
         tone="revenue"
         active={revenueActive}
@@ -200,7 +204,7 @@ function LinkMetricsStrip({ link }: { link: ResponseLink }) {
 }
 
 function LinkMobileMetricsBadges({ link }: { link: ResponseLink }) {
-  const { slug } = useWorkspace();
+  const { slug, currency } = useWorkspace();
   const {
     clicks,
     leads,
@@ -213,7 +217,9 @@ function LinkMobileMetricsBadges({ link }: { link: ResponseLink }) {
 
   const clicksValue = nFormatter(clicks, { full: clicks < INFINITY_NUMBER });
   const leadsValue = trackConversion ? nFormatter(leads, { full: leads < INFINITY_NUMBER }) : "—";
-  const revenueValue = trackConversion ? currencyFormatter(saleAmount / 100) : "—";
+  const revenueValue = trackConversion
+    ? currencyFormatter(saleAmount / 100, { currency: currency ?? "EUR" })
+    : "—";
 
   return (
     <a

@@ -32,17 +32,7 @@ export const GET = withWorkspace(
     );
   },
   {
-    requiredPlan: [
-      "free",
-      "starter",
-      "pro",
-      "business",
-      "business plus",
-      "business extra",
-      "business max",
-      "advanced",
-      "enterprise",
-    ],
+    requiredPlan: ["free", "pro", "business"],
   },
 );
 
@@ -96,17 +86,7 @@ export const PATCH = withWorkspace(
     }
   },
   {
-    requiredPlan: [
-      "free",
-      "starter",
-      "pro",
-      "business",
-      "business plus",
-      "business extra",
-      "business max",
-      "advanced",
-      "enterprise",
-    ],
+    requiredPlan: ["free", "pro", "business"],
   },
 );
 
@@ -131,16 +111,6 @@ export const DELETE = withWorkspace(
     });
   },
   {
-    requiredPlan: [
-      "free",
-      "starter",
-      "pro",
-      "business",
-      "business plus",
-      "business extra",
-      "business max",
-      "advanced",
-      "enterprise",
-    ],
+    requiredPlan: ["free", "pro", "business"],
   },
 );

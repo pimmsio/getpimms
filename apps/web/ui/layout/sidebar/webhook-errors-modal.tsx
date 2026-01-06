@@ -4,7 +4,7 @@ import { useWebhookErrors } from "@/lib/swr/use-webhook-errors";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { OnboardingSupportSection } from "@/ui/onboarding";
 import { UrlDecompositionTooltip } from "@/ui/shared/url-decomposition-tooltip";
-import { Button, CrownSmall, Tooltip } from "@dub/ui";
+import { Button, Tooltip } from "@dub/ui";
 import { timeAgo } from "@dub/utils";
 import { Info, Settings, X } from "lucide-react";
 import Link from "next/link";
@@ -15,7 +15,7 @@ interface WebhookErrorsModalProps {
 
 export function WebhookErrorsModal({ onClose }: WebhookErrorsModalProps) {
   const { errors, loading } = useWebhookErrors();
-  const { slug, plan, conversionEnabled } = useWorkspace();
+  const { slug, conversionEnabled } = useWorkspace();
 
   const parseFailedReason = (failedReason: string | null) => {
     if (!failedReason) {
@@ -108,35 +108,6 @@ export function WebhookErrorsModal({ onClose }: WebhookErrorsModalProps) {
           </div>
         </div>
 
-        {plan === "free" && (
-          <div className="rounded-lg border p-4">
-            <div className="flex items-start gap-3">
-              <CrownSmall className="mt-0.5 h-5 w-5 rounded-full border border-neutral-600" />
-              <div className="flex flex-col space-y-3">
-                <p className="text-sm font-medium">
-                  Upgrade to Starter plan required
-                </p>
-                <p className="text-sm">
-                  We noticed you have setup your webhook, but you are on a Free
-                  plan.
-                </p>
-                <p className="text-sm">
-                  Lead tracking is only available on Starter plans and
-                  above.
-                </p>
-                <Link href={`/${slug}/settings/billing`} className="w-fit">
-                  <Button
-                    size="sm"
-                    className="w-fit bg-blue-600 px-4 text-white hover:bg-blue-700"
-                    onClick={onClose}
-                    text="Upgrade Now"
-                  />
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
-
         <div className="rounded-lg border border-green-200 bg-green-50 p-4">
           <div className="flex items-start gap-3">
             <img
@@ -151,7 +122,7 @@ export function WebhookErrorsModal({ onClose }: WebhookErrorsModalProps) {
         <h2 className="text-md mt-2 font-medium">Recent missed leads</h2>
         <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
           <div className="border-b border-gray-200 bg-gray-50 px-4 py-3">
-            <div className="grid grid-cols-3 gap-4 text-xs font-medium uppercase tracking-wide text-gray-600">
+            <div className="grid grid-cols-3 gap-4 text-xs font-medium tracking-wide text-gray-600 uppercase">
               <div>Lead details</div>
               <div>Destination URL</div>
               <div>Date</div>

@@ -7,7 +7,7 @@ import { COLORS_LIST } from "@/ui/links/tag-badge";
 import { UtmTemplateWithUserProps } from "@/lib/types";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { cn, fetcher, normalizeUtmValue } from "@dub/utils";
-import { InfoTooltip } from "@dub/ui";
+import { HelpTooltip } from "@dub/ui";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
@@ -79,7 +79,7 @@ export function BulkUTMParametersSection({
           <div className="text-sm font-medium text-neutral-900">
             UTM Parameters
           </div>
-          <InfoTooltip
+          <HelpTooltip
             content={
               <div className="max-w-xs px-4 py-2 text-center text-sm text-neutral-700">
                 Select multiple UTM templates (each shown in a different color). Each template will be applied to all destination URLs, creating multiple link variations.

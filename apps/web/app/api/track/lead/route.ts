@@ -1,5 +1,8 @@
 import { computeCustomerHotScore } from "@/lib/analytics/compute-customer-hot-score";
-import { createId } from "@/lib/api/create-id";
+import {
+  createLeadEventPayload,
+  upsertCustomerForLead,
+} from "@/lib/api/customers/lead-utils";
 import { DubApiError } from "@/lib/api/errors";
 import { includeTags } from "@/lib/api/links/include-tags";
 import { parseRequestBody } from "@/lib/api/utils";
@@ -142,83 +145,34 @@ export const POST = withWorkspace(
       console.log("anonymousId", anonymousId);
       console.log("totalClicks", totalClicks);
 
-      // Create a function to handle customer upsert to avoid duplication
-      const upsertCustomer = async () => {
-        return prisma.customer.upsert({
-          where: {
-            projectId_externalId: {
-              projectId: workspaceId,
-              externalId: customerExternalId,
-            },
-          },
-          create: {
-            id: createId({ prefix: "cus_" }),
-            name: finalCustomerName,
-            email: customerEmail,
-            avatar: customerAvatar,
-            externalId: customerExternalId,
-            projectId: workspaceId,
-            projectConnectId: workspace.stripeConnectId,
-            clickId: clickData.click_id,
-            linkId: clickData.link_id,
-            country: clickData.country,
-            clickedAt: new Date(clickData.timestamp + "Z"),
-            anonymousId,
-            totalClicks,
-            lastEventAt: new Date(),
-            lastActivityLinkId: clickData.link_id,
-            lastActivityType: "lead",
-          },
-          update: {
-            // keep activity fresh for "latest activity" sorting
-            lastEventAt: new Date(),
-            // keep latest known attribution
-            clickId: clickData.click_id,
-            linkId: clickData.link_id,
-            lastActivityLinkId: clickData.link_id,
-            lastActivityType: "lead",
-            country: clickData.country,
-            // keep identity/click stats aligned
-            anonymousId,
-            totalClicks,
-            // fill missing profile data without overwriting existing
-            ...(customerEmail ? { email: customerEmail } : {}),
-            ...(customerAvatar ? { avatar: customerAvatar } : {}),
-            ...(customerName ? { name: customerName } : {}),
-          },
-        });
-      };
-
-      // Create a function to prepare the lead event payload
-      const createLeadEventPayload = (customerId: string) => {
-        const basePayload = {
-          ...clickData,
-          event_id: leadEventId,
-          event_name: eventName,
-          customer_id: customerId,
-          metadata: metadata ? JSON.stringify(metadata) : "",
-        };
-
-        return eventQuantity
-          ? Array(eventQuantity)
-              .fill(null)
-              .map(() => ({
-                ...basePayload,
-                event_id: nanoid(16),
-              }))
-          : basePayload;
-      };
-
       let customer: Customer | undefined;
 
       // Handle customer creation and lead recording based on mode
       if (mode === "wait") {
         // Execute customer creation synchronously
-        customer = await upsertCustomer();
+        customer = await upsertCustomerForLead({
+          workspaceId,
+          customerExternalId,
+          finalCustomerName,
+          customerEmail,
+          customerAvatar,
+          customerName,
+          workspaceStripeConnectId: workspace.stripeConnectId,
+          clickData,
+          anonymousId,
+          totalClicks,
+        });
 
         console.log("customer upserted", customer);
 
-        const leadEventPayload = createLeadEventPayload(customer.id);
+        const leadEventPayload = createLeadEventPayload({
+          clickData,
+          leadEventId,
+          eventName,
+          customerId: customer.id,
+          metadata,
+          eventQuantity,
+        });
         const cacheLeadEventPayload = Array.isArray(leadEventPayload)
           ? leadEventPayload[0]
           : leadEventPayload;
@@ -248,11 +202,29 @@ export const POST = withWorkspace(
         (async () => {
           // For async mode, create customer in the background
           if (mode === "async") {
-            customer = await upsertCustomer();
+            customer = await upsertCustomerForLead({
+              workspaceId,
+              customerExternalId,
+              finalCustomerName,
+              customerEmail,
+              customerAvatar,
+              customerName,
+              workspaceStripeConnectId: workspace.stripeConnectId,
+              clickData,
+              anonymousId,
+              totalClicks,
+            });
 
             console.log("customer upserted", customer);
 
-            const leadEventPayload = createLeadEventPayload(customer.id);
+            const leadEventPayload = createLeadEventPayload({
+              clickData,
+              leadEventId,
+              eventName,
+              customerId: customer.id,
+              metadata,
+              eventQuantity,
+            });
             console.log("leadEventPayload", leadEventPayload);
 
             // Use recordLead which doesn't wait
@@ -346,17 +318,7 @@ export const POST = withWorkspace(
     });
   },
   {
-    requiredPlan: [
-      "free",
-      "starter",
-      "pro",
-      "business",
-      "business plus",
-      "business extra",
-      "business max",
-      "advanced",
-      "enterprise",
-    ],
+    requiredPlan: ["free", "pro", "business"],
     requiredPermissions: ["lead.write"],
   },
 );

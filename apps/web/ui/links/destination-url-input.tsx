@@ -2,7 +2,7 @@
 
 import { DomainProps } from "@/lib/types";
 import {
-  InfoTooltip,
+  HelpTooltip,
   SimpleTooltipContent,
   useMediaQuery,
   UTM_PARAMETERS,

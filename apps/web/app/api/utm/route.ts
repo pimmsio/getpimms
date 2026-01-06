@@ -1,6 +1,7 @@
 import { createId } from "@/lib/api/create-id";
 import { DubApiError } from "@/lib/api/errors";
 import { withWorkspace } from "@/lib/auth";
+import { throwIfUtmTemplatesLimitExceeded } from "@/lib/utm/limits";
 import { createUTMTemplateBodySchema } from "@/lib/zod/schemas/utm";
 import { randomBadgeColor } from "@/ui/links/tag-badge";
 import { prisma } from "@dub/prisma";
@@ -47,6 +48,15 @@ export const POST = withWorkspace(
         message: "A template with that name already exists.",
       });
     }
+
+    // Enforce plan limit (only when creating a new template)
+    const templatesCount = await prisma.utmTemplate.count({
+      where: { projectId: workspace.id },
+    });
+    throwIfUtmTemplatesLimitExceeded({
+      plan: workspace.plan,
+      currentCount: templatesCount,
+    });
 
     const response = await prisma.utmTemplate.create({
       data: {

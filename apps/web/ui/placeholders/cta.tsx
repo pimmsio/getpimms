@@ -105,12 +105,7 @@ export function CTA({
         </ButtonLink>
         <ButtonLink
           variant="secondary"
-          href={createHref("/enterprise", domain, {
-            utm_source: "Custom Domain",
-            utm_medium: "Welcome Page",
-            utm_campaign: domain,
-            utm_content: "Get a demo",
-          })}
+          href="https://pim.ms/dAXN6jl"
         >
           Get a demo
         </ButtonLink>

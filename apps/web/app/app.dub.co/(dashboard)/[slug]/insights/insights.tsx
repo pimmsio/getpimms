@@ -4,10 +4,7 @@ import { useContext } from "react";
 import AnalyticsProvider, { AnalyticsContext } from "@/ui/analytics/analytics-provider";
 import { LinksDisplayProvider } from "@/ui/links/links-display-provider";
 import Toggle from "@/ui/analytics/toggle";
-import useWorkspace from "@/lib/swr/use-workspace";
-import EmptyState from "@/ui/shared/empty-state";
 import { cn } from "@dub/utils";
-import { CoinsIcon, TargetIcon } from "lucide-react";
 import InsightsTable from "./insights-table";
 
 export default function Insights({
@@ -38,30 +35,10 @@ export default function Insights({
 
 function InsightsTableContainer() {
   const { selectedTab } = useContext(AnalyticsContext);
-  const { plan, slug } = useWorkspace();
-
-  const requiresUpgrade = (plan === "free" || plan === "starter") && selectedTab === "sales";
 
   return (
     <InsightsTable
       key={selectedTab}
-      requiresUpgrade={requiresUpgrade}
-      upgradeOverlay={
-        <div className="rounded-lg bg-neutral-50/60 p-4">
-          <EmptyState
-            icon={selectedTab === "sales" ? CoinsIcon : TargetIcon}
-            title={
-              selectedTab === "sales"
-                ? "Real-time Sales tracking"
-                : "Real-time Leads tracking"
-            }
-            description={`Want to see your ${selectedTab === "sales" ? "sales" : "leads"} in realtime ?`}
-            learnMore="https://pimms.io/guides/how-to-track-conversions-on-vibe-coding-ai-no-code-sites"
-            buttonText="Upgrade to Pro"
-            buttonLink={`/${slug}/upgrade`}
-          />
-        </div>
-      }
     />
   );
 }

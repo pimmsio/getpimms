@@ -28,9 +28,9 @@ export function InvalidDomain({
 }): ReactElement {
   return (
     <Html>
-      <Head />
-      <Preview>Invalid Domain Configuration</Preview>
       <Tailwind>
+        <Head />
+        <Preview>Invalid Domain Configuration</Preview>
         <Body className="mx-auto my-auto bg-white font-sans">
           <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border border-solid border-neutral-100 px-10 py-5">
             <Section className="my-8">

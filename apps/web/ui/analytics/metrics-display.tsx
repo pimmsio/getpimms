@@ -1,5 +1,5 @@
-import { nFormatter } from "@dub/utils";
-import { cn } from "@dub/utils";
+import useWorkspace from "@/lib/swr/use-workspace";
+import { cn, currencyFormatter, nFormatter } from "@dub/utils";
 
 export function MetricsDisplay({
   clicks,
@@ -20,6 +20,7 @@ export function MetricsDisplay({
   primaryMetric: "clicks" | "leads" | "sales";
   className?: string;
 }) {
+  const { currency } = useWorkspace();
   const canShowClicksPct = typeof totalClicks === "number" && totalClicks > 0;
   const canShowLeadsPct = typeof totalLeads === "number" && totalLeads > 0;
 
@@ -71,7 +72,10 @@ export function MetricsDisplay({
             : "text-neutral-500",
         )}
       >
-        ${nFormatter((saleAmount ?? 0) / 100, { full: true })}
+        {currencyFormatter((saleAmount ?? 0) / 100, {
+          currency: currency ?? "EUR",
+          maximumFractionDigits: 0,
+        })}
       </span>
     </div>
   );

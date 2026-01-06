@@ -11,6 +11,7 @@ import {
 import useWorkspace from "@/lib/swr/use-workspace";
 import { Folder, FolderUser } from "@/lib/types";
 import { FolderUserRole } from "@dub/prisma/client";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import { Avatar, BlurImage, Button, Tooltip, TooltipContent } from "@dub/ui";
 import { Globe, UserCheck } from "@dub/ui/icons";
 import { cn, fetcher, nFormatter, OG_AVATAR_URL } from "@dub/utils";
@@ -40,7 +41,8 @@ const FolderPermissionsPanel = ({
   setShowPanel,
   folder,
 }: FolderPermissionsPanelProps) => {
-  const { id: workspaceId, slug, logo, name, plan } = useWorkspace();
+  const { id: workspaceId, logo, name, plan } = useWorkspace();
+  const { openUpgradeModal } = useUpgradeModal();
 
   const [isUpdating, setIsUpdating] = useState(false);
   const [workspaceAccessLevel, setWorkspaceAccessLevel] = useState<string>();
@@ -209,10 +211,9 @@ const FolderPermissionsPanel = ({
                     <Tooltip
                       content={
                         <TooltipContent
-                          title="You can only set custom folder permissions on a Business plan and above."
+                          title="You can only set custom folder permissions on a Business plan."
                           cta="Upgrade to Business"
-                          href={`/${slug}/upgrade`}
-                          target="_blank"
+                          onClick={openUpgradeModal}
                         />
                       }
                       align="end"
@@ -239,7 +240,7 @@ const FolderPermissionsPanel = ({
                       </>
                     }
                     className="border-none"
-                    learnMoreHref={`/${slug}/upgrade`}
+                    onLearnMoreClick={openUpgradeModal}
                     learnMoreText="Upgrade to Business"
                   />
                 ) : (

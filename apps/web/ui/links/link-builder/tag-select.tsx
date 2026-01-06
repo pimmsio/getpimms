@@ -21,7 +21,7 @@ import { toast } from "sonner";
 import { mutate } from "swr";
 import { useDebounce } from "use-debounce";
 import { MultiTagsIcon } from "./multi-tags-icon";
-import { HelpTooltip } from "./help-tooltip";
+import { HelpTooltip } from "@dub/ui";
 import { useLinkBuilderKeyboardShortcut } from "./use-link-builder-keyboard-shortcut";
 
 function getTagOption(tag: TagProps) {

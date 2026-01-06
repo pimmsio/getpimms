@@ -2,7 +2,7 @@ import useWorkspace from "@/lib/swr/use-workspace";
 import { ImportedDomainCountProps } from "@/lib/types";
 import {
   Button,
-  InfoTooltip,
+  HelpTooltip,
   LoadingSpinner,
   Logo,
   Modal,
@@ -241,7 +241,7 @@ function ImportRebrandlyModal({
                 <h2 className="text-sm font-medium text-neutral-900">
                   Rebrandly API Key
                 </h2>
-                <InfoTooltip
+                <HelpTooltip
                   content={
                     <SimpleTooltipContent
                       title={`Your Rebrandly API Key can be found in your Rebrandly account under`}

@@ -40,17 +40,7 @@ interface WithWorkspaceHandler {
 export const withWorkspace = (
   handler: WithWorkspaceHandler,
   {
-    requiredPlan = [
-      "free",
-      "starter",
-      "pro",
-      "business",
-      "business plus",
-      "business max",
-      "business extra",
-      "advanced",
-      "enterprise",
-    ], // if the action needs a specific plan
+    requiredPlan = ["free", "pro", "business"], // if the action needs a specific plan
     featureFlag, // if the action needs a specific feature flag
     requiredPermissions = [],
     skipPermissionChecks, // if the action doesn't need to check for required permission(s)

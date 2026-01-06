@@ -233,11 +233,19 @@ export const exceededLimitError = ({
 }: {
   plan: PlanProps;
   limit: number;
-  type: "clicks" | "links" | "AI" | "domains" | "tags" | "users" | "folders";
+  type: "events" | "clicks" | "links" | "AI" | "domains" | "tags" | "users" | "folders";
 }) => {
+  const isMonthly = type === "links" || type === "AI" || type === "events";
+  const action =
+    type === "events" || type === "clicks"
+      ? "track"
+      : type === "links"
+        ? "create"
+        : "add";
+
   return `You've reached your ${
-    type === "links" || type === "AI" ? "monthly" : ""
+    isMonthly ? "monthly" : ""
   } limit of ${limit} ${
     limit === 1 ? type.slice(0, -1) : type
-  } on the ${capitalize(plan)} plan. Please upgrade to add more ${type}.`;
+  } on the ${capitalize(plan)} plan. Please upgrade to ${action} more ${type}.`;
 };

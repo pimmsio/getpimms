@@ -60,7 +60,7 @@ export async function customerSubscriptionUpdated(event: Stripe.Event) {
   }
 
   const newPlan = plan.name.toLowerCase();
-  const shouldDisableWebhooks = newPlan === "free" || newPlan === "pro";
+  const shouldDisableWebhooks = newPlan === "free";
   const shouldDeleteFolders = newPlan === "free" && workspace.foldersUsage > 0;
 
   // If a workspace upgrades/downgrades their subscription, update their usage limit in the database.

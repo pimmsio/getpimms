@@ -1,5 +1,5 @@
 import useWorkspace from "@/lib/swr/use-workspace";
-import { BadgeTooltip, InfoTooltip, type TooltipProps } from "@dub/ui";
+import { BadgeTooltip, HelpTooltip, type TooltipProps } from "@dub/ui";
 import { Crown } from "lucide-react";
 
 /**
@@ -19,6 +19,6 @@ export function BusinessBadgeTooltip(props: Omit<TooltipProps, "children">) {
       </div>
     </BadgeTooltip>
   ) : (
-    <InfoTooltip {...props} />
+    <HelpTooltip {...props} />
   );
 }

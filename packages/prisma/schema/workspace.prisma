@@ -6,6 +6,7 @@ model Project {
   inviteCode String? @unique
 
   plan              String    @default("free")
+  currency          Currency  @default(EUR)
   stripeId          String?   @unique // Stripe subscription ID
   billingCycleStart Int // day of the month when the billing cycle starts
   paymentFailedAt   DateTime?
@@ -18,9 +19,9 @@ model Project {
   totalClicks Int @default(0) // Total number of clicks in the workspace
 
   usage        Int @default(0)
-  usageLimit   Int @default(600)
+  usageLimit   Int @default(200)
   linksUsage   Int @default(0)
-  linksLimit   Int @default(10)
+  linksLimit   Int @default(5)
   salesUsage   Int @default(0)
   salesLimit   Int @default(0)
   domainsLimit Int @default(1)
@@ -75,6 +76,11 @@ model Project {
   yearInReviews         YearInReview[]
 
   @@index(usageLastChecked(sort: Asc))
+}
+
+enum Currency {
+  EUR
+  USD
 }
 
 enum Role {

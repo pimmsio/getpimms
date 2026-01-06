@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertCircleFill } from "@/ui/shared/icons";
-import { Button, InfoTooltip, useMediaQuery } from "@dub/ui";
+import { Button, HelpTooltip, useMediaQuery } from "@dub/ui";
 import { cn } from "@dub/utils";
 import slugify from "@sindresorhus/slugify";
 import { useSession } from "next-auth/react";

@@ -19,6 +19,7 @@ import { useExportLinksModal } from "@/ui/modals/export-links-modal";
 import { useLinkBuilder } from "@/ui/modals/link-builder";
 import { ThreeDots } from "@/ui/shared/icons";
 import { SearchBoxPersisted } from "@/ui/shared/search-box";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import {
   Filter,
   IconMenu,
@@ -28,7 +29,6 @@ import {
   useRouterStuff,
 } from "@dub/ui";
 import { Download, Globe, TableIcon, Tag } from "@dub/ui/icons";
-import { cn } from "@dub/utils";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
@@ -388,7 +388,8 @@ function ImportOption({
   children: ReactNode;
   onClick: () => void;
 }) {
-  const { slug, exceededLinks, nextPlan } = useWorkspace();
+  const { exceededLinks, nextPlan } = useWorkspace();
+  const { openUpgradeModal } = useUpgradeModal();
 
   return exceededLinks ? (
     <Tooltip
@@ -396,7 +397,7 @@ function ImportOption({
         <TooltipContent
           title="Your workspace has exceeded its monthly links limit. We're still collecting data on your existing links, but you need to upgrade to add more links."
           cta={nextPlan ? `Upgrade to ${nextPlan.name}` : "Contact support"}
-          href={`/${slug}/upgrade`}
+          onClick={openUpgradeModal}
         />
       }
     >

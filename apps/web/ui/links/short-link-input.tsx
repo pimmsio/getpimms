@@ -4,6 +4,7 @@ import useWorkspace from "@/lib/swr/use-workspace";
 import { LinkProps } from "@/lib/types";
 import { DOMAINS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/domains";
 import { Lock, Random } from "@/ui/shared/icons";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import {
   ButtonTooltip,
   Combobox,
@@ -36,7 +37,7 @@ import {
 } from "react";
 import { useDebounce } from "use-debounce";
 import { AlertCircleFill } from "../shared/icons";
-import { HelpTooltip } from "./link-builder/help-tooltip";
+import { HelpTooltip } from "@dub/ui";
 import { useAvailableDomains } from "./use-available-domains";
 
 type ShortLinkInputProps = {
@@ -72,7 +73,8 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
     const inputId = useId();
     const randomLinkedInNonce = useMemo(() => nanoid(8), []);
 
-    const { id: workspaceId, slug, nextPlan } = useWorkspace();
+    const { id: workspaceId, nextPlan } = useWorkspace();
+    const { openUpgradeModal } = useUpgradeModal();
 
     const [lockKey, setLockKey] = useState(existingLink);
     const [generatingRandomKey, setGeneratingRandomKey] = useState(false);
@@ -346,13 +348,13 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
           error.includes("Upgrade to") ? (
             <p className="mt-2 text-sm text-red-600" id="key-error">
               {error.split(`Upgrade to ${nextPlan.name}`)[0]}
-              <a
+              <button
+                type="button"
                 className="cursor-pointer underline"
-                href={`/${slug}/upgrade`}
-                target="_blank"
+                onClick={openUpgradeModal}
               >
                 Upgrade to {nextPlan.name}
-              </a>
+              </button>
               {error.split(`Upgrade to ${nextPlan.name}`)[1]}
             </p>
           ) : (

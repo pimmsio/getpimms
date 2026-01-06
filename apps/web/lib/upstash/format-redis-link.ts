@@ -8,6 +8,7 @@ export function formatRedisLink(link: ExpandedLink): RedisLinkProps {
     id,
     url,
     trackConversion,
+    leadMagnetEnabled,
     password,
     proxy,
     rewrite,
@@ -29,6 +30,7 @@ export function formatRedisLink(link: ExpandedLink): RedisLinkProps {
     id,
     ...(url && { url }), // on free plans you cannot set a root domain redirect, hence URL is undefined
     ...(trackConversion && { trackConversion: true }),
+    ...(leadMagnetEnabled && { leadMagnetEnabled: true }),
     ...(password && password.length > 0 && { password: true }),
     ...(proxy && { proxy: true }),
     ...(url &&

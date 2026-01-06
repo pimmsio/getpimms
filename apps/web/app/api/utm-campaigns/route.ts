@@ -1,6 +1,7 @@
 import { createId } from "@/lib/api/create-id";
 import { DubApiError } from "@/lib/api/errors";
 import { withWorkspace } from "@/lib/auth";
+import { throwIfUtmParametersLimitExceeded } from "@/lib/utm/limits";
 import {
   UtmCampaignSchema,
   createUtmCampaignBodySchema,
@@ -67,6 +68,12 @@ export const POST = withWorkspace(
         message: "A UTM campaign with that name already exists.",
       });
     }
+
+    // Enforce plan limit (only when creating a new parameter)
+    await throwIfUtmParametersLimitExceeded({
+      plan: workspace.plan,
+      projectId: workspace.id,
+    });
 
     const response = await prisma.utmCampaign.create({
       data: {

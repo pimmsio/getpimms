@@ -170,15 +170,11 @@ export async function POST(req: NextRequest) {
                   componentBadge: {
                     badgeLabel: capitalize(plan),
                     badgeColor:
-                      plan === "enterprise"
-                        ? "RED"
-                        : plan === "advanced"
-                          ? "ORANGE"
-                          : plan.startsWith("business")
-                            ? "GREEN"
-                            : plan === "pro"
-                              ? "BLUE"
-                              : "GREY",
+                      plan === "business"
+                        ? "GREEN"
+                        : plan === "pro"
+                          ? "BLUE"
+                          : "GREY",
                   },
                 },
               ],

@@ -3,21 +3,23 @@
 import useWorkspace from "@/lib/swr/use-workspace";
 import { SingleFlameIcon } from "@/ui/analytics/events/hot-score-icons";
 import { AppButtonLink } from "@/ui/components/controls/app-button";
-import { AnonymousVisitorsTeaser } from "@/ui/conversions/anonymous-visitors-teaser";
 import { useLinkBuilder } from "@/ui/modals/link-builder";
-import { BlurImage, InfoTooltip, Table, useTable } from "@dub/ui";
+import { ModalContext } from "@/ui/modals/modal-provider";
+import { HelpTooltip, Table, useTable } from "@dub/ui";
 import { LoadingSpinner } from "@dub/ui/icons";
 import {
   COUNTRIES,
+  cn,
+  currencyFormatter,
   fetcher,
   formatDate,
   formatDateTimeSmart,
   timeAgo,
 } from "@dub/utils";
-import { BookOpen, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import useSWR from "swr";
 
 type AnalyticsCount = {
@@ -32,18 +34,40 @@ type DeviceBreakdownRow = {
   clicks?: number;
 };
 
+type ClickFeedResponse = {
+  hasRealData: boolean;
+  items: Array<{
+    timestamp: string;
+    clickId: string;
+    linkId: string;
+    domain: string;
+    key: string;
+    device?: string | null;
+    referer?: string | null;
+    identityHash?: string | null;
+    customer: { id: string; name: string | null; email: string | null } | null;
+  }>;
+};
 
-type GuidesApiResponse =
-  | {
-      ok: true;
-      guides: Array<{
-        title: string;
-        href: string;
-        date?: string | null;
-        thumbnail?: string | null;
-      }>;
-    }
-  | { ok: false; error: string; guides: [] };
+type ClickRow = ClickFeedResponse["items"][number];
+
+type LeadRow = {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  hotScore?: number | null;
+  lastEventAt?: string | null;
+  lastActivityType?: "click" | "lead" | "sale" | null;
+  totalClicks?: number | null;
+  createdAt?: string | null;
+  country?: string | null;
+  __masked?: boolean;
+};
+
+type LeadSignalRow = ClickRow | LeadRow;
+
+
+// Setup guides block moved to the Leads / Lead Signal pages.
 
 // TODO: re-enable video section once content is ready.
 const featuredVideo = {
@@ -177,14 +201,6 @@ export default function TodayClient() {
     revalidateOnFocus: false,
   });
 
-  const { data: guidesResponse, isLoading: guidesLoading } =
-    useSWR<GuidesApiResponse>("/api/pimms/guides", fetcher, {
-      revalidateOnFocus: false,
-      keepPreviousData: true,
-    });
-
-  const guides = guidesResponse?.ok ? guidesResponse.guides : [];
-
   const todaySaleAmount = todayAnalytics?.saleAmount ?? 0;
   const todayRevenue = todaySaleAmount / 100;
   const todayClicks = todayAnalytics?.clicks ?? 0;
@@ -304,7 +320,7 @@ export default function TodayClient() {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
                 Clicks saved
-                <InfoTooltip content="Mobile + tablet clicks (7d). Deeplinks help open the official app on mobile." />
+                <HelpTooltip content="Mobile + tablet clicks (7d). Deeplinks help open the official app on mobile." />
               </div>
               <div className="text-lg font-semibold text-neutral-900 tabular-nums">
                 {clicksSaved7d.toLocaleString()}
@@ -351,78 +367,6 @@ export default function TodayClient() {
         <div className="border-t border-neutral-100 pt-5">
           <LeadSignalActivitySection slug={slug} />
         </div>
-
-        {/* Latest guides */}
-        <div className="mt-6 border-t border-neutral-100 pt-5">
-          <div className="mb-3 flex items-center justify-between">
-            <div className="text-sm font-semibold text-neutral-900">
-              Latest guides
-            </div>
-            <AppButtonLink
-              href="https://pimms.io/guides"
-              target="_blank"
-              rel="noreferrer"
-              variant="secondary"
-              size="sm"
-            >
-              View all
-            </AppButtonLink>
-          </div>
-
-          {guidesLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <LoadingSpinner />
-            </div>
-          ) : guidesResponse && !guidesResponse.ok ? (
-            <div className="py-6 text-sm text-neutral-600">
-              Failed to load guides.
-            </div>
-          ) : guides.length === 0 ? (
-            <div className="py-6 text-sm text-neutral-600">
-              No guides found.
-            </div>
-          ) : (
-            <div className="divide-y divide-neutral-100 rounded-lg bg-neutral-50/50 p-1">
-              {guides.slice(0, 12).map((g) => (
-                <a
-                  key={g.href}
-                  href={g.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group flex items-center justify-between rounded-md px-2 py-2 transition-colors hover:bg-white"
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    {g.thumbnail ? (
-                      <div className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-neutral-100">
-                        <BlurImage
-                          src={g.thumbnail}
-                          alt=""
-                          className="size-full object-cover"
-                          width={240}
-                          height={126}
-                        />
-                      </div>
-                    ) : (
-                      <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-neutral-100">
-                        <BookOpen className="size-4 text-neutral-600" />
-                      </div>
-                    )}
-                    <div className="min-w-0">
-                      <div className="truncate text-sm font-semibold text-neutral-900">
-                        {g.title}
-                      </div>
-                      <div className="mt-0.5 truncate text-xs text-neutral-500">
-                        Guides
-                        {g.date ? ` · ${g.date}` : ""}
-                      </div>
-                    </div>
-                  </div>
-                  <ChevronRight className="size-4 text-neutral-300 group-hover:text-neutral-500" />
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
       </div>
     </>
   );
@@ -431,25 +375,27 @@ export default function TodayClient() {
 function Metric({
   label,
   value,
+  formattedValue,
   prefix,
   decimals,
 }: {
   label: string;
   value: number;
+  formattedValue?: string;
   prefix?: string;
   decimals?: number;
 }) {
   const formatted =
-    decimals !== undefined
+    formattedValue ??
+    (decimals !== undefined
       ? value.toFixed(decimals)
-      : Math.round(value).toString();
+      : Math.round(value).toString());
   return (
     <div className="rounded-lg bg-neutral-50 px-3 py-2">
       <div className="text-[11px] font-semibold tracking-wide text-neutral-500 uppercase">
         {label}
       </div>
       <div className="mt-0.5 text-lg font-semibold text-neutral-900 tabular-nums">
-        {prefix}
         {formatted}
       </div>
     </div>
@@ -458,6 +404,7 @@ function Metric({
 
 function LeadSignalActivitySection({ slug }: { slug?: string }) {
   const { id: workspaceId } = useWorkspace();
+  const { setShowConversionOnboardingModal } = useContext(ModalContext);
 
   const leadsFeedQuery = useMemo(() => {
     if (!workspaceId) return null;
@@ -475,20 +422,161 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
     revalidateOnFocus: false,
   });
 
-  const leads = (leadsData?.customers?.slice(0, 5) || []) as Array<{
-    id: string;
-    name?: string | null;
-    email?: string | null;
-    hotScore?: number | null;
-    lastEventAt?: string | null;
-    lastActivityType?: "click" | "lead" | "sale" | null;
-    totalClicks?: number | null;
-    createdAt?: string | null;
-    country?: string | null;
-  }>;
+  const leads = (leadsData?.customers?.slice(0, 5) || []) as LeadRow[];
 
-  const columns = useMemo(
-    () => [
+  const clickFeedQuery = useMemo(() => {
+    if (!workspaceId) return null;
+    const qs = new URLSearchParams({
+      workspaceId,
+      limit: "5",
+    });
+    return `/api/click-feed?${qs.toString()}`;
+  }, [workspaceId]);
+
+  const shouldFetchClicks = !isLoading && leads.length === 0;
+  const { data: clickFeedData, isLoading: clickFeedLoading } =
+    useSWR<ClickFeedResponse>(shouldFetchClicks ? clickFeedQuery : null, fetcher, {
+      keepPreviousData: true,
+      revalidateOnFocus: false,
+    });
+
+  const clicksLast7d = useMemo(() => {
+    const items = clickFeedData?.items ?? [];
+    const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    return items
+      .filter((it) => new Date(it.timestamp).getTime() >= sevenDaysAgo)
+      .slice(0, 5);
+  }, [clickFeedData?.items]);
+
+  const maskedLeads = useMemo(() => {
+    return Array.from({ length: 3 }).map((_, i) => ({
+      id: `masked_${i}`,
+      name: `Anonymous`,
+      email: `hidden${i}@example.com`,
+      hotScore: 0,
+      lastEventAt: new Date().toISOString(),
+      lastActivityType: "click" as const,
+      totalClicks: null,
+      createdAt: null,
+      country: null,
+      __masked: true as const,
+    }));
+  }, []);
+
+  const hasLeads = leads.length > 0;
+  const showClicksFallback =
+    !isLoading && !clickFeedLoading && !hasLeads && clicksLast7d.length > 0;
+  const showDemoFallback =
+    !isLoading && !hasLeads && (!clickFeedData || clicksLast7d.length === 0);
+
+  const displayLeads = showDemoFallback ? maskedLeads : leads;
+
+  const isPreview = showDemoFallback;
+
+  const columns = useMemo(() => {
+    if (showClicksFallback) {
+      return [
+        {
+          id: "activity",
+          header: "Recent clicks",
+          cell: ({ row }: { row: any }) => {
+            const it = row.original as ClickRow;
+            const who =
+              it.customer?.name || it.customer?.email || "Anonymous visitor";
+            const when = it.timestamp
+              ? timeAgo(new Date(it.timestamp), { withAgo: true })
+              : "-";
+            const referer = it.referer;
+            return (
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="inline-flex shrink-0 rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-xs font-medium text-neutral-700">
+                    Click
+                  </span>
+                  <div className="min-w-0 truncate text-sm font-medium text-neutral-900">
+                    {who}
+                  </div>
+                  <div className="shrink-0 text-xs text-neutral-500">{when}</div>
+                </div>
+                <div className="min-w-0 truncate text-xs text-neutral-500">
+                  <span className="font-medium text-neutral-700">
+                    {it.domain}/{it.key}
+                  </span>
+                  {referer ? (
+                    <>
+                      <span className="px-1 text-neutral-300">•</span>
+                      <span className="truncate">{referer}</span>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+            );
+          },
+        },
+      ];
+    }
+
+    if (isPreview) {
+      return [
+        {
+          id: "customer",
+          header: "Contact",
+          cell: ({ row }: { row: any }) => {
+            const lead = row.original as {
+              email?: string | null;
+            };
+            const email = (lead.email || "hidden@example.com").toLowerCase();
+            const [localPart, domainPart] = email.split("@");
+            const localMasked = (localPart || "hidden")
+              .slice(0, 1)
+              .padEnd(Math.min((localPart || "hidden").length, 6), "•");
+            const domainMasked = (domainPart || "example.com")
+              .split(".")
+              .map((p) => p.slice(0, 1).padEnd(Math.min(p.length, 6), "•"))
+              .join(".");
+
+            return (
+              <div className="group flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-medium text-neutral-900">
+                    Anonymous
+                  </div>
+                  <div className="mt-0.5 truncate text-xs text-neutral-500">
+                    <span className="blur-sm">{localMasked}</span>
+                    <span className="px-0.5">@</span>
+                    <span className="blur-sm">{domainMasked}</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowConversionOnboardingModal(true)}
+                  className="opacity-0 transition-opacity group-hover:opacity-100 rounded-md bg-neutral-900 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-neutral-800"
+                >
+                  Reveal
+                </button>
+              </div>
+            );
+          },
+        },
+        {
+          id: "lastActivityAt",
+          header: "Last activity",
+          size: 140,
+          cell: () => (
+            <div className="flex flex-col gap-0.5">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-xs font-medium text-neutral-700">
+                  Click
+                </span>
+              </div>
+              <div className="text-xs text-neutral-500">Just now</div>
+            </div>
+          ),
+        },
+      ];
+    }
+
+    return [
       {
         id: "customer",
         header: "Customer",
@@ -501,7 +589,6 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
             hotScore?: number | null;
             country?: string | null;
           };
-          const display = lead.name || lead.email || "Anonymous";
           const email = lead.email;
           const lastActivity = lead.lastEventAt
             ? timeAgo(new Date(lead.lastEventAt), { withAgo: true })
@@ -650,12 +737,11 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
           );
         },
       },
-    ],
-    [slug],
-  );
+    ];
+  }, [isPreview, showClicksFallback, slug, setShowConversionOnboardingModal]);
 
-  const { table, ...tableProps } = useTable({
-    data: leads,
+  const { table, ...tableProps } = useTable<LeadSignalRow>({
+    data: showClicksFallback ? clicksLast7d : displayLeads,
     columns,
   });
 
@@ -664,8 +750,9 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
   return (
     <div className="mt-6">
       <div className="mb-3 flex items-center justify-between">
-        <div className="text-sm font-semibold text-neutral-900">
-          Latest leads
+        <div className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
+          Lead Signal
+          <HelpTooltip content="Last 7 days (default)." />
         </div>
         <AppButtonLink
           href={`/${slug}/conversions?interval=7d`}
@@ -677,30 +764,58 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
         </AppButtonLink>
       </div>
 
-      {isLoading ? (
+      {showClicksFallback ? (
+        <div className="mb-3 flex items-start justify-between gap-3">
+          <div>
+            <div className="text-sm font-semibold text-neutral-900">
+              No leads yet — but you’re getting clicks
+            </div>
+            <div className="mt-1 text-sm text-neutral-600">
+              Showing your most recent clicks from the last 7 days (up to 5).
+            </div>
+          </div>
+          <button
+            type="button"
+            className="shrink-0 rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+            onClick={() => setShowConversionOnboardingModal(true)}
+          >
+            Reveal leads
+          </button>
+        </div>
+      ) : showDemoFallback ? (
+        <div className="mb-3 flex items-start justify-between gap-3">
+          <div>
+            <div className="text-sm font-semibold text-neutral-900">
+              No leads yet
+            </div>
+            <div className="mt-1 text-sm text-neutral-600">
+              Demo data below. Complete setup to see real activity and identities.
+            </div>
+          </div>
+          <button
+            type="button"
+            className="shrink-0 rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+            onClick={() => setShowConversionOnboardingModal(true)}
+          >
+            Reveal leads
+          </button>
+        </div>
+      ) : null}
+
+      {isLoading && leads.length === 0 ? (
         <div className="flex items-center justify-center rounded-lg bg-neutral-50 py-6">
           <LoadingSpinner />
         </div>
-      ) : leads.length === 0 ? (
-        <div className="rounded-lg bg-neutral-50/50 p-4">
-          <p className="text-sm font-semibold text-neutral-900">No leads yet</p>
-          <p className="mt-1 text-sm text-neutral-600">
-            Without conversion tracking, visitors stay anonymous. Set it up to
-            turn clicks into leads and sales.
-          </p>
-          <AppButtonLink
-            href={`/${slug}/conversions?ctSetup=1`}
-            variant="primary"
-            size="sm"
-            className="mt-3 w-fit"
-          >
-            Reveal leads
-          </AppButtonLink>
-          <AnonymousVisitorsTeaser variant="plain" className="mt-3" />
+      ) : clickFeedLoading && leads.length === 0 ? (
+        <div className="flex items-center justify-center rounded-lg bg-neutral-50 py-6">
+          <LoadingSpinner />
         </div>
       ) : (
-        <Table {...tableProps} table={table} />
+        <div className={cn(showDemoFallback ? "opacity-80" : undefined)}>
+          <Table {...tableProps} table={table} />
+        </div>
       )}
+
     </div>
   );
 }
@@ -722,6 +837,7 @@ function IntervalMetrics({
   revenue: number;
   cvr: number;
 }) {
+  const { currency } = useWorkspace();
   return (
     <div className="rounded-lg bg-neutral-50 p-3">
       <div className="mb-2 text-xs font-semibold text-neutral-700">{label}</div>
@@ -736,7 +852,15 @@ function IntervalMetrics({
         <div className="grid grid-cols-3 gap-2">
           <Metric label="Clicks" value={clicks} />
           <Metric label="Leads" value={leads} />
-          <Metric label="Revenue" value={revenue} prefix="$" decimals={2} />
+          <Metric
+            label="Revenue"
+            value={revenue}
+            formattedValue={currencyFormatter(revenue, {
+              currency: (currency || "EUR").toUpperCase() as "EUR" | "USD",
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          />
         </div>
       )}
     </div>

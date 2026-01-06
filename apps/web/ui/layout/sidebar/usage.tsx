@@ -1,12 +1,14 @@
 "use client";
 
 import useWorkspace from "@/lib/swr/use-workspace";
-import { AppButtonLink } from "@/ui/components/controls/app-button";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import ManageSubscriptionButton from "@/ui/workspaces/manage-subscription-button";
 import { AnimatedSizeContainer, Icon } from "@dub/ui";
 import { CursorRays, Hyperlink } from "@dub/ui/icons";
 import {
   cn,
+  currencyFormatter,
   getFirstAndLastDay,
   getNextPlan,
   INFINITY_NUMBER,
@@ -35,12 +37,14 @@ function UsageInner() {
     linksLimit,
     salesUsage,
     salesLimit,
+    currency,
     billingCycleStart,
     plan,
     slug,
     paymentFailedAt,
     loading,
   } = useWorkspace({ swrOpts: { keepPreviousData: true } });
+  const { openUpgradeModal } = useUpgradeModal();
 
   const [billingEnd] = useMemo(() => {
     if (billingCycleStart) {
@@ -165,9 +169,9 @@ function UsageInner() {
                 setHovered(false);
               }}
             />
-          ) : (warning || plan === "free") && plan !== "enterprise" ? (
-            <AppButtonLink
-              href={`/${slug}/upgrade`}
+          ) : warning || plan === "free" ? (
+            <AppButton
+              onClick={openUpgradeModal}
               variant="primary"
               size="sm"
               className="mt-4 w-full"
@@ -179,7 +183,7 @@ function UsageInner() {
               }}
             >
               {plan === "free" ? "Upgrade plan" : "Upgrade plan"}
-            </AppButtonLink>
+            </AppButton>
           ) : null}
         </div>
       </AnimatedSizeContainer>
@@ -196,6 +200,7 @@ type UsageRowProps = {
   showNextPlan: boolean;
   nextPlanLimit?: number;
   warning: boolean;
+  currency?: string | null;
 };
 
 const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
@@ -209,6 +214,7 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
       showNextPlan,
       nextPlanLimit,
       warning,
+      currency,
     }: UsageRowProps,
     ref,
   ) => {
@@ -233,7 +239,9 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
                     label === "Sales"
                       ? {
                           style: "currency",
-                          currency: "USD",
+                          currency:
+                            ((currency || "EUR").toUpperCase() as "EUR" | "USD") ??
+                            "EUR",
                           maximumFractionDigits: 0,
                         }
                       : undefined
@@ -248,8 +256,14 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
                       : "text-neutral-600",
                   )}
                 >
-                  {label === "Sales" ? "$" : ""}
-                  {formatNumber(label === "Sales" ? limit / 100 : limit)}
+                  {label === "Sales"
+                    ? currencyFormatter(limit / 100, {
+                        currency:
+                          ((currency || "EUR").toUpperCase() as "EUR" | "USD") ??
+                          "EUR",
+                        maximumFractionDigits: 0,
+                      })
+                    : formatNumber(limit)}
                   {showNextPlan && nextPlanLimit && (
                     <motion.span
                       className="absolute bottom-[45%] left-0 h-[1px] bg-neutral-400"

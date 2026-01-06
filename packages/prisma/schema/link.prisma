@@ -1,15 +1,16 @@
 model Link {
-  id              String    @id @default(cuid())
-  domain          String // domain of the link (e.g. dub.sh) – also stored on Redis
-  key             String // key of the link (e.g. /github) – also stored on Redis
-  url             String    @db.LongText // target url (e.g. https://github.com/dubinc/dub) – also stored on Redis
-  baseUrl         String?   @db.Text // normalized URL without search params, hash, or trailing slash
-  shortLink       String    @unique @db.VarChar(400) // new column for the full short link
-  archived        Boolean   @default(false) // whether the link is archived or not
-  expiresAt       DateTime? // when the link expires – stored on Redis via ttl
-  expiredUrl      String?   @db.Text // URL to redirect the user to when the link is expired
-  password        String? // password to access the link
-  trackConversion Boolean   @default(false) // whether to track conversions or not
+  id                String    @id @default(cuid())
+  domain            String // domain of the link (e.g. dub.sh) – also stored on Redis
+  key               String // key of the link (e.g. /github) – also stored on Redis
+  url               String    @db.LongText // target url (e.g. https://github.com/dubinc/dub) – also stored on Redis
+  baseUrl           String?   @db.Text // normalized URL without search params, hash, or trailing slash
+  shortLink         String    @unique @db.VarChar(400) // new column for the full short link
+  archived          Boolean   @default(false) // whether the link is archived or not
+  expiresAt         DateTime? // when the link expires – stored on Redis via ttl
+  expiredUrl        String?   @db.Text // URL to redirect the user to when the link is expired
+  password          String? // password to access the link
+  trackConversion   Boolean   @default(false) // whether to track conversions or not
+  leadMagnetEnabled Boolean   @default(false) // whether to show an email capture page before redirecting
 
   proxy       Boolean @default(false) // Proxy to use custom OG tags (stored on redis) – if false, will use OG tags from target url
   title       String? // OG title for the link (e.g. Dub.co - Open-Source Link Management Infrastructure)
@@ -80,14 +81,14 @@ model Link {
   partnerId         String?
   programEnrollment ProgramEnrollment? @relation(fields: [programId, partnerId], references: [programId, partnerId])
 
-  program     Program?     @relation(fields: [programId], references: [id])
-  customers   Customer[] @relation("CustomerPrimaryLink")
-  customersLastActivity Customer[] @relation("CustomerLastActivityLink")
-  commissions Commission[]
+  program               Program?     @relation(fields: [programId], references: [id])
+  customers             Customer[]   @relation("CustomerPrimaryLink")
+  customersLastActivity Customer[]   @relation("CustomerLastActivityLink")
+  commissions           Commission[]
 
   @@unique([domain, key])
-  @@index([projectId, folderId, archived, createdAt(sort: Desc)])
   @@unique([projectId, externalId])
+  @@index([projectId, folderId, archived, createdAt(sort: Desc)])
   @@index([programId, partnerId])
   @@index(folderId) // used in /api/folders
   @@index(userId) // for relation to User table

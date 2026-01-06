@@ -2,7 +2,7 @@ import { tb } from "@/lib/tinybird";
 import { prisma } from "@dub/prisma";
 import { Link } from "@dub/prisma/client";
 import { OG_AVATAR_URL } from "@dub/utils";
-import { transformLink } from "../api/links";
+import { transformLink } from "../api/links/utils/transform-link";
 import { decodeLinkIfCaseSensitive } from "../api/links/case-sensitivity";
 import { generateRandomName } from "../names";
 import z from "../zod";

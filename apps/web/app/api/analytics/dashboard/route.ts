@@ -86,7 +86,7 @@ export const GET = async (req: Request) => {
           message: exceededLimitError({
             plan: workspace.plan as PlanProps,
             limit: workspace.usageLimit,
-            type: "clicks",
+            type: "events",
           }),
         });
       }

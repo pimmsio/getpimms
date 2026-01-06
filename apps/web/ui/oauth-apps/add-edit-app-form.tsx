@@ -6,7 +6,7 @@ import { ExistingOAuthApp, NewOAuthApp, OAuthAppProps } from "@/lib/types";
 import {
   Button,
   FileUpload,
-  InfoTooltip,
+  HelpTooltip,
   LoadingSpinner,
   Switch,
 } from "@dub/ui";
@@ -229,7 +229,7 @@ export default function AddOAuthAppForm({
             <h2 className="text-sm font-medium text-neutral-900">
               Application name
             </h2>
-            <InfoTooltip content="Application name will be displayed in the OAuth consent screen" />
+            <HelpTooltip content="Application name will be displayed in the OAuth consent screen" />
           </label>
           <div className="relative mt-2 rounded shadow-sm">
             <input
@@ -255,7 +255,7 @@ export default function AddOAuthAppForm({
             <h2 className="text-sm font-medium text-neutral-900">
               Application slug
             </h2>
-            <InfoTooltip content="Unique slug for this application on PiMMs" />
+            <HelpTooltip content="Unique slug for this application on PiMMs" />
           </label>
           <div className="relative mt-2 rounded shadow-sm">
             <input
@@ -280,7 +280,7 @@ export default function AddOAuthAppForm({
             <h2 className="text-sm font-medium text-neutral-900">
               Description
             </h2>
-            <InfoTooltip content="Description of your application" />
+            <HelpTooltip content="Description of your application" />
           </label>
           <div className="relative mt-2 rounded shadow-sm">
             <TextareaAutosize
@@ -306,7 +306,7 @@ export default function AddOAuthAppForm({
         <div>
           <label htmlFor="slug" className="flex items-center space-x-2">
             <h2 className="text-sm font-medium text-neutral-900">Overview</h2>
-            <InfoTooltip content="Provide some details about your integration. This will be displayed on the integration page. Markdown is supported." />
+            <HelpTooltip content="Provide some details about your integration. This will be displayed on the integration page. Markdown is supported." />
           </label>
           <div className="relative mt-2 rounded shadow-sm">
             <TextareaAutosize
@@ -334,7 +334,7 @@ export default function AddOAuthAppForm({
             <h2 className="text-sm font-medium text-neutral-900">
               Screenshots
             </h2>
-            <InfoTooltip content="You can upload up to 4 screenshots that will be displayed on the integration page." />
+            <HelpTooltip content="You can upload up to 4 screenshots that will be displayed on the integration page." />
           </label>
           <Reorder.Group
             axis="y"
@@ -389,7 +389,7 @@ export default function AddOAuthAppForm({
             <h2 className="text-sm font-medium text-neutral-900">
               Developer name
             </h2>
-            <InfoTooltip content="The person or company developing this application" />
+            <HelpTooltip content="The person or company developing this application" />
           </label>
           <div className="relative mt-2 rounded shadow-sm">
             <input
@@ -413,7 +413,7 @@ export default function AddOAuthAppForm({
             <h2 className="text-sm font-medium text-neutral-900">
               Website URL
             </h2>
-            <InfoTooltip content="URL to the developer's website or documentation" />
+            <HelpTooltip content="URL to the developer's website or documentation" />
           </label>
           <div className="relative mt-2 rounded shadow-sm">
             <input
@@ -438,7 +438,7 @@ export default function AddOAuthAppForm({
             <h2 className="text-sm font-medium text-neutral-900">
               Install URL
             </h2>
-            <InfoTooltip content="An optional URL for installing the application" />
+            <HelpTooltip content="An optional URL for installing the application" />
           </label>
           <div className="relative mt-2 rounded shadow-sm">
             <input
@@ -471,7 +471,7 @@ export default function AddOAuthAppForm({
               <h2 className="text-sm font-medium text-neutral-900">
                 Callback URLs
               </h2>
-              <InfoTooltip content="All OAuth redirect URLs, All URLs must use HTTPS, except for localhost." />
+              <HelpTooltip content="All OAuth redirect URLs, All URLs must use HTTPS, except for localhost." />
             </label>
             <Button
               text="Add Callback URL"
@@ -548,7 +548,7 @@ export default function AddOAuthAppForm({
         <div className="flex items-center justify-between pb-4 pt-2">
           <label htmlFor="pkce" className="flex items-center space-x-2">
             <h2 className="text-sm font-medium text-neutral-900">Allow PKCE</h2>
-            <InfoTooltip content="We strongly recommend using the PKCE flow for increased security. Make sure your application supports it." />
+            <HelpTooltip content="We strongly recommend using the PKCE flow for increased security. Make sure your application supports it." />
           </label>
           <Switch
             checked={pkce}

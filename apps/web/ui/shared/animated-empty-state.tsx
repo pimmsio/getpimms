@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, buttonVariants } from "@dub/ui";
+import { Badge, Button, buttonVariants } from "@dub/ui";
 import { cn } from "@dub/utils";
 import Link from "next/link";
 import { CSSProperties, PropsWithChildren, ReactNode } from "react";
@@ -12,6 +12,7 @@ export function AnimatedEmptyState({
   addButton,
   pillContent,
   learnMoreHref,
+  onLearnMoreClick,
   learnMoreClassName,
   learnMoreText,
   className,
@@ -22,6 +23,7 @@ export function AnimatedEmptyState({
   addButton?: ReactNode;
   pillContent?: string;
   learnMoreHref?: string;
+  onLearnMoreClick?: () => void;
   learnMoreClassName?: string;
   learnMoreText?: string;
   className?: string;
@@ -56,18 +58,27 @@ export function AnimatedEmptyState({
       </div>
       <div className="flex items-center gap-2">
         {addButton}
-        {learnMoreHref && (
-          <Link
-            href={learnMoreHref}
-            target="_blank"
-            className={cn(
-              buttonVariants({ variant: addButton ? "secondary" : "primary" }),
-              "flex h-9 items-center whitespace-nowrap rounded border px-4 text-sm",
-              learnMoreClassName,
-            )}
-          >
-            {learnMoreText || "Learn more"}
-          </Link>
+        {(learnMoreHref || onLearnMoreClick) && (
+          learnMoreHref ? (
+            <Link
+              href={learnMoreHref}
+              target="_blank"
+              className={cn(
+                buttonVariants({ variant: addButton ? "secondary" : "primary" }),
+                "flex h-9 items-center whitespace-nowrap rounded border px-4 text-sm",
+                learnMoreClassName,
+              )}
+            >
+              {learnMoreText || "Learn more"}
+            </Link>
+          ) : (
+            <Button
+              onClick={onLearnMoreClick}
+              variant={addButton ? "secondary" : "primary"}
+              text={learnMoreText || "Learn more"}
+              className={cn("h-9", learnMoreClassName)}
+            />
+          )
         )}
       </div>
     </div>

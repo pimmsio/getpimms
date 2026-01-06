@@ -13,7 +13,7 @@ import {
   AnimatedSizeContainer,
   Button,
   Flask,
-  InfoTooltip,
+  HelpTooltip,
   Modal,
   SimpleTooltipContent,
   Tooltip,
@@ -286,7 +286,7 @@ function ABTestingModal({
             <label className="block text-sm font-medium text-neutral-700">
               Testing URLs
             </label>
-            <InfoTooltip
+            <HelpTooltip
               content="Add up to 3 additional destination URLs to test for this short link."
             />
           </div>
@@ -364,7 +364,7 @@ function ABTestingModal({
             <label className="block text-sm font-medium text-neutral-700">
               Traffic Split
             </label>
-            <InfoTooltip
+            <HelpTooltip
               content={`Adjust the percentage of traffic to each URL. The minimum is ${MIN_TEST_PERCENTAGE}%`}
             />
           </div>

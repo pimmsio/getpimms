@@ -13,10 +13,11 @@ export const appRedirect = (path: string) => {
   if (rootRegex.test(path) && !RESERVED_SLUGS.includes(path.split("/")[1]))
     return path.replace(rootRegex, "/$1/links");
 
-  // Redirect "/[slug]/upgrade" to "/[slug]/settings/billing/upgrade"
+  // Redirect "/[slug]/upgrade" to "/[slug]/settings/billing"
+  // Users can click the upgrade button to open the modal
   const upgradeRegex = /^\/([^\/]+)\/upgrade$/;
   if (upgradeRegex.test(path))
-    return path.replace(upgradeRegex, "/$1/settings/billing/upgrade");
+    return path.replace(upgradeRegex, "/$1/settings/billing");
 
   // Redirect "/[slug]/customers" to "/[slug]/events?event=leads" for now
   const customersRegex = /^\/([^\/]+)\/customers$/;

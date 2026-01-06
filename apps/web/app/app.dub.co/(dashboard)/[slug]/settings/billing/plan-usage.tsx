@@ -3,13 +3,15 @@
 import useTagsCount from "@/lib/swr/use-tags-count";
 import useUsers from "@/lib/swr/use-users";
 import useWorkspace from "@/lib/swr/use-workspace";
-import { AppButtonLink } from "@/ui/components/controls/app-button";
+import { AppButton, AppButtonLink } from "@/ui/components/controls/app-button";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import SubscriptionMenu from "@/ui/workspaces/subscription-menu";
-import { Icon, Tooltip, useRouterStuff } from "@dub/ui";
-import { CircleDollar, CrownSmall, CursorRays, Hyperlink } from "@dub/ui/icons";
+import { Icon, useRouterStuff } from "@dub/ui";
+import { CircleDollar, CursorRays, Hyperlink } from "@dub/ui/icons";
 import {
   capitalize,
   cn,
+  currencyFormatter,
   getFirstAndLastDay,
   INFINITY_NUMBER,
   nFormatter,
@@ -24,6 +26,7 @@ export default function PlanUsage() {
     slug,
     plan,
     stripeId,
+    currency,
     usage,
     usageLimit,
     salesUsage,
@@ -37,8 +40,8 @@ export default function PlanUsage() {
     tagsLimit,
     usersLimit,
     billingCycleStart,
-    flags,
   } = useWorkspace();
+  const { openUpgradeModal } = useUpgradeModal();
 
   const { data: tags } = useTagsCount();
   const { users } = useUsers();
@@ -78,15 +81,13 @@ export default function PlanUsage() {
           )}
         </div>
         <div className="flex items-center gap-4">
-          {plan !== "enterprise" && (
-            <AppButtonLink
-              href={`/${slug}/settings/billing/upgrade`}
-              variant="primary"
-              size="sm"
-            >
-              Upgrade
-            </AppButtonLink>
-          )}
+          <AppButton
+            onClick={openUpgradeModal}
+            variant="primary"
+            size="sm"
+          >
+            Upgrade
+          </AppButton>
           <AppButtonLink
             href={`/${slug}/settings/billing/invoices`}
             variant="secondary"
@@ -120,8 +121,7 @@ export default function PlanUsage() {
               title="Revenue tracked"
               usage={salesUsage}
               limit={salesLimit}
-              unit="$"
-              requiresUpgrade={plan === "free" || plan === "starter"}
+              unit={((currency || "EUR").toUpperCase() as "EUR" | "USD") ?? "EUR"}
             />
           </div>
           <div className="w-full px-2 pb-8 md:px-8">
@@ -140,15 +140,13 @@ function UsageTabCard({
   usage: usageProp,
   limit: limitProp,
   unit,
-  requiresUpgrade,
 }: {
   id: string;
   icon: Icon;
   title: string;
   usage?: number;
   limit?: number;
-  unit?: string;
-  requiresUpgrade?: boolean;
+  unit?: "EUR" | "USD";
 }) {
   const { searchParams, queryParams } = useRouterStuff();
   const { slug } = useWorkspace();
@@ -158,7 +156,7 @@ function UsageTabCard({
     (!searchParams.get("tab") && id === "events");
 
   const [usage, limit] =
-    unit === "$" && usageProp !== undefined && limitProp !== undefined
+    unit && usageProp !== undefined && limitProp !== undefined
       ? [usageProp / 100, limitProp / 100]
       : [usageProp, limitProp];
 
@@ -167,45 +165,20 @@ function UsageTabCard({
   const warning = !loading && !unlimited && usage >= limit * 0.9;
   const remaining = !loading && !unlimited ? Math.max(0, limit - usage) : 0;
 
-  const prefix = unit || "";
-
   return (
     <button
       className={cn(
         "rounded border border-neutral-200 bg-white px-4 py-3 text-left transition-colors duration-75",
         "outline-none focus-visible:border-blue-600 focus-visible:ring-0 focus-visible:ring-blue-600",
         isActive && "border-neutral-200 ring-1 ring-transparent",
-        requiresUpgrade
-          ? "border-neutral-100 bg-neutral-100 hover:bg-neutral-100"
-          : "hover:bg-neutral-50 lg:px-5 lg:py-4",
+        "hover:bg-neutral-50 lg:px-5 lg:py-4",
       )}
       aria-selected={isActive}
-      onClick={() => !requiresUpgrade && queryParams({ set: { tab: id } })}
-      disabled={requiresUpgrade}
+      onClick={() => queryParams({ set: { tab: id } })}
     >
       {/* <Icon className="size-4 text-neutral-600" /> */}
       <div className="mt-1.5 flex items-center gap-2 text-sm text-neutral-600">
         {title}
-        {requiresUpgrade && (
-          <Tooltip
-            content={
-              <div className="max-w-xs px-4 py-2 text-center text-sm text-neutral-600">
-                Upgrade to Pro to unlock sales tracking.{" "}
-                <Link
-                  href={`/${slug}/upgrade`}
-                  className="underline underline-offset-2 hover:text-neutral-800"
-                >
-                  View pricing plans
-                </Link>
-              </div>
-            }
-          >
-            <span className="flex items-center gap-1 rounded-full border border-neutral-300 px-2 py-0.5 text-xs text-neutral-500">
-              <CrownSmall className="size-" />
-              Pro
-            </span>
-          </Tooltip>
-        )}
       </div>
       <div className="mt-2">
         {!loading ? (
@@ -213,10 +186,10 @@ function UsageTabCard({
             value={usage}
             className="text-xl leading-none text-neutral-900"
             format={
-              unit === "$"
+              unit
                 ? {
                     style: "currency",
-                    currency: "USD",
+                    currency: unit,
                     // @ts-ignore – trailingZeroDisplay is a valid option but TS is outdated
                     trailingZeroDisplay: "stripIfInteger",
                   }
@@ -244,11 +217,7 @@ function UsageTabCard({
               <div
                 className={cn(
                   "size-full rounded-full",
-                  requiresUpgrade
-                    ? "bg-neutral-900/10"
-                    : warning
-                      ? "bg-red-500"
-                      : "bg-neutral-700/70",
+                  warning ? "bg-red-500" : "bg-neutral-700/70",
                 )}
                 style={{
                   transform: `translateX(-${100 - Math.max(Math.floor((usage / Math.max(0, usage, limit)) * 100), usage === 0 ? 0 : 1)}%)`,
@@ -263,7 +232,18 @@ function UsageTabCard({
           <span className="text-xs leading-none text-neutral-600">
             {unlimited
               ? "Unlimited"
-              : `${prefix}${nFormatter(remaining, { full: true })} remaining of ${prefix}${nFormatter(limit, { full: limit < INFINITY_NUMBER })}`}
+              : unit
+                ? `${currencyFormatter(remaining, {
+                    currency: unit,
+                    maximumFractionDigits: 0,
+                  })} remaining of ${currencyFormatter(limit, {
+                    currency: unit,
+                    maximumFractionDigits: 0,
+                  })}`
+                : `${nFormatter(remaining, { full: true })} remaining of ${nFormatter(
+                    limit,
+                    { full: limit < INFINITY_NUMBER },
+                  )}`}
           </span>
         ) : (
           <div className="h-4 w-20 animate-pulse rounded bg-neutral-200" />

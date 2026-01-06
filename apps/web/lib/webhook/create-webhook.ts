@@ -25,7 +25,7 @@ export async function createWebhook({
   installationId?: string;
 }) {
   // Webhooks are only supported on Pro plans and above
-  if (["free", "starter"].includes(workspace.plan)) {
+  if (workspace.plan === "free") {
     return;
   }
 

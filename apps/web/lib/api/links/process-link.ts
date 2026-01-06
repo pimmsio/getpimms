@@ -1,21 +1,23 @@
-import { isBlacklistedDomain, isWhitelistedDomain, updateConfig } from "@/lib/edge-config";
+import {
+  isBlacklistedDomain,
+  isWhitelistedDomain,
+  updateConfig,
+} from "@/lib/edge-config";
 import { verifyFolderAccess } from "@/lib/folder/permissions";
 import { getPangeaDomainIntel } from "@/lib/pangea";
 import { checkIfUserExists, getRandomKey } from "@/lib/planetscale";
 import { checkUrlWithSafeBrowsing } from "@/lib/safeBrowsing";
 import { isStored } from "@/lib/storage";
 import { NewLinkProps, ProcessedLinkProps, WorkspaceProps } from "@/lib/types";
-import { prisma } from "@dub/prisma";
 import { sendEmail } from "@dub/email";
 import { CheckFailureEmail } from "@dub/email/templates/check-failure";
+import { FreePlanRedirectAttemptEmail } from "@dub/email/templates/free-plan-redirect-attempt";
 import { MaliciousLinkAttemptEmail } from "@dub/email/templates/malicious-link-attempt";
 import { TooManyRedirectsEmail } from "@dub/email/templates/too-many-redirects";
-import { FreePlanRedirectAttemptEmail } from "@dub/email/templates/free-plan-redirect-attempt";
+import { prisma } from "@dub/prisma";
 import {
-  DUB_DOMAINS,
-  SHORT_DOMAIN,
-  UTMTags,
   constructURLFromUTMParams,
+  DUB_DOMAINS,
   getApexDomain,
   getDomainWithoutWWW,
   getParamsFromURL,
@@ -26,11 +28,17 @@ import {
   normalizeUtmValue,
   parseDateTime,
   pluralize,
+  SHORT_DOMAIN,
+  UTMTags,
 } from "@dub/utils";
 import { combineTagIds } from "../tags/combine-tag-ids";
-import { businessFeaturesCheck, proFeaturesCheck, starterFeaturesCheck } from "./plan-features-check";
+import { followRedirectChain, MAX_HOPS } from "./follow-redirects";
+import {
+  businessFeaturesCheck,
+  proFeaturesCheck,
+  proLinkFeaturesCheck,
+} from "./plan-features-check";
 import { keyChecks, processKey } from "./utils";
-import { followRedirectChain, MAX_REDIRECTS } from "./follow-redirects";
 
 /**
  * Check if a URL's domain is in the whitelist of allowed short link services
@@ -40,15 +48,15 @@ async function isDomainWhitelisted(url: string): Promise<boolean> {
   try {
     const domain = getDomainWithoutWWW(url);
     if (!domain) return false;
-    
+
     // Check both the full domain and apex domain against the whitelist
     const apexDomain = getApexDomain(url);
-    
+
     const [isDomainWhitelisted, isApexWhitelisted] = await Promise.all([
       isWhitelistedDomain(domain),
       apexDomain ? isWhitelistedDomain(apexDomain) : Promise.resolve(false),
     ]);
-    
+
     return isDomainWhitelisted || isApexWhitelisted;
   } catch (error) {
     console.error("Error checking whitelisted domain:", error);
@@ -86,24 +94,13 @@ export async function processLink<T extends Record<string, any>>({
       status?: never;
     }
 > {
-  let {
-    domain,
-    key,
-    url,
-    image,
-    proxy,
-    trackConversion,
-    expiredUrl,
-    tagNames,
-    folderId,
-    externalId,
-    webhookIds,
-    testVariants,
-  } = payload;
+  let { domain, key, url, expiredUrl, webhookIds } = payload;
+  const { image, proxy, tagNames, folderId, externalId, testVariants } =
+    payload;
 
   // Conversion tracking is enabled by default for all accounts.
   // We keep this pinned on so the product doesn’t branch into “tracking on/off” mental models.
-  trackConversion = true;
+  const trackConversion = true;
 
   let expiresAt: string | Date | null | undefined = payload.expiresAt;
   let testCompletedAt: string | Date | null | undefined =
@@ -127,17 +124,27 @@ export async function processLink<T extends Record<string, any>>({
     if (UTMTags.some((tag) => payload[tag])) {
       // Check if original URL had UTMs that match the form fields
       // If so, preserve the original URL to maintain exact character formatting
-      const originalUrlNormalized = originalUrl ? getUrlFromString(originalUrl) : null;
-      const originalUrlUtms = originalUrlNormalized ? getParamsFromURL(originalUrlNormalized) : {};
+      const originalUrlNormalized = originalUrl
+        ? getUrlFromString(originalUrl)
+        : null;
+      const originalUrlUtms = originalUrlNormalized
+        ? getParamsFromURL(originalUrlNormalized)
+        : {};
       const originalUrlUtmKeys = UTMTags.filter((tag) => originalUrlUtms[tag]);
-      
+
       // Check if form field UTMs match original URL UTMs (after normalization)
-      const utmsMatchOriginal = originalUrlUtmKeys.length > 0 && originalUrlUtmKeys.every((tag) => {
-        const originalValue = originalUrlUtms[tag];
-        const formValue = payload[tag];
-        // Compare normalized values to see if they match
-        return originalValue && formValue && normalizeUtmValue(originalValue) === normalizeUtmValue(formValue);
-      });
+      const utmsMatchOriginal =
+        originalUrlUtmKeys.length > 0 &&
+        originalUrlUtmKeys.every((tag) => {
+          const originalValue = originalUrlUtms[tag];
+          const formValue = payload[tag];
+          // Compare normalized values to see if they match
+          return (
+            originalValue &&
+            formValue &&
+            normalizeUtmValue(originalValue) === normalizeUtmValue(formValue)
+          );
+        });
 
       if (utmsMatchOriginal && originalUrlNormalized) {
         // Preserve original URL with exact UTM formatting
@@ -162,20 +169,22 @@ export async function processLink<T extends Record<string, any>>({
     };
   }
 
+  const normalizedPlan = workspace?.plan || "free";
+
   // free plan restrictions
-  if (!workspace || workspace.plan === "free") {
+  if (!workspace || normalizedPlan === "free") {
     if (key === "_root" && url) {
       return {
         link: payload,
         error:
-          "You can only set a redirect for a root domain link on a Starter plan and above. Upgrade to Starter to use this feature.",
+          "You can only set a redirect for a root domain link on a Pro plan and above. Upgrade to Pro to use this feature.",
         code: "forbidden",
       };
     }
     try {
       businessFeaturesCheck(payload);
       proFeaturesCheck(payload);
-      starterFeaturesCheck(payload);
+      proLinkFeaturesCheck(payload);
     } catch (error) {
       return {
         link: payload,
@@ -183,18 +192,7 @@ export async function processLink<T extends Record<string, any>>({
         code: "forbidden",
       };
     }
-  } else if (workspace.plan === "starter") {
-    try {
-      businessFeaturesCheck(payload);
-      proFeaturesCheck(payload);
-    } catch (error) {
-      return {
-        link: payload,
-        error: error.message,
-        code: "forbidden",
-      };
-    }
-  } else if (workspace.plan === "pro") {
+  } else if (normalizedPlan === "pro") {
     try {
       businessFeaturesCheck(payload);
     } catch (error) {
@@ -247,11 +245,13 @@ export async function processLink<T extends Record<string, any>>({
     userId,
     workspaceId: workspace?.id,
   });
-  
+
   if (maliciousCheck.isMalicious) {
     return {
       link: payload,
-      error: maliciousCheck.reason || "Malicious URL detected. An administrator has been notified.",
+      error:
+        maliciousCheck.reason ||
+        "Malicious URL detected. An administrator has been notified.",
       code: maliciousCheck.code || "unprocessable_entity",
     };
   }
@@ -282,7 +282,9 @@ export async function processLink<T extends Record<string, any>>({
     // checks for other Dub-owned domains (chatg.pt, spti.fi, etc.)
   } else if (isDubDomain(domain)) {
     // coerce type with ! cause we already checked if it exists
-    const { allowedHostnames } = DUB_DOMAINS.find((d) => d.slug === domain)! as any;
+    const { allowedHostnames } = DUB_DOMAINS.find(
+      (d) => d.slug === domain,
+    )! as any;
     const urlDomain = getDomainWithoutWWW(url) || "";
     const apexDomain = getApexDomain(url);
     if (
@@ -504,7 +506,7 @@ export async function processLink<T extends Record<string, any>>({
 
     // Webhook validity checks
     if (webhookIds && webhookIds.length > 0) {
-      if (!workspace || workspace.plan === "free" || workspace.plan === "starter") {
+      if (!workspace || workspace.plan === "free") {
         return {
           link: payload,
           error:
@@ -642,19 +644,23 @@ async function checkRedirectRestrictions({
   | { error: null; urlsToCheck: string[]; code?: never }
   | { error: string; code: string; urlsToCheck?: never }
 > {
-  // Follow redirect chain
-  const redirectResult = await followRedirectChain(url);
+  // Follow redirect chain (detect multi-apex-domain chains)
+  // Fail-closed for free plan (if we can't validate, we reject).
+  const redirectResult = await followRedirectChain(url, {
+    maxHops: MAX_HOPS,
+    failClosed: workspacePlan === "free",
+  });
 
   // Check if the original URL is from a whitelisted domain (e.g., wa.me, youtu.be, bit.ly)
   // If it is, allow multiple redirects regardless of plan or redirect count
   const isOriginalUrlWhitelisted = await isDomainWhitelisted(url);
-  
+
   // Handle redirect following errors
   // IMPORTANT: Check whitelist BEFORE rejecting for too many redirects
   // Whitelisted domains should be allowed regardless of redirect count
   if (!redirectResult.success) {
     console.error("Error following redirect chain:", redirectResult.error);
-    
+
     // If too many redirects, check whitelist first before rejecting
     if (redirectResult.tooManyRedirects) {
       // If the domain is whitelisted, allow it despite too many redirects
@@ -664,50 +670,78 @@ async function checkRedirectRestrictions({
         // Not whitelisted - reject for too many redirects
         await sendTooManyRedirectsEmail({
           url,
-          redirectCount: redirectResult.urls.length - 1,
+          hopsFollowed: redirectResult.hopsFollowed,
           redirectChain: redirectResult.urls,
+          apexDomains: redirectResult.apexDomains,
           userId,
           workspaceId,
         });
-        
+
         await log({
-          message: `Link rejected due to too many redirects → ${url} (${redirectResult.urls.length - 1} redirects)`,
+          message: `Link rejected due to too many redirects → ${url} (${redirectResult.hopsFollowed} hops, max ${MAX_HOPS}). Chain: ${redirectResult.urls.join(" → ")}`,
           type: "links",
           mention: true,
         });
-        
+
         return {
-          error: `Invalid destination URL: This link has too many redirects (maximum ${MAX_REDIRECTS} allowed).`,
+          error: `Invalid destination URL: This link has too many redirects (maximum ${MAX_HOPS} hops allowed).`,
           code: "unprocessable_entity",
         };
       }
     }
+
+    // Fail-closed for free plan: if we can't validate redirects, reject unless whitelisted.
+    if (workspacePlan === "free" && !isOriginalUrlWhitelisted) {
+      await Promise.all([
+        sendFreePlanRedirectAttemptEmail({
+          url,
+          hopsFollowed: redirectResult.hopsFollowed,
+          redirectChain: redirectResult.urls,
+          apexDomains: redirectResult.apexDomains,
+          userId,
+          workspaceId,
+        }),
+        log({
+          message: `Free user attempted to create link but redirect validation failed (fail-closed) → ${url}. Error: ${redirectResult.error || "unknown"}. Chain: ${redirectResult.urls.join(" → ")}`,
+          type: "links",
+          mention: false,
+        }),
+      ]);
+
+      return {
+        error:
+          "Invalid destination URL: We couldn't validate this URL's redirects on the free plan. Please try a different URL or upgrade for advanced redirect support.",
+        code: "unprocessable_entity",
+      };
+    }
   }
-  
-  // Free users cannot create links with redirects, UNLESS the original URL is whitelisted
+
+  // Free users cannot create links that redirect across apex domains, UNLESS the original URL is whitelisted
   if (
-    workspacePlan === "free" && 
-    redirectResult.success && 
-    redirectResult.urls.length > 1 &&
+    workspacePlan === "free" &&
+    redirectResult.success &&
+    redirectResult.hasMultipleApexDomains &&
     !isOriginalUrlWhitelisted
   ) {
     await Promise.all([
       sendFreePlanRedirectAttemptEmail({
         url,
-        redirectCount: redirectResult.urls.length - 1,
+        hopsFollowed: redirectResult.hopsFollowed,
         redirectChain: redirectResult.urls,
+        apexDomains: redirectResult.apexDomains,
         userId,
         workspaceId,
       }),
       log({
-        message: `Free user attempted to create link with redirects → ${url} (${redirectResult.urls.length - 1} redirects). Chain: ${redirectResult.urls.join(" → ")}`,
+        message: `Free user attempted to create link with multi-domain redirect chain → ${url}. Domains: ${redirectResult.apexDomains.join(", ")}. Chain: ${redirectResult.urls.join(" → ")}`,
         type: "links",
         mention: false,
       }),
     ]);
-    
+
     return {
-      error: "Invalid destination URL: Links with redirects are not allowed on the free plan. However, well-known services like wa.me, youtu.be, etc. are allowed.",
+      error:
+        "Invalid destination URL: Redirect chains across multiple domains are not allowed on the free plan. However, well-known services like wa.me, youtu.be, etc. are allowed.",
       code: "unprocessable_entity",
     };
   }
@@ -732,14 +766,17 @@ async function checkUrlSecurity({
   userId?: string;
   workspaceId?: string;
 }): Promise<{ isMalicious: boolean; reason?: string; code?: string }> {
-  console.log(`Checking ${urlsToCheck.length} URL(s) in redirect chain:`, urlsToCheck);
+  console.log(
+    `Checking ${urlsToCheck.length} URL(s) in redirect chain:`,
+    urlsToCheck,
+  );
 
   // Check each URL in the chain
   for (let i = 0; i < urlsToCheck.length; i++) {
     const currentUrl = urlsToCheck[i];
     const isRedirect = i > 0;
     const [domain, apexDomain] = [
-      getDomainWithoutWWW(currentUrl), 
+      getDomainWithoutWWW(currentUrl),
       getApexDomain(currentUrl),
     ];
 
@@ -762,11 +799,14 @@ async function checkUrlSecurity({
       });
       return {
         isMalicious: true,
-        reason: "Invalid destination URL: Flagged as malicious. An administrator has been notified.",
+        reason:
+          "Invalid destination URL: Flagged as malicious. An administrator has been notified.",
         code: "unprocessable_entity",
       };
     } else if (blacklistResult.isWhitelisted) {
-      console.log(`URL ${currentUrl} is whitelisted, skipping remaining checks`);
+      console.log(
+        `URL ${currentUrl} is whitelisted, skipping remaining checks`,
+      );
       return { isMalicious: false };
     }
 
@@ -784,11 +824,12 @@ async function checkUrlSecurity({
           userId,
           workspaceId,
         });
-          return {
-            isMalicious: true,
-            reason: "Invalid destination URL: Flagged as malicious. An administrator has been notified.",
-            code: "unprocessable_entity",
-          };
+        return {
+          isMalicious: true,
+          reason:
+            "Invalid destination URL: Flagged as malicious. An administrator has been notified.",
+          code: "unprocessable_entity",
+        };
       }
     }
 
@@ -806,11 +847,11 @@ async function checkUrlSecurity({
           userId,
           workspaceId,
         });
-          return {
-            isMalicious: true,
-            reason: `Invalid destination URL: Flagged as malicious. An administrator has been notified.`,
-            code: "unprocessable_entity",
-          };
+        return {
+          isMalicious: true,
+          reason: `Invalid destination URL: Flagged as malicious. An administrator has been notified.`,
+          code: "unprocessable_entity",
+        };
       }
     }
   }
@@ -905,10 +946,10 @@ async function handleMaliciousDetection({
   userId?: string;
   workspaceId?: string;
 }) {
-  const redirectInfo = isRedirect 
+  const redirectInfo = isRedirect
     ? ` (detected in redirect chain from ${originalUrl}: ${urlsToCheck.join(" → ")})`
     : "";
-  
+
   const { userEmail, userName, workspaceName, workspaceSlug } =
     await getUserAndWorkspaceInfo(userId, workspaceId);
 
@@ -955,7 +996,10 @@ async function getUserAndWorkspaceInfo(
             name: user?.name ?? undefined,
           }))
           .catch((e) => {
-            console.error("Error fetching user info for malicious link email", e);
+            console.error(
+              "Error fetching user info for malicious link email",
+              e,
+            );
             return { email: undefined, name: undefined };
           })
       : { email: undefined, name: undefined },
@@ -1006,7 +1050,7 @@ async function sendMaliciousLinkEmail({
 }) {
   try {
     const adminEmail = process.env.ADMIN_EMAIL || "alexandre@pimms.io";
-    
+
     await sendEmail({
       email: adminEmail,
       subject: `⚠️ Malicious Link Attempt: ${domain}`,
@@ -1039,7 +1083,7 @@ async function sendCheckFailureEmail({
 }) {
   try {
     const adminEmail = process.env.ADMIN_EMAIL || "alexandre@pimms.io";
-    
+
     await sendEmail({
       email: adminEmail,
       subject: `⚠️ ${service} Check Failed: ${domain}`,
@@ -1058,30 +1102,33 @@ async function sendCheckFailureEmail({
 
 async function sendTooManyRedirectsEmail({
   url,
-  redirectCount,
+  hopsFollowed,
   redirectChain,
+  apexDomains,
   userId,
   workspaceId,
 }: {
   url: string;
-  redirectCount: number;
+  hopsFollowed: number;
   redirectChain: string[];
+  apexDomains: string[];
   userId?: string;
   workspaceId?: string;
 }) {
   try {
     const { userEmail, userName, workspaceName, workspaceSlug } =
       await getUserAndWorkspaceInfo(userId, workspaceId);
-    
+
     const adminEmail = process.env.ADMIN_EMAIL || "alexandre@pimms.io";
-    
+
     await sendEmail({
       email: adminEmail,
       subject: `⚠️ Too Many Redirects Detected: ${getDomainWithoutWWW(url) || url}`,
       react: TooManyRedirectsEmail({
         url,
-        redirectCount,
+        hopsFollowed,
         redirectChain,
+        apexDomains,
         userEmail,
         userName,
         workspaceName,
@@ -1096,30 +1143,33 @@ async function sendTooManyRedirectsEmail({
 
 async function sendFreePlanRedirectAttemptEmail({
   url,
-  redirectCount,
+  hopsFollowed,
   redirectChain,
+  apexDomains,
   userId,
   workspaceId,
 }: {
   url: string;
-  redirectCount: number;
+  hopsFollowed: number;
   redirectChain: string[];
+  apexDomains: string[];
   userId?: string;
   workspaceId?: string;
 }) {
   try {
     const { userEmail, userName, workspaceName, workspaceSlug } =
       await getUserAndWorkspaceInfo(userId, workspaceId);
-    
+
     const adminEmail = process.env.ADMIN_EMAIL || "alexandre@pimms.io";
-    
+
     await sendEmail({
       email: adminEmail,
       subject: `💎 Free Plan Redirect Attempt: ${getDomainWithoutWWW(url) || url}`,
       react: FreePlanRedirectAttemptEmail({
         url,
-        redirectCount,
+        hopsFollowed,
         redirectChain,
+        apexDomains,
         userEmail,
         userName,
         workspaceName,

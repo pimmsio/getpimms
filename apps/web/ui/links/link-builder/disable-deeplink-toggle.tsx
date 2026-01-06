@@ -1,6 +1,6 @@
 import { LinkFormData } from "@/ui/links/link-builder/link-builder-provider";
 import {
-  InfoTooltip,
+  HelpTooltip,
   Switch,
 } from "@dub/ui";
 import { memo } from "react";
@@ -34,7 +34,7 @@ export const DisableDeeplinkToggle = memo(() => {
           ) : (
             <span className="text-neutral-900">enabled</span>
           )}
-          <InfoTooltip content="Deep linking opens links in official apps (YouTube, Twitter, etc.) instead of in browser. When enabled, search engine indexing is disabled." />
+          <HelpTooltip content="Deep linking opens links in official apps (YouTube, Twitter, etc.) instead of in browser. When enabled, search engine indexing is disabled." />
         </span>
       </div>
       <Switch

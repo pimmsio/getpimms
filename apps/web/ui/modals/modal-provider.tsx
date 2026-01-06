@@ -27,25 +27,31 @@ import { toast } from "sonner";
 import { useAddEditTagModal } from "./add-edit-tag-modal";
 import { useImportRebrandlyModal } from "./import-rebrandly-modal";
 import { useLinkBuilder } from "./link-builder";
+import { useConversionOnboardingModal } from "@/ui/layout/sidebar/conversions/conversions-onboarding-modal";
+import { usePaywallModal } from "@/ui/modals/paywall-modal";
 
 export const ModalContext = createContext<{
   setShowAddWorkspaceModal: Dispatch<SetStateAction<boolean>>;
   setShowAddEditDomainModal: Dispatch<SetStateAction<boolean>>;
   setShowLinkBuilder: Dispatch<SetStateAction<boolean>>;
+  setShowConversionOnboardingModal: Dispatch<SetStateAction<boolean>>;
   setShowAddEditTagModal: Dispatch<SetStateAction<boolean>>;
   setShowImportBitlyModal: Dispatch<SetStateAction<boolean>>;
   setShowImportShortModal: Dispatch<SetStateAction<boolean>>;
   setShowImportRebrandlyModal: Dispatch<SetStateAction<boolean>>;
   setShowImportCsvModal: Dispatch<SetStateAction<boolean>>;
+  setShowPaywallModal: Dispatch<SetStateAction<boolean>>;
 }>({
   setShowAddWorkspaceModal: () => {},
   setShowAddEditDomainModal: () => {},
   setShowLinkBuilder: () => {},
+  setShowConversionOnboardingModal: () => {},
   setShowAddEditTagModal: () => {},
   setShowImportBitlyModal: () => {},
   setShowImportShortModal: () => {},
   setShowImportRebrandlyModal: () => {},
   setShowImportCsvModal: () => {},
+  setShowPaywallModal: () => {},
 });
 
 export function ModalProvider({ children }: { children: ReactNode }) {
@@ -58,6 +64,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
 
 function ModalProviderClient({ children }: { children: ReactNode }) {
   const searchParams = useSearchParams();
+  const leadMagnet = searchParams.get("leadMagnet") === "1";
   const newLinkValues = useMemo(() => {
     const newLink = searchParams.get("newLink");
     if (newLink && getUrlFromString(newLink)) {
@@ -83,16 +90,23 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
             ...DEFAULT_LINK_PROPS,
             ...(newLinkValues.domain && { domain: newLinkValues.domain }),
             url: newLinkValues.url === "true" ? "" : newLinkValues.url,
+            ...(leadMagnet && {
+              leadMagnetEnabled: true,
+              trackConversion: true,
+            }),
           },
         }
       : {},
   );
+  const { setShowConversionOnboardingModal, ConversionOnboardingModal } =
+    useConversionOnboardingModal();
   const { setShowAddEditTagModal, AddEditTagModal } = useAddEditTagModal();
   const { setShowImportBitlyModal, ImportBitlyModal } = useImportBitlyModal();
   const { setShowImportShortModal, ImportShortModal } = useImportShortModal();
   const { setShowImportRebrandlyModal, ImportRebrandlyModal } =
     useImportRebrandlyModal();
   const { setShowImportCsvModal, ImportCsvModal } = useImportCsvModal();
+  const { setShowPaywallModal, PaywallModal } = usePaywallModal();
 
   const [hashes, setHashes] = useCookies<SimpleLinkProps[]>(
     "hashes__pimms",
@@ -143,7 +157,11 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
     if (searchParams.has("newLink")) {
       setShowLinkBuilder(true);
     }
-  }, [searchParams, setShowAddWorkspaceModal, setShowLinkBuilder]);
+  }, [
+    searchParams,
+    setShowAddWorkspaceModal,
+    setShowLinkBuilder,
+  ]);
 
   const { data: session, update } = useSession();
   const { workspaces } = useWorkspaces();
@@ -174,22 +192,26 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
         setShowAddWorkspaceModal,
         setShowAddEditDomainModal,
         setShowLinkBuilder,
+        setShowConversionOnboardingModal,
         setShowAddEditTagModal,
         setShowImportBitlyModal,
         setShowImportShortModal,
         setShowImportRebrandlyModal,
         setShowImportCsvModal,
+          setShowPaywallModal,
       }}
     >
       <AddWorkspaceModal />
       <AcceptInviteModal />
       <AddEditDomainModal />
       <LinkBuilder />
+      <ConversionOnboardingModal />
       <AddEditTagModal />
       <ImportBitlyModal />
       <ImportShortModal />
       <ImportRebrandlyModal />
       <ImportCsvModal />
+      <PaywallModal />
       {children}
     </ModalContext.Provider>
   );

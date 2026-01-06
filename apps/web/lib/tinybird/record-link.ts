@@ -1,5 +1,5 @@
 import z from "@/lib/zod";
-import { ExpandedLink } from "../api/links";
+import { ExpandedLink } from "../api/links/utils/transform-link";
 import { decodeKeyIfCaseSensitive } from "../api/links/case-sensitivity";
 import { prefixWorkspaceId } from "../api/workspace-id";
 import { tb } from "./client";

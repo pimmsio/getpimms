@@ -2,9 +2,10 @@ import { mutatePrefix } from "@/lib/swr/mutate";
 import useTags from "@/lib/swr/use-tags";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { TagColorProps, TagProps } from "@/lib/types";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import {
   Button,
-  InfoTooltip,
+  HelpTooltip,
   Label,
   Logo,
   Modal,
@@ -164,7 +165,7 @@ function AddEditTagModal({
             <p className="block text-sm font-medium text-neutral-700">
               Tag Color
             </p>
-            <InfoTooltip content={`A color to make your tag stand out.`} />
+            <HelpTooltip content={`A color to make your tag stand out.`} />
           </label>
           <RadioGroup
             defaultValue={color}
@@ -210,7 +211,8 @@ function AddTagButton({
 }: {
   setShowAddEditTagModal: Dispatch<SetStateAction<boolean>>;
 }) {
-  const { slug, plan, tagsLimit } = useWorkspace();
+  const { plan, tagsLimit } = useWorkspace();
+  const { openUpgradeModal } = useUpgradeModal();
   const { tags } = useTags();
   const exceededTags = tags && tagsLimit && tags.length >= tagsLimit;
 
@@ -230,7 +232,7 @@ function AddTagButton({
             <TooltipContent
               title={`You can only add up to ${tagsLimit} ${pluralize("tag", tagsLimit || 0)} on the ${capitalize(plan)} plan. Upgrade to add more tags`}
               cta="Upgrade"
-              href={`/${slug}/upgrade`}
+              onClick={openUpgradeModal}
             />
           ) : undefined
         }

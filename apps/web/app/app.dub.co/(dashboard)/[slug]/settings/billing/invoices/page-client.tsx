@@ -1,6 +1,7 @@
 "use client";
 
 import { InvoiceProps } from "@/lib/types";
+import useWorkspace from "@/lib/swr/use-workspace";
 import { AnimatedEmptyState } from "@/ui/shared/animated-empty-state";
 import { AppButton } from "@/ui/components/controls/app-button";
 import { text } from "@/ui/design/tokens";
@@ -34,6 +35,7 @@ const invoiceStatusBadge = (status: string | null | undefined) => {
 };
 
 export default function WorkspaceInvoicesClient() {
+  const { currency } = useWorkspace();
   const { slug } = useParams();
   const { searchParams } = useRouterStuff();
 
@@ -58,7 +60,13 @@ export default function WorkspaceInvoicesClient() {
         {invoices ? (
           invoices.length > 0 ? (
             invoices.map((invoice) => (
-              <InvoiceCard key={invoice.id} invoice={invoice} />
+              <InvoiceCard
+                key={invoice.id}
+                invoice={invoice}
+                currency={
+                  ((currency || "EUR").toUpperCase() as "EUR" | "USD") ?? "EUR"
+                }
+              />
             ))
           ) : (
             <AnimatedEmptyState
@@ -85,7 +93,13 @@ export default function WorkspaceInvoicesClient() {
   );
 }
 
-const InvoiceCard = ({ invoice }: { invoice: InvoiceProps }) => {
+const InvoiceCard = ({
+  invoice,
+  currency,
+}: {
+  invoice: InvoiceProps;
+  currency: "EUR" | "USD";
+}) => {
   return (
     <div className="grid grid-cols-3 gap-4 px-6 py-4 sm:px-12">
       <div className="text-sm">
@@ -104,6 +118,7 @@ const InvoiceCard = ({ invoice }: { invoice: InvoiceProps }) => {
         <div className="flex items-center gap-1.5 text-neutral-500">
           <span className="text-sm">
             {currencyFormatter(invoice.total / 100, {
+              currency,
               maximumFractionDigits: 2,
             })}
           </span>

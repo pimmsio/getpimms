@@ -3,6 +3,7 @@ import useDomain from "@/lib/swr/use-domain";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { QRLinkProps } from "@/lib/types";
 import { QRCode } from "@/ui/shared/qr-code";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import {
   Button,
   IconMenu,
@@ -78,6 +79,7 @@ function LinkQRModalInner({
   setShowLinkQRModal: Dispatch<SetStateAction<boolean>>;
 } & LinkQRModalProps) {
   const { id: workspaceId, slug, plan, logo: workspaceLogo } = useWorkspace();
+  const { openUpgradeModal } = useUpgradeModal();
   const id = useId();
   const { isMobile } = useMediaQuery();
   const { logo: domainLogo } = useDomain({
@@ -239,7 +241,7 @@ function LinkQRModalInner({
           >
             Logo
           </label>
-          <InfoTooltip
+          <HelpTooltip
             content={
               <SimpleTooltipContent
                 title="Display your logo in the center of the QR code."
@@ -260,12 +262,9 @@ function LinkQRModalInner({
               <TooltipContent
                 title="You need to be on the Pro plan and above to customize your QR Code logo."
                 cta="Upgrade to Pro"
-                href={
-                  slug
-                    ? `/${slug}/upgrade?exit=close`
-                    : "https://pimms.io/pricing"
-                }
-                target="_blank"
+                onClick={slug ? openUpgradeModal : undefined}
+                href={slug ? undefined : "https://pimms.io/pricing"}
+                target={slug ? undefined : "_blank"}
               />
             ) : undefined
           }

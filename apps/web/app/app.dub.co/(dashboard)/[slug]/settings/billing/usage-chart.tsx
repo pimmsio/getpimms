@@ -1,9 +1,10 @@
 import useUsage from "@/lib/swr/use-usage";
+import useWorkspace from "@/lib/swr/use-workspace";
 import { EmptyState, LoadingSpinner } from "@dub/ui";
 import { Bars, TimeSeriesChart, XAxis, YAxis } from "@dub/ui/charts";
 import { CircleDollar, Hyperlink } from "@dub/ui/icons";
 import { CursorRays } from "@/ui/layout/sidebar/icons/cursor-rays";
-import { formatDate, nFormatter } from "@dub/utils";
+import { currencyFormatter, formatDate, nFormatter } from "@dub/utils";
 import { LinearGradient } from "@visx/gradient";
 import { useSearchParams } from "next/navigation";
 import { ComponentProps, Fragment, useMemo } from "react";
@@ -32,6 +33,7 @@ const resourceEmptyStates: Record<
 };
 
 export function UsageChart() {
+  const { currency } = useWorkspace();
   const searchParams = useSearchParams();
   const resource =
     RESOURCES.find((r) => r === searchParams.get("tab")) ?? "events";
@@ -84,8 +86,12 @@ export function UsageChart() {
                         </p>
                       </div>
                       <p className="text-right font-medium text-neutral-900">
-                        {resource === "revenue" && "$"}
-                        {nFormatter(d.values.usage, { full: true })}
+                        {resource === "revenue"
+                          ? currencyFormatter(d.values.usage, {
+                              currency: currency ?? "EUR",
+                              maximumFractionDigits: 0,
+                            })
+                          : nFormatter(d.values.usage, { full: true })}
                       </p>
                     </Fragment>
                   </div>
@@ -101,7 +107,13 @@ export function UsageChart() {
             <YAxis
               showGridLines
               tickFormat={
-                resource === "revenue" ? (v) => `$${nFormatter(v)}` : nFormatter
+                resource === "revenue"
+                  ? (v) =>
+                      currencyFormatter(Number(v), {
+                        currency: currency ?? "EUR",
+                        maximumFractionDigits: 0,
+                      })
+                  : nFormatter
               }
             />
             <Bars

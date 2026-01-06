@@ -5,6 +5,7 @@ import useFolders from "@/lib/swr/use-folders";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { FolderSummary } from "@/lib/types";
 import { FOLDERS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/folders";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import { Combobox, TooltipContent } from "@dub/ui";
 import { cn } from "@dub/utils";
 import { ChevronsUpDown } from "lucide-react";
@@ -43,6 +44,7 @@ export const FolderDropdown = ({
 }: FolderDropdownProps) => {
   const router = useRouter();
   const { slug, plan, defaultFolderId } = useWorkspace();
+  const { openUpgradeModal } = useUpgradeModal();
   const searchParams = useSearchParams();
 
   const [search, setSearch] = useState("");
@@ -139,7 +141,7 @@ export const FolderDropdown = ({
           <TooltipContent
             title="You can only use Link Folders on a Pro plan and above. Upgrade to Pro to continue."
             cta="Upgrade to Pro"
-            href={`/${slug}/upgrade`}
+            onClick={openUpgradeModal}
           />
         ) : undefined,
       },
@@ -248,7 +250,7 @@ export const FolderDropdown = ({
                   <TooltipContent
                     title="You can only use Link Folders on a Pro plan and above. Upgrade to Pro to continue."
                     cta="Upgrade to Pro"
-                    href={`/${slug}/upgrade`}
+                    onClick={openUpgradeModal}
                   />
                 ) : undefined
               }

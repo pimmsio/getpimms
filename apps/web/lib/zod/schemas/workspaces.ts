@@ -4,6 +4,8 @@ import slugify from "@sindresorhus/slugify";
 import { DomainSchema } from "./domains";
 import { planSchema, roleSchema } from "./misc";
 
+export const currencySchema = z.enum(["EUR", "USD"]);
+
 export const workspaceIdSchema = z.object({
   workspaceId: z
     .string()
@@ -27,6 +29,7 @@ export const WorkspaceSchema = z
       .describe("The invite code of the workspace."),
 
     plan: planSchema,
+    currency: currencySchema.describe("The workspace currency for display."),
     stripeId: z.string().nullable().describe("The Stripe ID of the workspace."),
     billingCycleStart: z
       .number()
@@ -54,7 +57,7 @@ export const WorkspaceSchema = z
     salesUsage: z
       .number()
       .describe(
-        "The dollar amount of tracked revenue in the current billing cycle (in cents).",
+        "The amount of tracked revenue in the current billing cycle (in cents).",
       ),
     salesLimit: z
       .number()
@@ -143,6 +146,7 @@ export const createWorkspaceSchema = z.object({
 
 export const updateWorkspaceSchema = createWorkspaceSchema.partial().extend({
   allowedHostnames: z.array(z.string()).optional(),
+  currency: currencySchema.optional(),
 });
 
 export const notificationTypes = z.enum([

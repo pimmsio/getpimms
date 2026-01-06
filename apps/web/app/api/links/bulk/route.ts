@@ -41,10 +41,7 @@ export const POST = withWorkspace(
     throwIfLinksUsageExceeded(workspace);
 
     const links = bulkCreateLinksBodySchema.parse(await parseRequestBody(req));
-    if (
-      workspace.linksUsage + links.length > workspace.linksLimit &&
-      (workspace.plan === "free" || workspace.plan === "starter" || workspace.plan === "pro")
-    ) {
+    if (workspace.linksUsage + links.length > workspace.linksLimit) {
       throw new DubApiError({
         code: "exceeded_limit",
         message: exceededLimitError({
@@ -211,7 +208,7 @@ export const POST = withWorkspace(
     }
 
     if (checkIfLinksHaveWebhooks(validLinks)) {
-      if (workspace.plan === "free" || workspace.plan === "starter") {
+      if (workspace.plan === "free") {
         throw new DubApiError({
           code: "forbidden",
           message:

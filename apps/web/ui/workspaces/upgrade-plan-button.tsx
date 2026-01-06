@@ -11,12 +11,14 @@ import { useState } from "react";
 export function UpgradePlanButton({
   plan,
   period,
+  mode = "subscription",
   className,
   text,
   ...rest
 }: {
   plan: string;
   period: "monthly" | "yearly";
+  mode?: "subscription" | "lifetime";
   text?: string;
 } & Partial<AppButtonProps>) {
   const router = useRouter();
@@ -28,78 +30,94 @@ export function UpgradePlanButton({
 
   const selectedPlan =
     SELF_SERVE_PAID_PLANS.find(
-      (p) => p.name.toLowerCase() === plan.toLowerCase(),
+      (p) => p.name.toLowerCase() === plan,
     ) ?? SELF_SERVE_PAID_PLANS[0];
 
   const [clicked, setClicked] = useState(false);
 
   const queryString = searchParams.toString();
-
   const isCurrentPlan = currentPlan === selectedPlan.name.toLowerCase();
 
-  return (
-    <AppButton
-      type="button"
-      className={cn("text-sm", className)}
-      loading={clicked}
-      disabled={!workspaceSlug || isCurrentPlan}
-      onClick={() => {
-        if (selectedPlan.name === "Starter") {
-          window.location.href = `/api/pay?id=5kAeWJ8Q2f0O1e8dQS`;
-          return;
-        }
-        if (selectedPlan.name === "Pro") {
-          window.location.href = `/api/pay?id=9B66oG2VvcYq3STaGmc7u07`;
-          return;
-        }
+  const baseUrl = `${APP_DOMAIN}${pathname}${queryString.length > 0 ? `?${queryString}` : ""}`;
+  const onboarding = searchParams.get("workspace");
 
-        setClicked(true);
-        fetch(`/api/workspaces/${workspaceSlug}/billing/upgrade`, {
+  const handleUpgrade = async () => {
+    if (mode === "lifetime" && selectedPlan.name.toLowerCase() !== "pro") {
+      alert("Lifetime is only available for the Pro plan.");
+      return;
+    }
+
+    setClicked(true);
+
+    try {
+      const response = await fetch(
+        `/api/workspaces/${workspaceSlug}/billing/upgrade`,
+        {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             plan,
-            period,
-            baseUrl: `${APP_DOMAIN}${pathname}${queryString.length > 0 ? `?${queryString}` : ""}`,
-            onboarding: searchParams.get("workspace"),
+            period: mode === "lifetime" ? "lifetime" : period,
+            baseUrl,
+            onboarding,
           }),
-        })
-          .then(async (res) => {
-            plausible("Opened Checkout");
-            posthog.capture("checkout_opened", {
-              currentPlan: capitalize(plan),
-              newPlan: selectedPlan.name,
-            });
-            if (currentPlan === "free") {
-              const data = await res.json();
-              const { url } = data as { url?: string };
-              if (url) {
-                window.location.href = url;
-              } else {
-                throw new Error("Stripe checkout URL missing");
-              }
-            } else {
-              const { url } = await res.json();
-              router.push(url);
-            }
-          })
-          .catch((err) => {
-            alert(err);
-          })
-          .finally(() => {
-            setClicked(false);
-          });
-      }}
+        },
+      );
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || "Failed to create checkout session");
+      }
+
+      const data = await response.json();
+      const { url } = data as { url?: string };
+
+      if (!url) {
+        throw new Error("Stripe checkout URL missing");
+      }
+
+      // Track analytics
+      plausible("Opened Checkout");
+      posthog.capture("checkout_opened", {
+        currentPlan: capitalize(plan),
+        newPlan: selectedPlan.name,
+        ...(mode === "lifetime" && { period: "lifetime" }),
+      });
+
+      // Redirect based on current plan
+      if (currentPlan === "free" || mode === "lifetime") {
+        window.location.href = url;
+      } else {
+        router.push(url);
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : String(err));
+    } finally {
+      setClicked(false);
+    }
+  };
+
+  const getButtonText = () => {
+    if (text) return text;
+    if (isCurrentPlan) return "Your current plan";
+    if (currentPlan === "free") {
+      return `Get started with ${selectedPlan.name} ${capitalize(period)}`;
+    }
+    return `Switch to ${selectedPlan.name} ${capitalize(period)}`;
+  };
+
+  return (
+    <AppButton
+      type="button"
+      className={cn("text-sm", className)}
+      loading={clicked}
+      disabled={!workspaceSlug}
+      onClick={handleUpgrade}
       {...rest}
     >
-      {text ??
-        (isCurrentPlan
-          ? "Your current plan"
-          : currentPlan === "free"
-            ? `Get started with ${selectedPlan.name} ${capitalize(period)}`
-            : `Switch to ${selectedPlan.name} ${capitalize(period)}`)}
+      {getButtonText()}
     </AppButton>
   );
 }

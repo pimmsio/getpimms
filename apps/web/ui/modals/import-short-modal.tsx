@@ -2,7 +2,7 @@ import useWorkspace from "@/lib/swr/use-workspace";
 import { ImportedDomainCountProps } from "@/lib/types";
 import {
   Button,
-  InfoTooltip,
+  HelpTooltip,
   LoadingSpinner,
   Logo,
   Modal,
@@ -251,7 +251,7 @@ function ImportShortModal({
                 <h2 className="text-sm font-medium text-neutral-900">
                   Short.io API Key
                 </h2>
-                <InfoTooltip
+                <HelpTooltip
                   content={
                     <SimpleTooltipContent
                       title={`Your Short.io API Key can be found in your Short.io account under "Integrations & API".`}

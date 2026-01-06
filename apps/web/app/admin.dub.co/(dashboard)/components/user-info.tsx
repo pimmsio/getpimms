@@ -69,7 +69,7 @@ export default function UserInfo({ data }: { data: UserInfoProps }) {
             <div className="flex justify-between text-sm">
               <span className="font-medium text-neutral-700">Sales</span>
               <span className="text-neutral-500">
-                {currencyFormatter(workspace.sales / 100)}
+                {currencyFormatter(workspace.sales / 100, { currency: "USD" })}
               </span>
             </div>
           </div>

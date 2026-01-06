@@ -1,10 +1,10 @@
 import { mutatePrefix } from "@/lib/swr/mutate";
 import useWorkspace from "@/lib/swr/use-workspace";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import {
   AnimatedSizeContainer,
   Button,
   buttonVariants,
-  SimpleTooltipContent,
   TooltipContent,
   useMediaQuery,
 } from "@dub/ui";
@@ -16,7 +16,6 @@ import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
 import { AlertCircleFill, CheckCircleFill } from "../shared/icons";
-import { ProBadgeTooltip } from "../shared/pro-badge-tooltip";
 
 interface DomainSearchResult {
   domain: string;
@@ -357,7 +356,7 @@ export function RegisterDomainForm({
 }
 
 function UpgradeTooltipContent() {
-  const { slug } = useWorkspace();
+  const { openUpgradeModal } = useUpgradeModal();
   return (
     <TooltipContent
       title={
@@ -367,7 +366,7 @@ function UpgradeTooltipContent() {
         </>
       }
       cta="Upgrade to Pro"
-      onClick={() => window.open(`/${slug}/upgrade`)}
+      onClick={openUpgradeModal}
     />
   );
 }

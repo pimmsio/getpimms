@@ -23,9 +23,9 @@ export function LoginLink({
 }) {
   return (
     <Html>
-      <Head />
-      <Preview>Your PiMMs Login Link</Preview>
       <Tailwind>
+        <Head />
+        <Preview>Your PiMMs Login Link</Preview>
         <Body className="mx-auto my-auto bg-white font-sans">
           <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border border-solid border-neutral-100 px-10 py-5">
             <Section className="my-8">

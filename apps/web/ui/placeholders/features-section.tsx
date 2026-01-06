@@ -104,7 +104,7 @@ export function FeaturesSection({
   //         </FeatureCard>
   //         <FeatureCard
   //           title="Collaborate with your team"
-  //           description="Invite your teammates to collaborate on your links. For [enterprises](/enterprise), Dub offers [SAML SSO](/help/category/saml-sso) with Okta, Google, and Azure AD for higher security."
+  //           description="Invite your teammates to collaborate on your links."
   //           linkText="Learn more"
   //           href={createHref("/help/article/how-to-invite-teammates", domain, {
   //             utm_campaign: domain,

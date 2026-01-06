@@ -1,6 +1,6 @@
 "use client";
 
-import { AppButtonLink } from "@/ui/components/controls/app-button";
+import { AppButton, AppButtonLink } from "@/ui/components/controls/app-button";
 import { EmptyState as EmptyStateBlock } from "@dub/ui";
 import { cn } from "@dub/utils";
 import { ComponentProps, ReactNode } from "react";
@@ -8,6 +8,7 @@ import { ComponentProps, ReactNode } from "react";
 export default function EmptyState({
   buttonText,
   buttonLink,
+  onButtonClick,
   variant = "padded",
   containerClassName,
   actions,
@@ -15,9 +16,10 @@ export default function EmptyState({
 }: {
   buttonText?: string;
   buttonLink?: string;
+  onButtonClick?: () => void;
   /**
    * `padded` (default): consistent vertical rhythm for empty content blocks
-   * without adding extra “card-on-card” visuals.
+   * without adding extra "card-on-card" visuals.
    *
    * `plain`: render just the EmptyState content (use when the caller already
    * provides spacing/surface).
@@ -34,17 +36,27 @@ export default function EmptyState({
 } & Omit<ComponentProps<typeof EmptyStateBlock>, "children">) {
   const content = (
     <EmptyStateBlock {...rest}>
-      {(buttonText && buttonLink) || actions ? (
+      {(buttonText && (buttonLink || onButtonClick)) || actions ? (
         <div className="mt-4 flex items-center justify-center gap-2">
-          {buttonText && buttonLink && (
-            <AppButtonLink
-              href={buttonLink}
-              {...(buttonLink.startsWith("http") ? { target: "_blank" } : {})}
-              variant="secondary"
-              size="sm"
-            >
-              {buttonText}
-            </AppButtonLink>
+          {buttonText && (buttonLink || onButtonClick) && (
+            buttonLink ? (
+              <AppButtonLink
+                href={buttonLink}
+                {...(buttonLink.startsWith("http") ? { target: "_blank" } : {})}
+                variant="secondary"
+                size="sm"
+              >
+                {buttonText}
+              </AppButtonLink>
+            ) : (
+              <AppButton
+                onClick={onButtonClick}
+                variant="secondary"
+                size="sm"
+              >
+                {buttonText}
+              </AppButton>
+            )
           )}
           {actions}
         </div>

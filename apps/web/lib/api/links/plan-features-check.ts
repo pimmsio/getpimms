@@ -1,7 +1,7 @@
 import { NewLinkProps } from "@/lib/types";
 import { combineWords } from "@dub/utils";
 
-export const starterFeaturesCheck = (payload: NewLinkProps) => {
+export const proLinkFeaturesCheck = (payload: NewLinkProps) => {
   const {
     password,
     rewrite,
@@ -13,7 +13,7 @@ export const starterFeaturesCheck = (payload: NewLinkProps) => {
     rewrite ||
     expiresAt
   ) {
-    const starterFeaturesString = combineWords(
+    const proFeaturesString = combineWords(
       [
         password && "password protection",
         rewrite && "link cloaking",
@@ -22,7 +22,7 @@ export const starterFeaturesCheck = (payload: NewLinkProps) => {
     );
 
     throw new Error(
-      `You can only use ${starterFeaturesString} on a Starter plan and above. Upgrade to Starter to use these features.`,
+      `You can only use ${proFeaturesString} on a Pro plan and above. Upgrade to Pro to use these features.`,
     );
   }
 };

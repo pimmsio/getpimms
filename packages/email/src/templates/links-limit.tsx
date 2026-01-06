@@ -38,15 +38,16 @@ export function LinksLimitAlert({
   };
   const percentage = Math.round((linksUsage / linksLimit) * 100);
   const nextPlan = getNextPlan(plan as string);
+  const isBusinessPlan = plan.startsWith("business");
 
   return (
     <Html>
-      <Head />
-      <Preview>
-        Your PiMMs workspace, {name} has used {percentage.toString()}% of its
-        links limit for the month.
-      </Preview>
       <Tailwind>
+        <Head />
+        <Preview>
+          Your PiMMs workspace, {name} has used {percentage.toString()}% of its
+          links limit for the month.
+        </Preview>
         <Body className="mx-auto my-auto bg-white font-sans">
           <Container className="mx-auto my-10 max-w-[500px] rounded-3xl border border-solid border-neutral-100 px-10 py-5">
             <Section className="my-8">
@@ -71,7 +72,7 @@ export function LinksLimitAlert({
               links) in your current billing cycle.
             </Text>
 
-            {plan === "business-max" || plan === "enterprise" ? (
+            {isBusinessPlan ? (
               <Text className="text-sm leading-6 text-black">
                 Since you're on the {capitalize(plan)} plan, you will still be
                 able to create links even after you hit your limit. We're
@@ -82,11 +83,11 @@ export function LinksLimitAlert({
             ) : percentage === 100 ? (
               <Text className="text-sm leading-6 text-black">
                 All your existing links will continue to work, and we are still
-                collecting data on them, but you'll need to upgrade the plan add more links.
+                collecting data on them, but you'll need to upgrade your plan to add more links.
               </Text>
             ) : (
               <Text className="text-sm leading-6 text-black">
-                Once you hit your limit, you'll need to upgrade to the plan to add more links.
+                Once you hit your limit, you'll need to upgrade your plan to add more links.
               </Text>
             )}
             <Section className="mb-8">

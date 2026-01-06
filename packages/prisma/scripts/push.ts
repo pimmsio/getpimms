@@ -2,33 +2,25 @@ import { spawn } from "node:child_process";
 
 function sanitizeDatabaseUrl(rawUrl: string): string {
   // Prisma/MySQL URLs are valid WHATWG URLs (e.g. mysql://user:pass@host/db?sslaccept=strict)
-  // PlanetScale requires SSL/TLS. MySQL2 (used by Prisma tooling in some commands) ignores
-  // `sslaccept`, so enforce TLS using an `ssl` profile object instead of a boolean.
+  // PlanetScale requires SSL/TLS. Prisma's schema engine understands `sslaccept=strict`
+  // (and/or sslmode/ssl-mode). Do NOT strip these params; without them PlanetScale will reject
+  // the connection as "insecure".
   try {
     const url = new URL(rawUrl);
     const protocol = url.protocol.toLowerCase();
     const isMySql = protocol === "mysql:" || protocol === "mysql2:";
-    const hasSslMode = Array.from(url.searchParams.keys()).some(
-      (k) => k.toLowerCase() === "ssl-mode" || k.toLowerCase() === "sslmode",
-    );
-    const hasSsl = Array.from(url.searchParams.keys()).some(
-      (k) => k.toLowerCase() === "ssl",
-    );
+    const qpKeys = Array.from(url.searchParams.keys()).map((k) => k.toLowerCase());
+    const hasSslAccept = qpKeys.includes("sslaccept");
+    const hasSslMode = qpKeys.includes("ssl-mode") || qpKeys.includes("sslmode");
+    const hasSsl = qpKeys.includes("ssl");
 
     if (isMySql) {
-      // Remove `sslaccept` if present (MySQL2 warns and ignores it).
-      for (const key of Array.from(url.searchParams.keys())) {
-        if (key.toLowerCase() === "sslaccept") url.searchParams.delete(key);
-      }
-
       // If no SSL indicator is present, force it on.
-      if (!hasSsl && !hasSslMode) {
-        // MySQL2 expects `ssl` to be an object, not a boolean.
-        // URLSearchParams will percent-encode the JSON string automatically.
-        url.searchParams.set(
-          "ssl",
-          JSON.stringify({ rejectUnauthorized: true }),
-        );
+      //
+      // PlanetScale's recommended param is `sslaccept=strict`. We only add it when the URL
+      // doesn't already include any TLS hints to avoid overriding explicit config.
+      if (!hasSslAccept && !hasSslMode && !hasSsl) {
+        url.searchParams.set("sslaccept", "strict");
       }
     }
     return url.toString();

@@ -39,7 +39,5 @@ function LeadsViewToggle() {
 function EventsTableContainer() {
   useWorkspace();
 
-  return (
-    <LeadsFeedTable />
-  );
+  return <LeadsFeedTable />;
 }

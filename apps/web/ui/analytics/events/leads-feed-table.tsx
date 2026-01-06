@@ -8,7 +8,7 @@ import {
   TABLE_CONTAINER_CLASS,
   TABLE_CLASS,
 } from "@/ui/shared/table-styles";
-import { AppButton, AppButtonLink } from "@/ui/components/controls/app-button";
+import { AppButton } from "@/ui/components/controls/app-button";
 import {
   Table,
   Tooltip,
@@ -19,7 +19,7 @@ import {
 import { Globe } from "@dub/ui/icons";
 import { cn, COUNTRIES, fetcher, formatDate, OG_AVATAR_URL, timeAgo } from "@dub/utils";
 import { ColumnDef } from "@tanstack/react-table";
-import { ChevronRight, ClipboardCopy, Download, Flame } from "lucide-react";
+import { ChevronRight, ClipboardCopy, Download } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useMemo, useState } from "react";
@@ -31,8 +31,8 @@ import {
   copyLeadsForGoogleSheets,
   downloadLeadsAsCSV,
 } from "./leads-export";
-import { LinksRowSkeleton } from "@/ui/shared/links-row";
-import { AnonymousVisitorsTeaser } from "@/ui/conversions/anonymous-visitors-teaser";
+import { ModalContext } from "@/ui/modals/modal-provider";
+import SetupGuides from "./setup-guides";
 
 
 type LeadLink = {
@@ -77,6 +77,7 @@ export default function LeadsFeedTable() {
   const { queryString: originalQueryString } = useContext(AnalyticsContext);
   const { slug, id: workspaceId } = useWorkspace();
   const router = useRouter();
+  const { setShowConversionOnboardingModal } = useContext(ModalContext);
 
   const hotOnly = searchParams.get("hotOnly") === "1";
   const selectedHotScores = useMemo(
@@ -130,11 +131,101 @@ export default function LeadsFeedTable() {
   );
   const showSkeleton = isLoading && customers.length === 0;
   const rows = showSkeleton ? skeletonRows : customers;
+  const showMaskedPreview = !isLoading && customers.length === 0;
+
+  const maskedPreviewRows = useMemo(
+    () =>
+      Array.from({ length: 1 }).map((_, i) => ({
+        id: `masked_${i}`,
+        name: "Anonymous",
+        email: `hidden${i}@example.com`,
+        avatar: null,
+        hotScore: 0,
+        lastHotScoreAt: null,
+        lastEventAt: new Date().toISOString(),
+        lastActivityType: "click" as const,
+        totalClicks: null,
+        createdAt: null,
+        link: null,
+        lastActivityLink: null,
+        country: null,
+        referer: null,
+        __masked: true as const,
+      })),
+    [],
+  );
 
   const [copying, setCopying] = useState(false);
 
-  const columns = useMemo<ColumnDef<LeadsFeedCustomer, unknown>[]>(
-    () => [
+  const columns = useMemo<
+    ColumnDef<LeadsFeedCustomer & { __masked?: boolean }, unknown>[]
+  >(() => {
+    if (showMaskedPreview) {
+      return [
+        {
+          id: "customer",
+          header: () => <TableHeader>Contact</TableHeader>,
+          enableHiding: false,
+          minSize: 260,
+          size: 340,
+          cell: ({ row }) => {
+            const c = row.original as any;
+            const email = (c.email || "hidden@example.com").toLowerCase();
+            const [localPart, domainPart] = email.split("@");
+            const localMasked = (localPart || "hidden")
+              .slice(0, 1)
+              .padEnd(Math.min((localPart || "hidden").length, 6), "•");
+            const domainMasked = (domainPart || "example.com")
+              .split(".")
+              .map((p) => p.slice(0, 1).padEnd(Math.min(p.length, 6), "•"))
+              .join(".");
+
+            return (
+              <div className="group flex w-full items-center justify-between gap-4 px-2 py-1.5 sm:px-5 sm:py-3 select-none">
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <div className="size-10 shrink-0 rounded-full bg-neutral-100 ring-1 ring-neutral-200/60" />
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-medium text-neutral-900">
+                      Anonymous
+                    </div>
+                    <div className="truncate text-xs text-neutral-500">
+                      <span className="blur-sm">{localMasked}</span>
+                      <span className="px-0.5">@</span>
+                      <span className="blur-sm">{domainMasked}</span>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowConversionOnboardingModal(true)}
+                  className="opacity-0 transition-opacity group-hover:opacity-100 rounded-md bg-neutral-900 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-neutral-800"
+                >
+                  Reveal
+                </button>
+              </div>
+            );
+          },
+        },
+        {
+          id: "lastActivity",
+          header: () => <TableHeader>Last Activity</TableHeader>,
+          enableHiding: false,
+          minSize: 140,
+          size: 160,
+          cell: () => (
+            <div className="flex flex-col gap-0.5">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-xs font-medium text-neutral-700">
+                  Click
+                </span>
+              </div>
+            </div>
+          ),
+        },
+      ];
+    }
+
+    return [
       {
         id: "hotScore",
         header: () => <TableHeader>Score</TableHeader>,
@@ -408,21 +499,26 @@ export default function LeadsFeedTable() {
           );
         },
       },
-    ],
-    [],
-  );
+    ];
+  }, [showMaskedPreview, setShowConversionOnboardingModal, slug]);
 
   const { table, ...tableProps } = useTable({
-    data: rows,
+    data: showMaskedPreview ? (maskedPreviewRows as any) : rows,
     loading: false,
     error: error ? "Failed to fetch leads feed." : undefined,
     columns,
     enableColumnResizing: true,
-    pagination: hasWarmHotFilter ? undefined : pagination,
-    onPaginationChange: hasWarmHotFilter ? undefined : setPagination,
-    rowCount: hasWarmHotFilter ? customers.length : data?.total ?? customers.length,
+    pagination: showMaskedPreview || hasWarmHotFilter ? undefined : pagination,
+    onPaginationChange:
+      showMaskedPreview || hasWarmHotFilter ? undefined : setPagination,
+    rowCount: showMaskedPreview
+      ? maskedPreviewRows.length
+      : hasWarmHotFilter
+        ? customers.length
+        : data?.total ?? customers.length,
     onRowClick: (row) => {
-      if (row.original.__skeleton) return;
+      if ((row.original as any).__skeleton || (row.original as any).__masked)
+        return;
       router.push(`/${slug}/customers/${row.original.id}`);
     },
     containerClassName: TABLE_CONTAINER_CLASS,
@@ -435,44 +531,41 @@ export default function LeadsFeedTable() {
         !showSkeleton && "cursor-pointer",
         columnId === "customer" ? "p-0" : "px-3 py-1.5",
       ),
-    emptyState: (
-      <div className="px-4 py-6 sm:px-6">
-        <div className="max-w-2xl text-left">
-          <div className="text-sm font-semibold text-neutral-900">
-            {hasWarmHotFilter ? "No warm/hot leads yet" : "No leads yet"}
-          </div>
-          <div className="mt-1 text-sm text-neutral-600">
-            Without conversion tracking, visitors stay anonymous. Set it up to turn clicks into leads and sales.
-          </div>
-          <AppButtonLink
-            href={`/${slug}/conversions?ctSetup=1`}
-            variant="primary"
-            size="sm"
-            className="mt-3 w-fit"
-          >
-            Reveal leads
-          </AppButtonLink>
-          <AnonymousVisitorsTeaser variant="plain" className="mt-3" />
-        </div>
-      </div>
-    ),
+    emptyState: null,
     resourceName: (plural) => `lead${plural ? "s" : ""}`,
   });
 
   return (
-    <>
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2">
-          <div />
+    <div className="mt-4 rounded-xl border border-neutral-200 bg-white p-4 sm:p-6">
+      {showMaskedPreview ? (
+        <div className="mb-4">
+          <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+            <div>
+              <div className="text-sm font-semibold text-neutral-900">
+                No leads yet
+              </div>
+            </div>
+            <AppButton
+              type="button"
+              variant="primary"
+              size="sm"
+              className="w-fit shrink-0"
+              onClick={() => setShowConversionOnboardingModal(true)}
+            >
+              Reveal leads
+            </AppButton>
+          </div>
         </div>
+      ) : null}
 
-        <div className="flex items-center gap-2">
+      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-2">
           <AppButton
             type="button"
             variant="secondary"
             size="sm"
             className="w-auto"
-            disabled={customers.length === 0 || copying}
+            disabled={showMaskedPreview || customers.length === 0 || copying}
             onClick={async () => {
               try {
                 setCopying(true);
@@ -493,7 +586,7 @@ export default function LeadsFeedTable() {
             variant="secondary"
             size="sm"
             className="w-auto"
-            disabled={customers.length === 0}
+            disabled={showMaskedPreview || customers.length === 0}
             onClick={() => downloadLeadsAsCSV(customers)}
           >
             <Download className="mr-2 h-4 w-4 text-neutral-500" />
@@ -503,7 +596,9 @@ export default function LeadsFeedTable() {
       </div>
 
       <Table {...tableProps} table={table} />
-    </>
+
+      {showMaskedPreview ? <SetupGuides embedded className="mt-4" /> : null}
+    </div>
   );
 }
 

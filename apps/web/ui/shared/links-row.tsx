@@ -3,6 +3,7 @@
 import { LinkUtmColumns } from "@/ui/links/link-utm-columns";
 import { LinkCell } from "@/ui/shared/link-cell";
 import { cn, currencyFormatter, nFormatter } from "@dub/utils";
+import useWorkspace from "@/lib/swr/use-workspace";
 
 type UtmKey = "utm_source" | "utm_medium" | "utm_campaign" | "utm_term" | "utm_content";
 
@@ -113,6 +114,7 @@ export function LinksRowMetricPills({
   metrics: LinksRowMetrics;
   className?: string;
 }) {
+  const { currency } = useWorkspace();
   const { clicks, leads, revenue } = metrics;
   return (
     <div className={cn("flex items-center gap-2", className)}>
@@ -122,7 +124,10 @@ export function LinksRowMetricPills({
       <div className="h-6 w-px bg-neutral-200/70" />
       <Metric
         label="REV"
-        value={currencyFormatter(revenue, { maximumFractionDigits: 0 })}
+        value={currencyFormatter(revenue, {
+          currency: currency ?? "EUR",
+          maximumFractionDigits: 0,
+        })}
         tone="revenue"
         active={revenue > 0}
       />

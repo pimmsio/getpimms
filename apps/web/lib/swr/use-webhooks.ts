@@ -2,7 +2,6 @@ import { WebhookProps } from "@/lib/types";
 import { fetcher } from "@dub/utils";
 import useSWR from "swr";
 import useWorkspace from "./use-workspace";
-
 export default function useWebhooks() {
   const { id, plan } = useWorkspace();
 
@@ -11,9 +10,7 @@ export default function useWebhooks() {
     isValidating,
     isLoading,
   } = useSWR<WebhookProps[]>(
-    plan &&
-      !["free", "starter"].includes(plan) &&
-      `/api/webhooks?workspaceId=${id}`,
+    plan && plan !== "free" && `/api/webhooks?workspaceId=${id}`,
     fetcher,
     {
       dedupingInterval: 60000,

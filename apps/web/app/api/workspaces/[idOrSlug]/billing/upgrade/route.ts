@@ -17,6 +17,13 @@ export const POST = withWorkspace(async ({ req, workspace, session }) => {
     lookup_keys: [`${plan}_${period}`],
   });
 
+  if (!prices.data || prices.data.length === 0) {
+    return new Response(`Price not found for ${plan}_${period}`, { status: 404 });
+  }
+
+  const priceId = prices.data[0].id;
+  const isLifetime = period === "lifetime";
+
   const activeSubscription = workspace.stripeId
     ? await stripe.subscriptions
         .list({
@@ -36,8 +43,9 @@ export const POST = withWorkspace(async ({ req, workspace, session }) => {
     }
   }
 
-  // if the user has an active subscription, create billing portal to upgrade
-  if (workspace.stripeId && activeSubscription) {
+  // For lifetime payments, always create a new checkout session (one-time payment)
+  // For subscriptions, use billing portal if user has active subscription
+  if (!isLifetime && workspace.stripeId && activeSubscription) {
     const { url } = await stripe.billingPortal.sessions.create({
       customer: workspace.stripeId,
       return_url: baseUrl,
@@ -49,7 +57,7 @@ export const POST = withWorkspace(async ({ req, workspace, session }) => {
             {
               id: activeSubscription.items.data[0].id,
               quantity: 1,
-              price: prices.data[0].id,
+              price: priceId,
             },
           ],
         },
@@ -60,6 +68,8 @@ export const POST = withWorkspace(async ({ req, workspace, session }) => {
     // const customer = await getPimmsCustomer(session.user.id);
 
     // For both new users and users with canceled subscriptions
+    // For lifetime payments, use "payment" mode (one-time)
+    // For subscriptions, use "subscription" mode
     const stripeSession = await stripe.checkout.sessions.create({
       ...(workspace.stripeId
         ? {
@@ -76,7 +86,7 @@ export const POST = withWorkspace(async ({ req, workspace, session }) => {
       billing_address_collection: "required",
       success_url: `${APP_DOMAIN}/${workspace.slug}?${onboarding ? "onboarded" : "upgraded"}=true&plan=${plan}&period=${period}`,
       cancel_url: baseUrl,
-      line_items: [{ price: prices.data[0].id, quantity: 1 }],
+      line_items: [{ price: priceId, quantity: 1 }],
       // ...(customer?.discount?.couponId
       //   ? {
       //       discounts: [
@@ -96,7 +106,7 @@ export const POST = withWorkspace(async ({ req, workspace, session }) => {
       tax_id_collection: {
         enabled: true,
       },
-      mode: "subscription",
+      mode: isLifetime ? "payment" : "subscription",
       client_reference_id: workspace.id,
       metadata: {
         pimmsCustomerId: session.user.id,

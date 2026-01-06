@@ -1,6 +1,6 @@
 import { formatDateTooltip } from "@/lib/analytics/format-date-tooltip";
 import useWorkspace from "@/lib/swr/use-workspace";
-import { InfoTooltip, useRouterStuff } from "@dub/ui";
+import { HelpTooltip, useRouterStuff } from "@dub/ui";
 import { TimeSeriesChart, XAxis, YAxis } from "@dub/ui/charts";
 import { nFormatter } from "@dub/utils";
 import { useMemo } from "react";
@@ -154,7 +154,7 @@ export default function MixedAnalyticsChart({
             <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
               <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
                 <span>Clicks saved</span>
-                <InfoTooltip content="Mobile + tablet clicks." />
+                <HelpTooltip content="Mobile + tablet clicks." />
               </div>
               <div className="text-sm font-bold text-gray-800 sm:text-xl">
                 {clicksSaved > 999
@@ -215,7 +215,7 @@ export default function MixedAnalyticsChart({
               <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
                 <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-gray-400 sm:h-2 sm:w-2"></div>
                 <span>Recent</span>
-                <InfoTooltip content="Visitors in the last 2 hours." />
+                <HelpTooltip content="Visitors in the last 2 hours." />
               </div>
               <div className="text-sm font-bold text-gray-800 sm:text-xl">
                 {additionalMetrics.recentVisitors}
@@ -228,7 +228,7 @@ export default function MixedAnalyticsChart({
             <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
               <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
                 <span>RPC</span>
-                <InfoTooltip content="Revenue Per Click - Average revenue generated per click on your links" />
+                <HelpTooltip content="Revenue Per Click - Average revenue generated per click on your links" />
               </div>
               <div className="text-sm font-bold text-gray-800 sm:text-xl">
                 ${(additionalMetrics.revenuePerClick || 0).toFixed(1)}
@@ -241,7 +241,7 @@ export default function MixedAnalyticsChart({
             <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
               <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
                 <span>CVR</span>
-                <InfoTooltip content="Conversion Rate - Percentage of visitors who become qualified leads" />
+                <HelpTooltip content="Conversion Rate - Percentage of visitors who become qualified leads" />
               </div>
               <div className="text-sm font-bold text-gray-800 sm:text-xl">
                 {Math.round(additionalMetrics.clickToLeadRate || 0)}%
@@ -254,7 +254,7 @@ export default function MixedAnalyticsChart({
             <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
               <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
                 <span>Close Rate</span>
-                <InfoTooltip content="Close Rate - Percentage of leads that convert to sales" />
+                <HelpTooltip content="Close Rate - Percentage of leads that convert to sales" />
               </div>
               <div className="text-sm font-bold text-gray-800 sm:text-xl">
                 {Math.round(additionalMetrics.leadToSaleRate || 0)}%
@@ -267,7 +267,7 @@ export default function MixedAnalyticsChart({
             <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
               <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
                 <span>AOV</span>
-                <InfoTooltip content="Average Order Value - Average value of each order generated" />
+                <HelpTooltip content="Average Order Value - Average value of each order generated" />
               </div>
               <div className="text-sm font-bold text-gray-800 sm:text-xl">
                 {Math.round(additionalMetrics.avgOrderValue || 0)}€

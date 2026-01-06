@@ -14,7 +14,7 @@ import {
   AppleLogo,
   Badge,
   FileUpload,
-  InfoTooltip,
+  HelpTooltip,
   LoadingSpinner,
   ShimmerDots,
   SimpleTooltipContent,

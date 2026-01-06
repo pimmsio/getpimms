@@ -14,16 +14,18 @@ import {
 
 export function TooManyRedirectsEmail({
   url,
-  redirectCount,
+  hopsFollowed,
   redirectChain,
+  apexDomains,
   userEmail,
   userName,
   workspaceName,
   workspaceSlug,
 }: {
   url: string;
-  redirectCount: number;
+  hopsFollowed: number;
   redirectChain: string[];
+  apexDomains: string[];
   userEmail?: string;
   userName?: string;
   workspaceName?: string;
@@ -53,10 +55,16 @@ export function TooManyRedirectsEmail({
               </Text>
               <Text className="my-2 text-sm text-black">{url}</Text>
               <Text className="my-2 text-sm font-semibold text-black">
-                Redirect Count:
+                Redirect hops followed:
               </Text>
               <Text className="my-2 text-sm text-black">
-                {redirectCount} redirects (maximum 3 allowed)
+                {hopsFollowed} hops (limit reached)
+              </Text>
+              <Text className="my-2 text-sm font-semibold text-black">
+                Apex domains detected:
+              </Text>
+              <Text className="my-2 text-sm text-black">
+                {apexDomains.length ? apexDomains.join(", ") : "(unknown)"}
               </Text>
               <Text className="my-2 text-sm font-semibold text-black">
                 Redirect Chain:

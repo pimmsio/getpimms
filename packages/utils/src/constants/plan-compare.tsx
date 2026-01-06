@@ -16,10 +16,8 @@ export const PLAN_COMPARE_FEATURES: {
       | {
           default?: boolean;
           free?: boolean;
-          starter?: boolean;
           pro?: boolean;
           business?: boolean;
-          enterprise?: boolean;
         };
   }[];
 }[] = [
@@ -85,7 +83,6 @@ export const PLAN_COMPARE_FEATURES: {
       {
         check: {
           free: false,
-          starter: false,
           default: true,
         },
         text: "A/B testing",
@@ -146,11 +143,7 @@ export const PLAN_COMPARE_FEATURES: {
     features: [
       {
         check: {
-          default: false,
-          starter: true,
-          pro: true,
-          business: true,
-          enterprise: true,
+          default: true,
         },
         text: "Event tracking",
         // href: "https://dub.co/help/article/dub-conversions",
@@ -173,26 +166,21 @@ export const PLAN_COMPARE_FEATURES: {
           </>
         ),
       },
-      // {
-      //   check: {
-      //     default: false,
-      //     pro: true,
-      //     business: true,
-      //     advanced: true,
-      //     enterprise: true,
-      //   },
-      //   text: "Real-time events stream",
-      //   // href: "https://dub.co/help/article/real-time-events-stream",
-      // },
       {
         check: {
           default: false,
-          starter: true,
           pro: true,
           business: true,
-          enterprise: true,
         },
         text: "100+ integrations incl. Zapier",
+      },
+      {
+        check: {
+          default: false,
+          pro: true,
+          business: true,
+        },
+        text: "Analytics export",
       },
     ],
   },
@@ -200,26 +188,14 @@ export const PLAN_COMPARE_FEATURES: {
     category: "Sales tracking",
     href: "https://pimms.io",
     features: [
-      // {
-      //   check: {
-      //     default: false,
-      //     pro: false,
-      //     business: true,
-      //     advanced: true,
-      //     enterprise: true,
-      //   },
-      //   text: "Create your own affiliate program",
-      //   // href: "https://dub.co/help/article/dub-partners",
-      // },
       {
         check: {
           default: false,
           pro: true,
           business: true,
-          enterprise: true,
         },
         text: ({ id, plan }) =>
-          id === "free" || id === "starter" ? (
+          id === "free" ? (
             "No sales tracking"
           ) : (
             <>
@@ -238,75 +214,9 @@ export const PLAN_COMPARE_FEATURES: {
           default: false,
           pro: true,
           business: true,
-          enterprise: true,
         },
         text: "Stripe payments integration",
       },
-      // {
-      //   check: {
-      //     default: false,
-      //     business: true,
-      //     advanced: true,
-      //     enterprise: true,
-      //   },
-      //   text: "1-click global payouts",
-      //   // href: "https://dub.co/help/article/partner-payouts",
-      // },
-      // {
-      //   check: {
-      //     default: false,
-      //     business: true,
-      //     advanced: true,
-      //     enterprise: true,
-      //   },
-      //   text: ({ id }) =>
-      //     id === "free" || id === "pro" ? (
-      //       "No payouts"
-      //     ) : (
-      //       <>
-      //         <strong>
-      //           {
-      //             {
-      //               business: "7%",
-      //               advanced: "5%",
-      //               enterprise: "3%",
-      //             }[id]
-      //           }
-      //         </strong>{" "}
-      //         payout fees
-      //       </>
-      //     ),
-      //   // href: "https://dub.co/help/article/partner-payouts#payout-fees-and-timing",
-      // },
-      // {
-      //   check: {
-      //     default: false,
-      //     business: true,
-      //     advanced: true,
-      //     enterprise: true,
-      //   },
-      //   text: "Tax compliance",
-      //   // href: "https://dub.co/help/article/partner-payouts#tax-compliance",
-      // },
-      // {
-      //   check: {
-      //     default: false,
-      //     business: false,
-      //     advanced: true,
-      //     enterprise: true,
-      //   },
-      //   text: "White-labeling support",
-      //   // href: "https://dub.co/help/article/dub-partners#white-labeled-in-app-dashboard",
-      // },
-      // {
-      //   check: {
-      //     default: false,
-      //     business: false,
-      //     advanced: true,
-      //     enterprise: true,
-      //   },
-      //   text: "Branded email domains",
-      // },
     ],
   },
   {
@@ -317,7 +227,7 @@ export const PLAN_COMPARE_FEATURES: {
         text: ({ plan }) => (
           <>
             <strong>
-              {plan.name === "Enterprise" || plan.name === "Business"
+              {plan.limits.domains === INFINITY_NUMBER
                 ? "Unlimited"
                 : nFormatter(plan.limits.domains, { full: true })}
             </strong>{" "}
@@ -370,9 +280,7 @@ export const PLAN_COMPARE_FEATURES: {
         text: ({ id, plan }) => (
           <>
             <strong>
-              {id === "enterprise"
-                ? "Custom"
-                : nFormatter(plan.limits.api) + "/min"}
+              {nFormatter(plan.limits.api) + "/min"}
             </strong>{" "}
             rate limit
           </>
@@ -383,7 +291,6 @@ export const PLAN_COMPARE_FEATURES: {
           default: false,
           pro: true,
           business: true,
-          enterprise: true,
         },
         text: "Event webhooks",
         // href: "https://dub.co/docs/concepts/webhooks/introduction",
@@ -398,9 +305,7 @@ export const PLAN_COMPARE_FEATURES: {
         text: ({ plan }) => (
           <>
             <strong>
-              {plan.name === "Enterprise" || plan.name === "Business"
-                ? "Unlimited"
-                : nFormatter(plan.limits.users)}
+              {plan.name === "Business" ? "Unlimited" : nFormatter(plan.limits.users)}
             </strong>{" "}
             user
             {plan.limits.users === 1 ? "" : "s"}
@@ -428,40 +333,9 @@ export const PLAN_COMPARE_FEATURES: {
         check: {
           default: false,
           business: true,
-          enterprise: true,
         },
         text: "Bulk link operations",
       },
-      // {
-      //   check: {
-      //     default: false,
-      //     advanced: true,
-      //     enterprise: true,
-      //   },
-      //   text: "Role-based access control",
-      // },
-      // {
-      //   check: {
-      //     default: false,
-      //     enterprise: true,
-      //   },
-      //   text: "SAML/SSO",
-      //   // href: "https://dub.co/help/category/saml-sso",
-      // },
-      // {
-      //   check: {
-      //     default: false,
-      //     enterprise: true,
-      //   },
-      //   text: "Custom SLA",
-      // },
-      // {
-      //   check: {
-      //     default: false,
-      //     enterprise: true,
-      //   },
-      //   text: "Audit logs",
-      // },
     ],
   },
   {
@@ -475,27 +349,14 @@ export const PLAN_COMPARE_FEATURES: {
               {
                 {
                   free: "Basic support",
-                  starter: "1 month priority support",
                   pro: "3 months priority support",
                   business: "Priority support",
-                  enterprise: "Priority with SLA",
                 }[id]
               }
             </strong>
           </>
         ),
       },
-      // {
-      //   check: {
-      //     default: false,
-      //     enterprise: true,
-      //   },
-      //   text: () => (
-      //     <>
-      //       <strong>Dedicated</strong> success manager
-      //     </>
-      //   ),
-      // },
     ],
   },
 ];

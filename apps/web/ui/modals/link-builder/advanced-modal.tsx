@@ -1,7 +1,7 @@
 import { LinkFormData } from "@/ui/links/link-builder/link-builder-provider";
 import {
   Button,
-  InfoTooltip,
+  HelpTooltip,
   Modal,
   SimpleTooltipContent,
   Tooltip,
@@ -143,7 +143,7 @@ function AdvancedModal({
                 className="flex items-center gap-2 text-sm font-medium text-neutral-700"
               >
                 Tenant ID{" "}
-                <InfoTooltip content="The ID of the tenant that created the link inside your system. If set, it can be used to fetch all links for a tenant." />
+                <HelpTooltip content="The ID of the tenant that created the link inside your system. If set, it can be used to fetch all links for a tenant." />
               </label>
               <Tooltip content="The ID of the tenant that created the link inside your system. If set, it can be used to fetch all links for a tenant." />
             </div>

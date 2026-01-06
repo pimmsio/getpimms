@@ -1,9 +1,9 @@
 "use client";
 
 import useWorkspace from "@/lib/swr/use-workspace";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import { capitalize } from "@dub/utils";
 import { Crown } from "lucide-react";
-import Link from "next/link";
 
 export const UpgradeRequiredToast = ({
   title,
@@ -15,6 +15,7 @@ export const UpgradeRequiredToast = ({
   message: string;
 }) => {
   const { slug, nextPlan } = useWorkspace();
+  const { openUpgradeModal } = useUpgradeModal();
   planToUpgradeTo = planToUpgradeTo || nextPlan?.name;
 
   return (
@@ -27,13 +28,23 @@ export const UpgradeRequiredToast = ({
         </p>
       </div>
       <p className="text-sm text-neutral-600">{message}</p>
-      <Link
-        href={slug ? `/${slug}/upgrade` : "https://pimms.io/pricing"}
-        target="_blank"
-        className="w-full rounded border border-blue-500 bg-[#3971ff] px-3 py-1.5 text-center text-sm text-white transition-all hover:ring-0 hover:ring-transparent"
-      >
-        {planToUpgradeTo ? `Upgrade to ${planToUpgradeTo}` : "Contact support"}
-      </Link>
+      {slug ? (
+        <button
+          onClick={openUpgradeModal}
+          className="w-full rounded border border-blue-500 bg-[#3971ff] px-3 py-1.5 text-center text-sm text-white transition-all hover:ring-0 hover:ring-transparent"
+        >
+          {planToUpgradeTo ? `Upgrade to ${planToUpgradeTo}` : "Contact support"}
+        </button>
+      ) : (
+        <a
+          href="https://pimms.io/pricing"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full rounded border border-blue-500 bg-[#3971ff] px-3 py-1.5 text-center text-sm text-white transition-all hover:ring-0 hover:ring-transparent"
+        >
+          {planToUpgradeTo ? `Upgrade to ${planToUpgradeTo}` : "Contact support"}
+        </a>
+      )}
     </div>
   );
 };

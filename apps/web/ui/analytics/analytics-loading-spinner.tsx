@@ -1,4 +1,5 @@
 import useWorkspace from "@/lib/swr/use-workspace";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import { LoadingSpinner } from "@dub/ui";
 import { Lock } from "lucide-react";
 import Link from "next/link";
@@ -6,7 +7,8 @@ import { useContext } from "react";
 import { AnalyticsContext } from "./analytics-provider";
 
 export function AnalyticsLoadingSpinner() {
-  const { slug, nextPlan } = useWorkspace();
+  const { nextPlan } = useWorkspace();
+  const { openUpgradeModal } = useUpgradeModal();
   const { requiresUpgrade } = useContext(AnalyticsContext);
 
   return requiresUpgrade ? (
@@ -17,13 +19,12 @@ export function AnalyticsLoadingSpinner() {
       <p className="mt-2 text-sm text-neutral-500">
         {nextPlan?.name} plan required to view more analytics
       </p>
-      <Link
-        href={slug ? `/${slug}/upgrade` : "https://pimms.io/pricing"}
-        {...(slug ? {} : { target: "_blank" })}
+      <button
+        onClick={openUpgradeModal}
         className="w-full rounded border border-black bg-black px-3 py-1.5 text-center text-sm text-white transition-all hover:bg-neutral-800 hover:ring-0 hover:ring-transparent"
       >
         Upgrade to {nextPlan?.name}
-      </Link>
+      </button>
     </div>
   ) : (
     <LoadingSpinner />

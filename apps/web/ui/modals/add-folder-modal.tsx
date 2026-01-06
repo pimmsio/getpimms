@@ -1,5 +1,6 @@
 import useWorkspace from "@/lib/swr/use-workspace";
 import { FolderSummary } from "@/lib/types";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import { Button, Modal, TooltipContent, useKeyboardShortcut } from "@dub/ui";
 import {
   Dispatch,
@@ -39,7 +40,8 @@ function AddFolderButton({
 }: {
   setShowAddFolderModal: Dispatch<SetStateAction<boolean>>;
 }) {
-  const { slug, plan } = useWorkspace();
+  const { plan } = useWorkspace();
+  const { openUpgradeModal } = useUpgradeModal();
 
   useKeyboardShortcut("c", () => setShowAddFolderModal(true), {
     enabled: plan !== "free",
@@ -56,7 +58,7 @@ function AddFolderButton({
           <TooltipContent
             title="You can only use Link Folders on a Pro plan and above. Upgrade to Pro to continue."
             cta="Upgrade to Pro"
-            href={`/${slug}/upgrade`}
+            onClick={openUpgradeModal}
           />
         )
       }

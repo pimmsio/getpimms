@@ -1,11 +1,24 @@
 import { getApexDomain } from "@dub/utils";
 
-export const MAX_REDIRECTS = 3;
+export const MAX_HOPS = 5;
 const REQUEST_TIMEOUT = 5000; // 5 seconds
 
 interface RedirectChainResult {
   success: boolean;
   urls: string[];
+  /**
+   * Unique apex domains encountered in the chain (in order).
+   */
+  apexDomains: string[];
+  /**
+   * True as soon as the chain contains >1 unique apex domain.
+   * This is the primary signal we care about for abuse prevention.
+   */
+  hasMultipleApexDomains: boolean;
+  /**
+   * Number of redirect hops followed (each 3xx with a Location counts as 1 hop).
+   */
+  hopsFollowed: number;
   error?: string;
   tooManyRedirects?: boolean;
 }
@@ -13,25 +26,42 @@ interface RedirectChainResult {
 /**
  * Follows a URL's redirect chain and returns all URLs in the chain.
  * Redirects to the same domain (ignoring subdomain differences) are not counted.
- * 
+ *
  * @param url - The initial URL to check
  * @param maxRedirects - Maximum number of redirects to follow (default: 3)
  * @returns RedirectChainResult containing all URLs in the chain or error
  */
 export async function followRedirectChain(
   url: string,
-  maxRedirects: number = MAX_REDIRECTS,
+  {
+    maxHops = MAX_HOPS,
+    failClosed = false,
+  }: { maxHops?: number; failClosed?: boolean } = {},
 ): Promise<RedirectChainResult> {
   const urls: string[] = [url];
-  const visitedUrls = new Set<string>([url]);
   let currentUrl = url;
-  let redirectCount = 0;
-  
-  // Get the apex domain of the original URL to ignore subdomain-only redirects
+  let hopsFollowed = 0;
+
   const originalApexDomain = getApexDomain(url);
+  const apexDomains: string[] = [];
+  const seenApexDomains = new Set<string>();
+
+  const addApexDomain = (candidate: string) => {
+    const apex = (candidate || "").toLowerCase();
+    if (!apex) return;
+    if (!seenApexDomains.has(apex)) {
+      seenApexDomains.add(apex);
+      apexDomains.push(apex);
+    }
+  };
+
+  addApexDomain(originalApexDomain);
 
   try {
-    while (redirectCount < maxRedirects) {
+    let exhaustedHopBudget = true;
+
+    while (hopsFollowed < maxHops) {
+      exhaustedHopBudget = false;
       // Create an abort controller for timeout
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
@@ -43,7 +73,8 @@ export async function followRedirectChain(
           redirect: "manual",
           signal: controller.signal,
           headers: {
-            "User-Agent": "Mozilla/5.0 (compatible; PimmsBot/1.0; +https://pimms.io)",
+            "User-Agent":
+              "Mozilla/5.0 (compatible; PimmsBot/1.0; +https://pimms.io)",
           },
         });
 
@@ -51,8 +82,9 @@ export async function followRedirectChain(
 
         // Check if this is a redirect (3xx status codes)
         if (response.status >= 300 && response.status < 400) {
+          exhaustedHopBudget = true;
           const location = response.headers.get("Location");
-          
+
           if (!location) {
             // Redirect status but no Location header - stop here
             break;
@@ -61,7 +93,10 @@ export async function followRedirectChain(
           // Handle relative URLs
           let nextUrl: string;
           try {
-            if (location.startsWith("http://") || location.startsWith("https://")) {
+            if (
+              location.startsWith("http://") ||
+              location.startsWith("https://")
+            ) {
               nextUrl = location;
             } else if (location.startsWith("/")) {
               const urlObj = new URL(currentUrl);
@@ -71,61 +106,83 @@ export async function followRedirectChain(
             }
           } catch (e) {
             console.error("Error parsing redirect URL:", e);
+            if (failClosed) {
+              return {
+                success: false,
+                urls,
+                apexDomains,
+                hasMultipleApexDomains: apexDomains.length > 1,
+                hopsFollowed,
+                error: "Error parsing redirect URL",
+              };
+            }
             break;
           }
 
-          // Check for redirect loops
-          if (visitedUrls.has(nextUrl)) {
-            return {
-              success: false,
-              urls,
-              error: "Redirect loop detected",
-            };
-          }
-
-          // Check if redirect is to the same domain (ignoring subdomain differences)
-          const nextApexDomain = getApexDomain(nextUrl);
-          const isSameDomainRedirect = originalApexDomain && 
-            nextApexDomain && 
-            originalApexDomain.toLowerCase() === nextApexDomain.toLowerCase();
-
           urls.push(nextUrl);
-          visitedUrls.add(nextUrl);
           currentUrl = nextUrl;
-          
-          // Only increment redirect count if it's not a same-domain redirect
-          // (e.g., abc.com => www.abc.com => abc.com should count as 0 redirects)
-          if (!isSameDomainRedirect) {
-            redirectCount++;
+          hopsFollowed++;
+
+          const nextApexDomain = getApexDomain(nextUrl);
+          addApexDomain(nextApexDomain);
+
+          if (seenApexDomains.size > 1) {
+            return {
+              success: true,
+              urls,
+              apexDomains,
+              hasMultipleApexDomains: true,
+              hopsFollowed,
+            };
           }
         } else {
           // Not a redirect - we've reached the final destination
+          exhaustedHopBudget = false;
           break;
         }
       } catch (e) {
         clearTimeout(timeoutId);
-        
+
         if (e instanceof Error && e.name === "AbortError") {
+          if (failClosed) {
+            return {
+              success: false,
+              urls,
+              apexDomains,
+              hasMultipleApexDomains: seenApexDomains.size > 1,
+              hopsFollowed,
+              error: "Request timeout while following redirects",
+            };
+          }
+          break;
+        }
+
+        // For network errors, return what we have so far
+        console.error("Error following redirect:", e);
+        if (failClosed) {
           return {
             success: false,
             urls,
-            error: "Request timeout while following redirects",
+            apexDomains,
+            hasMultipleApexDomains: seenApexDomains.size > 1,
+            hopsFollowed,
+            error: "Network error while following redirects",
           };
         }
-        
-        // For network errors, return what we have so far
-        console.error("Error following redirect:", e);
         break;
       }
     }
 
-    // Check if we hit the redirect limit
-    // Use > instead of >= to allow exactly MAX_REDIRECTS redirects (e.g., 3 redirects should be allowed when MAX_REDIRECTS=3)
-    if (redirectCount > maxRedirects) {
+    // If we exhausted hop budget and the last response was still a redirect, we'll end up here.
+    // Treat as too many redirects to avoid infinite chains.
+    if (hopsFollowed >= maxHops && exhaustedHopBudget) {
       return {
         success: false,
         urls,
-        error: `Too many redirects (maximum ${maxRedirects} allowed)`,
+        apexDomains,
+        hasMultipleApexDomains: seenApexDomains.size > 1,
+        hopsFollowed,
+        error: `Too many redirects (maximum ${maxHops} hops allowed)`,
         tooManyRedirects: true,
       };
     }
@@ -133,14 +190,19 @@ export async function followRedirectChain(
     return {
       success: true,
       urls,
+      apexDomains,
+      hasMultipleApexDomains: seenApexDomains.size > 1,
+      hopsFollowed,
     };
   } catch (e) {
     console.error("Unexpected error in followRedirectChain:", e);
     return {
       success: false,
       urls,
+      apexDomains,
+      hasMultipleApexDomains: seenApexDomains.size > 1,
+      hopsFollowed,
       error: e instanceof Error ? e.message : "Unknown error",
     };
   }
 }
-

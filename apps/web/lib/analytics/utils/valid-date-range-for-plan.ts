@@ -41,23 +41,6 @@ export const validDateRangeForPlan = ({
     }
   }
 
-  // Starter plan users can only get analytics for 6 months
-  if (
-    plan === "starter" &&
-    start &&
-    getDaysDifference(new Date(start), end || now) > 183
-  ) {
-    if (throwError) {
-      throw new DubApiError({
-        code: "forbidden",
-        message:
-          "You can only get analytics for up to 6 months on a Starter plan. Upgrade to Pro to get analytics for longer periods.",
-      });
-    } else {
-      return false;
-    }
-  }
-
   // Pro plan users can only get analytics for 1 year
   if (
     plan === "pro" &&

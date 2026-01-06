@@ -3,6 +3,7 @@
 import useWorkspace from "@/lib/swr/use-workspace";
 import { SegmentIntegrationCredentials } from "@/lib/types";
 import { Lock } from "@/ui/shared/icons";
+import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import { Button, Tooltip, TooltipContent } from "@dub/ui";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
@@ -16,8 +17,10 @@ export function SetWriteKey({
   credentials: SegmentIntegrationCredentials;
   installed: boolean;
 }) {
-  const { id: workspaceId, slug, plan } = useWorkspace();
+  const { id: workspaceId, plan } = useWorkspace();
+  const { openUpgradeModal } = useUpgradeModal();
   const [writeKey, setWriteKey] = useState(credentials?.writeKey);
+  const normalizedPlan = plan;
 
   const { executeAsync, isPending } = useAction(installSegmentAction, {
     async onSuccess() {
@@ -50,7 +53,7 @@ export function SetWriteKey({
     <TooltipContent
       title="You can only install the Segment integration on the Business plan and above."
       cta="Upgrade to Business"
-      href={`/${slug}/upgrade`}
+      onClick={openUpgradeModal}
     />
   );
 
@@ -77,7 +80,7 @@ export function SetWriteKey({
             how to locate your write key.
           </p>
 
-          {plan === "free" || plan === "starter" || plan === "pro" ? (
+          {normalizedPlan !== "business" ? (
             <Tooltip content={planDisabledTooltip}>
               <div className="mt-4 cursor-not-allowed rounded border border-neutral-300 bg-neutral-50 px-3 py-2 text-sm text-neutral-400">
                 Enter your write key
@@ -110,7 +113,7 @@ export function SetWriteKey({
               loading={isPending}
               disabled={installed || !writeKey}
               disabledTooltip={
-                plan === "free" || plan === "starter" || plan === "pro"
+                normalizedPlan !== "business"
                   ? planDisabledTooltip
                   : undefined
               }

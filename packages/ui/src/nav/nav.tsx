@@ -42,11 +42,6 @@ export const navItems = [
     segments: ["/docs", "/help", "/brand", "/blog", "/changelog", "/customers"],
   },
   {
-    name: "Enterprise",
-    href: "/enterprise",
-    segments: ["/enterprise"],
-  },
-  {
     name: "Pricing",
     href: "/pricing",
     segments: ["/pricing"],

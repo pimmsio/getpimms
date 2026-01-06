@@ -177,6 +177,11 @@ export function AnalyticsCacheProvider({
         
         // Keep showing old data while fetching new (smooth UX)
         keepPreviousData: true,
+
+        // SWR expects `use` (middleware list) to be iterable. We've observed runtime
+        // crashes where an undefined `use` is treated as iterable inside SWR.
+        // Set a safe default at the provider level.
+        use: [],
         
       }}
     >

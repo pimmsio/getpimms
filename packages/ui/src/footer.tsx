@@ -40,7 +40,6 @@ const navigation = {
       name: title,
       href,
     })),
-    { name: "PiMMs Enterprise", href: "/enterprise" },
     { name: "Pricing", href: "/pricing" },
   ],
   solutions: [

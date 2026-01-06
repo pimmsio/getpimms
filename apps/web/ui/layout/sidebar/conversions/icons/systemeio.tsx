@@ -21,7 +21,7 @@ export function SystemeIO(props: SVGProps<SVGSVGElement>) {
           transform="translate(9761 -21207)"
           fill="#fff"
           stroke="#707070"
-          stroke-width="1"
+          strokeWidth="1"
         >
           <rect width="739" height="1020" stroke="none" />
           <rect x="0.5" y="0.5" width="738" height="1019" fill="none" />
