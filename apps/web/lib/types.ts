@@ -72,6 +72,7 @@ export interface RedisLinkProps {
   id: string;
   url?: string;
   trackConversion?: boolean;
+  isConversionCallback?: boolean;
   leadMagnetEnabled?: boolean;
   password?: boolean;
   proxy?: boolean;

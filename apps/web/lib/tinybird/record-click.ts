@@ -11,6 +11,7 @@ import { geolocation, ipAddress } from "@vercel/functions";
 import { userAgent } from "next/server";
 import { clickCache } from "../api/links/click-cache";
 import { ExpandedLink, transformLink } from "../api/links/utils/transform-link";
+import { qstash } from "../cron";
 import {
   detectBot,
   detectQr,
@@ -22,7 +23,6 @@ import { redis } from "../upstash";
 import { webhookCache } from "../webhook/cache";
 import { sendWebhooks } from "../webhook/qstash";
 import { transformClickEventData } from "../webhook/transform";
-import { qstash } from "../cron";
 
 /**
  * Recording clicks with geo, ua, referer and timestamp data
@@ -160,7 +160,9 @@ export async function recordClick({
 
   const hasWebhooks = webhookIds && webhookIds.length > 0;
 
-  const [, , , , workspaceRows, ] = await Promise.allSettled([
+  // NOTE: Keep this destructuring aligned with the Promise array below.
+  // `workspaceRows` must refer to the "SELECT usage, usageLimit..." query result.
+  const [, , , , , , , workspaceRows] = await Promise.allSettled([
     fetch(
       `${process.env.TINYBIRD_API_URL}/v0/events?name=dub_click_events&wait=true`,
       {
@@ -174,6 +176,20 @@ export async function recordClick({
 
     // cache the click ID in Redis for 1 hour
     clickCache.set({ domain, key, ip, clickId }),
+
+    // TY attribution: store the most recent click per visitor per workspace (30 days).
+    // NOTE: TY links never call recordClick, so they won't overwrite last-click attribution.
+    workspaceId
+      ? redis.set(
+          `ty:lastClick:${workspaceId}:${clickData.identity_hash}`,
+          {
+            clickId,
+            linkId,
+            timestamp: clickData.timestamp,
+          },
+          { ex: 60 * 60 * 24 * 30 },
+        )
+      : null,
 
     // cache the click data for 5 mins
     // we're doing this because ingested click events are not available immediately in Tinybird
@@ -212,7 +228,7 @@ export async function recordClick({
           [workspaceId],
         )
       : null,
-    
+
     // Increment customer click count and update last event + last activity fields
     anonymousId && workspaceId
       ? conn.execute(

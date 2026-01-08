@@ -70,6 +70,8 @@ export default async function LinkMiddleware(
     key = "_root";
   }
 
+  console.log("key", key);
+
   // we don't support .php links (too much bot traffic)
   // hence we redirect to the root domain and add `pimms-no-track` header to avoid tracking bot traffic
   if (isUnsupportedKey(key)) {
@@ -252,6 +254,25 @@ export default async function LinkMiddleware(
     pimmsAnonymousIdCookieName,
     pimmsAnonymousIdCookieValue: anonymousId,
   };
+
+  // TY (conversion callback) links:
+  // - do NOT record clicks
+  // - do NOT write click feeds / counters
+  // - do NOT become last-click attribution (recordClick is never called)
+  // We only ensure visitor cookies exist, then hand off to /api/thankyou to do reconciliation.
+  if (key.toLowerCase().endsWith("/thankyou")) {
+    console.log("TY link", key);
+
+    return createResponseWithCookies(
+      NextResponse.rewrite(new URL(`/api/thankyou?linkId=${linkId}`, req.url), {
+        headers: {
+          ...DUB_HEADERS,
+          "X-Robots-Tag": "googlebot: noindex",
+        },
+      }),
+      cookieData,
+    );
+  }
 
   // for root domain links, if there's no destination URL, rewrite to placeholder page
   if (!url) {

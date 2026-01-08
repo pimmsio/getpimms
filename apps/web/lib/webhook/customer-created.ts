@@ -3,7 +3,10 @@ import { includeTags } from "@/lib/api/links/include-tags";
 import { getClickEvent, recordLead } from "@/lib/tinybird";
 import {
   computeAnonymousCustomerFields,
+  getClickData,
   getFirstAvailableField,
+  getLink,
+  isValidPimmsId,
 } from "@/lib/webhook/custom";
 import { sendWorkspaceWebhook } from "@/lib/webhook/publish";
 import { transformLeadEventData } from "@/lib/webhook/transform";
@@ -157,3 +160,27 @@ export const customerCreated = async (
 
   return `Customer created: ${customer.id}`;
 };
+
+/**
+ * Validates pimmsId, gets click data and link, then creates customer.
+ * Used in webhook routes and pending webhook handlers.
+ */
+export async function processCustomerCreatedFromPimmsId({
+  clickId,
+  workspaceId,
+  data,
+}: {
+  clickId: string;
+  workspaceId: string;
+  data: Record<string, any>;
+}): Promise<string> {
+  const clickData = await getClickData(clickId);
+  const link = await getLink(clickData);
+  const isValid = await isValidPimmsId(link, workspaceId);
+  if (!isValid) {
+    throw new WebhookError("Invalid pimms_id, skipping...", 200);
+  }
+
+  const customerData = await getCustomerData(data, clickId, link, clickData);
+  return await customerCreated(customerData);
+}

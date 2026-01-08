@@ -284,6 +284,12 @@ export const createLinkBodySchema = z.object({
     .describe(
       "Whether to track conversions for the short link. Defaults to `false` if not provided.",
     ),
+  isConversionCallback: z
+    .boolean()
+    .optional()
+    .describe(
+      "Whether this short link is a conversion callback (thank-you) link. TY hits do not count as clicks and are used for webhook reconciliation.",
+    ),
   leadMagnetEnabled: z
     .boolean()
     .optional()
