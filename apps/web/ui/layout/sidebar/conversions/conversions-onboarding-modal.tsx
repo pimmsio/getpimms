@@ -35,6 +35,7 @@ import { SystemeIO } from "./icons/systemeio";
 
 type SetupCategory =
   | "leadMagnet"
+  | "thankyou"
   | "website"
   | "calendars"
   | "payments"
@@ -44,6 +45,7 @@ type SetupCategory =
 
 type ProviderId =
   | "leadMagnet"
+  | "thankyou"
   | "framer"
   | "webflow"
   | "lovable"
@@ -103,6 +105,13 @@ const PROVIDERS: Provider[] = [
     category: "leadMagnet",
     setupTime: "< 1 min",
     isMostPopular: true,
+  },
+  {
+    id: "thankyou",
+    name: "Thank-you links",
+    shortName: "Thank-you links",
+    category: "thankyou",
+    setupTime: "< 1 min",
   },
   // Website
   {
@@ -339,6 +348,13 @@ const CATEGORY_CARDS: Array<{
     time: "< 1 min",
   },
   {
+    id: "thankyou",
+    title: "Thank-you links",
+    subtitle: "Attribute conversions even when webhooks miss pimms_id.",
+    icon: Sparkles,
+    time: "< 1 min",
+  },
+  {
     id: "website",
     title: "Website",
     subtitle: "Framer, Webflow, WordPress…",
@@ -485,7 +501,8 @@ function ConversionOnboardingModalInner({
   const providersForCategory = useMemo(() => {
     if (!category) return [];
     return PROVIDERS.filter(
-      (p) => p.category === category && p.id !== "leadMagnet",
+      (p) =>
+        p.category === category && !["leadMagnet", "thankyou"].includes(p.id),
     );
   }, [category]);
 
@@ -509,8 +526,8 @@ function ConversionOnboardingModalInner({
 
   const handleChooseCategory = (next: SetupCategory) => {
     setCategory(next);
-    if (next === "leadMagnet") {
-      setProviderId("leadMagnet");
+    if (next === "leadMagnet" || next === "thankyou") {
+      setProviderId(next === "leadMagnet" ? "leadMagnet" : "thankyou");
       setStep("providerAction");
     } else {
       setStep("chooseProvider");
@@ -572,6 +589,17 @@ function ConversionOnboardingModalInner({
               const params = new URLSearchParams(searchParams.toString());
               params.set("newLink", "true");
               params.set("leadMagnet", "1");
+              router.replace(`${pathname}?${params.toString()}`, {
+                scroll: false,
+              });
+              setShowConversionOnboardingModal(false);
+            }}
+            onCreateThankYouLink={() => {
+              // Open Link Builder in “new link” mode (ModalProvider watches ?newLink).
+              // We also pass ?ty=1 to preconfigure the form for a conversion callback link.
+              const params = new URLSearchParams(searchParams.toString());
+              params.set("newLink", "true");
+              params.set("ty", "1");
               router.replace(`${pathname}?${params.toString()}`, {
                 scroll: false,
               });
@@ -709,11 +737,13 @@ function ProviderAction({
   provider,
   onReset,
   onCreateLeadMagnetLink,
+  onCreateThankYouLink,
   workspaceSlug,
 }: {
   provider: Provider | null;
   onReset: () => void;
   onCreateLeadMagnetLink: () => void;
+  onCreateThankYouLink: () => void;
   workspaceSlug: string | null;
 }) {
   if (!provider) {
@@ -769,6 +799,55 @@ function ProviderAction({
             </button>
             <div className="text-xs text-neutral-500">
               You can customize the capture step anytime.
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (provider.id === "thankyou") {
+    return (
+      <div>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <h3 className="text-lg font-semibold text-neutral-900">
+            Thank-you links
+          </h3>
+          <span className="inline-flex items-center rounded-full border border-neutral-200 bg-white px-2 py-0.5 text-[11px] font-semibold text-neutral-700">
+            &lt; 1 min
+          </span>
+        </div>
+        <p className="mt-2 text-sm text-neutral-600">
+          Create a short link used as a conversion callback (thank-you page).
+          TY hits don’t count as clicks, but they help reconcile provider webhooks
+          that sometimes miss <code className="rounded bg-neutral-100 px-1">pimms_id</code>.
+        </p>
+
+        <div className="mt-6 rounded-lg border border-neutral-200 bg-white p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-sm font-semibold text-neutral-900">
+                Create your first thank-you link
+              </div>
+              <p className="mt-1 text-xs text-neutral-600">
+                Use a custom key like <code>/abc/thankyou</code> and set the
+                destination URL to your final thank-you page.
+              </p>
+            </div>
+            <span className="inline-flex shrink-0 items-center rounded-full border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[11px] font-semibold text-neutral-700">
+              &lt; 1 min
+            </span>
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+              onClick={onCreateThankYouLink}
+            >
+              Create thank-you link
+            </button>
+            <div className="text-xs text-neutral-500">
+              You can update it anytime.
             </div>
           </div>
         </div>

@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import { combineTagIds } from "@/lib/api/tags/combine-tag-ids";
 import { tb } from "@/lib/tinybird";
 import { UTM_TAGS_PLURAL_LIST } from "@/lib/zod/schemas/utm";

@@ -1,39 +1,35 @@
-import { convertCurrency } from "@/lib/analytics/convert-currency";
-import { createId } from "@/lib/api/create-id";
-import { includeTags } from "@/lib/api/links/include-tags";
-import {
-  getClickEvent,
-  getLeadEvent,
-  recordLead,
-  recordSale,
-} from "@/lib/tinybird";
-import { redis } from "@/lib/upstash";
-import { sendWorkspaceWebhook } from "@/lib/webhook/publish";
-import {
-  transformLeadEventData,
-  transformSaleEventData,
-} from "@/lib/webhook/transform";
+import { handleTyReconciliation } from "@/lib/thankyou/reconcile";
+import { getClickEvent, getLeadEvent } from "@/lib/tinybird";
+import { prisma } from "@dub/prisma";
+import { Customer } from "@dub/prisma/client";
 import z from "@/lib/zod";
 import { clickEventSchemaTB } from "@/lib/zod/schemas/clicks";
 import { leadEventSchemaTB } from "@/lib/zod/schemas/leads";
-import { prisma } from "@dub/prisma";
-import { computeAnonymousCustomerFields } from "@/lib/webhook/custom";
-import { computeCustomerHotScore } from "@/lib/analytics/compute-customer-hot-score";
-import { Customer } from "@dub/prisma/client";
-import { nanoid } from "@dub/utils";
-import { waitUntil } from "@vercel/functions";
 import type Stripe from "stripe";
+import {
+  recordStripeCheckoutSale,
+  recordStripeCheckoutSaleFromExistingCustomer,
+} from "./utils";
 
 // Handle event "checkout.session.completed"
 export async function checkoutSessionCompleted(event: Stripe.Event) {
-  let charge = event.data.object as Stripe.Checkout.Session;
+  console.log("[Stripe Webhook] Processing checkout.session.completed event");
+  
+  const charge = event.data.object as Stripe.Checkout.Session;
   const pimmsCustomerId = charge.metadata?.pimmsCustomerId;
   const clientReferenceId = charge.client_reference_id;
-  const stripeAccountId = event.account as string || "acct_1OKQowBN5sOoOmBU";
+  const stripeAccountId = event.account as string || "acct_1OKQowBN5sOoOmBU";
   const stripeCustomerId = charge.customer as string;
   const stripeCustomerName = charge.customer_details?.name;
   const stripeCustomerEmail = charge.customer_details?.email;
-  const invoiceId = charge.invoice as string;
+
+  console.log("[Stripe Webhook] Extracted data", {
+    hasPimmsCustomerId: !!pimmsCustomerId,
+    hasClientReferenceId: !!clientReferenceId,
+    stripeAccountId,
+    hasStripeCustomerId: !!stripeCustomerId,
+    hasCustomerEmail: !!stripeCustomerEmail,
+  });
 
   let customer: Customer;
   let existingCustomer: Customer | null = null;
@@ -48,9 +44,16 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
     - the lead event will then be passed to the remaining logic to record a sale
   */
   if (pimmsCustomerId) {
-    console.log("pimmsCustomerId", pimmsCustomerId);
+    console.log("[Stripe Webhook] Path: pimmsCustomerId found", {
+      pimmsCustomerId,
+    });
 
     try {
+      console.log("[Stripe Webhook] Updating customer with stripeCustomerId", {
+        pimmsCustomerId,
+        stripeAccountId,
+        stripeCustomerId,
+      });
       // Update customer with stripe customerId if exists
       customer = await prisma.customer.update({
         where: {
@@ -63,18 +66,48 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
           stripeCustomerId,
         },
       });
+      console.log("[Stripe Webhook] Customer updated", {
+        customerId: customer.id,
+        projectId: customer.projectId,
+      });
     } catch (error) {
       // Skip if customer not found
-      console.log(error);
+      console.error("[Stripe Webhook] Customer not found", {
+        pimmsCustomerId,
+        error: error instanceof Error ? error.message : String(error),
+      });
       return `Customer with pimmsCustomerId ${pimmsCustomerId} not found, skipping...`;
     }
 
+    console.log("[Stripe Webhook] Finding lead event", {
+      customerId: customer.id,
+    });
     // Find lead
     leadEvent = await getLeadEvent({ customerId: customer.id }).then(
       (res) => res.data[0],
     );
 
     linkId = leadEvent.link_id;
+    console.log("[Stripe Webhook] Lead event found", {
+      linkId,
+      leadEventId: leadEvent.event_id,
+    });
+
+    // Record the sale using the utility function (customer and leadEvent already exist)
+    // Use customer.projectId - no need to lookup workspace since we already have it from customer
+    console.log("[Stripe Webhook] Recording sale from existing customer");
+    const result = await recordStripeCheckoutSaleFromExistingCustomer({
+      charge,
+      customer,
+      leadEvent,
+      linkId,
+      workspaceId: customer.projectId,
+      stripeCustomerId,
+    });
+    console.log("[Stripe Webhook] Sale recorded successfully", {
+      result: result.substring(0, 100),
+    });
+    return result;
 
     /*
       for stripe checkout links:
@@ -82,19 +115,20 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
       - the click event will be used to create a lead event + customer
       - the lead event will then be passed to the remaining logic to record a sale
     */
-  } else if (clientReferenceId?.startsWith("pimms_id_")) {
-    const pimmsClickId = clientReferenceId.split("pimms_id_")[1];
+  } else {
+    console.log("[Stripe Webhook] Path: client_reference_id (checkout links)");
+    let pimmsClickId: string | null = null;
 
-    console.log("pimmsClickId", pimmsClickId);
-
-    clickEvent = await getClickEvent({ clickId: pimmsClickId }).then(
-      (res) => res.data[0],
-    );
-
-    if (!clickEvent) {
-      return `Click event with pimms_id ${pimmsClickId} not found, skipping...`;
+    if (clientReferenceId?.startsWith("pimms_id_")) {
+      pimmsClickId = clientReferenceId.split("pimms_id_")[1];
+      console.log("[Stripe Webhook] Extracted pimmsClickId from client_reference_id", {
+        pimmsClickId: pimmsClickId.substring(0, 20) + "...",
+      });
     }
 
+    console.log("[Stripe Webhook] Looking up workspace", {
+      stripeAccountId,
+    });
     const workspace = await prisma.project.findUnique({
       where: {
         stripeConnectId: stripeAccountId,
@@ -105,9 +139,56 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
     });
 
     if (!workspace) {
+      console.error("[Stripe Webhook] Workspace not found", {
+        stripeAccountId,
+      });
       return `Workspace with stripeConnectId ${stripeAccountId} not found, skipping...`;
     }
 
+    console.log("[Stripe Webhook] Workspace found", {
+      workspaceId: workspace.id,
+    });
+
+    if (!pimmsClickId) {
+      console.log("[Stripe Webhook] No pimmsClickId, attempting TY reconciliation");
+      const result = await handleTyReconciliation({
+        workspaceId: workspace.id,
+        provider: "stripe",
+        payload: event,
+        failedReason:
+          "Customer ID not found in Stripe checkout session metadata and client_reference_id is not a pimms_id",
+      });
+      if (result.shouldReturnEarly) {
+        console.log("[Stripe Webhook] TY reconciliation: webhook stored, returning early");
+        return "OK";
+      }
+      pimmsClickId = result.pimmsId;
+      console.log("[Stripe Webhook] TY reconciliation: pimmsClickId found", {
+        pimmsClickId: pimmsClickId.substring(0, 20) + "...",
+      });
+    }
+
+    console.log("[Stripe Webhook] Looking up click event", {
+      pimmsClickId: pimmsClickId.substring(0, 20) + "...",
+    });
+    clickEvent = await getClickEvent({ clickId: pimmsClickId }).then(
+      (res) => res.data[0],
+    );
+
+    if (!clickEvent) {
+      console.error("[Stripe Webhook] Click event not found", {
+        pimmsClickId: pimmsClickId.substring(0, 20) + "...",
+      });
+      return `Click event with pimms_id ${pimmsClickId} not found, skipping...`;
+    }
+
+    console.log("[Stripe Webhook] Click event found", {
+      clickId: clickEvent.click_id?.substring(0, 20) + "...",
+      linkId: clickEvent.link_id,
+    });
+
+    // Find existing customer (the utility function will also check, but we pass it to avoid duplicate logic)
+    console.log("[Stripe Webhook] Checking for existing customer");
     existingCustomer = await prisma.customer.findFirst({
       where: {
         projectId: workspace.id,
@@ -124,219 +205,28 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
       },
     });
 
-    const { anonymousId, totalClicks } =
-      await computeAnonymousCustomerFields(clickEvent);
-
-    const payload = {
-      name: stripeCustomerName,
-      email: stripeCustomerEmail,
-      // stripeCustomerId can potentially be null, so we use email as fallback
-      externalId: stripeCustomerId || stripeCustomerEmail,
-      projectId: workspace.id,
-      projectConnectId: stripeAccountId,
-      stripeCustomerId,
-      clickId: clickEvent.click_id,
-      linkId: clickEvent.link_id,
-      lastActivityLinkId: clickEvent.link_id,
-      lastActivityType: "lead",
-      country: clickEvent.country,
-      clickedAt: new Date(clickEvent.timestamp + "Z"),
-      anonymousId,
-      totalClicks,
-      lastEventAt: new Date()
-    };
-
-    if (existingCustomer) {
-      customer = await prisma.customer.update({
-        where: {
-          id: existingCustomer.id,
-        },
-        data: payload,
-      });
-    } else {
-      customer = await prisma.customer.create({
-        data: {
-          id: createId({ prefix: "cus_" }),
-          ...payload,
-        },
-      });
-    }
-
-    // remove timestamp from clickEvent
-    const { timestamp, ...rest } = clickEvent;
-    leadEvent = {
-      ...rest,
-      event_id: nanoid(16),
-      event_name: "Register",
-      customer_id: customer.id,
-      metadata: "",
-    };
-
-    if (!existingCustomer) {
-      await recordLead(leadEvent);
-    }
-
-    linkId = clickEvent.link_id;
-
-    // if it's not either a regular stripe checkout setup or a stripe checkout link,
-    // we skip the event
-  } else {
-    return `Customer ID not found in Stripe checkout session metadata and client_reference_id is not a pimms_id, skipping...`;
-  }
-
-  if (charge.amount_total === 0) {
-    return `Checkout session completed for Stripe customer ${stripeCustomerId} with invoice ID ${invoiceId} but amount is 0, skipping...`;
-  }
-
-  if (charge.mode === "setup") {
-    return `Checkout session completed for Stripe customer ${stripeCustomerId} but mode is setup, skipping...`;
-  }
-
-  if (invoiceId) {
-    // Skip if invoice id is already processed
-    const ok = await redis.set(`pimms_sale_events:invoiceId:${invoiceId}`, 1, {
-      ex: 60 * 60 * 24 * 7,
-      nx: true,
+    console.log("[Stripe Webhook] Existing customer check", {
+      found: !!existingCustomer,
+      customerId: existingCustomer?.id,
     });
 
-    if (!ok) {
-      console.info(
-        "[Stripe Webhook] Skipping already processed invoice.",
-        invoiceId,
-      );
-      return `Invoice with ID ${invoiceId} already processed, skipping...`;
-    }
-  }
-
-  if (charge.currency && charge.currency !== "usd" && charge.amount_total) {
-    // support for Stripe Adaptive Pricing: https://docs.stripe.com/payments/checkout/adaptive-pricing
-    if (charge.currency_conversion) {
-      charge.currency = charge.currency_conversion.source_currency;
-      charge.amount_total = charge.currency_conversion.amount_total;
-
-      // if Stripe Adaptive Pricing is not enabled, we convert the amount to USD based on the current FX rate
-      // TODO: allow custom "defaultCurrency" on workspace table in the future
-    } else {
-      const { currency: convertedCurrency, amount: convertedAmount } =
-        await convertCurrency({
-          currency: charge.currency,
-          amount: charge.amount_total,
-        });
-
-      charge.currency = convertedCurrency;
-      charge.amount_total = convertedAmount;
-    }
-  }
-
-  const eventId = nanoid(16);
-
-  const saleData = {
-    ...leadEvent,
-    event_id: eventId,
-    // if the charge is a one-time payment, we set the event name to "Purchase"
-    event_name:
-      charge.mode === "payment" ? "Purchase" : "Subscription creation",
-    payment_processor: "stripe",
-    amount: charge.amount_total!,
-    currency: charge.currency!,
-    invoice_id: invoiceId || "",
-    metadata: JSON.stringify({
+    // Record the sale using the utility function
+    // Note: recordStripeCheckoutSale will perform the same lookup internally, but we pass existingCustomer
+    // to ensure consistency. The utility function will still do its own lookup for safety.
+    console.log("[Stripe Webhook] Recording sale");
+    const result = await recordStripeCheckoutSale({
       charge,
-    }),
-  };
-
-  console.log("saleData", saleData);
-
-  const link = await prisma.link.findUnique({
-    where: {
-      id: linkId,
-    },
-  });
-
-  const [_sale, linkUpdated, workspace] = await Promise.all([
-    recordSale(saleData),
-
-    // update link sales count
-    link &&
-      prisma.link.update({
-        where: {
-          id: link.id,
-        },
-        data: {
-          // if the clickEvent variable exists, it means that a new lead was created
-          ...(clickEvent && {
-            leads: {
-              increment: 1,
-            },
-          }),
-          sales: {
-            increment: 1,
-          },
-          saleAmount: {
-            increment: charge.amount_total!,
-          },
-        },
-        include: includeTags,
-      }),
-
-    // update workspace sales usage
-    prisma.project.update({
-      where: {
-        id: customer.projectId,
-      },
-      data: {
-        usage: {
-          increment: clickEvent ? 2 : 1,
-        },
-        salesUsage: {
-          increment: charge.amount_total!,
-        },
-      },
-    }),
-  ]);
-
-  waitUntil(
-    (async () => {
-      // update customer hot score
-      await prisma.customer.update({
-        where: { id: customer.id },
-        data: {
-          hotScore: await computeCustomerHotScore(customer.id, workspace.id),
-          lastHotScoreAt: new Date(),
-          lastEventAt: new Date(),
-          lastActivityLinkId: linkId,
-          lastActivityType: "sale",
-        },
-      });
-      
-      // if the clickEvent variable exists and there was no existing customer before,
-      // we send a lead.created webhook
-      if (clickEvent && !existingCustomer) {
-        await sendWorkspaceWebhook({
-          trigger: "lead.created",
-          workspace,
-          data: transformLeadEventData({
-            ...clickEvent,
-            eventName: "Checkout session completed",
-            link: linkUpdated,
-            customer,
-          }),
-        });
-      }
-
-      // send workspace webhook
-      await sendWorkspaceWebhook({
-        trigger: "sale.created",
-        workspace,
-        data: transformSaleEventData({
-          ...saleData,
-          clickedAt: customer.clickedAt || customer.createdAt,
-          link: linkUpdated,
-          customer,
-        }),
-      });
-    })(),
-  );
-
-  return `Checkout session completed for customer with external ID ${pimmsCustomerId} and invoice ID ${invoiceId}`;
+      workspaceId: workspace.id,
+      stripeAccountId,
+      stripeCustomerId,
+      stripeCustomerName: stripeCustomerName ?? null,
+      stripeCustomerEmail: stripeCustomerEmail ?? null,
+      clickEvent,
+      existingCustomer,
+    });
+    console.log("[Stripe Webhook] Sale recorded successfully", {
+      result: result.substring(0, 100),
+    });
+    return result;
+  }
 }

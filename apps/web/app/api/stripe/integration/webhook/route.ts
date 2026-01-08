@@ -54,6 +54,11 @@ export const POST = withAxiom(async (req: Request) => {
 
   let response = "OK";
 
+  console.log("[Stripe Integration Webhook] Processing event", {
+    eventType: event.type,
+    livemode,
+  });
+
   switch (event.type) {
     case "customer.created":
       response = await customerCreated(event);
@@ -74,6 +79,11 @@ export const POST = withAxiom(async (req: Request) => {
       response = await accountApplicationDeauthorized(event);
       break;
   }
+
+  console.log("[Stripe Integration Webhook] Event processed", {
+    eventType: event.type,
+    response: response.substring(0, 100),
+  });
 
   return new Response(response, {
     status: 200,

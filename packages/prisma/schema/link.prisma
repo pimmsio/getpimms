@@ -10,6 +10,7 @@ model Link {
   expiredUrl        String?   @db.Text // URL to redirect the user to when the link is expired
   password          String? // password to access the link
   trackConversion   Boolean   @default(false) // whether to track conversions or not
+  isConversionCallback Boolean @default(false) // whether this link is a “thank-you / conversion callback” (TY hits do not count as clicks)
   leadMagnetEnabled Boolean   @default(false) // whether to show an email capture page before redirecting
 
   proxy       Boolean @default(false) // Proxy to use custom OG tags (stored on redis) – if false, will use OG tags from target url
