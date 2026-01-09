@@ -28,16 +28,9 @@ export async function processTyPendingWebhook({
     });
   }
 
-  if (provider === "generic") {
-    return await processCustomerCreatedFromPimmsId({
-      clickId,
-      workspaceId,
-      data: payload as Record<string, any>,
-    });
-  }
-
-  throw new WebhookError(
-    `Unsupported pending TY webhook provider: ${provider}`,
-    200,
-  );
+  return await processCustomerCreatedFromPimmsId({
+    clickId,
+    workspaceId,
+    data: payload as Record<string, any>,
+  });
 }

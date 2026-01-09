@@ -3,6 +3,7 @@ import {
   pushTyWaitingConversion,
   takeLatestTyPendingWebhook,
 } from "@/lib/thankyou/reconcile";
+import { tyLastClickKey } from "@/lib/thankyou/last-click";
 import { redis } from "@/lib/upstash";
 import { prismaEdge } from "@dub/prisma/edge";
 import { cookies } from "next/headers";
@@ -57,14 +58,14 @@ export const GET = async (req: Request) => {
   console.log("[TY] Processing thank-you link", {
     linkId,
     workspaceId,
-    anonymousId: anonymousId.substring(0, 8) + "...", // Log partial ID for privacy
+    anonymousId,
   });
 
   const lastClick = await redis.get<{
     clickId: string;
     linkId: string;
     timestamp: string;
-  }>(`ty:lastClick:${workspaceId}:${decodeURIComponent(anonymousId)}`);
+  }>(tyLastClickKey(workspaceId, anonymousId));
 
   if (!lastClick?.clickId || !lastClick?.linkId) {
     console.log("[TY] No lastClick found in Redis", {

@@ -19,6 +19,7 @@ import {
 } from "../middleware/utils";
 import { conn } from "../planetscale";
 import { WorkspaceProps } from "../types";
+import { setTyLastClick } from "@/lib/thankyou/last-click";
 import { redis } from "../upstash";
 import { webhookCache } from "../webhook/cache";
 import { sendWebhooks } from "../webhook/qstash";
@@ -78,6 +79,16 @@ export async function recordClick({
     // here, we check if the clickId is cached in Redis within the last hour
     const cachedClickId = await clickCache.get({ domain, key, ip });
     if (cachedClickId) {
+      // Dedup is for counting/recording, but TY attribution should still work.
+      // If a user has a new anonymousId (e.g. cleared cookie) and we dedup the click,
+      // we still want TY to find a lastClick for this visitor.
+      await setTyLastClick({
+        workspaceId,
+        anonymousId,
+        clickId: cachedClickId,
+        linkId,
+      });
+
       return null;
     }
   }
@@ -104,9 +115,6 @@ export async function recordClick({
   const referer = referrer || req.headers.get("referer");
 
   const finalUrl = url ? getFinalUrlForRecordClick({ req, url }) : "";
-
-  console.log("record click final Url", finalUrl, url, clickId, linkId);
-  console.log("anonymous ID for tracking:", anonymousId);
 
   const clickData = {
     timestamp: timestamp || new Date(Date.now()).toISOString(),
@@ -179,17 +187,13 @@ export async function recordClick({
 
     // TY attribution: store the most recent click per visitor per workspace (30 days).
     // NOTE: TY links never call recordClick, so they won't overwrite last-click attribution.
-    workspaceId
-      ? redis.set(
-          `ty:lastClick:${workspaceId}:${clickData.identity_hash}`,
-          {
-            clickId,
-            linkId,
-            timestamp: clickData.timestamp,
-          },
-          { ex: 60 * 60 * 24 * 30 },
-        )
-      : null,
+    setTyLastClick({
+      workspaceId,
+      anonymousId: clickData.identity_hash,
+      clickId,
+      linkId,
+      timestamp: clickData.timestamp,
+    }),
 
     // cache the click data for 5 mins
     // we're doing this because ingested click events are not available immediately in Tinybird
