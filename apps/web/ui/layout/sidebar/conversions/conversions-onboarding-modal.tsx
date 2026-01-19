@@ -9,14 +9,17 @@ import {
   CopyButton,
   Modal,
 } from "@dub/ui";
-import { cn, fetcher } from "@dub/utils";
+import { cn, fetcher, nanoid } from "@dub/utils";
 import {
+  BadgeCheck,
   Calendar,
   ChevronLeft,
   Code2,
   CreditCard,
+  FileText,
   Globe,
-  Sparkles,
+  Magnet,
+  Workflow,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -30,8 +33,10 @@ import {
   useState,
 } from "react";
 import useSWR from "swr";
+import { Brevo } from "./icons/brevo";
 import { Stripe } from "./icons/stripe";
 import { SystemeIO } from "./icons/systemeio";
+import { Tally } from "./icons/tally";
 
 type SetupCategory =
   | "leadMagnet"
@@ -50,35 +55,29 @@ type ProviderId =
   | "webflow"
   | "lovable"
   | "wordpressElementor"
-  | "wix"
-  | "squarespace"
+  | "systemeioWebsite"
   | "shopify"
-  | "carrd"
   | "calDotCom"
   | "calendly"
-  | "iclosed"
-  | "acuity"
+  | "lemcal"
   | "hubspotMeetings"
+  | "brevoMeeting"
   | "stripe"
   | "systemeio"
-  | "paypal"
-  | "paddle"
-  | "lemonsqueezy"
   | "shopifyPayments"
   | "zapier"
   | "make"
   | "n8n"
-  | "pabbly"
   | "tally"
+  | "brevoForm"
+  | "systemeioForm"
   | "typeform"
-  | "jotform"
-  | "googleForms"
-  | "other_website"
-  | "other_calendars"
-  | "other_payments"
-  | "other_automations"
-  | "other_forms"
-  | "other_apis"
+  | "otherWebsite"
+  | "otherCalendars"
+  | "otherPayments"
+  | "otherAutomations"
+  | "otherForms"
+  | "otherApis"
   | "trackLeadApi"
   | "trackSaleApi";
 
@@ -87,7 +86,7 @@ type Provider = {
   name: string;
   shortName?: string;
   category: SetupCategory;
-  icon?: any;
+  icon?: any; // React component OR string path to an image in /public
   guideKey?: string; // used to map to /api/pimms/guides
   guideUrl?: string;
   thumbnail?: string;
@@ -95,6 +94,17 @@ type Provider = {
   setupTime?: string; // human-friendly estimate, e.g. "< 1 min", "10 min"
   isMostPopular?: boolean;
 };
+
+const THANK_YOU_ALT_PROVIDER_IDS: ProviderId[] = [
+  "brevoMeeting",
+  "brevoForm",
+  "stripe",
+  "calendly",
+  "lemcal",
+  "calDotCom",
+  "hubspotMeetings",
+  "tally",
+];
 
 const PROVIDERS: Provider[] = [
   // No setup
@@ -108,8 +118,8 @@ const PROVIDERS: Provider[] = [
   },
   {
     id: "thankyou",
-    name: "Thank-you links",
-    shortName: "Thank-you links",
+    name: "Via thank you page",
+    shortName: "Via thank you page",
     category: "thankyou",
     setupTime: "< 1 min",
   },
@@ -118,6 +128,7 @@ const PROVIDERS: Provider[] = [
     id: "framer",
     name: "Framer",
     category: "website",
+    icon: "/static/symbols/integrations/framer.svg",
     guideKey: "framer",
     setupTime: "30 min",
   },
@@ -125,6 +136,7 @@ const PROVIDERS: Provider[] = [
     id: "webflow",
     name: "Webflow",
     category: "website",
+    icon: "/static/symbols/integrations/webflow.svg",
     guideKey: "webflow",
     setupTime: "30 min",
   },
@@ -132,6 +144,7 @@ const PROVIDERS: Provider[] = [
     id: "lovable",
     name: "Lovable",
     category: "website",
+    icon: "/static/symbols/integrations/lovable.svg",
     guideKey: "lovable",
     setupTime: "30 min",
   },
@@ -139,43 +152,33 @@ const PROVIDERS: Provider[] = [
     id: "wordpressElementor",
     name: "WordPress / Elementor",
     category: "website",
+    icon: "/static/symbols/integrations/wordpress.svg",
     guideKey: "wordpress",
     setupTime: "30 min",
   },
   {
-    id: "wix",
-    name: "Wix",
+    id: "systemeioWebsite",
+    name: "Systeme.io",
     category: "website",
-    guideKey: "wix",
-    setupTime: "30 min",
-  },
-  {
-    id: "squarespace",
-    name: "Squarespace",
-    category: "website",
-    guideKey: "squarespace",
+    icon: SystemeIO,
+    guideKey: "systeme.io",
     setupTime: "30 min",
   },
   {
     id: "shopify",
     name: "Shopify",
     category: "website",
+    icon: "/static/symbols/integrations/shopify.svg",
     guideKey: "shopify",
     setupTime: "30 min",
   },
-  {
-    id: "carrd",
-    name: "Carrd",
-    category: "website",
-    guideKey: "carrd",
-    setupTime: "30 min",
-  },
-  { id: "other_website", name: "Other", category: "website" },
+  { id: "otherWebsite", name: "Other", category: "website" },
   // Calendars
   {
     id: "calDotCom",
     name: "Cal.com",
     category: "calendars",
+    icon: "/static/symbols/integrations/calcom.svg",
     guideKey: "cal.com",
     setupTime: "5 min",
   },
@@ -183,23 +186,16 @@ const PROVIDERS: Provider[] = [
     id: "calendly",
     name: "Calendly",
     category: "calendars",
+    icon: "/static/symbols/integrations/calendly.svg",
     guideKey: "calendly",
     setupTime: "5 min",
   },
   {
-    id: "iclosed",
-    name: "iclosed.io",
-    shortName: "iclosed",
+    id: "lemcal",
+    name: "Lemcal",
     category: "calendars",
-    guideKey: "iclosed",
-    setupTime: "5 min",
-  },
-  {
-    id: "acuity",
-    name: "Acuity Scheduling",
-    shortName: "Acuity",
-    category: "calendars",
-    guideKey: "acuity",
+    icon: "/static/symbols/integrations/lemcal.svg",
+    guideKey: "lemcal",
     setupTime: "5 min",
   },
   {
@@ -207,10 +203,20 @@ const PROVIDERS: Provider[] = [
     name: "HubSpot Meetings",
     shortName: "HubSpot",
     category: "calendars",
+    icon: "/static/symbols/integrations/hubspot.svg",
     guideKey: "hubspot",
     setupTime: "5 min",
   },
-  { id: "other_calendars", name: "Other", category: "calendars" },
+  {
+    id: "brevoMeeting",
+    name: "Brevo Meetings",
+    shortName: "Brevo",
+    category: "calendars",
+    icon: Brevo,
+    guideKey: "brevo meeting",
+    setupTime: "5 min",
+  },
+  { id: "otherCalendars", name: "Other", category: "calendars" },
   // Payments
   {
     id: "stripe",
@@ -227,37 +233,20 @@ const PROVIDERS: Provider[] = [
     guideKey: "systeme.io",
   },
   {
-    id: "paypal",
-    name: "PayPal",
-    category: "payments",
-    guideKey: "paypal",
-  },
-  {
-    id: "paddle",
-    name: "Paddle",
-    category: "payments",
-    guideKey: "paddle",
-  },
-  {
-    id: "lemonsqueezy",
-    name: "Lemon Squeezy",
-    shortName: "LemonSqueezy",
-    category: "payments",
-    guideKey: "lemon squeezy",
-  },
-  {
     id: "shopifyPayments",
     name: "Shopify Payments",
     shortName: "Shopify",
     category: "payments",
+    icon: "/static/symbols/integrations/shopify.svg",
     guideKey: "shopify",
   },
-  { id: "other_payments", name: "Other", category: "payments" },
+  { id: "otherPayments", name: "Other", category: "payments" },
   // Automations
   {
     id: "zapier",
     name: "Zapier",
     category: "automations",
+    icon: "/static/symbols/integrations/zapier.svg",
     guideKey: "zapier",
     externalUrl: "https://zapier.com/apps/pimms/integrations",
     setupTime: "10 min",
@@ -267,6 +256,7 @@ const PROVIDERS: Provider[] = [
     name: "Make.com",
     shortName: "Make.com",
     category: "automations",
+    icon: "/static/symbols/integrations/make.svg",
     guideKey: "make.com",
     // User will share the final URL later; keep centralized for easy update.
     externalUrl: "https://www.make.com/",
@@ -276,48 +266,44 @@ const PROVIDERS: Provider[] = [
     id: "n8n",
     name: "n8n",
     category: "automations",
+    icon: "/static/symbols/integrations/n8n.svg",
     guideKey: "n8n",
     externalUrl: "https://n8n.io/",
     setupTime: "10 min",
   },
-  {
-    id: "pabbly",
-    name: "Pabbly Connect",
-    shortName: "Pabbly",
-    category: "automations",
-    guideKey: "pabbly",
-    externalUrl: "https://www.pabbly.com/connect/",
-    setupTime: "10 min",
-  },
-  { id: "other_automations", name: "Other", category: "automations" },
+  { id: "otherAutomations", name: "Other", category: "automations" },
   // Forms
   {
     id: "tally",
     name: "Tally.so",
     shortName: "Tally",
     category: "forms",
+    icon: Tally,
     guideKey: "tally",
+  },
+  {
+    id: "brevoForm",
+    name: "Brevo Forms",
+    shortName: "Brevo",
+    category: "forms",
+    icon: Brevo,
+    guideKey: "brevo form",
+  },
+  {
+    id: "systemeioForm",
+    name: "Systeme.io",
+    category: "forms",
+    icon: SystemeIO,
+    guideKey: "systeme.io",
   },
   {
     id: "typeform",
     name: "Typeform",
     category: "forms",
+    icon: "/static/symbols/integrations/typeform.svg",
     guideKey: "typeform",
   },
-  {
-    id: "jotform",
-    name: "Jotform",
-    category: "forms",
-    guideKey: "jotform",
-  },
-  {
-    id: "googleForms",
-    name: "Google Forms",
-    shortName: "Google",
-    category: "forms",
-    guideKey: "google forms",
-  },
-  { id: "other_forms", name: "Other", category: "forms" },
+  { id: "otherForms", name: "Other", category: "forms" },
   // APIs
   {
     id: "trackLeadApi",
@@ -329,7 +315,7 @@ const PROVIDERS: Provider[] = [
     name: "Track Sale API",
     category: "apis",
   },
-  { id: "other_apis", name: "Other", category: "apis" },
+  { id: "otherApis", name: "Other", category: "apis" },
 ];
 
 const CATEGORY_CARDS: Array<{
@@ -340,75 +326,76 @@ const CATEGORY_CARDS: Array<{
   badge?: string;
   time?: string;
 }> = [
-  {
-    id: "leadMagnet",
-    title: "Create link magnets",
-    subtitle: "Get started fast in under a minute.",
-    icon: Sparkles,
-    time: "< 1 min",
-  },
-  {
-    id: "thankyou",
-    title: "Thank-you links",
-    subtitle: "Attribute conversions even when webhooks miss pimms_id.",
-    icon: Sparkles,
-    time: "< 1 min",
-  },
-  {
-    id: "website",
-    title: "Website",
-    subtitle: "Framer, Webflow, WordPress…",
-    icon: Globe,
-    time: "30 min",
-  },
-  {
-    id: "calendars",
-    title: "Calendars",
-    subtitle: "Cal.com, Calendly, Acuity…",
-    icon: Calendar,
-    time: "5 min",
-  },
-  {
-    id: "payments",
-    title: "Payments",
-    subtitle: "Stripe, PayPal, Paddle…",
-    icon: CreditCard,
-    time: "5 min",
-  },
-  {
-    id: "automations",
-    title: "Automations",
-    subtitle: "Zapier, Make.com, n8n…",
-    icon: Sparkles,
-    time: "10 min",
-  },
-  {
-    id: "forms",
-    title: "Forms",
-    subtitle: "Tally, Typeform and more…",
-    icon: Globe,
-    time: "10 min",
-  },
-  {
-    id: "apis",
-    title: "APIs",
-    subtitle: "Track leads/sales from code",
-    icon: Code2,
-  },
-];
+    {
+      id: "leadMagnet",
+      title: "Via link with Magnet",
+      subtitle: "Capture email as soon as users click.",
+      icon: Magnet,
+      time: "< 1 min",
+    },
+    {
+      id: "thankyou",
+      title: "Via thank you page",
+      subtitle: "Webhook + redirect to match conversions.",
+      icon: BadgeCheck,
+      time: "10 min",
+    },
+    {
+      id: "website",
+      title: "Website",
+      subtitle: "Framer, Webflow, WordPress…",
+      icon: Globe,
+      time: "20 min",
+    },
+    {
+      id: "forms",
+      title: "Forms",
+      subtitle: "Brevo, Tally, Typeform…",
+      icon: FileText,
+      time: "10 min",
+    },
+    {
+      id: "calendars",
+      title: "Calendars",
+      subtitle: "Cal.com, Calendly…",
+      icon: Calendar,
+      time: "10 min",
+    },
+    {
+      id: "payments",
+      title: "Payments",
+      subtitle: "Stripe, Systeme.io…",
+      icon: CreditCard,
+      time: "10 min",
+    },
+    {
+      id: "automations",
+      title: "Automations",
+      subtitle: "Zapier, Make.com, n8n…",
+      icon: Workflow,
+      time: "30 min",
+    },
+    {
+      id: "apis",
+      title: "Dev / API",
+      subtitle: "Track leads/sales from code",
+      icon: Code2,
+      time: "30 min",
+    },
+  ];
 
 type WizardStep = "chooseCategory" | "chooseProvider" | "providerAction";
 
 type GuidesApiResponse =
   | {
-      ok: true;
-      guides: Array<{
-        title: string;
-        href: string;
-        date?: string | null;
-        thumbnail?: string | null;
-      }>;
-    }
+    ok: true;
+    guides: Array<{
+      title: string;
+      href: string;
+      date?: string | null;
+      thumbnail?: string | null;
+    }>;
+  }
   | { ok: false; error: string; guides: [] };
 
 function findGuide(
@@ -487,7 +474,7 @@ function ConversionOnboardingModalInner({
     if (!providerId) return null;
     const base = PROVIDERS.find((p) => p.id === providerId) ?? null;
     if (!base) return null;
-    if (base.id.startsWith("other_")) return base;
+    if (base.id.startsWith("other")) return base;
     if (!base.guideKey) return base;
     const g = findGuide(guides, base.guideKey);
     return {
@@ -514,8 +501,11 @@ function ConversionOnboardingModalInner({
 
   const goBack = () => {
     if (step === "providerAction") {
-      setStep(category === "leadMagnet" ? "chooseCategory" : "chooseProvider");
-      if (category === "leadMagnet") setProviderId(null);
+      if (category === "leadMagnet" || category === "thankyou") {
+        resetToRoot();
+      } else {
+        setStep("chooseProvider");
+      }
       return;
     }
     if (step === "chooseProvider") {
@@ -548,7 +538,7 @@ function ConversionOnboardingModalInner({
         <button
           type="button"
           onClick={() => setShowConversionOnboardingModal(false)}
-          className="group absolute top-4 right-4 z-[1] hidden rounded-full p-2 text-neutral-500 transition-all duration-75 hover:bg-neutral-100 focus:outline-none active:bg-neutral-200 md:block"
+          className="group absolute top-4 right-4 z-1 hidden rounded-full p-2 text-neutral-500 transition-all duration-75 hover:bg-neutral-100 focus:outline-none active:bg-neutral-200 md:block"
         >
           <X className="size-5" />
         </button>
@@ -600,6 +590,8 @@ function ConversionOnboardingModalInner({
               const params = new URLSearchParams(searchParams.toString());
               params.set("newLink", "true");
               params.set("ty", "1");
+              const nextTyKey = `${nanoid(8)}/thankyou`;
+              params.set("tyKey", nextTyKey);
               router.replace(`${pathname}?${params.toString()}`, {
                 scroll: false,
               });
@@ -643,7 +635,7 @@ function ChooseCategory({
               className={cn(
                 "group relative flex items-start gap-3 rounded-lg bg-neutral-200/40 p-4 text-left transition-colors hover:bg-neutral-200/60",
                 id === "leadMagnet" &&
-                  "bg-neutral-900/5 ring-1 ring-neutral-900/10 hover:bg-neutral-900/10",
+                "bg-neutral-900/5 ring-1 ring-neutral-900/10 hover:bg-neutral-900/10",
               )}
               onClick={() => onChoose(id)}
             >
@@ -704,9 +696,6 @@ function ChooseProvider({
   return (
     <div>
       <h3 className="mt-2 text-lg font-semibold text-neutral-900">{title}</h3>
-      <p className="mt-2 text-sm text-neutral-600">
-        Pick the closest match. You can always switch later.
-      </p>
 
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
         {providers.map(({ id, name, shortName, icon: Icon }) => (
@@ -718,7 +707,16 @@ function ChooseProvider({
           >
             <div className="flex size-10 items-center justify-center rounded-md bg-white/70 text-neutral-800">
               {Icon ? (
-                <Icon className="h-6" />
+                typeof Icon === "string" ? (
+                  <img
+                    alt=""
+                    src={Icon}
+                    className="h-6 w-6 object-contain"
+                    loading="lazy"
+                  />
+                ) : (
+                  <Icon className="h-6" />
+                )
               ) : (
                 <BookOpen className="size-4" />
               )}
@@ -756,106 +754,51 @@ function ProviderAction({
 
   if (provider.id === "leadMagnet") {
     return (
-      <div>
+      <div className="flex flex-col items-start gap-4">
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <h3 className="text-lg font-semibold text-neutral-900">
-            Create link magnets
+            Via link with Magnet
           </h3>
-          <span className="inline-flex items-center rounded-full border border-neutral-200 bg-white px-2 py-0.5 text-[11px] font-semibold text-neutral-700">
-            &lt; 1 min
-          </span>
-          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-800">
-            <span className="size-1.5 rounded-full bg-emerald-500" />
-            Most popular
-          </span>
         </div>
         <p className="mt-2 text-sm text-neutral-600">
-          Get started in less than a minute with link magnets that capture email
-          before reaching your destination URL.
+          Capture email as soon as users click, then redirect to your destination page.
         </p>
-
-        <div className="mt-6 rounded-lg border border-neutral-200 bg-white p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <div className="text-sm font-semibold text-neutral-900">
-                Create your first link magnet
-              </div>
-              <p className="mt-1 text-xs text-neutral-600">
-                We’ll add an email capture step before redirecting. Great for
-                lead gen, gated content, and opt-ins.
-              </p>
-            </div>
-            <span className="inline-flex shrink-0 items-center rounded-full border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[11px] font-semibold text-neutral-700">
-              &lt; 1 min
-            </span>
-          </div>
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
-              onClick={onCreateLeadMagnetLink}
-            >
-              Create link magnet
-            </button>
-            <div className="text-xs text-neutral-500">
-              You can customize the capture step anytime.
-            </div>
-          </div>
-        </div>
+        <button
+          type="button"
+          className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+          onClick={onCreateLeadMagnetLink}
+        >
+          Create link magnet
+        </button>
       </div>
     );
   }
 
   if (provider.id === "thankyou") {
     return (
-      <div>
+      <div className="flex flex-col items-start gap-4">
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <h3 className="text-lg font-semibold text-neutral-900">
-            Thank-you links
+            Via thank you page
           </h3>
-          <span className="inline-flex items-center rounded-full border border-neutral-200 bg-white px-2 py-0.5 text-[11px] font-semibold text-neutral-700">
-            &lt; 1 min
-          </span>
         </div>
         <p className="mt-2 text-sm text-neutral-600">
-          Create a short link used as a conversion callback (thank-you page).
-          TY hits don’t count as clicks, but they help reconcile provider webhooks
-          that sometimes miss <code className="rounded bg-neutral-100 px-1">pimms_id</code>.
+          Webhook + thank-you redirect to match conversions. Use a custom key like <code>/abc/thankyou</code> and set the
+          destination URL to your final thank-you page.
         </p>
 
-        <div className="mt-6 rounded-lg border border-neutral-200 bg-white p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <div className="text-sm font-semibold text-neutral-900">
-                Create your first thank-you link
-              </div>
-              <p className="mt-1 text-xs text-neutral-600">
-                Use a custom key like <code>/abc/thankyou</code> and set the
-                destination URL to your final thank-you page.
-              </p>
-            </div>
-            <span className="inline-flex shrink-0 items-center rounded-full border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[11px] font-semibold text-neutral-700">
-              &lt; 1 min
-            </span>
-          </div>
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
-              onClick={onCreateThankYouLink}
-            >
-              Create thank-you link
-            </button>
-            <div className="text-xs text-neutral-500">
-              You can update it anytime.
-            </div>
-          </div>
-        </div>
+        <button
+          type="button"
+          className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+          onClick={onCreateThankYouLink}
+        >
+          Create thank-you link
+        </button>
       </div>
     );
   }
 
-  if (provider.id.startsWith("other_")) {
+  if (provider.id.startsWith("other")) {
     return <OtherSetupForm provider={provider} workspaceSlug={workspaceSlug} />;
   }
 
@@ -892,7 +835,16 @@ function ProviderAction({
       <div className="flex items-center gap-3">
         <div className="flex size-10 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-900">
           {provider.icon ? (
-            <provider.icon className="size-6" />
+            typeof provider.icon === "string" ? (
+              <img
+                alt=""
+                src={provider.icon}
+                className="h-6 w-6 object-contain"
+                loading="lazy"
+              />
+            ) : (
+              <provider.icon className="size-6" />
+            )
           ) : (
             <BookOpen className="size-4" />
           )}
@@ -902,7 +854,7 @@ function ProviderAction({
             {provider.name}
           </h3>
           <p className="text-sm text-neutral-600">
-            Follow the guide or copy a snippet.
+            Follow a guide or contact support
           </p>
         </div>
       </div>
@@ -919,7 +871,7 @@ function ProviderAction({
                 <BlurImage
                   src={provider.thumbnail}
                   alt={`${provider.name} guide thumbnail`}
-                  className="aspect-[1200/630] w-full max-w-[260px] rounded bg-neutral-800 object-cover"
+                  className="aspect-1200/630 w-full max-w-[260px] rounded bg-neutral-800 object-cover"
                   width={1200}
                   height={630}
                 />
@@ -985,6 +937,24 @@ function ProviderAction({
             </pre>
           </div>
         ) : null}
+
+        {THANK_YOU_ALT_PROVIDER_IDS.includes(provider.id) && (
+          <div className="flex flex-col items-center justify-center rounded bg-neutral-200/40 px-6 py-6 text-center">
+            <div className="mt-3 text-sm font-semibold text-neutral-900">
+              Alternative via thank-you page
+            </div>
+            <div className="mt-1 text-xs text-neutral-600">
+              Redirect to a Pimms thank-you link after the conversion.
+            </div>
+            <button
+              type="button"
+              className="mt-4 rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+              onClick={onCreateThankYouLink}
+            >
+              Create thank-you link
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="mt-6">
@@ -1036,7 +1006,7 @@ function FeedbackForm({
           className={cn(
             "rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800",
             (sending || sent || message.trim().length === 0) &&
-              "cursor-not-allowed opacity-60",
+            "cursor-not-allowed opacity-60",
           )}
           onClick={async () => {
             setSending(true);

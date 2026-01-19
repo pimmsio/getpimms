@@ -28,9 +28,10 @@ export const config = {
      * 1. /api/ routes
      * 2. /_next/ (Next.js internals)
      * 3. /_proxy/ (proxies for third-party services)
+     * 4. /static/ (public static assets)
      * 4. Metadata files: favicon.ico, sitemap.xml, robots.txt, manifest.webmanifest
      */
-    "/((?!api/|_next/|_proxy/|favicon.ico|sitemap.xml|robots.txt|manifest.webmanifest).*)",
+    "/((?!api/|_next/|_proxy/|static/|favicon.ico|sitemap.xml|robots.txt|manifest.webmanifest).*)",
   ],
 };
 

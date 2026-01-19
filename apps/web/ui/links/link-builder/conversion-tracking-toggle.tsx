@@ -1,6 +1,6 @@
 import useWorkspace from "@/lib/swr/use-workspace";
 import { LinkFormData } from "@/ui/links/link-builder/link-builder-provider";
-import { memo } from "react";
+import { memo, useEffect } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { useLinkBuilderKeyboardShortcut } from "./use-link-builder-keyboard-shortcut";
 
@@ -15,9 +15,11 @@ export const ConversionTrackingToggle = memo(() => {
 
   // Conversion tracking is always on (no toggle).
   // Keep the form field pinned to true so downstream logic (e.g. test variants) behaves consistently.
-  if (!trackConversion) {
-    setValue("trackConversion", true, { shouldDirty: true });
-  }
+  useEffect(() => {
+    if (!trackConversion) {
+      setValue("trackConversion", true, { shouldDirty: true });
+    }
+  }, [trackConversion, setValue]);
 
   // Keep keyboard shortcut wired for internal dev muscle memory, but don't allow disabling.
   useLinkBuilderKeyboardShortcut("c", () => {

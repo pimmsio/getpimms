@@ -66,9 +66,6 @@ type LeadRow = {
 
 type LeadSignalRow = ClickRow | LeadRow;
 
-
-// Setup guides block moved to the Leads / Lead Signal pages.
-
 // TODO: re-enable video section once content is ready.
 const featuredVideo = {
   title: "Deep links on Pimms (opens the official app)",
@@ -190,7 +187,6 @@ export default function TodayClient() {
       revalidateOnFocus: false,
     },
   );
-
 
   const {
     data: last30dAnalytics,
@@ -316,22 +312,6 @@ export default function TodayClient() {
             </AppButtonLink>
           </div>
 
-          <div className="mb-3 rounded-lg bg-neutral-50 px-4 py-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
-                Clicks saved
-                <HelpTooltip content="Mobile + tablet clicks (7d). Deeplinks help open the official app on mobile." />
-              </div>
-              <div className="text-lg font-semibold text-neutral-900 tabular-nums">
-                {clicksSaved7d.toLocaleString()}
-              </div>
-            </div>
-            <div className="mt-1 text-sm text-neutral-600">
-              Use our deeplinks that open the official apps on mobile to save
-              clicks from in-app browser chaos.
-            </div>
-          </div>
-
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
             <IntervalMetrics
               label="Today"
@@ -360,6 +340,21 @@ export default function TodayClient() {
               revenue={last30dRevenue}
               cvr={last30dCvr}
             />
+          </div>
+
+          <div className="mt-3 rounded-lg bg-neutral-50 px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
+                Clicks saved last week
+              </div>
+              <div className="text-lg font-semibold text-neutral-900 tabular-nums">
+                {clicksSaved7d.toLocaleString()}
+              </div>
+            </div>
+            <div className="mt-1 text-sm text-neutral-600">
+              Your links open the official apps on mobile instead of in-app
+              browsers.
+            </div>
           </div>
         </div>
 
@@ -435,10 +430,14 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
 
   const shouldFetchClicks = !isLoading && leads.length === 0;
   const { data: clickFeedData, isLoading: clickFeedLoading } =
-    useSWR<ClickFeedResponse>(shouldFetchClicks ? clickFeedQuery : null, fetcher, {
-      keepPreviousData: true,
-      revalidateOnFocus: false,
-    });
+    useSWR<ClickFeedResponse>(
+      shouldFetchClicks ? clickFeedQuery : null,
+      fetcher,
+      {
+        keepPreviousData: true,
+        revalidateOnFocus: false,
+      },
+    );
 
   const clicksLast7d = useMemo(() => {
     const items = clickFeedData?.items ?? [];
@@ -449,7 +448,7 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
   }, [clickFeedData?.items]);
 
   const maskedLeads = useMemo(() => {
-    return Array.from({ length: 3 }).map((_, i) => ({
+    return Array.from({ length: 1 }).map((_, i) => ({
       id: `masked_${i}`,
       name: `Anonymous`,
       email: `hidden${i}@example.com`,
@@ -496,7 +495,9 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
                   <div className="min-w-0 truncate text-sm font-medium text-neutral-900">
                     {who}
                   </div>
-                  <div className="shrink-0 text-xs text-neutral-500">{when}</div>
+                  <div className="shrink-0 text-xs text-neutral-500">
+                    {when}
+                  </div>
                 </div>
                 <div className="min-w-0 truncate text-xs text-neutral-500">
                   <span className="font-medium text-neutral-700">
@@ -550,7 +551,7 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
                 <button
                   type="button"
                   onClick={() => setShowConversionOnboardingModal(true)}
-                  className="opacity-0 transition-opacity group-hover:opacity-100 rounded-md bg-neutral-900 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-neutral-800"
+                  className="rounded-md bg-neutral-900 px-2.5 py-1.5 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-neutral-800"
                 >
                   Reveal
                 </button>
@@ -569,7 +570,6 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
                   Click
                 </span>
               </div>
-              <div className="text-xs text-neutral-500">Just now</div>
             </div>
           ),
         },
@@ -754,14 +754,25 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
           Lead Signal
           <HelpTooltip content="Last 7 days (default)." />
         </div>
-        <AppButtonLink
-          href={`/${slug}/conversions?interval=7d`}
-          variant="secondary"
-          size="sm"
-        >
-          View all
-          <ChevronRight className="ml-1 size-3 text-neutral-500" />
-        </AppButtonLink>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="shrink-0 rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+            onClick={() => {
+              setShowConversionOnboardingModal(true);
+            }}
+          >
+            {hasLeads ? "Setup guides" : "Reveal leads"}
+          </button>
+          <AppButtonLink
+            href={`/${slug}/conversions?interval=7d`}
+            variant="secondary"
+            size="sm"
+          >
+            View all
+            <ChevronRight className="ml-1 size-3 text-neutral-500" />
+          </AppButtonLink>
+        </div>
       </div>
 
       {showClicksFallback ? (
@@ -774,31 +785,15 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
               Showing your most recent clicks from the last 7 days (up to 5).
             </div>
           </div>
-          <button
-            type="button"
-            className="shrink-0 rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
-            onClick={() => setShowConversionOnboardingModal(true)}
-          >
-            Reveal leads
-          </button>
         </div>
       ) : showDemoFallback ? (
         <div className="mb-3 flex items-start justify-between gap-3">
           <div>
-            <div className="text-sm font-semibold text-neutral-900">
-              No leads yet
-            </div>
             <div className="mt-1 text-sm text-neutral-600">
-              Demo data below. Complete setup to see real activity and identities.
+              Demo data below. Complete setup to see real activity and
+              identities.
             </div>
           </div>
-          <button
-            type="button"
-            className="shrink-0 rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
-            onClick={() => setShowConversionOnboardingModal(true)}
-          >
-            Reveal leads
-          </button>
         </div>
       ) : null}
 
@@ -815,7 +810,6 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
           <Table {...tableProps} table={table} />
         </div>
       )}
-
     </div>
   );
 }

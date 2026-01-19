@@ -12,7 +12,10 @@ import { LinkBuilderFolderSelector } from "@/ui/links/link-builder/controls/link
 import { LinkBuilderShortLinkInput } from "@/ui/links/link-builder/controls/link-builder-short-link-input";
 import { LinkCommentsInput } from "@/ui/links/link-builder/controls/link-comments-input";
 import { ConversionTrackingToggle } from "@/ui/links/link-builder/conversion-tracking-toggle";
-import { DraftControls, DraftControlsHandle } from "@/ui/links/link-builder/draft-controls";
+import {
+  DraftControls,
+  DraftControlsHandle,
+} from "@/ui/links/link-builder/draft-controls";
 import { LeadMagnetToggle } from "@/ui/links/link-builder/lead-magnet-toggle";
 import { LinkBuilderHeader } from "@/ui/links/link-builder/link-builder-header";
 import {
@@ -26,10 +29,10 @@ import { LinkPreview } from "@/ui/links/link-builder/link-preview";
 import { MoreOptionsSection } from "@/ui/links/link-builder/more-options-section";
 import { QRCodePreview } from "@/ui/links/link-builder/qr-code-preview";
 import { TagSelect } from "@/ui/links/link-builder/tag-select";
-import { UTMParametersSection } from "@/ui/links/link-builder/utm-parameters-section";
-import { useLinkBuilderSubmit } from "@/ui/links/link-builder/use-link-builder-submit";
 import { bulkCreateLinks } from "@/ui/links/link-builder/use-bulk-create-links";
+import { useLinkBuilderSubmit } from "@/ui/links/link-builder/use-link-builder-submit";
 import { useMetatags } from "@/ui/links/link-builder/use-metatags";
+import { UTMParametersSection } from "@/ui/links/link-builder/utm-parameters-section";
 import { useAvailableDomains } from "@/ui/links/use-available-domains";
 import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import {
@@ -96,17 +99,20 @@ function LinkBuilderInner({
     control,
     handleSubmit,
     setValue,
-    formState: { isDirty, isSubmitting, isSubmitSuccessful },
+    formState: { isDirty, isSubmitting, isSubmitSuccessful, dirtyFields },
   } = useFormContext<LinkFormData>();
 
   // Bulk mode state
   const [urlMode, setUrlMode] = useState<"single" | "bulk">("single");
   const [bulkUrls, setBulkUrls] = useState<string[]>([]);
   const autoExpandUtm = showLinkBuilder && searchParams.has("utmFocus");
+  const isTyPreset = searchParams.get("ty") === "1";
+  const tyKey = searchParams.get("tyKey");
+  const isLeadMagnetPreset = searchParams.get("leadMagnet") === "1";
 
-  const [domain, key] = useWatch({
+  const [domain, key, leadMagnetEnabled, trackConversion] = useWatch({
     control,
-    name: ["domain", "key"],
+    name: ["domain", "key", "leadMagnetEnabled", "trackConversion"],
   });
 
   useMetatags({
@@ -122,9 +128,9 @@ function LinkBuilderInner({
     */
     return Boolean(
       !showLinkBuilder ||
-        isSubmitting ||
-        isSubmitSuccessful ||
-        (props && !isDirty),
+      isSubmitting ||
+      isSubmitSuccessful ||
+      (props && !isDirty),
     );
   }, [showLinkBuilder, isSubmitting, isSubmitSuccessful, props, isDirty]);
 
@@ -140,7 +146,55 @@ function LinkBuilderInner({
         shouldDirty: false,
       });
     }
-  }, [loading, primaryDomain, props, duplicateProps]);
+  }, [loading, primaryDomain, props, duplicateProps, setValue, domain, key]);
+
+  useEffect(() => {
+    // TY preset: only prefill the key (leave the rest untouched).
+    if (!showLinkBuilder) return;
+    if (!isTyPreset || !tyKey) return;
+    // Keep it simple + deterministic:
+    // - Set the TY key immediately (without validation) so random key generation never starts.
+    // - Don't override if the user already edited the key.
+    if (dirtyFields?.key) return;
+    if (String(key) === String(tyKey)) return;
+    setValue("key", tyKey, { shouldValidate: false, shouldDirty: true });
+  }, [
+    showLinkBuilder,
+    isTyPreset,
+    tyKey,
+    key,
+    setValue,
+    props,
+    duplicateProps,
+    dirtyFields,
+  ]);
+
+  useEffect(() => {
+    // Lead magnet preset: turn on lead magnet for blank "new link" flows.
+    // (We intentionally do not force it for existing links / duplicates.)
+    if (!showLinkBuilder) return;
+    if (!isLeadMagnetPreset) return;
+    if (props || duplicateProps) return;
+    if (leadMagnetEnabled) return;
+
+    setValue("leadMagnetEnabled" as any, true, {
+      shouldValidate: true,
+      shouldDirty: false,
+    });
+    // Keep conversion tracking on (it should already be pinned, but be explicit).
+    setValue("trackConversion", true, {
+      shouldValidate: true,
+      shouldDirty: false,
+    });
+  }, [
+    showLinkBuilder,
+    isLeadMagnetPreset,
+    props,
+    duplicateProps,
+    leadMagnetEnabled,
+    trackConversion,
+    setValue,
+  ]);
 
   const draftControlsRef = useRef<DraftControlsHandle>(null);
 
@@ -194,18 +248,21 @@ function LinkBuilderInner({
         onClose={() => {
           if (searchParams.has("newLink"))
             queryParams({
-              del: ["newLink", "newLinkDomain", "leadMagnet"],
+              del: ["newLink", "newLinkDomain", "leadMagnet", "ty", "tyKey"],
             });
           draftControlsRef.current?.onClose();
         }}
       >
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="flex flex-col overflow-auto">
+        <form
+          onSubmit={handleSubmit(handleFormSubmit)}
+          className="flex flex-col overflow-auto"
+        >
           <LinkBuilderHeader
             onClose={() => {
               setShowLinkBuilder(false);
               if (searchParams.has("newLink")) {
                 queryParams({
-                  del: ["newLink", "leadMagnet"],
+                  del: ["newLink", "leadMagnet", "ty", "tyKey"],
                 });
               }
               draftControlsRef.current?.onClose();
@@ -227,8 +284,8 @@ function LinkBuilderInner({
           <div
             className={cn(
               "grid w-full max-md:overflow-auto sm:gap-y-6 md:grid-cols-[3fr_2fr]",
-              "max-md:max-h-[calc(100dvh-200px)] max-md:min-h-[min(566px,_calc(100dvh-200px))]",
-              "md:[&>div]:max-h-[calc(100dvh-200px)] md:[&>div]:min-h-[min(566px,_calc(100dvh-200px))]",
+              "max-md:max-h-[calc(100dvh-200px)] max-md:min-h-[min(566px,calc(100dvh-200px))]",
+              "md:[&>div]:max-h-[calc(100dvh-200px)] md:[&>div]:min-h-[min(566px,calc(100dvh-200px))]",
             )}
           >
             <div className="scrollbar-hide px-6 md:overflow-auto">
@@ -275,7 +332,7 @@ function LinkBuilderInner({
                 )}
               </div>
             </div>
-            <div className="scrollbar-hide px-2 md:overflow-auto md:px-6 md:pl-0 md:pr-4">
+            <div className="scrollbar-hide px-2 md:overflow-auto md:px-6 md:pr-4 md:pl-0">
               <div className="rounded-3xl bg-neutral-50 px-4 py-3 ring-1 ring-neutral-200/60">
                 <div className="flex flex-col gap-6">
                   <LinkBuilderFolderSelector />
@@ -306,7 +363,7 @@ function LinkBuilderInner({
                   saveDisabled || (urlMode === "bulk" && bulkUrls.length === 0)
                 }
                 loading={isSubmitting || isSubmitSuccessful}
-                className="h-8 w-full pl-2.5 pr-1.5"
+                className="h-8 w-full pr-1.5 pl-2.5"
               >
                 {
                   <span className="flex items-center gap-2">
@@ -342,39 +399,42 @@ export function CreateLinkButton({
   floating?: boolean;
 } & CreateLinkButtonProps) {
   const { slug, nextPlan, exceededLinks } = useWorkspace();
+  const { openUpgradeModal } = useUpgradeModal();
 
   useKeyboardShortcut("c", () => setShowLinkBuilder(true));
 
   // listen to paste event, and if it's a URL, open the modal and input the URL
-  const handlePaste = (e: ClipboardEvent) => {
-    const pastedContent = e.clipboardData?.getData("text");
-    const target = e.target as HTMLElement;
-    const existingModalBackdrop = document.getElementById("modal-backdrop");
+  const handlePaste = useCallback(
+    (e: ClipboardEvent) => {
+      const pastedContent = e.clipboardData?.getData("text");
+      const target = e.target as HTMLElement;
+      const existingModalBackdrop = document.getElementById("modal-backdrop");
 
-    // make sure:
-    // - pasted content is a valid URL
-    // - user is not typing in an input or textarea
-    // - there is no existing modal backdrop (i.e. no other modal is open)
-    // - workspace has not exceeded links limit
-    if (
-      pastedContent &&
-      isValidUrl(pastedContent) &&
-      target.tagName !== "INPUT" &&
-      target.tagName !== "TEXTAREA" &&
-      !existingModalBackdrop &&
-      !exceededLinks
-    ) {
-      setShowLinkBuilder(true);
-    }
-  };
+      // make sure:
+      // - pasted content is a valid URL
+      // - user is not typing in an input or textarea
+      // - there is no existing modal backdrop (i.e. no other modal is open)
+      // - workspace has not exceeded links limit
+      if (
+        pastedContent &&
+        isValidUrl(pastedContent) &&
+        target.tagName !== "INPUT" &&
+        target.tagName !== "TEXTAREA" &&
+        !existingModalBackdrop &&
+        !exceededLinks
+      ) {
+        setShowLinkBuilder(true);
+      }
+    },
+    [exceededLinks, setShowLinkBuilder],
+  );
 
   useEffect(() => {
     document.addEventListener("paste", handlePaste);
     return () => document.removeEventListener("paste", handlePaste);
-  }, []);
+  }, [handlePaste]);
 
   if (floating) {
-    const { openUpgradeModal } = useUpgradeModal();
     const disabledTooltip = exceededLinks ? (
       <TooltipContent
         title="Your workspace has exceeded its monthly links limit. We're still collecting data on your existing links, but you need to upgrade to add more links."
@@ -386,7 +446,7 @@ export function CreateLinkButton({
     if (disabledTooltip) {
       return (
         <Tooltip content={disabledTooltip}>
-          <div className="fixed bottom-6 right-4 flex h-12 w-12 cursor-not-allowed items-center justify-center rounded-lg border border-neutral-200 bg-neutral-100 text-neutral-400">
+          <div className="fixed right-4 bottom-6 flex h-12 w-12 cursor-not-allowed items-center justify-center rounded-lg border border-neutral-200 bg-neutral-100 text-neutral-400">
             <Plus className="size-5" />
           </div>
         </Tooltip>
@@ -398,7 +458,7 @@ export function CreateLinkButton({
         type="button"
         onClick={() => setShowLinkBuilder(true)}
         className={cn(
-          "fixed bottom-6 right-4 h-12 w-12 bg-brand-primary p-0 text-white hover:bg-brand-primary-hover hover:text-white",
+          "bg-brand-primary hover:bg-brand-primary-hover fixed right-4 bottom-6 h-12 w-12 p-0 text-white hover:text-white",
           buttonProps.className,
         )}
         aria-label="Create link"
@@ -408,7 +468,6 @@ export function CreateLinkButton({
     );
   }
 
-  const { openUpgradeModal } = useUpgradeModal();
   const disabledTooltip = exceededLinks ? (
     <TooltipContent
       title="Your workspace has exceeded its monthly links limit. We're still collecting data on your existing links, but you need to upgrade to add more links."

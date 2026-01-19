@@ -106,9 +106,18 @@ export default function WorkspacePeopleClient() {
         <div className="grid divide-y divide-neutral-100">
           {users ? (
             users.length > 0 ? (
-              users.map((user) => (
-                <UserCard key={user.id} user={user} currentTab={currentTab} />
-              ))
+              users.map((user) => {
+                const userKey =
+                  currentTab === "Invitations" ? user.email : user.id;
+
+                return (
+                  <UserCard
+                    key={userKey}
+                    user={user}
+                    currentTab={currentTab}
+                  />
+                );
+              })
             ) : (
               <AnimatedEmptyState
                 title="No invitations sent"
@@ -181,7 +190,6 @@ const UserCard = ({
       <EditRoleModal />
       <RemoveTeammateModal />
       <div
-        key={id}
         className="flex items-center justify-between space-x-3 px-4 py-3 sm:pl-8"
       >
         <div className="flex items-start space-x-3">

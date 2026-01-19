@@ -19,7 +19,7 @@ import {
 } from "../middleware/utils";
 import { conn } from "../planetscale";
 import { WorkspaceProps } from "../types";
-import { setTyLastClick } from "@/lib/thankyou/last-click";
+import { setTyLastClick } from "../thankyou/last-click";
 import { redis } from "../upstash";
 import { webhookCache } from "../webhook/cache";
 import { sendWebhooks } from "../webhook/qstash";

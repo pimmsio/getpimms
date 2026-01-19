@@ -8,6 +8,7 @@ import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import {
   ButtonTooltip,
   Combobox,
+  HelpTooltip,
   LinkedIn,
   LoadingCircle,
   Tooltip,
@@ -30,6 +31,7 @@ import { useParams, usePathname } from "next/navigation";
 import {
   forwardRef,
   HTMLProps,
+  useCallback,
   useEffect,
   useId,
   useMemo,
@@ -37,7 +39,6 @@ import {
 } from "react";
 import { useDebounce } from "use-debounce";
 import { AlertCircleFill } from "../shared/icons";
-import { HelpTooltip } from "@dub/ui";
 import { useAvailableDomains } from "./use-available-domains";
 
 type ShortLinkInputProps = {
@@ -82,7 +83,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
     const [keyError, setKeyError] = useState<string | null>(null);
     const error = keyError || errorProp;
 
-    const generateRandomKey = async () => {
+    const generateRandomKey = useCallback(async () => {
       setKeyError(null);
       setGeneratingRandomKey(true);
       const res = await fetch(
@@ -91,7 +92,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
       const key = await res.json();
       onChange?.({ key });
       setGeneratingRandomKey(false);
-    };
+    }, [domain, workspaceId, onChange]);
 
     const [isFocused, setIsFocused] = useState(false);
 
@@ -103,19 +104,22 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
       if (domain && !key && !isFocused) {
         generateRandomKey();
       }
-    }, [domain, key, isFocused]);
+    }, [domain, key, isFocused, generateRandomKey]);
 
-    const runKeyChecks = async (value: string) => {
-      const res = await fetch(
-        `/api/links/exists?domain=${domain}&key=${value}&workspaceId=${workspaceId}`,
-      );
-      const { error } = await res.json();
-      if (error) {
-        setKeyError(error.message);
-      } else {
-        setKeyError(null);
-      }
-    };
+    const runKeyChecks = useCallback(
+      async (value: string) => {
+        const res = await fetch(
+          `/api/links/exists?domain=${domain}&key=${value}&workspaceId=${workspaceId}`,
+        );
+        const { error } = await res.json();
+        if (error) {
+          setKeyError(error.message);
+        } else {
+          setKeyError(null);
+        }
+      },
+      [domain, workspaceId],
+    );
 
     const [debouncedKey] = useDebounce(key, 500);
 
@@ -127,7 +131,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
       if (debouncedKey && workspaceId && !existingLink) {
         runKeyChecks(debouncedKey);
       }
-    }, [debouncedKey, workspaceId, existingLink]);
+    }, [debouncedKey, workspaceId, existingLink, runKeyChecks]);
 
     const [generatedKeys, setGeneratedKeys] = useState<string[]>(
       existingLink && key ? [key] : [],
@@ -247,7 +251,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
           )}
         </div>
         <div className="relative mt-1 flex rounded">
-          <div className="z-[1]">
+          <div className="z-1">
             <DomainCombobox
               domain={domain}
               setDomain={(domain) => {
@@ -276,7 +280,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
             autoCapitalize="none"
             className={cn(
               "block w-full rounded-r-lg border border-neutral-200 bg-white px-3 py-2 text-neutral-900 placeholder-neutral-400 transition outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200/60 sm:text-sm",
-              "z-0 focus:z-[1]",
+              "z-0 focus:z-1",
               {
                 "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-0":
                   error,

@@ -565,6 +565,15 @@ export default function LeadsFeedTable() {
             variant="secondary"
             size="sm"
             className="w-auto"
+            onClick={() => setShowConversionOnboardingModal(true)}
+          >
+            Setup guides
+          </AppButton>
+          <AppButton
+            type="button"
+            variant="secondary"
+            size="sm"
+            className="w-auto"
             disabled={showMaskedPreview || customers.length === 0 || copying}
             onClick={async () => {
               try {
@@ -597,7 +606,7 @@ export default function LeadsFeedTable() {
 
       <Table {...tableProps} table={table} />
 
-      {showMaskedPreview ? <SetupGuides embedded className="mt-4" /> : null}
+      <SetupGuides embedded className="mt-4" />
     </div>
   );
 }

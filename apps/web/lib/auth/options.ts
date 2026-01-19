@@ -412,6 +412,16 @@ export const authOptions: NextAuthOptions = {
 
           // Only create workspace if user has no workspaces
           if (!userWorkspaces) {
+            const pendingInviteCount = await prisma.projectInvite.count({
+              where: { email },
+            });
+
+            // If the user has pending invites, don't auto-create a workspace.
+            // The invite accept flow should land them in the invited workspace.
+            if (pendingInviteCount > 0) {
+              return;
+            }
+
             // Generate random name and slug with "a_" prefix
             const randomSuffix = nanoid(8).toLowerCase();
             const workspaceName = `a_${randomSuffix}`;

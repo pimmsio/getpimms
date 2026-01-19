@@ -1,6 +1,5 @@
 import { Tooltip, useRouterStuff } from "@dub/ui";
 import { cn, getParamsFromURL } from "@dub/utils";
-import { useMemo } from "react";
 
 type UtmKey = "utm_source" | "utm_medium" | "utm_campaign" | "utm_term" | "utm_content";
 
@@ -17,6 +16,7 @@ export function LinkUtmColumns({
   tags,
   visibleUtmKeys,
   showTagsColumn,
+  disableUtms,
 }: {
   link: {
     url?: string | null;
@@ -29,17 +29,19 @@ export function LinkUtmColumns({
   tags?: { id: string; name: string; color: string }[];
   visibleUtmKeys?: UtmKey[];
   showTagsColumn?: boolean;
+  disableUtms?: boolean;
 }) {
   const { queryParams, searchParamsObj } = useRouterStuff();
 
   // Get UTM values from link or URL params
-  let utmSource = link.utm_source ?? null;
-  let utmMedium = link.utm_medium ?? null;
-  let utmCampaign = link.utm_campaign ?? null;
-  let utmTerm = link.utm_term ?? null;
-  let utmContent = link.utm_content ?? null;
+  let utmSource = disableUtms ? null : (link.utm_source ?? null);
+  let utmMedium = disableUtms ? null : (link.utm_medium ?? null);
+  let utmCampaign = disableUtms ? null : (link.utm_campaign ?? null);
+  let utmTerm = disableUtms ? null : (link.utm_term ?? null);
+  let utmContent = disableUtms ? null : (link.utm_content ?? null);
 
   if (
+    !disableUtms &&
     !utmSource &&
     !utmMedium &&
     !utmCampaign &&
@@ -75,21 +77,15 @@ export function LinkUtmColumns({
     return null;
   }
 
-  const selectedTagIds = useMemo(
-    () => searchParamsObj["tagIds"]?.split(",")?.filter(Boolean) ?? [],
-    [searchParamsObj],
-  );
+  const selectedTagIds = searchParamsObj["tagIds"]?.split(",")?.filter(Boolean) ?? [];
 
-  const selectedUtmValues = useMemo(() => {
-    const selected: Record<UtmKey, string[]> = {
-      utm_source: searchParamsObj["utm_source"]?.split(",")?.filter(Boolean) ?? [],
-      utm_medium: searchParamsObj["utm_medium"]?.split(",")?.filter(Boolean) ?? [],
-      utm_campaign: searchParamsObj["utm_campaign"]?.split(",")?.filter(Boolean) ?? [],
-      utm_term: searchParamsObj["utm_term"]?.split(",")?.filter(Boolean) ?? [],
-      utm_content: searchParamsObj["utm_content"]?.split(",")?.filter(Boolean) ?? [],
-    };
-    return selected;
-  }, [searchParamsObj]);
+  const selectedUtmValues: Record<UtmKey, string[]> = {
+    utm_source: searchParamsObj["utm_source"]?.split(",")?.filter(Boolean) ?? [],
+    utm_medium: searchParamsObj["utm_medium"]?.split(",")?.filter(Boolean) ?? [],
+    utm_campaign: searchParamsObj["utm_campaign"]?.split(",")?.filter(Boolean) ?? [],
+    utm_term: searchParamsObj["utm_term"]?.split(",")?.filter(Boolean) ?? [],
+    utm_content: searchParamsObj["utm_content"]?.split(",")?.filter(Boolean) ?? [],
+  };
 
   const handleTagClick = (tagId: string, e: React.MouseEvent) => {
     e.stopPropagation();

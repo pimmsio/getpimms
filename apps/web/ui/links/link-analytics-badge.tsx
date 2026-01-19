@@ -1,7 +1,7 @@
 import { useCheckFolderPermission } from "@/lib/swr/use-folder-permissions";
 import useWorkspace from "@/lib/swr/use-workspace";
+import { AppButton } from "@/ui/components/controls/app-button";
 import {
-  CardList,
   CopyButton,
   CursorRays,
   ReferredVia,
@@ -19,10 +19,9 @@ import {
 } from "@dub/utils";
 import { CoinsIcon, MousePointerClick, TargetIcon } from "lucide-react";
 import Link from "next/link";
-import { useContext, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useShareDashboardModal } from "../modals/share-dashboard-modal";
 import { ResponseLink } from "./links-container";
-import { AppButton } from "@/ui/components/controls/app-button";
 
 export function LinkAnalyticsBadge({
   link,
@@ -35,6 +34,7 @@ export function LinkAnalyticsBadge({
 }) {
   const { slug, plan, currency } = useWorkspace();
   const { domain, key, trackConversion, clicks, leads, saleAmount } = link;
+  const isConversionCallback = !!link.isConversionCallback;
 
   const { isMobile } = useMediaQuery();
 
@@ -76,14 +76,22 @@ export function LinkAnalyticsBadge({
     "folders.links.write",
   );
 
+  const analyticsHref = `/${slug}/analytics?domain=${domain}&key=${key}${url ? `&url=${url}` : ""}&interval=${plan === "free" ? "30d" : plan === "pro" ? "1y" : "all"}`;
+
   return isMobile ? (
-    <Link
-      href={`/${slug}/analytics?domain=${domain}&key=${key}`}
-      className="flex items-center gap-1 rounded-lg border border-neutral-200 bg-white px-2 py-0.5 text-sm text-neutral-800"
-    >
-      <CursorRays className="h-4 w-4 text-neutral-600" />
-      {nFormatter(link.clicks)}
-    </Link>
+    isConversionCallback ? (
+      <div className="flex items-center gap-1 rounded-lg border border-neutral-200 bg-white px-2 py-0.5 text-sm text-neutral-400">
+        <CursorRays className="h-4 w-4 text-neutral-300" />—
+      </div>
+    ) : (
+      <Link
+        href={`/${slug}/analytics?domain=${domain}&key=${key}`}
+        className="flex items-center gap-1 rounded-lg border border-neutral-200 bg-white px-2 py-0.5 text-sm text-neutral-800"
+      >
+        <CursorRays className="h-4 w-4 text-neutral-600" />
+        {nFormatter(link.clicks)}
+      </Link>
+    )
   ) : (
     <>
       {sharingEnabled && <ShareDashboardModal />}
@@ -91,7 +99,7 @@ export function LinkAnalyticsBadge({
         key={modalShowCount}
         side="top"
         content={
-          <div className="flex flex-col gap-2.5 whitespace-nowrap p-3 text-neutral-600">
+          <div className="flex flex-col gap-2.5 p-3 whitespace-nowrap text-neutral-600">
             {stats.map(({ id: tab, value }) => (
               <div
                 key={tab}
@@ -102,7 +110,9 @@ export function LinkAnalyticsBadge({
               >
                 <span className="font-medium text-neutral-950">
                   {tab === "sales"
-                    ? currencyFormatter(value / 100, { currency: currency ?? "EUR" })
+                    ? currencyFormatter(value / 100, {
+                        currency: currency ?? "EUR",
+                      })
                     : nFormatter(value, { full: value < INFINITY_NUMBER })}
                 </span>{" "}
                 {tab === "sales" ? "total " : ""}
@@ -110,11 +120,13 @@ export function LinkAnalyticsBadge({
               </div>
             ))}
             <p className="text-xs leading-none text-neutral-400">
-              {link.lastClicked
-                ? `Last clicked ${timeAgo(link.lastClicked, {
-                    withAgo: true,
-                  })}`
-                : "No clicks yet"}
+              {isConversionCallback
+                ? "Conversion callback link (thank-you)."
+                : link.lastClicked
+                  ? `Last clicked ${timeAgo(link.lastClicked, {
+                      withAgo: true,
+                    })}`
+                  : "No clicks yet"}
             </p>
 
             {sharingEnabled && (
@@ -144,82 +156,97 @@ export function LinkAnalyticsBadge({
           </div>
         }
       >
-        <Link
-          href={`/${slug}/analytics?domain=${domain}&key=${key}${url ? `&url=${url}` : ""}&interval=${plan === "free" ? "30d" : plan === "pro" ? "1y" : "all"}`}
-          className="block w-fit overflow-hidden rounded-lg border border-neutral-200 bg-white py-0.5 text-sm text-neutral-600 transition-colors hover:border-neutral-300"
-        >
-          <div className="flex w-fit flex-col items-center px-1 sm:flex-row">
-            <div className="flex w-fit flex-row items-center justify-center gap-1">
-              {stats
-                .filter(({ id }) => id === "clicks")
-                .map(
-                  ({
-                    id: tab,
-                    icon: Icon,
-                    value,
-                    className,
-                    iconClassName,
-                  }) => (
-                    <div
-                      key={tab}
-                      className={cn(
-                        "flex items-center gap-1 whitespace-nowrap rounded px-1 py-px transition-colors",
-                        className,
-                      )}
-                    >
-                      <Icon
-                        data-active={value > 0}
-                        className={cn("h-3 w-3 shrink-0", iconClassName)}
-                      />
-                      <span className="text-xs sm:text-sm">
-                        {nFormatter(value)}
-                      </span>
-                    </div>
-                  ),
-                )}
+        {isConversionCallback ? (
+          <div className="block w-fit overflow-hidden rounded-lg border border-neutral-200 bg-white py-0.5 text-sm text-neutral-400">
+            <div className="flex w-fit flex-col items-center px-1 sm:flex-row">
+              <div className="flex w-fit flex-row items-center justify-center gap-1">
+                <div className="flex items-center gap-1 rounded px-1 py-px whitespace-nowrap transition-colors">
+                  <MousePointerClick className="h-3 w-3 shrink-0 text-neutral-300" />
+                  <span className="text-xs sm:text-sm">—</span>
+                </div>
+              </div>
             </div>
-            <div className="flex w-full flex-row items-center gap-0.5">
-              {stats
-                .filter(({ id }) => id !== "clicks")
-                .map(
-                  ({
-                    id: tab,
-                    icon: Icon,
-                    value,
-                    className,
-                    iconClassName,
-                  }) => (
-                    <div
-                      key={tab}
-                      className={cn(
-                        "flex items-center gap-1 whitespace-nowrap rounded px-1 py-px transition-colors",
-                        className,
-                      )}
-                    >
-                      {tab !== "sales" && (
+          </div>
+        ) : (
+          <Link
+            href={analyticsHref}
+            className="block w-fit overflow-hidden rounded-lg border border-neutral-200 bg-white py-0.5 text-sm text-neutral-600 transition-colors hover:border-neutral-300"
+          >
+            <div className="flex w-fit flex-col items-center px-1 sm:flex-row">
+              <div className="flex w-fit flex-row items-center justify-center gap-1">
+                {stats
+                  .filter(({ id }) => id === "clicks")
+                  .map(
+                    ({
+                      id: tab,
+                      icon: Icon,
+                      value,
+                      className,
+                      iconClassName,
+                    }) => (
+                      <div
+                        key={tab}
+                        className={cn(
+                          "flex items-center gap-1 rounded px-1 py-px whitespace-nowrap transition-colors",
+                          className,
+                        )}
+                      >
                         <Icon
                           data-active={value > 0}
                           className={cn("h-3 w-3 shrink-0", iconClassName)}
                         />
-                      )}
-                      <div className="flow-col flex gap-1">
                         <span className="text-xs sm:text-sm">
-                          {tab === "sales"
-                            ? currencyFormatter(value / 100, { currency: currency ?? "EUR" })
-                            : nFormatter(value)}
+                          {nFormatter(value)}
                         </span>
                       </div>
-                    </div>
-                  ),
-                )}
-            </div>
-            {link.dashboardId && (
-              <div className="border-l border-neutral-200 px-1.5">
-                <ReferredVia className="h-4 w-4 shrink-0 text-neutral-600" />
+                    ),
+                  )}
               </div>
-            )}
-          </div>
-        </Link>
+              <div className="flex w-full flex-row items-center gap-0.5">
+                {stats
+                  .filter(({ id }) => id !== "clicks")
+                  .map(
+                    ({
+                      id: tab,
+                      icon: Icon,
+                      value,
+                      className,
+                      iconClassName,
+                    }) => (
+                      <div
+                        key={tab}
+                        className={cn(
+                          "flex items-center gap-1 rounded px-1 py-px whitespace-nowrap transition-colors",
+                          className,
+                        )}
+                      >
+                        {tab !== "sales" && (
+                          <Icon
+                            data-active={value > 0}
+                            className={cn("h-3 w-3 shrink-0", iconClassName)}
+                          />
+                        )}
+                        <div className="flow-col flex gap-1">
+                          <span className="text-xs sm:text-sm">
+                            {tab === "sales"
+                              ? currencyFormatter(value / 100, {
+                                  currency: currency ?? "EUR",
+                                })
+                              : nFormatter(value)}
+                          </span>
+                        </div>
+                      </div>
+                    ),
+                  )}
+              </div>
+              {link.dashboardId && (
+                <div className="border-l border-neutral-200 px-1.5">
+                  <ReferredVia className="h-4 w-4 shrink-0 text-neutral-600" />
+                </div>
+              )}
+            </div>
+          </Link>
+        )}
       </Tooltip>
     </>
   );

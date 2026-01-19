@@ -1,5 +1,8 @@
+import { mutatePrefix } from "@/lib/swr/mutate";
+import { useCheckFolderPermission } from "@/lib/swr/use-folder-permissions";
 import useWorkspace from "@/lib/swr/use-workspace";
-import { CardList, Tooltip, useCopyToClipboard } from "@dub/ui";
+import { AppIconButton } from "@/ui/components/controls/app-icon-button";
+import { CardList, Switch, Tooltip, useCopyToClipboard } from "@dub/ui";
 import { Copy } from "@dub/ui/icons";
 import {
   cn,
@@ -7,27 +10,21 @@ import {
   INFINITY_NUMBER,
   linkConstructor,
   nFormatter,
-  pluralize,
 } from "@dub/utils";
-import {
-  memo,
-  useCallback,
-  useContext,
-  useRef,
-  useState,
-} from "react";
+import { memo, useCallback, useContext, useRef, useState } from "react";
 import { toast } from "sonner";
-import { mutatePrefix } from "@/lib/swr/mutate";
-import { useCheckFolderPermission } from "@/lib/swr/use-folder-permissions";
-import { Switch } from "@dub/ui";
 import { LinkControls } from "./link-controls";
 import { useLinkSelection } from "./link-selection-provider";
 import { LinkUtmColumns } from "./link-utm-columns";
 import { LinksListContext, ResponseLink } from "./links-container";
 import { LinksDisplayContext } from "./links-display-provider";
-import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 
-type UtmKey = "utm_source" | "utm_medium" | "utm_campaign" | "utm_term" | "utm_content";
+type UtmKey =
+  | "utm_source"
+  | "utm_medium"
+  | "utm_campaign"
+  | "utm_term"
+  | "utm_content";
 type UtmVisibility = {
   visibleUtmKeys: UtmKey[];
   showTagsColumn: boolean;
@@ -41,6 +38,7 @@ export function LinkDetailsColumn({
   utmVisibility?: UtmVisibility;
 }) {
   const { domain, key } = link;
+  const isConversionCallback = !!link.isConversionCallback;
 
   const { displayProperties } = useContext(LinksDisplayContext);
 
@@ -58,6 +56,7 @@ export function LinkDetailsColumn({
           tags={link.tags}
           visibleUtmKeys={utmVisibility?.visibleUtmKeys}
           showTagsColumn={utmVisibility?.showTagsColumn}
+          disableUtms={isConversionCallback}
         />
       </div>
       <div className="hidden xl:flex xl:justify-end">
@@ -99,6 +98,7 @@ function LinkMetricsStrip({ link }: { link: ResponseLink }) {
     "folders.links.write",
   );
   const [enabling, setEnabling] = useState(false);
+  const isConversionCallback = !!(link as any).isConversionCallback;
   const {
     clicks,
     leads,
@@ -145,14 +145,67 @@ function LinkMetricsStrip({ link }: { link: ResponseLink }) {
             }
           }}
           disabledTooltip={
-            canManageLink ? undefined : "You don't have permission to update this link."
+            canManageLink
+              ? undefined
+              : "You don't have permission to update this link."
           }
         />
       </div>
     </div>
   );
 
-  const metricsStrip = (
+  const clicksValue = isConversionCallback
+    ? "—"
+    : nFormatter(clicks, { full: clicks < INFINITY_NUMBER });
+  const leadsValue = isConversionCallback
+    ? "—"
+    : trackConversion
+      ? nFormatter(leads, { full: leads < INFINITY_NUMBER })
+      : "—";
+  const revenueValue = isConversionCallback
+    ? "—"
+    : trackConversion
+      ? currencyFormatter(saleAmount / 100, { currency: currency ?? "EUR" })
+      : "—";
+
+  const metricsStripInner = (
+    <>
+      <Metric
+        label="CLK"
+        value={clicksValue}
+        muted={isConversionCallback || !clicksActive}
+        tone="clicks"
+        active={!isConversionCallback && clicksActive}
+      />
+      <div className="h-6 w-px bg-neutral-200/70" />
+      <Metric
+        label="LEAD"
+        value={leadsValue}
+        muted={isConversionCallback || !leadsActive}
+        tone="leads"
+        active={!isConversionCallback && leadsActive}
+      />
+      <div className="h-6 w-px bg-neutral-200/70" />
+      <Metric
+        label="REV"
+        value={revenueValue}
+        muted={isConversionCallback || !revenueActive}
+        tone="revenue"
+        active={!isConversionCallback && revenueActive}
+      />
+    </>
+  );
+
+  const metricsStrip = isConversionCallback ? (
+    <div
+      className={cn(
+        "flex items-center gap-2 px-2 py-1 text-[12px] text-neutral-700",
+        "border-l border-neutral-200/70",
+      )}
+    >
+      {metricsStripInner}
+    </div>
+  ) : (
     <a
       href={`/${slug}/analytics?domain=${link.domain}&key=${link.key}`}
       onClick={(e) => e.stopPropagation()}
@@ -162,33 +215,7 @@ function LinkMetricsStrip({ link }: { link: ResponseLink }) {
         "transition-[box-shadow] hover:ring-1 hover:ring-neutral-200/60",
       )}
     >
-      <Metric
-        label="CLK"
-        value={nFormatter(clicks, { full: clicks < INFINITY_NUMBER })}
-        muted={!clicksActive}
-        tone="clicks"
-        active={clicksActive}
-      />
-      <div className="h-6 w-px bg-neutral-200/70" />
-      <Metric
-        label="LEAD"
-        value={trackConversion ? nFormatter(leads, { full: leads < INFINITY_NUMBER }) : "—"}
-        muted={!leadsActive}
-        tone="leads"
-        active={leadsActive}
-      />
-      <div className="h-6 w-px bg-neutral-200/70" />
-      <Metric
-        label="REV"
-        value={
-          trackConversion
-            ? currencyFormatter(saleAmount / 100, { currency: currency ?? "EUR" })
-            : "—"
-        }
-        muted={!revenueActive}
-        tone="revenue"
-        active={revenueActive}
-      />
+      {metricsStripInner}
     </a>
   );
 
@@ -205,6 +232,7 @@ function LinkMetricsStrip({ link }: { link: ResponseLink }) {
 
 function LinkMobileMetricsBadges({ link }: { link: ResponseLink }) {
   const { slug, currency } = useWorkspace();
+  const isConversionCallback = !!(link as any).isConversionCallback;
   const {
     clicks,
     leads,
@@ -215,29 +243,66 @@ function LinkMobileMetricsBadges({ link }: { link: ResponseLink }) {
     revenueActive,
   } = getLinkMetricState(link);
 
-  const clicksValue = nFormatter(clicks, { full: clicks < INFINITY_NUMBER });
-  const leadsValue = trackConversion ? nFormatter(leads, { full: leads < INFINITY_NUMBER }) : "—";
-  const revenueValue = trackConversion
-    ? currencyFormatter(saleAmount / 100, { currency: currency ?? "EUR" })
-    : "—";
+  const clicksValue = isConversionCallback
+    ? "—"
+    : nFormatter(clicks, { full: clicks < INFINITY_NUMBER });
+  const leadsValue = isConversionCallback
+    ? "—"
+    : trackConversion
+      ? nFormatter(leads, { full: leads < INFINITY_NUMBER })
+      : "—";
+  const revenueValue = isConversionCallback
+    ? "—"
+    : trackConversion
+      ? currencyFormatter(saleAmount / 100, { currency: currency ?? "EUR" })
+      : "—";
 
-  return (
-    <a
-      href={`/${slug}/analytics?domain=${link.domain}&key=${link.key}`}
-      onClick={(e) => e.stopPropagation()}
-      className="flex items-center gap-1.5 text-[11px] text-neutral-600 whitespace-nowrap"
-    >
-      <span className={cn("tabular-nums", clicksActive ? "text-neutral-800" : "text-neutral-400")}>
+  const content = (
+    <>
+      <span
+        className={cn(
+          "tabular-nums",
+          isConversionCallback
+            ? "text-neutral-300"
+            : clicksActive
+              ? "text-neutral-800"
+              : "text-neutral-400",
+        )}
+      >
         {clicksValue}
       </span>
       <span className="text-neutral-300">•</span>
-      <span className={cn("tabular-nums", leadsActive ? "text-neutral-800" : "text-neutral-400")}>
+      <span
+        className={cn(
+          "tabular-nums",
+          leadsActive ? "text-neutral-800" : "text-neutral-400",
+        )}
+      >
         {leadsValue}
       </span>
       <span className="text-neutral-300">•</span>
-      <span className={cn("tabular-nums", revenueActive ? "text-neutral-800" : "text-neutral-400")}>
+      <span
+        className={cn(
+          "tabular-nums",
+          revenueActive ? "text-neutral-800" : "text-neutral-400",
+        )}
+      >
         {revenueValue}
       </span>
+    </>
+  );
+
+  return isConversionCallback ? (
+    <div className="flex items-center gap-1.5 text-[11px] whitespace-nowrap text-neutral-600">
+      {content}
+    </div>
+  ) : (
+    <a
+      href={`/${slug}/analytics?domain=${link.domain}&key=${link.key}`}
+      onClick={(e) => e.stopPropagation()}
+      className="flex items-center gap-1.5 text-[11px] whitespace-nowrap text-neutral-600"
+    >
+      {content}
     </a>
   );
 }
@@ -290,12 +355,12 @@ function Metric({
         active ? toneClassName : "bg-transparent",
       )}
     >
-      <span className="text-[7px] font-medium uppercase tracking-wide text-neutral-400">
+      <span className="text-[7px] font-medium tracking-wide text-neutral-400 uppercase">
         {label}
       </span>
       <span
         className={cn(
-          "tabular-nums font-mono text-[12px] leading-4",
+          "font-mono text-[12px] leading-4 tabular-nums",
           muted ? "text-neutral-300" : "text-neutral-800",
         )}
       >

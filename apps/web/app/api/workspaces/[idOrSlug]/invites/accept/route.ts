@@ -1,10 +1,11 @@
 import { exceededLimitError } from "@/lib/api/errors";
 import { withSession } from "@/lib/auth";
 import { PlanProps } from "@/lib/types";
+import { redis } from "@/lib/upstash";
 import { prisma } from "@dub/prisma";
 import { NextResponse } from "next/server";
 
-// POST /api/workspaces/[idOrSlug]/invites/accept – accept a workspace invite
+// POST /api/workspaces/[idOrSlug]/invites/accept - accept a workspace invite
 export const POST = withSession(async ({ session, params }) => {
   const { idOrSlug: slug } = params;
   const invite = await prisma.projectInvite.findFirst({
@@ -90,5 +91,9 @@ export const POST = withSession(async ({ session, params }) => {
         },
       }),
   ]);
+
+  // After accepting an invite, don't force onboarding (invites are a primary entry path for new users).
+  await redis.set(`onboarding-step:${session.user.id}`, "completed");
+
   return NextResponse.json(response);
 });

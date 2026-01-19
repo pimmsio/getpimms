@@ -4,12 +4,14 @@ import { mutatePrefix } from "@/lib/swr/mutate";
 import useWorkspace from "@/lib/swr/use-workspace";
 import useWorkspaces from "@/lib/swr/use-workspaces";
 import { SimpleLinkProps } from "@/lib/types";
+import { useConversionOnboardingModal } from "@/ui/layout/sidebar/conversions/conversions-onboarding-modal";
 import { useAcceptInviteModal } from "@/ui/modals/accept-invite-modal";
 import { useAddEditDomainModal } from "@/ui/modals/add-edit-domain-modal";
 import { useAddWorkspaceModal } from "@/ui/modals/add-workspace-modal";
 import { useImportBitlyModal } from "@/ui/modals/import-bitly-modal";
 import { useImportCsvModal } from "@/ui/modals/import-csv-modal";
 import { useImportShortModal } from "@/ui/modals/import-short-modal";
+import { usePaywallModal } from "@/ui/modals/paywall-modal";
 import { useCookies } from "@dub/ui";
 import { DEFAULT_LINK_PROPS, getUrlFromString } from "@dub/utils";
 import { useSession } from "next-auth/react";
@@ -27,8 +29,6 @@ import { toast } from "sonner";
 import { useAddEditTagModal } from "./add-edit-tag-modal";
 import { useImportRebrandlyModal } from "./import-rebrandly-modal";
 import { useLinkBuilder } from "./link-builder";
-import { useConversionOnboardingModal } from "@/ui/layout/sidebar/conversions/conversions-onboarding-modal";
-import { usePaywallModal } from "@/ui/modals/paywall-modal";
 
 export const ModalContext = createContext<{
   setShowAddWorkspaceModal: Dispatch<SetStateAction<boolean>>;
@@ -67,9 +67,13 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
   const leadMagnet = searchParams.get("leadMagnet") === "1";
   const newLinkValues = useMemo(() => {
     const newLink = searchParams.get("newLink");
-    if (newLink && getUrlFromString(newLink)) {
+    // `?newLink=true` means "open the create link modal", not "duplicate from URL".
+    // Only treat `newLink` as a URL if it parses to a URL and isn't the boolean sentinel.
+    if (!newLink || newLink === "true") return null;
+    const parsedUrl = getUrlFromString(newLink);
+    if (parsedUrl) {
       return {
-        url: getUrlFromString(newLink),
+        url: parsedUrl,
         domain: searchParams.get("newLinkDomain"),
       };
     } else {
@@ -157,11 +161,7 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
     if (searchParams.has("newLink")) {
       setShowLinkBuilder(true);
     }
-  }, [
-    searchParams,
-    setShowAddWorkspaceModal,
-    setShowLinkBuilder,
-  ]);
+  }, [searchParams, setShowAddWorkspaceModal, setShowLinkBuilder]);
 
   const { data: session, update } = useSession();
   const { workspaces } = useWorkspaces();
@@ -198,7 +198,7 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
         setShowImportShortModal,
         setShowImportRebrandlyModal,
         setShowImportCsvModal,
-          setShowPaywallModal,
+        setShowPaywallModal,
       }}
     >
       <AddWorkspaceModal />
