@@ -18,7 +18,7 @@ function parseGuidesFromHtml(html: string): GuideItem[] {
   const nextImageEncodedAssetRegexGlobal =
     /url=(https%3A%2F%2Fassets\.pimms\.io%2F[^&"'\s)]+)/g;
   const preferredAssetRegex =
-    /(guide|pimms\.webp|conversion|stripe|systeme|calcom|webflow|framer|wordpress|tally|zapier|calendly|elementor)/i;
+    /(guide|pimms\.webp|conversion|stripe|systeme|calcom|webflow|framer|wordpress|tally|zapier|calendly|elementor|brevo|podia)/i;
   const excludedAssetRegex = /(linkedin-profile|avatar|dicebear)/i;
 
   for (const match of html.matchAll(cardRegex)) {

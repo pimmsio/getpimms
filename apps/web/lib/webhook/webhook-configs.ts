@@ -1,10 +1,15 @@
-import { getFirstAvailableField } from "@/lib/webhook/custom";
+import {
+  extractUserFields,
+  fieldsArrayToMap,
+  getFirstAvailableField,
+} from "@/lib/webhook/custom";
 import { type WebhookConfig } from "@/lib/webhook/process-webhook";
 import { checkValidSignature } from "@/lib/webhook/signature-utils";
 import {
   getUntrustedWorkspaceIdFromUrlNoFix,
   WebhookError,
 } from "@/lib/webhook/utils";
+import crypto from "crypto";
 
 /**
  * Shared webhook configurations for different apps
@@ -135,30 +140,61 @@ export const WEBHOOK_CONFIGS: Record<string, WebhookConfig> = {
 
       console.log("identifiers", identifiers);
       console.log("allData", allData);
-      // Extract email using getFirstAvailableField (matches EMAIL, email, email_id, etc.)
-      // matchPrefix=true means it will match keys containing "email" (e.g., "EMAIL", "email_id")
-      const email = getFirstAvailableField(allData, ["email"], true);
-      console.log("email", email);
-      // Extract name fields using getFirstAvailableField
-      // matchPrefix=true means it will match keys containing "firstname" (e.g., "FIRSTNAME", "FIRST_NAME")
-      const firstName = getFirstAvailableField(allData, ["firstname", "prenom"], true);
-      const lastName = getFirstAvailableField(allData, ["lastname", "nom"], true);
-      const fullName = getFirstAvailableField(allData, ["fullname", "name", "nom"], true);
-      // Build name: prefer fullName, otherwise combine firstName + lastName, fallback to firstName or lastName
-      const name = fullName || (firstName && lastName ? `${firstName} ${lastName}` : firstName || lastName || null);
-      console.log("firstName", firstName);
-      console.log("lastName", lastName);
-      console.log("fullName", fullName);
-      console.log("name", name);
-      return {
-        email,
-        name,
-        firstname: firstName,
-        lastname: lastName,
-        fullname: fullName,
-      };
+      return extractUserFields(allData);
     },
     provider: "brevo",
+    isTYReconciliationEnabled: true,
+  },
+  tally: {
+    parseBody: (body) => JSON.parse(body),
+    validateSignature: (req: Request, body: string) => {
+      // Get workspace ID from URL query parameter to use as the signing key
+      const untrustedWorkspaceId = getUntrustedWorkspaceIdFromUrlNoFix(req);
+
+      // Tally.so uses 'Tally-Signature' header
+      const signature = req.headers.get("tally-signature");
+
+      if (!signature) {
+        throw new WebhookError("Tally-Signature header is required", 400);
+      }
+
+      // Tally.so uses HMAC SHA256 with base64 encoding
+      const expectedSignature = crypto
+        .createHmac("sha256", untrustedWorkspaceId)
+        .update(body)
+        .digest("base64");
+
+      // Compare signatures using timing-safe comparison
+      const isValid = crypto.timingSafeEqual(
+        Buffer.from(expectedSignature, "base64"),
+        Buffer.from(signature, "base64"),
+      );
+
+      if (!isValid) {
+        throw new WebhookError("Invalid Tally-Signature", 401);
+      }
+    },
+    extractPimmsId: (parsed) => {
+      // Tally webhook structure: data.fields is an array of field objects
+      // Each field has: { key, label, type, value }
+      // We need to find the field with label "pimms_id" (exact match for pimms_id)
+      const fields = parsed?.data?.fields || [];
+      
+      // Use exact match for pimms_id to avoid false positives
+      for (const field of fields) {
+        if (field.label === "pimms_id" && field.value) {
+          return field.value;
+        }
+      }
+      
+      return null;
+    },
+    extractData: (parsed) => {
+      // Convert fields array to flat object with labels as keys
+      const fields = parsed?.data?.fields || [];
+      const fieldsMap = fieldsArrayToMap(fields);
+      return extractUserFields(fieldsMap);
+    },
     isTYReconciliationEnabled: true,
   },
 };

@@ -65,6 +65,8 @@ type ProviderId =
   | "stripe"
   | "systemeio"
   | "shopifyPayments"
+  | "podia"
+  | "podiaWebsite"
   | "zapier"
   | "make"
   | "n8n"
@@ -104,6 +106,7 @@ const THANK_YOU_ALT_PROVIDER_IDS: ProviderId[] = [
   "calDotCom",
   "hubspotMeetings",
   "tally",
+  "podia",
 ];
 
 const PROVIDERS: Provider[] = [
@@ -172,6 +175,14 @@ const PROVIDERS: Provider[] = [
     guideKey: "shopify",
     setupTime: "30 min",
   },
+  {
+    id: "podiaWebsite",
+    name: "Podia",
+    category: "website",
+    icon: "/static/symbols/integrations/podia.svg",
+    guideKey: "podia",
+    setupTime: "30 min",
+  },
   { id: "otherWebsite", name: "Other", category: "website" },
   // Calendars
   {
@@ -213,7 +224,8 @@ const PROVIDERS: Provider[] = [
     shortName: "Brevo",
     category: "calendars",
     icon: Brevo,
-    guideKey: "brevo meeting",
+    guideKey: "brevo",
+    guideUrl: "https://pimms.io/guides/how-to-track-brevo-forms-and-meetings-webhook-integration",
     setupTime: "5 min",
   },
   { id: "otherCalendars", name: "Other", category: "calendars" },
@@ -239,6 +251,13 @@ const PROVIDERS: Provider[] = [
     category: "payments",
     icon: "/static/symbols/integrations/shopify.svg",
     guideKey: "shopify",
+  },
+  {
+    id: "podia",
+    name: "Podia",
+    category: "payments",
+    icon: "/static/symbols/integrations/podia.svg",
+    guideKey: "podia",
   },
   { id: "otherPayments", name: "Other", category: "payments" },
   // Automations
@@ -280,6 +299,7 @@ const PROVIDERS: Provider[] = [
     category: "forms",
     icon: Tally,
     guideKey: "tally",
+    guideUrl: "https://pimms.io/guides/tally-direct-webhook-integration",
   },
   {
     id: "brevoForm",
@@ -287,7 +307,8 @@ const PROVIDERS: Provider[] = [
     shortName: "Brevo",
     category: "forms",
     icon: Brevo,
-    guideKey: "brevo form",
+    guideKey: "brevo",
+    guideUrl: "https://pimms.io/guides/how-to-track-brevo-forms-and-meetings-webhook-integration",
   },
   {
     id: "systemeioForm",
@@ -364,7 +385,7 @@ const CATEGORY_CARDS: Array<{
     {
       id: "payments",
       title: "Payments",
-      subtitle: "Stripe, Systeme.io…",
+      subtitle: "Stripe, Podia, Systeme.io…",
       icon: CreditCard,
       time: "10 min",
     },

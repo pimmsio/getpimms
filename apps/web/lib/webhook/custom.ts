@@ -36,6 +36,61 @@ export function getFirstAvailableField(
   return null;
 }
 
+/**
+ * Converts an array of field objects with label/value to a flat object
+ * Useful for webhooks that send fields as arrays (e.g., Tally)
+ */
+export function fieldsArrayToMap(
+  fields: Array<{ label?: string; value?: any; [key: string]: any }>,
+): Record<string, any> {
+  const fieldsMap: Record<string, any> = {};
+  for (const field of fields) {
+    if (field.label && field.value !== undefined && field.value !== null) {
+      fieldsMap[field.label] = field.value;
+    }
+  }
+  return fieldsMap;
+}
+
+/**
+ * Extracts common user fields (email, name, firstname, lastname) from data
+ * Uses getFirstAvailableField with smart matching for common field names
+ */
+export function extractUserFields(
+  data: Record<string, any>,
+): {
+  email: string | null;
+  name: string | null;
+  firstname: string | null;
+  lastname: string | null;
+  fullname: string | null;
+} {
+  const email = getFirstAvailableField(data, ["email"], true);
+  const firstName = getFirstAvailableField(data, ["firstname", "prenom"], true);
+  const lastName = getFirstAvailableField(data, ["lastname", "nom"], true);
+  const fullName = getFirstAvailableField(data, ["fullname", "name", "nom"], true);
+
+  // Build name: prefer fullName, otherwise combine firstName + lastName, fallback to firstName or lastName
+  const name =
+    fullName ||
+    (firstName && lastName
+      ? `${firstName} ${lastName}`
+      : firstName || lastName || null);
+
+  console.log("email", email);
+  console.log("firstName", firstName);
+  console.log("lastName", lastName);
+  console.log("fullName", fullName);
+
+  return {
+    email,
+    name,
+    firstname: firstName,
+    lastname: lastName,
+    fullname: fullName,
+  };
+}
+
 export const getClickData = async (pimmsId: string) => {
   const clickEvent = await getClickEvent({ clickId: pimmsId });
   if (!clickEvent || clickEvent.data.length === 0) {
