@@ -53,6 +53,7 @@ export default function DomainCard({ props }: { props: DomainProps }) {
 
   const isDubProvisioned = !!registeredDomain;
   const isDefaultDomain = (props as any).isDefaultDomain || false;
+  const isSharedDomain = (props as any).isSharedDomain || false;
 
   const { id: workspaceId, slug } = useWorkspace();
 
@@ -67,6 +68,7 @@ export default function DomainCard({ props }: { props: DomainProps }) {
   }>(
     workspaceId &&
       isVisible &&
+      !isSharedDomain &&
       `/api/domains/${domain}/verify?workspaceId=${workspaceId}`,
     fetcher,
   );
@@ -158,6 +160,8 @@ export default function DomainCard({ props }: { props: DomainProps }) {
             <div className="hidden sm:block">
               {isDefaultDomain ? (
                 <StatusBadge variant="success">Active</StatusBadge>
+              ) : isSharedDomain ? (
+                <StatusBadge variant="pending">Shared</StatusBadge>
               ) : verificationData ? (
                 <StatusBadge
                   variant={
@@ -188,7 +192,7 @@ export default function DomainCard({ props }: { props: DomainProps }) {
             </div>
 
             <div className="flex justify-end gap-2 sm:gap-3">
-              {!isDefaultDomain && (
+              {!isDefaultDomain && !isSharedDomain && (
                 <>
                   {!isDubProvisioned && (
                     <Button

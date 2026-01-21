@@ -1,5 +1,5 @@
 import { getFolderIdsToFilter } from "@/lib/analytics/get-folder-ids-to-filter";
-import { getDomainOrThrow } from "@/lib/api/domains/get-domain-or-throw";
+import { assertWorkspaceCanUseDomain } from "@/lib/api/domains/assert-workspace-can-use-domain";
 import { DubApiError, ErrorCodes } from "@/lib/api/errors";
 import { createLink, getLinksForWorkspace, processLink } from "@/lib/api/links";
 import { throwIfLinksUsageExceeded } from "@/lib/api/links/usage-checks";
@@ -25,9 +25,8 @@ export const GET = withWorkspace(
     const { domain, folderId, search, tagId, tagIds, tagNames, tenantId } =
       params;
 
-
     if (domain) {
-      await getDomainOrThrow({ workspace, domain });
+      await assertWorkspaceCanUseDomain({ workspace, domain });
     }
 
     let selectedFolder: Pick<Folder, "id" | "type"> | null = null;

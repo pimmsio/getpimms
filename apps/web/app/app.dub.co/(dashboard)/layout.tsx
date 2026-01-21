@@ -26,7 +26,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
           {children}
         </MainNav>
       </div>
-      <Toolbar show={["onboarding"]} />
+      {/* <Toolbar show={["onboarding"]} /> */}
     </>
   );
 }

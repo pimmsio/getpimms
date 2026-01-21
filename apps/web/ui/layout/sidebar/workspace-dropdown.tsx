@@ -97,6 +97,8 @@ export function WorkspaceDropdown() {
         align="start"
         openPopover={openPopover}
         setOpenPopover={setOpenPopover}
+        popoverContentClassName="max-h-[calc(100vh-120px)] overflow-hidden"
+        sticky="partial"
       >
         <button
           onClick={() => setOpenPopover(!openPopover)}
@@ -230,7 +232,7 @@ function WorkspaceList({
       <div
         ref={scrollRef}
         onScroll={updateScrollProgress}
-        className="relative max-h-80 w-full space-y-0.5 overflow-auto rounded bg-white text-base sm:w-64 sm:text-sm"
+        className="relative max-h-[calc(100vh-180px)] w-full space-y-0.5 overflow-auto rounded bg-white text-base sm:w-64 sm:text-sm"
       >
         <div className="flex flex-col gap-0.5 border-b border-neutral-100 p-2">
           {filteredLinks.map(({ name, href: linkHref, target, isWorkspaceLink }) => {

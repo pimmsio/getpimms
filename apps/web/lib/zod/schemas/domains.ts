@@ -92,12 +92,19 @@ export const getDomainsQuerySchemaExtended = getDomainsQuerySchema.merge(
   z.object({
     // only Dub UI uses the following query parameters
     includeLink: booleanQuerySchema.default("false"),
+    includeShared: booleanQuerySchema.default("false"),
   }),
 );
 
 export const getDomainsCountQuerySchema = getDomainsQuerySchema.omit({
   page: true,
 });
+
+export const getDomainsCountQuerySchemaExtended = getDomainsCountQuerySchema.merge(
+  z.object({
+    includeShared: booleanQuerySchema.default("false"),
+  }),
+);
 
 export const getDefaultDomainsQuerySchema = getDomainsQuerySchema.pick({
   search: true,

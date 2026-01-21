@@ -7,6 +7,7 @@ import useWorkspace from "@/lib/swr/use-workspace";
 import { UtmTemplateWithUserProps } from "@/lib/types";
 import { CheckCircleFill, ThreeDots } from "@/ui/shared/icons";
 import { AppButton } from "@/ui/components/controls/app-button";
+import { ModalContext } from "@/ui/modals/modal-provider";
 import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import {
   Popover,
@@ -19,7 +20,7 @@ import { fetcher } from "@dub/utils";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { forwardRef, HTMLAttributes, Ref, useMemo, useState } from "react";
+import { useContext, forwardRef, HTMLAttributes, Ref, useMemo, useState } from "react";
 import useSWR from "swr";
 
 export function OnboardingButton() {
@@ -40,6 +41,7 @@ function OnboardingButtonInner({
 }) {
   const { slug } = useParams() as { slug: string };
   const { openUpgradeModal } = useUpgradeModal();
+  const { setShowConversionOnboardingModal } = useContext(ModalContext);
 
   if (!slug) {
     return null;
@@ -86,20 +88,21 @@ function OnboardingButtonInner({
         checked: totalLinks && totalLinks > 0,
       },
       {
-        display: "Create one UTM template",
-        cta: `/${slug}/settings/utm/templates`,
-        checked: utmTemplates && utmTemplates.length > 0,
-      },
-      {
-        display: "Collect a first Click",
+        display: "Get a Click",
         cta: `/${slug}/analytics`,
         checked: totalClicks && totalClicks > 0,
       },
       {
-        display: "Collect a first Lead",
+        display: "Reveal a lead",
         cta: `/${slug}/conversions`,
         checked: customersCount && customersCount > 0,
+        onClick: () => setShowConversionOnboardingModal(true),
         // Tracking is available on all plans; keep as a normal onboarding task.
+      },
+      {
+        display: "Create one UTM template",
+        cta: `/${slug}/settings/utm/templates`,
+        checked: utmTemplates && utmTemplates.length > 0,
       },
       // {
       //   display: "Collect a first Sale",
@@ -109,12 +112,12 @@ function OnboardingButtonInner({
       //   feature: "Sales tracking",
       // },
       {
-        display: "Set up your custom domain",
+        display: "Setup a custom domain",
         cta: `/${slug}/settings/domains`,
         checked: domainsCount && domainsCount > 0,
       },
       {
-        display: "Invite your teammates",
+        display: "Invite a teammate",
         cta: `/${slug}/settings/people`,
         checked: (users && users.length > 1) || (invites && invites.length > 0),
       },
@@ -129,6 +132,7 @@ function OnboardingButtonInner({
     users,
     invites,
     utmTemplates,
+    setShowConversionOnboardingModal,
   ]);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -161,43 +165,63 @@ function OnboardingButtonInner({
           </div>
           <div className="p-3">
             <div className="grid divide-y divide-neutral-100 rounded border border-neutral-100 bg-white">
-              {tasks.map(({ display, cta, checked, premium, feature }: any) => {
+              {tasks.map(({ display, cta, checked, premium, feature, onClick }: any) => {
+                const content = (
+                  <div className="group flex items-center justify-between gap-3 p-3 sm:gap-10">
+                    <div className="flex items-center gap-2">
+                      {checked ? (
+                        <CheckCircleFill className="size-5 text-green-600" />
+                      ) : (
+                        <CircleDotted className="size-5 text-neutral-400" />
+                      )}
+                      <p className="inline-flex items-center gap-2 text-sm text-neutral-800">
+                        {display}{" "}
+                        {plan === "free" && premium && (
+                          <Tooltip
+                            content={
+                              <TooltipContent
+                                title={`${feature} is only available on ${premium} plans and above.`}
+                                cta={`Upgrade to ${premium}`}
+                                onClick={openUpgradeModal}
+                              />
+                            }
+                          >
+                            <div className="inline-block">
+                              <CrownSmall className="size-5 rounded-md border border-neutral-300 text-neutral-600" />
+                            </div>
+                          </Tooltip>
+                        )}
+                      </p>
+                    </div>
+                    <div className="mr-2">
+                      <ExpandingArrow className="text-neutral-500" />
+                    </div>
+                  </div>
+                );
+
+                if (onClick) {
+                  return (
+                    <button
+                      key={display}
+                      type="button"
+                      onClick={() => {
+                        onClick();
+                        setIsOpen(false);
+                      }}
+                      className="w-full text-left"
+                    >
+                      {content}
+                    </button>
+                  );
+                }
+
                 return (
                   <Link
                     key={display}
                     href={cta}
                     onClick={() => setIsOpen(false)}
                   >
-                    <div className="group flex items-center justify-between gap-3 p-3 sm:gap-10">
-                      <div className="flex items-center gap-2">
-                        {checked ? (
-                          <CheckCircleFill className="size-5 text-green-500" />
-                        ) : (
-                          <CircleDotted className="size-5 text-neutral-400" />
-                        )}
-                        <p className="inline-flex items-center gap-2 text-sm text-neutral-800">
-                          {display}{" "}
-                          {plan === "free" && premium && (
-                            <Tooltip
-                              content={
-                                <TooltipContent
-                                  title={`${feature} is only available on ${premium} plans and above.`}
-                                  cta={`Upgrade to ${premium}`}
-                                  onClick={openUpgradeModal}
-                                />
-                              }
-                            >
-                              <div className="inline-block">
-                                <CrownSmall className="size-5 rounded-md border border-neutral-300 text-neutral-600" />
-                              </div>
-                            </Tooltip>
-                          )}
-                        </p>
-                      </div>
-                      <div className="mr-5">
-                        <ExpandingArrow className="text-neutral-500" />
-                      </div>
-                    </div>
+                    {content}
                   </Link>
                 );
               })}

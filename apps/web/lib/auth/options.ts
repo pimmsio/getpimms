@@ -27,6 +27,7 @@ import {
 } from "./lock-account";
 import { validatePassword } from "./password";
 import { trackLead } from "./track-lead";
+import { reconcileStripePendingCheckoutByEmail } from "@/lib/stripe/reconcile-email";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 
@@ -473,6 +474,13 @@ export const authOptions: NextAuthOptions = {
               // If slug collision, try again with different suffix
               console.error("Failed to auto-create workspace:", error);
             }
+          }
+
+          if (email) {
+            await reconcileStripePendingCheckoutByEmail({
+              email,
+              userId: user.id,
+            });
           }
         })(),
       );

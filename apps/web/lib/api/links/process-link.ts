@@ -214,7 +214,19 @@ export async function processLink<T extends Record<string, any>>({
 
   const domains = workspace
     ? await prisma.domain.findMany({
-        where: { projectId: workspace.id },
+        where: {
+          OR: [
+            { projectId: workspace.id },
+            {
+              workspaceAccesses: {
+                some: {
+                  workspaceId: workspace.id,
+                  enabled: true,
+                },
+              },
+            },
+          ],
+        },
       })
     : [];
 
@@ -321,7 +333,7 @@ export async function processLink<T extends Record<string, any>>({
   } else if (!domains?.find((d) => d.slug === domain)) {
     return {
       link: payload,
-      error: "Domain does not belong to workspace.",
+      error: "Domain is not enabled for this workspace.",
       code: "forbidden",
     };
 

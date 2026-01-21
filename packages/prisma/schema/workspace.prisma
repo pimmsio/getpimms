@@ -53,6 +53,7 @@ model Project {
   sentEmails            SentEmail[]
   links                 Link[]
   domains               Domain[]
+  domainWorkspaceAccesses DomainWorkspaceAccess[]
   tags                  Tag[]
   programs              Program[]
   invoices              Invoice[]
