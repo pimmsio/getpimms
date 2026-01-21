@@ -39,7 +39,12 @@ export const PLANS = [
     price: {
       monthly: 19,
       lifetime: 129,
-      ids: ["price_1SQBYHBN5sOoOmBUxCM8iTy8", "price_1SQBYHBN5sOoOmBUs2reZG2N"],
+      ids: [
+        "price_1SQBYHBN5sOoOmBUxCM8iTy8", // prod monthly
+        "price_1SQBYHBN5sOoOmBUs2reZG2N", // prod lifetime
+        "price_1SshGGBL7DFxjjSQ50AZD1Ta", // staging monthly
+        "price_1SshGGBL7DFxjjSQY8rBy8K7", // staging lifetime
+      ],
     },
     limits: {
       links: 500,
@@ -73,7 +78,12 @@ export const PLANS = [
     price: {
       monthly: 69,
       yearly: 690,
-      ids: ["price_1SQBqRBN5sOoOmBUMXE1IUA8", "price_1SQBqRBN5sOoOmBUkOtzh1lV"],
+      ids: [
+        "price_1SQBqRBN5sOoOmBUMXE1IUA8", // prod monthly
+        "price_1SQBqRBN5sOoOmBUkOtzh1lV", // prod yearly
+        "price_1SshGgBL7DFxjjSQoiz9zKmZ", // staging monthly
+        "price_1SshH5BL7DFxjjSQUthdqQQY", // staging yearly
+      ],
     },
     limits: {
       links: 2000,

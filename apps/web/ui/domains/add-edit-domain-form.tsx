@@ -118,6 +118,8 @@ export function AddEditDomainForm({
   const [domainStatus, setDomainStatus] = useState<DomainStatus>(
     props ? "available" : "idle",
   );
+  const [conflictOwnedByWorkspace, setConflictOwnedByWorkspace] =
+    useState(false);
   const [showOptionStates, setShowOptionStates] = useState<
     Record<string, boolean>
   >({});
@@ -173,9 +175,33 @@ export function AddEditDomainForm({
     async (value: string) => {
       if (!isValidDomain(value)) return;
       setDomainStatus("checking");
+      setConflictOwnedByWorkspace(false);
       fetch(`/api/domains/${value}/validate`).then(async (res) => {
         const data = await res.json();
         setDomainStatus(data.status);
+
+        // If it's a conflict, determine whether it's already owned by this workspace.
+        // (We shouldn't show "Request access" if the domain is already in the workspace.)
+        if (data?.status === "conflict" && workspaceId) {
+          try {
+            const qs = new URLSearchParams({
+              workspaceId,
+              search: value,
+            });
+            const ownedRes = await fetch(`/api/domains?${qs.toString()}`);
+            const owned = ownedRes.ok ? await ownedRes.json() : [];
+            const isOwned =
+              Array.isArray(owned) &&
+              owned.some(
+                (d: any) =>
+                  typeof d?.slug === "string" &&
+                  d.slug.toLowerCase() === value.toLowerCase(),
+              );
+            setConflictOwnedByWorkspace(isOwned);
+          } catch {
+            setConflictOwnedByWorkspace(false);
+          }
+        }
       });
     },
     500,
@@ -206,6 +232,36 @@ export function AddEditDomainForm({
   const { isMobile } = useMediaQuery();
 
   const isDubProvisioned = !!props?.registeredDomain;
+
+  const requestDomainAccess = async () => {
+    try {
+      const value = (domain || "").trim();
+      if (!isValidDomain(value)) {
+        toast.error("Please enter a valid domain first.");
+        return;
+      }
+      const res = await fetch(
+        `/api/domains/access-request?workspaceId=${workspaceId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ domain: value }),
+        },
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data?.error?.message || "Failed to request domain access.");
+        return;
+      }
+      toast.success(
+        data.enabled
+          ? "Domain access is already enabled for this workspace."
+          : "Request sent to admin. The domain will appear once approved.",
+      );
+    } catch {
+      toast.error("Failed to request domain access.");
+    }
+  };
 
   const onSubmit = async (formData: FormData) => {
     try {
@@ -347,9 +403,23 @@ export function AddEditDomainForm({
                       currentStatusProps.message
                     )}
                   </p>
-                  {currentStatusProps.icon && (
-                    <currentStatusProps.icon className="size-5 shrink-0" />
-                  )}
+                  <div className="flex items-center gap-2">
+                    {domainStatus === "conflict" &&
+                      !conflictOwnedByWorkspace &&
+                      !props && (
+                      <AppButton
+                        type="button"
+                        variant="secondary"
+                        className="h-7"
+                        onClick={requestDomainAccess}
+                      >
+                        Request access
+                      </AppButton>
+                    )}
+                    {currentStatusProps.icon && (
+                      <currentStatusProps.icon className="size-5 shrink-0" />
+                    )}
+                  </div>
                 </div>
               </AnimatedSizeContainer>
             </div>

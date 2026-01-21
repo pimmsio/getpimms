@@ -107,7 +107,7 @@ function UsageInner() {
               label="Events"
               usage={usage}
               limit={usageLimit}
-              href={`/${slug}/conversions`}
+              href={`/${slug}/settings/billing`}
               showNextPlan={hovered}
               nextPlanLimit={nextPlan?.limits.clicks}
               warning={warnings[0]}
@@ -117,7 +117,7 @@ function UsageInner() {
               label="Links"
               usage={linksUsage}
               limit={linksLimit}
-              href={`/${slug}/links`}
+              href={`/${slug}/settings/billing`}
               showNextPlan={hovered}
               nextPlanLimit={nextPlan?.limits.links}
               warning={warnings[1]}

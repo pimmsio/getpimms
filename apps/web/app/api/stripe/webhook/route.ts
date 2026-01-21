@@ -18,14 +18,22 @@ const relevantEvents = new Set([
   "invoice.payment_failed",
 ]);
 
-// POST /api/stripe/webhook – listen to Stripe webhooks
+// POST /api/stripe/webhook - listen to Stripe webhooks
 export const POST = async (req: Request) => {
   const buf = await req.text();
   const sig = req.headers.get("Stripe-Signature") as string;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   let event: Stripe.Event;
   try {
-    if (!sig || !webhookSecret) return;
+    if (!sig || !webhookSecret) {
+      console.log("[Stripe Webhook] Missing signature or secret", {
+        hasSignature: Boolean(sig),
+        hasSecret: Boolean(webhookSecret),
+      });
+      return new Response("Missing Stripe webhook signature or secret", {
+        status: 400,
+      });
+    }
     event = stripe.webhooks.constructEvent(buf, sig, webhookSecret);
   } catch (err: any) {
     console.log(`❌ Error message: ${err.message}`);
@@ -36,10 +44,21 @@ export const POST = async (req: Request) => {
 
   // Ignore unsupported events
   if (!relevantEvents.has(event.type)) {
+    console.log("[Stripe Webhook] Unsupported event type, skipping", {
+      eventType: event.type,
+      eventId: event.id,
+    });
     return new Response("Unsupported event, skipping...", {
       status: 200,
     });
   }
+
+  console.log("[Stripe Webhook] Event received", {
+    eventType: event.type,
+    eventId: event.id,
+    account: event.account ?? null,
+    livemode: event.livemode,
+  });
 
   try {
     switch (event.type) {

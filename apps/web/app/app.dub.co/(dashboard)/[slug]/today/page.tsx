@@ -1,5 +1,13 @@
+"use client";
+
 import { PageContent } from "@/ui/layout/page-content";
-import TodayClient from "./today-client";
+import LayoutLoader from "@/ui/layout/layout-loader";
+import dynamic from "next/dynamic";
+
+const TodayClient = dynamic(() => import("./today-client.tsx"), {
+  ssr: false,
+  loading: () => <LayoutLoader />,
+});
 
 export default function TodayPage() {
   return (

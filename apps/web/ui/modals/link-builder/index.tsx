@@ -146,7 +146,7 @@ function LinkBuilderInner({
         shouldDirty: false,
       });
     }
-  }, [loading, primaryDomain, props, duplicateProps, setValue, domain, key]);
+  }, [loading, primaryDomain, props, duplicateProps, setValue]);
 
   useEffect(() => {
     // TY preset: only prefill the key (leave the rest untouched).

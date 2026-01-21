@@ -62,7 +62,7 @@ export const POST = withSession(async ({ req, session }) => {
   //   attachmentIds,
   // });
 
-  // send email to support@pimms.io
+  // send email to alexandre@pimms.io
 
   await resend?.emails.send({
     from: "alexandre+support@pimms.io",

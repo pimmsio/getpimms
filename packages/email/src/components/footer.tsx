@@ -24,7 +24,7 @@ export function Footer({
           </Link>
         </Text>
         <Text className="text-[12px] text-neutral-500">
-          PIMMS. Chemin de Louis-Hubert 2. Petit-Lancy, 1213
+          PIMMS. c/o ExpertFid & Audit SA, Cours des Bastions 13, 1205 Genève
         </Text>
       </Tailwind>
     );
@@ -52,7 +52,7 @@ export function Footer({
         </Text>
       )}
       <Text className="text-[12px] text-neutral-500">
-        PIMMS. Chemin de Louis-Hubert 2. Petit-Lancy, 1213
+        PIMMS. c/o ExpertFid & Audit SA, Cours des Bastions 13, 1205 Genève
       </Text>
     </Tailwind>
   );

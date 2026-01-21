@@ -9,16 +9,25 @@ import {
   Popover,
   SquareXmark,
 } from "@dub/ui";
-import { cn } from "@dub/utils";
+import { cn, fetcher } from "@dub/utils";
 import { Command } from "cmdk";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import useSWR from "swr";
 import { ThreeDots } from "../shared/icons";
 
 export default function SubscriptionMenu() {
-  const { id: workspaceId } = useWorkspace();
+  const { id: workspaceId, slug } = useWorkspace();
   const router = useRouter();
+
+  // Check if workspace has an active subscription
+  const { data: subscriptionData } = useSWR<{ hasActiveSubscription: boolean }>(
+    slug ? `/api/workspaces/${slug}/billing/has-active-subscription` : null,
+    fetcher,
+  );
+
+  const hasActiveSubscription = subscriptionData?.hasActiveSubscription ?? false;
 
   const [isOpen, setIsOpen] = useState(false);
   const [clicked, setClicked] = useState(false);
@@ -42,6 +51,11 @@ export default function SubscriptionMenu() {
       }
     });
   };
+
+  // Don't show menu if there's no active subscription (e.g., lifetime deals)
+  if (!hasActiveSubscription) {
+    return null;
+  }
 
   return (
     <Popover

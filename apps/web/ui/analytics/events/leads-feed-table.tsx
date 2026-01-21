@@ -22,7 +22,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ChevronRight, ClipboardCopy, Download } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import useSWR from "swr";
 import { toast } from "sonner";
 import { AnalyticsContext } from "../analytics-provider";
@@ -132,6 +132,28 @@ export default function LeadsFeedTable() {
   const showSkeleton = isLoading && customers.length === 0;
   const rows = showSkeleton ? skeletonRows : customers;
   const showMaskedPreview = !isLoading && customers.length === 0;
+
+  const fetchAllLeadsForExport = useCallback(async () => {
+    const pageSize = 500;
+    let page = 1;
+    let allCustomers: LeadsFeedCustomer[] = [];
+    let total = 0;
+    while (true) {
+      const params = new URLSearchParams(queryString);
+      params.set("page", String(page));
+      params.set("limit", String(pageSize));
+      const response = await fetch(`/api/customers/leads-feed?${params.toString()}`);
+      const payload = (await response.json()) as LeadsFeedResponse;
+      const batch = payload.customers ?? [];
+      total = payload.total ?? total;
+      allCustomers = allCustomers.concat(batch);
+      if (batch.length < pageSize || (total > 0 && allCustomers.length >= total)) {
+        break;
+      }
+      page += 1;
+    }
+    return allCustomers;
+  }, [queryString]);
 
   const maskedPreviewRows = useMemo(
     () =>
@@ -578,7 +600,8 @@ export default function LeadsFeedTable() {
             onClick={async () => {
               try {
                 setCopying(true);
-                await copyLeadsForGoogleSheets(customers);
+                const allCustomers = await fetchAllLeadsForExport();
+                await copyLeadsForGoogleSheets(allCustomers);
                 toast.success("Copied — paste into Google Sheets");
               } catch {
                 toast.error("Copy failed. Please try again.");
@@ -596,7 +619,15 @@ export default function LeadsFeedTable() {
             size="sm"
             className="w-auto"
             disabled={showMaskedPreview || customers.length === 0}
-            onClick={() => downloadLeadsAsCSV(customers)}
+            onClick={() => {
+              fetchAllLeadsForExport()
+                .then((allCustomers) => {
+                  downloadLeadsAsCSV(allCustomers);
+                })
+                .catch(() => {
+                  toast.error("Download failed. Please try again.");
+                });
+            }}
           >
             <Download className="mr-2 h-4 w-4 text-neutral-500" />
             Download CSV

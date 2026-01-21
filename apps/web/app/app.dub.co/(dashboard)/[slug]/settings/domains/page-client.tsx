@@ -40,9 +40,11 @@ export default function WorkspaceDomainsClient() {
   const [openPopover, setOpenPopover] = useState(false);
   const { searchParams, queryParams } = useRouterStuff();
   const { allWorkspaceDomains, allDomainsForPage, loading } = useDomains({
-    opts: { includeLink: "true" },
+    opts: { includeLink: "true", includeShared: "true" },
   });
-  const { data: domainsCount } = useDomainsCount();
+  const { data: domainsCount } = useDomainsCount({
+    opts: { includeShared: "true" },
+  });
 
   const { pagination, setPagination } = usePagination(DOMAINS_MAX_PAGE_SIZE);
 

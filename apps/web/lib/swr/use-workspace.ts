@@ -1,8 +1,8 @@
 "use client";
 
 import { ExpandedWorkspaceProps } from "@/lib/types";
+import { useWorkspaceSlug } from "../hooks/use-workspace-slug";
 import { PRO_PLAN, fetcher, getNextPlan } from "@dub/utils";
-import { useParams, useSearchParams } from "next/navigation";
 import useSWR, { SWRConfiguration } from "swr";
 
 export default function useWorkspace({
@@ -10,31 +10,7 @@ export default function useWorkspace({
 }: {
   swrOpts?: SWRConfiguration;
 } = {}) {
-  // `next/navigation` hooks can throw when rendered outside the App Router context
-  // (e.g. Storybook/tests). We fall back gracefully instead of crashing the whole page.
-  let params: Record<string, unknown> = {};
-  let searchParams: ReturnType<typeof useSearchParams> | null = null;
-  try {
-    params = useParams() as Record<string, unknown>;
-  } catch {
-    params = {};
-  }
-  try {
-    searchParams = useSearchParams();
-  } catch {
-    searchParams = null;
-  }
-
-  const rawSlug = params?.slug;
-  let slug =
-    typeof rawSlug === "string"
-      ? rawSlug
-      : Array.isArray(rawSlug) && typeof rawSlug[0] === "string"
-        ? rawSlug[0]
-        : null;
-  if (!slug) {
-    slug = searchParams?.get("slug") || searchParams?.get("workspace") || null;
-  }
+  const slug = useWorkspaceSlug();
 
   // SWR expects a stable key or `null` (to pause). Avoid passing `undefined`
   // because it can lead to intermittent argument parsing issues in some setups.
@@ -50,11 +26,11 @@ export default function useWorkspace({
     mergedOpts.use = [];
   }
 
-  const {
-    data: workspace,
-    error,
-    mutate,
-  } = useSWR<ExpandedWorkspaceProps>(swrKey, fetcher, mergedOpts);
+  const { data: workspace, error, mutate } = useSWR<ExpandedWorkspaceProps>(
+    swrKey,
+    fetcher,
+    mergedOpts,
+  );
 
   return {
     ...(workspace ?? {}),

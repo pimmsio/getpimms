@@ -9,6 +9,10 @@ type CacheType = Map<string, any>;
 
 let boundMutate: MutateFn | null = null;
 let boundCache: CacheType | null = null;
+const pendingPrefixes: PrefixArg[] = [];
+
+const prefixToKey = (prefix: PrefixArg) =>
+  Array.isArray(prefix) ? prefix.join("|") : prefix;
 
 const matchesPrefix = (key: string, prefix: PrefixArg) =>
   typeof key === "string" &&
@@ -27,8 +31,17 @@ const mutateWithCache = async (prefix: PrefixArg, mutateFn: MutateFn) => {
   return;
 };
 
-export const mutatePrefix = (prefix: PrefixArg) =>
-  mutateWithCache(prefix, boundMutate || globalMutate);
+export const mutatePrefix = async (prefix: PrefixArg) => {
+  if (!boundMutate && !boundCache) {
+    const key = prefixToKey(prefix);
+    if (!pendingPrefixes.some((p) => prefixToKey(p) === key)) {
+      pendingPrefixes.push(prefix);
+    }
+    return;
+  }
+
+  await mutateWithCache(prefix, boundMutate || globalMutate);
+};
 
 export async function optimisticPrependToPrefix(prefix: PrefixArg, item: any) {
   const cache = boundCache;
@@ -38,6 +51,14 @@ export async function optimisticPrependToPrefix(prefix: PrefixArg, item: any) {
   const matchedKeys = keys.filter(
     (k): k is string => typeof k === "string" && matchesPrefix(k, prefix),
   );
+
+  if (!cache || matchedKeys.length === 0) {
+    const key = prefixToKey(prefix);
+    if (!pendingPrefixes.some((p) => prefixToKey(p) === key)) {
+      pendingPrefixes.push(prefix);
+    }
+    return;
+  }
 
   await Promise.all(
     matchedKeys.map((key) =>
@@ -62,6 +83,14 @@ export const useMutatePrefix = () => {
   useEffect(() => {
     boundMutate = mutate as MutateFn;
     boundCache = cache as CacheType;
+
+    if (pendingPrefixes.length > 0) {
+      const queued = [...pendingPrefixes];
+      pendingPrefixes.length = 0;
+      queued.forEach((prefix) => {
+        mutateWithCache(prefix, mutate as MutateFn).catch(() => {});
+      });
+    }
     return () => {
       if (boundMutate === mutate) {
         boundMutate = null;

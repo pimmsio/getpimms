@@ -101,10 +101,11 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
       // - there is a domain
       // - there is no key
       // - the input is not focused
-      if (domain && !key && !isFocused) {
+      // - key generation is not already in progress
+      if (domain && !key && !isFocused && !generatingRandomKey) {
         generateRandomKey();
       }
-    }, [domain, key, isFocused, generateRandomKey]);
+    }, [domain, key, isFocused, generatingRandomKey, generateRandomKey]);
 
     const runKeyChecks = useCallback(
       async (value: string) => {

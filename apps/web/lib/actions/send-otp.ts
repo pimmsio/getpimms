@@ -58,7 +58,7 @@ export const sendOtpAction = actionClient
 
       if (isDisposable) {
         throw new Error(
-          "Invalid email address – please use your work email instead. If you think this is a mistake, please contact us at support@pimms.io"
+          "Invalid email address – please use your work email instead. If you think this is a mistake, please contact us at alexandre@pimms.io"
         );
       }
 
@@ -71,7 +71,7 @@ export const sendOtpAction = actionClient
 
         if (blacklistedEmailDomainTermsRegex.test(domain)) {
           throw new Error(
-            "Invalid email address – please use your work email instead. If you think this is a mistake, please contact us at support@pimms.io"
+            "Invalid email address – please use your work email instead. If you think this is a mistake, please contact us at alexandre@pimms.io"
           );
         }
       }

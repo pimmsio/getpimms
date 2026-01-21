@@ -16,6 +16,7 @@ model Domain {
   projectId               String?
   registeredDomain        RegisteredDomain?
   programs                Program[]
+  workspaceAccesses       DomainWorkspaceAccess[]
 
   // these attributes will exist on both Link and Domain models
   createdAt DateTime @default(now())
@@ -23,6 +24,25 @@ model Domain {
 
   @@index(projectId)
   @@index(lastChecked(sort: Asc))
+}
+
+model DomainWorkspaceAccess {
+  id              String   @id @default(cuid())
+  domainSlug       String
+  workspaceId      String
+  enabled          Boolean  @default(false)
+  requestedByUserId String?
+  enabledByUserId   String?
+  enabledAt         DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  domain       Domain  @relation(fields: [domainSlug], references: [slug], onDelete: Cascade, onUpdate: Cascade)
+  workspace    Project @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([domainSlug, workspaceId])
+  @@index([workspaceId])
+  @@index([domainSlug])
 }
 
 model RegisteredDomain {

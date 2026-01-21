@@ -5,6 +5,7 @@ import { SingleFlameIcon } from "@/ui/analytics/events/hot-score-icons";
 import { AppButtonLink } from "@/ui/components/controls/app-button";
 import { useLinkBuilder } from "@/ui/modals/link-builder";
 import { ModalContext } from "@/ui/modals/modal-provider";
+import { GettingStartedPanel } from "@/ui/onboarding/getting-started-panel";
 import { HelpTooltip, Table, useTable } from "@dub/ui";
 import { LoadingSpinner } from "@dub/ui/icons";
 import {
@@ -309,6 +310,7 @@ export default function TodayClient() {
               size="sm"
             >
               Analytics
+              <ChevronRight className="ml-1 size-3 text-neutral-500" />
             </AppButtonLink>
           </div>
 
@@ -359,8 +361,12 @@ export default function TodayClient() {
         </div>
 
         {/* Lead Signal Activity */}
-        <div className="border-t border-neutral-100 pt-5">
+        <div className="mb-6 border-t border-neutral-100 pt-5">
           <LeadSignalActivitySection slug={slug} />
+        </div>
+
+        <div className="mb-6">
+          <GettingStartedPanel />
         </div>
       </div>
     </>

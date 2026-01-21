@@ -39,7 +39,10 @@ export function useAvailableDomains(
     primaryDomain,
   } = useDomains({
     ignoreParams: true,
-    opts: options.search ? { search: options.search } : undefined,
+    opts: {
+      ...(options.search ? { search: options.search } : {}),
+      includeShared: "true",
+    },
   });
 
   const domains = useMemo(() => {

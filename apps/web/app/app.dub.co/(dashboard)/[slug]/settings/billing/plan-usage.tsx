@@ -12,6 +12,7 @@ import {
   capitalize,
   cn,
   currencyFormatter,
+  fetcher,
   getFirstAndLastDay,
   INFINITY_NUMBER,
   nFormatter,
@@ -19,6 +20,7 @@ import {
 import NumberFlow from "@number-flow/react";
 import Link from "next/link";
 import { CSSProperties, useMemo } from "react";
+import useSWR from "swr";
 import { UsageChart } from "./usage-chart";
 
 export default function PlanUsage() {
@@ -46,6 +48,14 @@ export default function PlanUsage() {
   const { data: tags } = useTagsCount();
   const { users } = useUsers();
 
+  // Check if workspace has an active subscription
+  const { data: subscriptionData } = useSWR<{ hasActiveSubscription: boolean }>(
+    slug ? `/api/workspaces/${slug}/billing/has-active-subscription` : null,
+    fetcher,
+  );
+
+  const hasActiveSubscription = subscriptionData?.hasActiveSubscription ?? false;
+
   const [billingStart, billingEnd] = useMemo(() => {
     if (billingCycleStart) {
       const { firstDay, lastDay } = getFirstAndLastDay(billingCycleStart);
@@ -68,7 +78,14 @@ export default function PlanUsage() {
     <div className="rounded bg-white">
       <div className="flex flex-col items-start justify-between gap-y-4 p-6 md:p-8 lg:flex-row">
         <div>
-          <h2 className="text-xl font-medium">{capitalize(plan)} Plan</h2>
+          <h2 className="text-xl font-medium">
+            {capitalize(plan)} Plan
+            {!hasActiveSubscription && stripeId && plan !== "free" && (
+              <span className="ml-2 text-sm font-normal text-neutral-500">
+                (Lifetime)
+              </span>
+            )}
+          </h2>
           {billingStart && billingEnd && (
             <p className="mt-1.5 text-balance text-sm font-medium leading-normal text-neutral-700">
               <>

@@ -6,7 +6,6 @@ import {
   AnimatedSizeContainer,
   BlurImage,
   BookOpen,
-  CopyButton,
   Modal,
 } from "@dub/ui";
 import { cn, fetcher, nanoid } from "@dub/utils";
@@ -330,11 +329,19 @@ const PROVIDERS: Provider[] = [
     id: "trackLeadApi",
     name: "Track Lead API",
     category: "apis",
+    guideKey: "step-by-step-guide-for-developers-to-set-conversion-tracking",
+    thumbnail: "https://assets.pimms.io/javascript-guide-pimms.webp",
+    guideUrl:
+      "https://pimms.io/guides/step-by-step-guide-for-developers-to-set-conversion-tracking",
   },
   {
     id: "trackSaleApi",
     name: "Track Sale API",
     category: "apis",
+    guideKey: "step-by-step-guide-for-developers-to-set-conversion-tracking",
+    thumbnail: "https://assets.pimms.io/javascript-guide-pimms.webp",
+    guideUrl:
+      "https://pimms.io/guides/step-by-step-guide-for-developers-to-set-conversion-tracking",
   },
   { id: "otherApis", name: "Other", category: "apis" },
 ];
@@ -823,34 +830,6 @@ function ProviderAction({
     return <OtherSetupForm provider={provider} workspaceSlug={workspaceSlug} />;
   }
 
-  const apiSnippetLead = `fetch("https://app.pimms.io/api/track/lead", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: "Bearer pimms_...",
-  },
-  body: JSON.stringify({
-    clickId: "CLICK_ID",
-    eventName: "signup",
-    externalId: "user_123",
-    customerEmail: "user@example.com",
-  }),
-});`;
-
-  const apiSnippetSale = `fetch("https://app.pimms.io/api/track/sale", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: "Bearer pimms_...",
-  },
-  body: JSON.stringify({
-    clickId: "CLICK_ID",
-    amount: 4900,
-    currency: "usd",
-    paymentProcessor: "stripe",
-  }),
-});`;
-
   return (
     <div>
       <div className="flex items-center gap-3">
@@ -926,36 +905,23 @@ function ProviderAction({
         ) : null}
 
         {provider.category === "apis" ? (
-          <div className="rounded bg-neutral-50 p-4 ring-1 ring-neutral-200/60">
-            <div className="flex items-center justify-between gap-2">
-              <div className="text-sm font-semibold text-neutral-900">
-                {provider.id === "trackSaleApi" ? "Track sale" : "Track lead"}
-              </div>
-              <div className="flex items-center gap-2">
-                <Link
-                  href="https://pim.ms/api"
-                  target="_blank"
-                  className="text-xs text-neutral-600 underline-offset-4 hover:underline"
-                >
-                  pim.ms/api
-                </Link>
-                <CopyButton
-                  value={
-                    provider.id === "trackSaleApi"
-                      ? apiSnippetSale
-                      : apiSnippetLead
-                  }
-                  className="rounded"
-                />
-              </div>
+          <div className="group flex flex-col items-center justify-center rounded bg-neutral-200/40 px-6 py-6 text-center transition-colors duration-100 hover:bg-neutral-200/60">
+            <div className="flex size-12 items-center justify-center rounded-md bg-white/70 text-neutral-800">
+              <Code2 className="size-5" />
             </div>
-            <pre className="mt-3 overflow-auto rounded bg-white p-3 text-xs text-neutral-800 ring-1 ring-neutral-200/60">
-              <code>
-                {provider.id === "trackSaleApi"
-                  ? apiSnippetSale
-                  : apiSnippetLead}
-              </code>
-            </pre>
+            <div className="mt-3 text-sm font-semibold text-neutral-900">
+              API documentation
+            </div>
+            <div className="mt-1 text-xs text-neutral-600">
+              Endpoints, payloads, and examples.
+            </div>
+            <Link
+              href="https://pim.ms/api"
+              target="_blank"
+              className="mt-4 inline-flex items-center justify-center rounded-md bg-neutral-900 px-3 py-2 text-xs font-medium text-white hover:bg-neutral-800"
+            >
+              Open API docs
+            </Link>
           </div>
         ) : null}
 

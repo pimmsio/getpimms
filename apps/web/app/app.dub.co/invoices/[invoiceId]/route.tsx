@@ -162,11 +162,11 @@ export const GET = withSession(async ({ session, params }) => {
       title: "From",
       address: {
         name: "PIMMS.",
-        line1: "Chemin de Louis-Hubert 2",
-        city: "Petit Lancy",
+        line1: "c/o ExpertFid & Audit SA, Cours des Bastions 13",
+        city: "Genève",
         state: "CH",
-        postalCode: "1213",
-        email: "support@pimms.io",
+        postalCode: "1205",
+        email: "alexandre@pimms.io",
       },
     },
     {

@@ -18,12 +18,26 @@ import { NextResponse } from "next/server";
 // GET /api/domains – get all domains for a workspace
 export const GET = withWorkspace(
   async ({ workspace, searchParams }) => {
-    const { search, archived, page, pageSize, includeLink } =
+    const { search, archived, page, pageSize, includeLink, includeShared } =
       getDomainsQuerySchemaExtended.parse(searchParams);
 
     const domains = await prisma.domain.findMany({
       where: {
-        projectId: workspace.id,
+        ...(includeShared
+          ? {
+              OR: [
+                { projectId: workspace.id },
+                {
+                  workspaceAccesses: {
+                    some: {
+                      workspaceId: workspace.id,
+                      enabled: true,
+                    },
+                  },
+                },
+              ],
+            }
+          : { projectId: workspace.id }),
         archived,
         ...(search && {
           slug: {
@@ -62,6 +76,9 @@ export const GET = withWorkspace(
 
     const response = domains.map((domain) => ({
       ...transformDomain(domain),
+      ...(includeShared && domain.projectId !== workspace.id
+        ? { isSharedDomain: true }
+        : {}),
       ...(includeLink &&
         domain.links.length > 0 && {
           link: transformLink({

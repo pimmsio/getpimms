@@ -2,6 +2,7 @@ import { claimDotLinkDomain } from "@/lib/api/domains/claim-dot-link-domain";
 import { inviteUser } from "@/lib/api/users";
 import { limiter } from "@/lib/cron/limiter";
 import { stripe } from "@/lib/stripe";
+import { pushStripePendingCheckoutByEmail } from "@/lib/stripe/reconcile-email";
 import { WorkspaceProps } from "@/lib/types";
 import { redis } from "@/lib/upstash";
 import { Invite } from "@/lib/zod/schemas/invites";
@@ -14,10 +15,26 @@ import Stripe from "stripe";
 
 export async function checkoutSessionCompleted(event: Stripe.Event) {
   const checkoutSession = event.data.object as Stripe.Checkout.Session;
+  const customerEmail =
+    checkoutSession.customer_details?.email ??
+    checkoutSession.customer_email ??
+    null;
 
   if (checkoutSession.mode === "setup") {
+    console.log("[Stripe Webhook] checkout.session.completed: setup mode ignored", {
+      eventId: event.id,
+      sessionId: checkoutSession.id,
+    });
     return;
   }
+
+  console.log("[Stripe Webhook] checkout.session.completed received", {
+    eventId: event.id,
+    sessionId: checkoutSession.id,
+    mode: checkoutSession.mode,
+    clientReferenceId: checkoutSession.client_reference_id ?? null,
+    customerId: checkoutSession.customer ?? null,
+  });
 
   if (
     checkoutSession.client_reference_id === null ||
@@ -27,6 +44,24 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
       message: "Missing items in Stripe webhook callback",
       type: "errors",
     });
+    console.log("[Stripe Webhook] Missing client_reference_id or customer", {
+      eventId: event.id,
+      sessionId: checkoutSession.id,
+      clientReferenceId: checkoutSession.client_reference_id ?? null,
+      customerId: checkoutSession.customer ?? null,
+    });
+    if (customerEmail) {
+      await pushStripePendingCheckoutByEmail({
+        email: customerEmail,
+        payload: event,
+        reason: "missing_client_reference_or_customer",
+      });
+    } else {
+      console.log("[Stripe Webhook] Missing customer email for reconciliation", {
+        eventId: event.id,
+        sessionId: checkoutSession.id,
+      });
+    }
     return;
   }
 
@@ -34,6 +69,10 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
   // For subscriptions, get price ID from subscription
   let priceId: string;
   if (checkoutSession.mode === "payment") {
+    console.log("[Stripe Webhook] Resolving price from line items", {
+      eventId: event.id,
+      sessionId: checkoutSession.id,
+    });
     // One-time payment - retrieve the checkout session with line items
     const sessionWithLineItems = await stripe.checkout.sessions.retrieve(
       checkoutSession.id,
@@ -47,10 +86,19 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
         message: `Missing price ID in checkout.session.completed event for one-time payment: ${checkoutSession.id}`,
         type: "errors",
       });
+      console.log("[Stripe Webhook] Missing line item price ID", {
+        eventId: event.id,
+        sessionId: checkoutSession.id,
+      });
       return;
     }
     priceId = lineItem.price.id;
   } else {
+    console.log("[Stripe Webhook] Resolving price from subscription", {
+      eventId: event.id,
+      sessionId: checkoutSession.id,
+      subscriptionId: checkoutSession.subscription ?? null,
+    });
     // Subscription payment
     const subscription = await stripe.subscriptions.retrieve(
       checkoutSession.subscription as string,
@@ -65,12 +113,44 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
       message: `Invalid price ID in checkout.session.completed event: ${priceId}`,
       type: "errors",
     });
+    console.log("[Stripe Webhook] Invalid price ID, no plan found", {
+      eventId: event.id,
+      sessionId: checkoutSession.id,
+      priceId,
+    });
     return;
   }
 
   const stripeId = checkoutSession.customer.toString();
   const workspaceId = checkoutSession.client_reference_id;
   const planName = plan.name.toLowerCase();
+
+  const workspaceExists = await prisma.project.findUnique({
+    where: { id: workspaceId },
+    select: { id: true },
+  });
+
+  if (!workspaceExists) {
+    console.log("[Stripe Webhook] Workspace not found for checkout session", {
+      eventId: event.id,
+      sessionId: checkoutSession.id,
+      workspaceId,
+      clientReferenceId: checkoutSession.client_reference_id,
+    });
+    if (customerEmail) {
+      await pushStripePendingCheckoutByEmail({
+        email: customerEmail,
+        payload: event,
+        reason: "workspace_not_found",
+      });
+    } else {
+      console.log("[Stripe Webhook] Missing customer email for reconciliation", {
+        eventId: event.id,
+        sessionId: checkoutSession.id,
+      });
+    }
+    return;
+  }
 
   // when the workspace subscribes to a plan, set their stripe customer ID
   // in the database for easy identification in future webhook events
@@ -111,6 +191,12 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
         },
       },
     },
+  });
+  console.log("[Stripe Webhook] Workspace updated from checkout session", {
+    eventId: event.id,
+    sessionId: checkoutSession.id,
+    workspaceId,
+    plan: planName,
   });
 
   const users = workspace.users.map(({ user }) => ({

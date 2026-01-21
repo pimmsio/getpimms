@@ -17,6 +17,7 @@ import {
 } from "@/ui/links/link-builder/draft-controls";
 import { LinkActionBar } from "@/ui/links/link-builder/link-action-bar";
 import { LinkBuilderHeader } from "@/ui/links/link-builder/link-builder-header";
+import { LeadMagnetToggle } from "@/ui/links/link-builder/lead-magnet-toggle";
 import {
   LinkBuilderProvider,
   LinkFormData,
@@ -222,6 +223,8 @@ function LinkBuilder({ link }: { link: ExpandedLinkProps }) {
             <TagSelect />
 
             <LinkCommentsInput />
+
+            <LeadMagnetToggle />
 
             <ConversionTrackingToggle />
 

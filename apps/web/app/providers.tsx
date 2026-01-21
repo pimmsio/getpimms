@@ -6,17 +6,22 @@ import {
   useRemoveGAParams,
 } from "@dub/ui";
 import { Analytics as PimmsAnalytics } from "@getpimms/analytics/react";
+import { AnalyticsCacheProvider } from "@/lib/swr/analytics-cache-provider";
+import { useWorkspaceSlug } from "../lib/hooks/use-workspace-slug";
 import { ReactNode } from "react";
 import { Toaster } from "sonner";
 
 export default function RootProviders({ children }: { children: ReactNode }) {
   useRemoveGAParams();
+  const workspaceSlug = useWorkspaceSlug() as string;
 
   return (
     <TooltipProvider>
       <KeyboardShortcutProvider>
         <Toaster closeButton className="pointer-events-auto" />
-        {children}
+        <AnalyticsCacheProvider workspaceSlug={workspaceSlug}>
+          {children}
+        </AnalyticsCacheProvider>
         {/* <DubAnalytics
             apiHost="/_proxy/dub"
             cookieOptions={{

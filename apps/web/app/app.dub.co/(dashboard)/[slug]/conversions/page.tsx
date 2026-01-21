@@ -1,25 +1,24 @@
-import Events from "@/ui/analytics/events";
-import { EventsProvider } from "@/ui/analytics/events/events-provider";
-import LayoutLoader from "@/ui/layout/layout-loader";
+"use client";
+
 import { PageContent } from "@/ui/layout/page-content";
-import { Suspense } from "react";
-import AnalyticsClient from "../analytics/client";
+import LayoutLoader from "@/ui/layout/layout-loader";
+import dynamic from "next/dynamic";
+
+const ConversionsClient = dynamic(
+  () => import("./conversions-client.tsx"),
+  {
+    ssr: false,
+    loading: () => <LayoutLoader />,
+  },
+);
 
 export default function WorkspaceAnalyticsConversions() {
   return (
-    <Suspense fallback={<LayoutLoader />}>
-      <PageContent
-        title="Leads"
-        headerPlacement="content"
-      >
-        <AnalyticsClient eventsPage>
-          <div className="px-3 py-4 pb-16 lg:px-10">
-            <EventsProvider>
-              <Events />
-            </EventsProvider>
-          </div>
-        </AnalyticsClient>
-      </PageContent>
-    </Suspense>
+    <PageContent
+      title="Leads"
+      headerPlacement="content"
+    >
+      <ConversionsClient />
+    </PageContent>
   );
 }
