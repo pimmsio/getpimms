@@ -245,9 +245,6 @@ export function UTMParametersSection({
                 value={selectedTemplateId}
                 onChange={setSelectedTemplateId}
               />
-              <p className="mt-1.5 text-xs text-neutral-500">
-                Select a template to apply UTM parameters
-              </p>
             </div>
 
             {/* Divider */}

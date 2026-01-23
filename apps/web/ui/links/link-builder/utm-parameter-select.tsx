@@ -16,7 +16,8 @@ import { UtmParameterType } from "@/lib/utils/utm-parameter-utils";
 import { 
   getUtmParameterIcon, 
   getUtmParameterDisplayName,
-  getUtmParameterPlural
+  getUtmParameterPlural,
+  getUtmParameterPlaceholder
 } from "@/lib/utils/utm-parameter-utils";
 
 interface UtmParameterSelectProps {
@@ -180,6 +181,7 @@ export function UtmParameterSelect({
   const Icon = getUtmParameterIcon(parameterType);
   const displayName = getUtmParameterDisplayName(parameterType);
   const plural = getUtmParameterPlural(parameterType);
+  const placeholder = getUtmParameterPlaceholder(parameterType);
 
   return (
     <Combobox
@@ -189,6 +191,7 @@ export function UtmParameterSelect({
       }}
       options={loading ? undefined : options}
       icon={<Icon className="size-4 text-neutral-500" />}
+      placeholder={placeholder}
       searchPlaceholder={`Search or add ${displayName.toLowerCase()}...`}
       emptyState={
         <p className="p-2 text-center text-sm text-neutral-500">
@@ -197,8 +200,8 @@ export function UtmParameterSelect({
       }
       buttonProps={{
         className: cn(
-          "h-auto w-full rounded-md border px-3 py-2 text-sm text-neutral-700",
-          !value && "text-neutral-400",
+          "h-auto w-full rounded-md border px-3 py-2 text-sm",
+          value ? "!text-neutral-700" : "!text-neutral-400",
           isCreating && "opacity-50 cursor-wait",
           className,
         ),
@@ -212,9 +215,7 @@ export function UtmParameterSelect({
       caret={false}
       matchTriggerWidth
     >
-      <span className="block truncate">
-        {value || `Select ${displayName.toLowerCase()}...`}
-      </span>
+      {value && <span className="block truncate">{value}</span>}
     </Combobox>
   );
 }

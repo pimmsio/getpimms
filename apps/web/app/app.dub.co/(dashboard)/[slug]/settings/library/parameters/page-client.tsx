@@ -25,8 +25,9 @@ import {
 import { cn, normalizeUtmValue } from "@dub/utils";
 import { useState } from "react";
 import { toast } from "sonner";
+import { getUtmParameterPlaceholder, UtmParameterType } from "@/lib/utils/utm-parameter-utils";
 
-type ParameterType = "source" | "medium" | "campaign" | "term" | "content";
+type ParameterType = UtmParameterType;
 
 interface Parameter {
   id: string;
@@ -144,6 +145,7 @@ function ParameterColumn({
   workspaceId: string | undefined;
   mutateCache: (data?: any, opts?: any) => Promise<any>;
 }) {
+  const placeholder = getUtmParameterPlaceholder(type);
   if (!workspaceId) return null;
   const [newValue, setNewValue] = useState("");
   const [isAdding, setIsAdding] = useState(false);
@@ -220,8 +222,8 @@ function ParameterColumn({
               type="text"
               value={newValue}
               onChange={(e) => setNewValue(e.target.value)}
-              placeholder={`Add ${title.toLowerCase()}...`}
-              className="app-input h-9"
+              placeholder={placeholder || `Add ${title.toLowerCase()}...`}
+              className="app-input h-9 !placeholder:text-neutral-400"
               disabled={isAdding}
             />
             <AppButton

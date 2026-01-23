@@ -2,7 +2,7 @@
 
 import { normalizeUtmValue, getParamsFromURL, getUrlFromString } from "@dub/utils";
 import { AlertCircle, X, Loader2 } from "lucide-react";
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { LinkFormData } from "./link-builder-provider";
@@ -10,43 +10,19 @@ import { useUtmSectionContextOptional } from "./utm-section-context";
 import { saveUtmParameters } from "./save-utm-parameters";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { checkUtmParameterExists, UtmParameterType } from "@/lib/utils/utm-parameter-utils";
-import useSWR from "swr";
-import { fetcher } from "@dub/utils";
-import { UtmTemplateWithUserProps } from "@/lib/types";
 
 export function UtmDetectionBanner() {
   const { control, setValue } = useFormContext<LinkFormData>();
   const url = useWatch({ control, name: "url" });
-  
-  // Watch form UTM values to compare with URL UTMs
-  const [
-    formUtmSource,
-    formUtmMedium,
-    formUtmCampaign,
-    formUtmTerm,
-    formUtmContent,
-  ] = useWatch({
-    control,
-    name: ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"],
-  });
-  
   const utmSectionContext = useUtmSectionContextOptional();
   const { id: workspaceId } = useWorkspace();
-
-  // Fetch templates to check if UTMs match
-  const { data: templates } = useSWR<UtmTemplateWithUserProps[]>(
-    workspaceId ? `/api/utm?workspaceId=${workspaceId}` : null,
-    fetcher,
-    {
-      dedupingInterval: 60000,
-    },
-  );
 
   const [dismissedUrls, setDismissedUrls] = useState<Set<string>>(new Set());
   const [detectedUtms, setDetectedUtms] = useState<Record<string, string>>({});
   const [showBanner, setShowBanner] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
-  const previousUrlRef = useRef<string>("");
+  const autoFilledUrlRef = useRef<string>("");
+  const checkIdRef = useRef(0);
 
   // Helper function to clean URL (remove UTM parameters)
   const cleanUrlFromUtms = useCallback((urlToClean: string) => {
@@ -76,11 +52,6 @@ export function UtmDetectionBanner() {
       setDetectedUtms({});
       setShowBanner(false);
       return;
-    }
-
-    // Reset dismissed state when URL changes
-    if (url !== previousUrlRef.current) {
-      previousUrlRef.current = url;
     }
 
     // Check if this URL was dismissed
@@ -118,57 +89,65 @@ export function UtmDetectionBanner() {
 
     setDetectedUtms(utmParams);
 
-    // Get form UTM values
-    const formUtms = {
-      utm_source: formUtmSource || "",
-      utm_medium: formUtmMedium || "",
-      utm_campaign: formUtmCampaign || "",
-      utm_term: formUtmTerm || "",
-      utm_content: formUtmContent || "",
+    const checkId = ++checkIdRef.current;
+
+    const evaluateUtmExistence = async () => {
+      if (!workspaceId) {
+        setShowBanner(true);
+        return;
+      }
+
+      const existenceChecks = await Promise.all(
+        Object.entries(utmParams).map(async ([key, value]) => {
+          const type = key.replace("utm_", "") as UtmParameterType;
+          const exists = await checkUtmParameterExists(
+            type,
+            value,
+            workspaceId,
+            { raw: true },
+          );
+          return { key, exists };
+        }),
+      );
+
+      if (checkIdRef.current !== checkId) return;
+
+      const missingKeys = existenceChecks
+        .filter((entry) => !entry.exists)
+        .map((entry) => entry.key);
+      const allExist = missingKeys.length === 0;
+
+      if (allExist) {
+        if (autoFilledUrlRef.current !== url) {
+          autoFilledUrlRef.current = url;
+          const cleanUrl = cleanUrlFromUtms(url);
+          setValue("url", cleanUrl, { shouldDirty: true });
+          Object.entries(utmParams).forEach(([key, value]) => {
+            setValue(key as keyof LinkFormData, value, {
+              shouldDirty: false,
+            });
+          });
+          if (utmSectionContext) {
+            utmSectionContext.expandUtmSection();
+          }
+        }
+        setShowBanner(false);
+        return;
+      }
+
+      // At least one UTM missing: keep URL and ask user.
+      setShowBanner(true);
     };
 
-    // Check if form has any UTM values
-    const formHasUtms = Object.values(formUtms).some((val) => val);
-
-    // Check if all UTMs in URL match an existing template
-    let utmsMatchTemplate = false;
-    if (templates && Object.keys(utmParams).length > 0) {
-      utmsMatchTemplate = templates.some((template) => {
-        const utmKeys = [
-          "utm_source",
-          "utm_medium",
-          "utm_campaign",
-          "utm_term",
-          "utm_content",
-        ];
-
-        // Check if all detected UTMs match the template (after normalization)
-        return utmKeys.every((key) => {
-          const detectedValue = utmParams[key];
-          const templateValue = template[key as keyof typeof template] as string | null | undefined;
-
-          // If UTM is in URL but not in template, or vice versa, they don't match
-          if (!detectedValue && !templateValue) return true; // Both empty, match
-          if (!detectedValue || !templateValue) return false; // One empty, one not, no match
-
-          // Compare normalized values
-          return normalizeUtmValue(detectedValue) === normalizeUtmValue(templateValue);
-        });
-      });
-    }
-
-    // Don't show banner if:
-    // 1. Form already has UTMs (user has already extracted or set them)
-    // 2. All UTMs match an existing template
-    // 3. URL was dismissed
-    if (formHasUtms || utmsMatchTemplate) {
-      setShowBanner(false);
-      return;
-    }
-
-    // Show banner to propose extracting UTMs
-    setShowBanner(true);
-  }, [url, formUtmSource, formUtmMedium, formUtmCampaign, formUtmTerm, formUtmContent, dismissedUrls, templates]);
+    void evaluateUtmExistence();
+  }, [
+    url,
+    dismissedUrls,
+    workspaceId,
+    cleanUrlFromUtms,
+    setValue,
+    utmSectionContext,
+  ]);
 
   const handleExtract = useCallback(async () => {
     setIsExtracting(true);
@@ -269,7 +248,7 @@ export function UtmDetectionBanner() {
     setShowBanner(false);
   }, [url]);
 
-  // Only show banner when explicitly needed (UTMs differ from form)
+  // Only show banner when explicitly needed
   if (!showBanner) {
     return null;
   }

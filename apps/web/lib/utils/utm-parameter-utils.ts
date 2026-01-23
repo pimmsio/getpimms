@@ -15,9 +15,11 @@ export type UtmParameterType = "source" | "medium" | "campaign" | "term" | "cont
 export async function checkUtmParameterExists(
   type: UtmParameterType,
   name: string,
-  workspaceId: string
+  workspaceId: string,
+  options?: { raw?: boolean },
 ): Promise<boolean> {
-  const normalizedName = normalizeUtmValue(name);
+  const isRaw = Boolean(options?.raw);
+  const normalizedName = isRaw ? name : normalizeUtmValue(name);
   if (!normalizedName) return false;
 
   const endpoint = getUtmParameterEndpoint(type);
@@ -97,5 +99,19 @@ export function getUtmParameterPlural(type: UtmParameterType): string {
     content: "contents",
   };
   return pluralMap[type];
+}
+
+/**
+ * Get the placeholder text for a UTM parameter type
+ */
+export function getUtmParameterPlaceholder(type: UtmParameterType): string {
+  const placeholderMap: Record<UtmParameterType, string> = {
+    campaign: "e.g. holiday special, birthday promotion",
+    medium: "e.g. post, email, ads",
+    source: "e.g. linkedin, brevo, google",
+    content: "Use to differentiate content e.g. email-1",
+    term: "Identify the content with keywords e.g. magnet",
+  };
+  return placeholderMap[type];
 }
 
