@@ -116,7 +116,7 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
       - the lead event will then be passed to the remaining logic to record a sale
     */
   } else {
-    console.log("[Stripe Webhook] Path: client_reference_id (checkout links)");
+    console.log("[Stripe Webhook] Path: client_reference_id");
     let pimmsClickId: string | null = null;
 
     if (clientReferenceId?.startsWith("pimms_id_")) {
