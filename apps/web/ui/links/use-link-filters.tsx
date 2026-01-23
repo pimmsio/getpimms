@@ -4,13 +4,18 @@ import useTags from "@/lib/swr/use-tags";
 import useTagsCount from "@/lib/swr/use-tags-count";
 import useUrlValues from "@/lib/swr/use-url-values";
 import useUsers from "@/lib/swr/use-users";
+import useUtmSources from "@/lib/swr/use-utm-sources";
+import useUtmMediums from "@/lib/swr/use-utm-mediums";
+import useUtmCampaigns from "@/lib/swr/use-utm-campaigns";
+import useUtmTerms from "@/lib/swr/use-utm-terms";
+import useUtmContents from "@/lib/swr/use-utm-contents";
 import useUtmValues from "@/lib/swr/use-utm-values";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { TagProps } from "@/lib/types";
 import { TAGS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/tags";
 import { Link4, LinkLogo, Tag, useRouterStuff, UTM_PARAMETERS } from "@dub/ui";
 import { getApexDomain } from "@dub/utils";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useMemo, useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
 import { LinksDisplayContext } from "./links-display-provider";
 import TagBadge from "./tag-badge";
@@ -23,12 +28,12 @@ export function useLinkFilters() {
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 500);
-  
+
   // Separate state for UTM filters
   const [selectedUtmFilter, setSelectedUtmFilter] = useState<string | null>(null);
   const [utmSearch, setUtmSearch] = useState("");
   const [debouncedUtmSearch] = useDebounce(utmSearch, 500);
-  
+
   const { searchParams } = useRouterStuff();
 
   // Decide on the folderId to use (for scoping filters like Destination URL)
@@ -57,28 +62,46 @@ export function useLinkFilters() {
     enabled: selectedFilter === "userId" || Boolean(searchParamsObj.userId),
   });
 
-  // Fetch filter data eagerly so search/filter works when dropdown opens
-  const { options: utmSources } = useUtmValues({
-    utmField: "utm_source",
-    enabled: true, // Always fetch so data is ready when filter opens
+  // Fetch UTM parameter definitions (from the library)
+  const { utmSources } = useUtmSources({
+    query: { sortBy: "name", sortOrder: "asc" },
   });
 
-  const { options: utmMediums } = useUtmValues({
+  const { utmMediums } = useUtmMediums({
+    query: { sortBy: "name", sortOrder: "asc" },
+  });
+
+  const { utmCampaigns } = useUtmCampaigns({
+    query: { sortBy: "name", sortOrder: "asc" },
+  });
+
+  const { utmTerms } = useUtmTerms({
+    query: { sortBy: "name", sortOrder: "asc" },
+  });
+
+  const { utmContents } = useUtmContents({
+    query: { sortBy: "name", sortOrder: "asc" },
+  });
+
+  // Fetch distinct UTM values actually used on links so filters can include
+  // non-saved values as well.
+  const { options: usedUtmSources } = useUtmValues({
+    utmField: "utm_source",
+    enabled: true,
+  });
+  const { options: usedUtmMediums } = useUtmValues({
     utmField: "utm_medium",
     enabled: true,
   });
-
-  const { options: utmCampaigns } = useUtmValues({
+  const { options: usedUtmCampaigns } = useUtmValues({
     utmField: "utm_campaign",
     enabled: true,
   });
-
-  const { options: utmTerms } = useUtmValues({
+  const { options: usedUtmTerms } = useUtmValues({
     utmField: "utm_term",
     enabled: true,
   });
-
-  const { options: utmContents } = useUtmValues({
+  const { options: usedUtmContents } = useUtmValues({
     utmField: "utm_content",
     enabled: true,
   });
@@ -144,8 +167,49 @@ export function useLinkFilters() {
     ];
   }, [tags, urls, tagsAsync]);
 
-  // UTM filters only
+  // UTM filters only – built from the union of:
+  // - UTM parameter library (saved values)
+  // - distinct values actually used on links (including non-saved ones)
   const utmFilters = useMemo(() => {
+    const buildUnionOptions = (
+      libraryNames: string[] | null | undefined,
+      usedValues: { value: string }[] | null | undefined,
+    ) => {
+      const lib = libraryNames ?? [];
+      const used = (usedValues ?? []).map((o) => o.value);
+      const merged = Array.from(
+        new Set(
+          [...lib, ...used].filter((v) => typeof v === "string" && v.length > 0),
+        ),
+      );
+      return merged.length
+        ? merged
+          .sort((a, b) => a.localeCompare(b))
+          .map((v) => ({ value: v, label: v }))
+        : null;
+    };
+
+    const sourceOptions = buildUnionOptions(
+      utmSources?.map((s) => s.name),
+      usedUtmSources,
+    );
+    const mediumOptions = buildUnionOptions(
+      utmMediums?.map((m) => m.name),
+      usedUtmMediums,
+    );
+    const campaignOptions = buildUnionOptions(
+      utmCampaigns?.map((c) => c.name),
+      usedUtmCampaigns,
+    );
+    const termOptions = buildUnionOptions(
+      utmTerms?.map((t) => t.name),
+      usedUtmTerms,
+    );
+    const contentOptions = buildUnionOptions(
+      utmContents?.map((c) => c.name),
+      usedUtmContents,
+    );
+
     return UTM_PARAMETERS.filter(({ key }) => key !== "ref").map(
       ({ key, label, icon: Icon }) => ({
         key,
@@ -155,19 +219,30 @@ export function useLinkFilters() {
         shouldFilter: true,
         options:
           key === "utm_source"
-            ? utmSources ?? null
+            ? sourceOptions
             : key === "utm_medium"
-              ? utmMediums ?? null
+              ? mediumOptions
               : key === "utm_campaign"
-                ? utmCampaigns ?? null
+                ? campaignOptions
                 : key === "utm_term"
-                  ? utmTerms ?? null
+                  ? termOptions
                   : key === "utm_content"
-                    ? utmContents ?? null
+                    ? contentOptions
                     : null,
       }),
     );
-  }, [utmSources, utmMediums, utmCampaigns, utmTerms, utmContents]);
+  }, [
+    utmSources,
+    utmMediums,
+    utmCampaigns,
+    utmTerms,
+    utmContents,
+    usedUtmSources,
+    usedUtmMediums,
+    usedUtmCampaigns,
+    usedUtmTerms,
+    usedUtmContents,
+  ]);
 
   // Combined filters for Filter.List
   const filters = useMemo(
@@ -464,20 +539,20 @@ function useTagFilterOptions({
         ))
       ? null
       : (
-          [
-            ...(tags ?? []),
-            // Add selected tag to list if not already in tags
-            ...(selectedTags
-              ?.filter((st) => !tags?.some((t) => t.id === st.id))
-              ?.map((st) => ({ ...st, hideDuringSearch: true })) ?? []),
-          ] as (TagProps & { hideDuringSearch?: boolean })[]
-        )
-          ?.map((tag) => ({
-            ...tag,
-            count:
-              tagLinksCount?.find(({ tagId }) => tagId === tag.id)?._count || 0,
-          }))
-          .sort((a, b) => a.name.localeCompare(b.name)) ?? null; // Sort alphabetically by name
+        [
+          ...(tags ?? []),
+          // Add selected tag to list if not already in tags
+          ...(selectedTags
+            ?.filter((st) => !tags?.some((t) => t.id === st.id))
+            ?.map((st) => ({ ...st, hideDuringSearch: true })) ?? []),
+        ] as (TagProps & { hideDuringSearch?: boolean })[]
+      )
+        ?.map((tag) => ({
+          ...tag,
+          count:
+            tagLinksCount?.find(({ tagId }) => tagId === tag.id)?._count || 0,
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name)) ?? null; // Sort alphabetically by name
   }, [loadingTags, tags, selectedTags, tagLinksCount, tagIds]);
 
   return { tags: tagsResult, tagsAsync };
@@ -534,19 +609,19 @@ function useUserFilterOptions({ /* folderId, */ enabled }: { /* folderId: string
     () =>
       users
         ? users
-            .map((user) => ({
-              ...user,
-              count:
-                usersCount?.find(({ userId }) => userId === user.id)?._count ||
-                0,
-            }))
-            .sort((a, b) => (a.name || '').localeCompare(b.name || '')) // Sort alphabetically by name
+          .map((user) => ({
+            ...user,
+            count:
+              usersCount?.find(({ userId }) => userId === user.id)?._count ||
+              0,
+          }))
+          .sort((a, b) => (a.name || '').localeCompare(b.name || '')) // Sort alphabetically by name
         : usersCount
           ? usersCount.map(({ userId, _count }) => ({
-              id: userId,
-              name: userId,
-              count: _count,
-            }))
+            id: userId,
+            name: userId,
+            count: _count,
+          }))
           : null,
     [users, usersCount],
   );
@@ -554,10 +629,10 @@ function useUserFilterOptions({ /* folderId, */ enabled }: { /* folderId: string
 
 function useFolderFilterOptions({ enabled }: { enabled: boolean }) {
   const { folders } = useFolders({ includeParams: true, includeLinkCount: true });
-  
+
   return useMemo(() => {
     if (!folders || !enabled) return null;
-    
+
     return folders
       .map((folder) => ({
         value: folder.id,

@@ -3,7 +3,7 @@ import z from "@/lib/zod";
 import { getLinksCountQuerySchema } from "@/lib/zod/schemas/links";
 import { prisma } from "@dub/prisma";
 import {
-  buildUtmFilter,
+  buildUtmFilterWithUrl,
   buildUrlFilter,
   calculateDateRange,
 } from "./utils/filter-helpers";
@@ -92,25 +92,20 @@ export async function getLinksCount({
       }),
     ...(tenantId && { tenantId }),
     ...(utm_source &&
-      groupBy !== "utm_source" && {
-        utm_source: buildUtmFilter(utm_source),
-      }),
+      groupBy !== "utm_source" &&
+      buildUtmFilterWithUrl("utm_source", utm_source)),
     ...(utm_medium &&
-      groupBy !== "utm_medium" && {
-        utm_medium: buildUtmFilter(utm_medium),
-      }),
+      groupBy !== "utm_medium" &&
+      buildUtmFilterWithUrl("utm_medium", utm_medium)),
     ...(utm_campaign &&
-      groupBy !== "utm_campaign" && {
-        utm_campaign: buildUtmFilter(utm_campaign),
-      }),
+      groupBy !== "utm_campaign" &&
+      buildUtmFilterWithUrl("utm_campaign", utm_campaign)),
     ...(utm_term &&
-      groupBy !== "utm_term" && {
-        utm_term: buildUtmFilter(utm_term),
-      }),
+      groupBy !== "utm_term" &&
+      buildUtmFilterWithUrl("utm_term", utm_term)),
     ...(utm_content &&
-      groupBy !== "utm_content" && {
-        utm_content: buildUtmFilter(utm_content),
-      }),
+      groupBy !== "utm_content" &&
+      buildUtmFilterWithUrl("utm_content", utm_content)),
     ...(url &&
       groupBy !== "url" && {
         // Apply URL filter using normalized baseUrl (strip query, hash, trailing slash),

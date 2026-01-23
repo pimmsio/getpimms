@@ -268,7 +268,7 @@ export function UtmDetectionBanner() {
             className="flex items-center gap-1.5 rounded-md bg-neutral-900 px-3 py-1 text-xs font-medium text-white hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isExtracting && <Loader2 className="size-3 animate-spin" />}
-            Extract
+            Save parameters
           </button>
           <button
             type="button"
@@ -276,7 +276,7 @@ export function UtmDetectionBanner() {
             disabled={isExtracting}
             className="rounded-md border border-neutral-200 bg-white px-3 py-1 text-xs font-medium text-neutral-800 outline-none transition hover:border-neutral-300 hover:bg-neutral-50 focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200/60 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Discard
+            Skip
           </button>
         </div>
       </div>

@@ -26,15 +26,56 @@ export function normalizeUrlsToBaseUrls(urls: string): string[] {
 
 /**
  * Builds a Prisma filter for a UTM parameter that supports multiple comma-separated values.
- * Uses OR logic for multiple values, exact match for single value.
+ * Always uses the `in` operator format for consistent multi-select behavior.
  *
  * @param utmValue - The UTM parameter value (can be comma-separated)
- * @returns Prisma filter object
+ * @returns Prisma filter object with `in` operator
  */
-export function buildUtmFilter(utmValue: string): string | { in: string[] } {
-  return utmValue.includes(",")
-    ? { in: utmValue.split(",").filter(Boolean) }
-    : utmValue;
+export function buildUtmFilter(utmValue: string): { in: string[] } {
+  const values = utmValue.includes(",")
+    ? utmValue.split(",").filter(Boolean)
+    : [utmValue];
+  return { in: values };
+}
+
+/**
+ * Builds a Prisma filter for a UTM parameter that checks both the database field AND the destination URL.
+ * This allows filtering by UTM values that exist in URLs even if they're not saved in the database field.
+ *
+ * @param utmField - The UTM field name (e.g., 'utm_content', 'utm_source')
+ * @param utmValue - The UTM parameter value (can be comma-separated)
+ * @returns Prisma filter object with OR condition checking both field and URL
+ */
+export function buildUtmFilterWithUrl(
+  utmField: "utm_source" | "utm_medium" | "utm_campaign" | "utm_term" | "utm_content",
+  utmValue: string,
+): {
+  OR: Array<any>;
+} {
+  const values = utmValue.includes(",")
+    ? utmValue.split(",").filter(Boolean)
+    : [utmValue];
+
+  // Build the database field check object with the specific field
+  const dbFieldCheck: any = {
+    [utmField]: { in: values },
+  };
+
+  return {
+    OR: [
+      // Check database field
+      dbFieldCheck,
+      // Check URL - match URLs containing utm_field=value
+      // This will match: ?utm_field=value, &utm_field=value, etc.
+      ...values.map((value) => ({
+        url: {
+          // Use contains to match URLs with the UTM parameter
+          // MySQL will use LIKE '%utm_field=value%' internally
+          contains: `${utmField}=${value}`,
+        },
+      })),
+    ],
+  };
 }
 
 /**

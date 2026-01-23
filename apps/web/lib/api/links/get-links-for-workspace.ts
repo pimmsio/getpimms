@@ -5,7 +5,7 @@ import { Prisma } from "@dub/prisma/client";
 import { combineTagIds } from "../tags/combine-tag-ids";
 import { encodeKeyIfCaseSensitive } from "./case-sensitivity";
 import {
-  buildUtmFilter,
+  buildUtmFilterWithUrl,
   buildUrlFilter,
   calculateDateRange,
 } from "./utils/filter-helpers";
@@ -151,21 +151,11 @@ export async function getLinksForWorkspace({
     ...(partnerId && { partnerId }),
     ...(userId && { userId }),
     ...(linkIds && { id: { in: linkIds } }),
-    ...(utm_source && {
-      utm_source: buildUtmFilter(utm_source),
-    }),
-    ...(utm_medium && {
-      utm_medium: buildUtmFilter(utm_medium),
-    }),
-    ...(utm_campaign && {
-      utm_campaign: buildUtmFilter(utm_campaign),
-    }),
-    ...(utm_term && {
-      utm_term: buildUtmFilter(utm_term),
-    }),
-    ...(utm_content && {
-      utm_content: buildUtmFilter(utm_content),
-    }),
+    ...(utm_source && buildUtmFilterWithUrl("utm_source", utm_source)),
+    ...(utm_medium && buildUtmFilterWithUrl("utm_medium", utm_medium)),
+    ...(utm_campaign && buildUtmFilterWithUrl("utm_campaign", utm_campaign)),
+    ...(utm_term && buildUtmFilterWithUrl("utm_term", utm_term)),
+    ...(utm_content && buildUtmFilterWithUrl("utm_content", utm_content)),
     ...(url && {
       // Apply URL filter using normalized baseUrl (strip query, hash, trailing slash)
       baseUrl: buildUrlFilter(url),
