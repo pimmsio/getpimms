@@ -57,6 +57,7 @@ type OGPreviewProps = PropsWithChildren<{
   description: string | null;
   hostname: string | null;
   password: string | null;
+  showMetaFields?: boolean;
 }>;
 
 const tabComponents: Record<Tab, ComponentType<OGPreviewProps>> = {
@@ -66,7 +67,7 @@ const tabComponents: Record<Tab, ComponentType<OGPreviewProps>> = {
   facebook: FacebookOGPreview,
 };
 
-export const LinkPreview = memo(() => {
+export const LinkPreview = memo(({ showMetaFields = true }: { showMetaFields?: boolean } = {}) => {
   const { slug, plan } = useWorkspace();
   const { control, setValue } = useFormContext<LinkFormData>();
   const [proxy, doIndex, title, description, image, url, password] = useWatch({
@@ -217,6 +218,7 @@ export const LinkPreview = memo(() => {
           description={description}
           hostname={hostname}
           password={password}
+          showMetaFields={showMetaFields}
         >
           <ImagePreview image={image} onImageChange={onImageChange} />
         </OGPreview>
@@ -347,6 +349,7 @@ function DefaultOGPreview({
   description,
   hostname,
   children,
+  showMetaFields = true,
 }: OGPreviewProps) {
   const { watch, setValue } = useFormContext<LinkFormData>();
   const { proxy, doIndex } = watch();
@@ -356,36 +359,36 @@ function DefaultOGPreview({
       <div className="group relative overflow-hidden rounded-xl bg-white ring-1 ring-neutral-200/60">
         {children}
       </div>
-      <ReactTextareaAutosize
-        className="text-md mt-4 line-clamp-2 w-full resize-none border-none bg-transparent p-0 font-medium text-neutral-700 outline-none focus:ring-0"
-        value={title || "Add a title..."}
-        maxRows={2}
-        disabled={!!doIndex}
-        onChange={(e) => {
-          setValue("title", e.currentTarget.value, { shouldDirty: true });
-          // if (plan && plan !== "free") {
-          setValue("proxy", true, { shouldDirty: true });
-          // }
-        }}
-      />
-      <ReactTextareaAutosize
-        className="mt-1.5 line-clamp-2 w-full resize-none border-none bg-transparent p-0 text-sm text-neutral-700/80 outline-none focus:ring-0"
-        value={description || "Add a description..."}
-        maxRows={2}
-        disabled={!!doIndex}
-        onChange={(e) => {
-          setValue("description", e.currentTarget.value, {
-            shouldDirty: true,
-          });
-          // if (plan && plan !== "free") {
-          setValue("proxy", true, { shouldDirty: true });
-          // }
-        }}
-      />
-      {hostname && (
-        <p className="mt-2 text-xs text-neutral-600">
-          {proxy ? SHORT_DOMAIN : hostname || "domain.com"}
-        </p>
+      {showMetaFields && (
+        <>
+          <ReactTextareaAutosize
+            className="text-md mt-4 line-clamp-2 w-full resize-none border-none bg-transparent p-0 font-medium text-neutral-700 outline-none focus:ring-0"
+            value={title || "Add a title..."}
+            maxRows={2}
+            disabled={!!doIndex}
+            onChange={(e) => {
+              setValue("title", e.currentTarget.value, { shouldDirty: true });
+              setValue("proxy", true, { shouldDirty: true });
+            }}
+          />
+          <ReactTextareaAutosize
+            className="mt-1.5 line-clamp-2 w-full resize-none border-none bg-transparent p-0 text-sm text-neutral-700/80 outline-none focus:ring-0"
+            value={description || "Add a description..."}
+            maxRows={2}
+            disabled={!!doIndex}
+            onChange={(e) => {
+              setValue("description", e.currentTarget.value, {
+                shouldDirty: true,
+              });
+              setValue("proxy", true, { shouldDirty: true });
+            }}
+          />
+          {hostname && (
+            <p className="mt-2 text-xs text-neutral-600">
+              {proxy ? SHORT_DOMAIN : hostname || "domain.com"}
+            </p>
+          )}
+        </>
       )}
     </div>
   );
@@ -396,6 +399,7 @@ function FacebookOGPreview({
   description,
   hostname,
   children,
+  showMetaFields = true,
 }: OGPreviewProps) {
   const { watch, setValue } = useFormContext<LinkFormData>();
   const { proxy, doIndex } = watch();
@@ -404,7 +408,7 @@ function FacebookOGPreview({
     <div>
       <div className="relative overflow-hidden rounded-xl bg-white ring-1 ring-neutral-200/60">
         {children}
-        {(hostname || title || description) && (
+        {showMetaFields && (hostname || title || description) && (
           <div className="grid gap-1 border-t border-neutral-200/70 bg-neutral-50 p-2">
             <input
               className="truncate border-none bg-transparent p-0 text-xs font-semibold text-neutral-900 outline-none focus:ring-0"
@@ -445,7 +449,12 @@ function FacebookOGPreview({
   );
 }
 
-function LinkedInOGPreview({ title, hostname, children }: OGPreviewProps) {
+function LinkedInOGPreview({
+  title,
+  hostname,
+  children,
+  showMetaFields = true,
+}: OGPreviewProps) {
   const { watch, setValue } = useFormContext<LinkFormData>();
   const { proxy, doIndex } = watch();
 
@@ -457,30 +466,35 @@ function LinkedInOGPreview({ title, hostname, children }: OGPreviewProps) {
       >
         {children}
       </div>
-      <div className="grid gap-2">
-        <ReactTextareaAutosize
-          className="line-clamp-2 w-full resize-none border-none p-0 text-sm text-neutral-900 outline-none focus:ring-0"
-          value={title || "Add a title..."}
-          maxRows={2}
-          disabled={!!doIndex}
-          onChange={(e) => {
-            setValue("title", e.currentTarget.value, {
-              shouldDirty: true,
-            });
-            // if (plan && plan !== "free") {
-            setValue("proxy", true, { shouldDirty: true });
-            // }
-          }}
-        />
-        <p className="text-xs text-neutral-600">
-          {proxy ? SHORT_DOMAIN : hostname || "domain.com"}
-        </p>
-      </div>
+      {showMetaFields && (
+        <div className="grid gap-2">
+          <ReactTextareaAutosize
+            className="line-clamp-2 w-full resize-none border-none p-0 text-sm text-neutral-900 outline-none focus:ring-0"
+            value={title || "Add a title..."}
+            maxRows={2}
+            disabled={!!doIndex}
+            onChange={(e) => {
+              setValue("title", e.currentTarget.value, {
+                shouldDirty: true,
+              });
+              setValue("proxy", true, { shouldDirty: true });
+            }}
+          />
+          <p className="text-xs text-neutral-600">
+            {proxy ? SHORT_DOMAIN : hostname || "domain.com"}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
 
-function XOGPreview({ title, hostname, children }: OGPreviewProps) {
+function XOGPreview({
+  title,
+  hostname,
+  children,
+  showMetaFields = true,
+}: OGPreviewProps) {
   const { watch } = useFormContext<LinkFormData>();
   const { proxy } = watch();
 
@@ -488,15 +502,17 @@ function XOGPreview({ title, hostname, children }: OGPreviewProps) {
     <div>
       <div className="group relative overflow-hidden rounded-xl bg-white ring-1 ring-neutral-200/60">
         {children}
-        <div className="absolute bottom-2 left-0 w-full px-2">
-          <div className="w-fit max-w-full rounded bg-black/[0.77] px-1.5 py-px">
-            <span className="block max-w-sm truncate text-xs text-white">
-              {title || "Add a title..."}
-            </span>
+        {showMetaFields && (
+          <div className="absolute bottom-2 left-0 w-full px-2">
+            <div className="w-fit max-w-full rounded bg-black/[0.77] px-1.5 py-px">
+              <span className="block max-w-sm truncate text-xs text-white">
+                {title || "Add a title..."}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
-      {hostname && (
+      {showMetaFields && hostname && (
         <p className="mt-1 text-xs text-neutral-600">
           From {proxy ? SHORT_DOMAIN : hostname || "domain.com"}
         </p>

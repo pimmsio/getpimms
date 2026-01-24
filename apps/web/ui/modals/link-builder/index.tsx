@@ -5,8 +5,10 @@ import { ExpandedLinkProps } from "@/lib/types";
 import { AppButton } from "@/ui/components/controls/app-button";
 import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 import { BulkDestinationUrlInput } from "@/ui/links/link-builder/bulk-destination-url-input";
-import { BulkDomainSelector } from "@/ui/links/link-builder/bulk-domain-selector";
-import { BulkUTMParametersSection } from "@/ui/links/link-builder/bulk-utm-parameters-section";
+import {
+  BulkUTMParametersSection,
+  type BulkUtmTemplateSelection,
+} from "@/ui/links/link-builder/bulk-utm-parameters-section";
 import { LinkBuilderDestinationUrlInput } from "@/ui/links/link-builder/controls/link-builder-destination-url-input";
 import { LinkBuilderFolderSelector } from "@/ui/links/link-builder/controls/link-builder-folder-selector";
 import { LinkBuilderShortLinkInput } from "@/ui/links/link-builder/controls/link-builder-short-link-input";
@@ -30,10 +32,13 @@ import { MoreOptionsSection } from "@/ui/links/link-builder/more-options-section
 import { QRCodePreview } from "@/ui/links/link-builder/qr-code-preview";
 import { TagSelect } from "@/ui/links/link-builder/tag-select";
 import { bulkCreateLinks } from "@/ui/links/link-builder/use-bulk-create-links";
+import { useBulkLinkBuilder } from "@/ui/links/link-builder/use-bulk-link-builder";
 import { useLinkBuilderSubmit } from "@/ui/links/link-builder/use-link-builder-submit";
 import { useMetatags } from "@/ui/links/link-builder/use-metatags";
+import { useModalFormHeight } from "@/ui/links/link-builder/use-modal-form-height";
 import { UTMParametersSection } from "@/ui/links/link-builder/utm-parameters-section";
 import { useAvailableDomains } from "@/ui/links/use-available-domains";
+import { UpgradeRequiredToast } from "@/ui/shared/upgrade-required-toast";
 import { useUpgradeModal } from "@/ui/shared/use-upgrade-modal";
 import {
   ArrowTurnLeft,
@@ -43,8 +48,10 @@ import {
   useKeyboardShortcut,
   useRouterStuff,
 } from "@dub/ui";
-import { cn, isValidUrl } from "@dub/utils";
-import { Plus } from "lucide-react";
+import { toast } from "sonner";
+import { cn, getCurrentPlan, isValidUrl } from "@dub/utils";
+
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   Dispatch,
@@ -91,7 +98,16 @@ function LinkBuilderInner({
 }: LinkBuilderModalProps) {
   const searchParams = useSearchParams();
   const { queryParams } = useRouterStuff();
-  const { id: workspaceId, slug, flags } = useWorkspace();
+  const {
+    id: workspaceId,
+    slug,
+    flags,
+    plan,
+    nextPlan,
+    linksUsage = 0,
+    linksLimit = 0,
+  } = useWorkspace();
+  const { openUpgradeModal } = useUpgradeModal();
 
   const { props, duplicateProps } = useLinkBuilderContext();
 
@@ -102,51 +118,79 @@ function LinkBuilderInner({
     formState: { isDirty, isSubmitting, isSubmitSuccessful, dirtyFields },
   } = useFormContext<LinkFormData>();
 
-  // Bulk mode state
   const [urlMode, setUrlMode] = useState<"single" | "bulk">("single");
-  const [bulkUrls, setBulkUrls] = useState<string[]>([]);
+  const [bulkSubmitting, setBulkSubmitting] = useState(false);
   const autoExpandUtm = showLinkBuilder && searchParams.has("utmFocus");
   const isTyPreset = searchParams.get("ty") === "1";
   const tyKey = searchParams.get("tyKey");
   const isLeadMagnetPreset = searchParams.get("leadMagnet") === "1";
 
-  const [domain, key, leadMagnetEnabled, trackConversion] = useWatch({
+  const formRef = useRef<HTMLFormElement>(null);
+  const formHeight = useModalFormHeight(showLinkBuilder, formRef);
+
+  const [domain, key, leadMagnetEnabled, trackConversion, currentUrl] = useWatch({
     control,
-    name: ["domain", "key", "leadMagnetEnabled", "trackConversion"],
+    name: ["domain", "key", "leadMagnetEnabled", "trackConversion", "url"],
   });
+
+  const { loading, primaryDomain } = useAvailableDomains({
+    currentDomain: domain,
+  });
+
+  const bulkLinkBuilder = useBulkLinkBuilder(
+    urlMode,
+    setValue,
+    workspaceId!,
+    primaryDomain,
+    currentUrl,
+    key,
+    domain,
+  );
 
   useMetatags({
     enabled: showLinkBuilder,
   });
 
+  const bulkLinksLimit = getCurrentPlan(plan ?? "free").limits.bulkLinks ?? 0;
+  const remainingLinks = Math.max(0, linksLimit - linksUsage);
+  const exceededMonthlyLimitForBulk =
+    urlMode === "bulk" &&
+    linksLimit > 0 &&
+    linksUsage + bulkLinkBuilder.bulkTotalCount > linksLimit;
+
   const saveDisabled = useMemo(() => {
     /* 
       Disable save if:
       - modal is not open
-      - saving is in progress
+      - saving is in progress (or bulk submit in progress)
       - for an existing link, there's no changes
     */
     return Boolean(
       !showLinkBuilder ||
       isSubmitting ||
-      isSubmitSuccessful ||
+      (urlMode === "bulk" ? bulkSubmitting : isSubmitSuccessful) ||
       (props && !isDirty),
     );
-  }, [showLinkBuilder, isSubmitting, isSubmitSuccessful, props, isDirty]);
-
-  const { loading, primaryDomain, domains } = useAvailableDomains({
-    currentDomain: domain,
-  });
+  }, [
+    showLinkBuilder,
+    isSubmitting,
+    isSubmitSuccessful,
+    urlMode,
+    bulkSubmitting,
+    props,
+    isDirty,
+  ]);
 
   useEffect(() => {
     // for a new link (no props or duplicateProps), set the domain to the primary domain
+    if (urlMode === "bulk") return;
     if (!loading && primaryDomain && !props && !duplicateProps) {
       setValue("domain", primaryDomain, {
         shouldValidate: true,
         shouldDirty: false,
       });
     }
-  }, [loading, primaryDomain, props, duplicateProps, setValue]);
+  }, [loading, primaryDomain, props, duplicateProps, setValue, urlMode, domain]);
 
   useEffect(() => {
     // TY preset: only prefill the key (leave the rest untouched).
@@ -214,7 +258,7 @@ function LinkBuilderInner({
     }
 
     setShowLinkBuilder(false);
-  }, []);
+  }, [link, router, slug, queryParams, setShowLinkBuilder]);
 
   const onSubmit = useLinkBuilderSubmit({
     onSuccess: onSubmitSuccess,
@@ -222,19 +266,50 @@ function LinkBuilderInner({
 
   const handleFormSubmit = async (data: LinkFormData) => {
     if (urlMode === "bulk") {
-      // Handle bulk creation
-      await bulkCreateLinks({
-        urls: bulkUrls,
-        formData: data,
-        workspaceId: workspaceId!,
-        onSuccess: () => {
-          setShowLinkBuilder(false);
-          // Reset bulk state
-          setBulkUrls([]);
-        },
-      });
+      if (bulkLinkBuilder.bulkTotalCount > bulkLinksLimit) {
+        toast.custom(
+          () => (
+            <UpgradeRequiredToast
+              title="Bulk create limit exceeded"
+              message={`Your plan allows up to ${bulkLinksLimit} links at a time in the Bulk Link Builder. Upgrade to create more.`}
+              planToUpgradeTo={nextPlan?.name ?? "Pro"}
+            />
+          ),
+          { id: "bulk-limit-exceeded" },
+        );
+        return;
+      }
+      if (exceededMonthlyLimitForBulk) {
+        toast.custom(
+          () => (
+            <UpgradeRequiredToast
+              title="Monthly links limit exceeded"
+              message={`You can create ${remainingLinks} more link${remainingLinks === 1 ? "" : "s"} this month, but this bulk operation would add ${bulkLinkBuilder.bulkTotalCount}. Upgrade to create more.`}
+              planToUpgradeTo={nextPlan?.name ?? "Pro"}
+            />
+          ),
+          { id: "monthly-links-limit-exceeded" },
+        );
+        return;
+      }
+      setBulkSubmitting(true);
+      try {
+        await bulkCreateLinks({
+          urls: bulkLinkBuilder.bulkUrls,
+          templates: bulkLinkBuilder.bulkTemplates,
+          formData: data,
+          workspaceId: workspaceId!,
+          bulkKeyByCombo: bulkLinkBuilder.bulkKeyByCombo,
+          bulkDomainByCombo: bulkLinkBuilder.bulkDomainByCombo,
+          onSuccess: () => {
+            setShowLinkBuilder(false);
+            bulkLinkBuilder.resetBulkState();
+          },
+        });
+      } finally {
+        setBulkSubmitting(false);
+      }
     } else {
-      // Handle single link creation
       await onSubmit(data);
     }
   };
@@ -254,8 +329,10 @@ function LinkBuilderInner({
         }}
       >
         <form
+          ref={formRef}
           onSubmit={handleSubmit(handleFormSubmit)}
-          className="flex flex-col overflow-auto"
+          className="flex flex-col overflow-hidden"
+          style={formHeight ? { height: `${formHeight}px`, maxHeight: `${formHeight}px` } : { height: 'min(800px, calc(100vh - 100px))', maxHeight: 'min(800px, calc(100vh - 100px))' }}
         >
           <LinkBuilderHeader
             onClose={() => {
@@ -283,13 +360,19 @@ function LinkBuilderInner({
 
           <div
             className={cn(
-              "grid w-full max-md:overflow-auto sm:gap-y-6 md:grid-cols-[3fr_2fr]",
+              "grid w-full flex-1 min-h-0 overflow-y-auto sm:gap-y-6",
+              urlMode === "bulk" 
+                ? "md:grid-cols-1 lg:grid-cols-[3fr_2fr]"
+                : "md:grid-cols-[3fr_2fr]",
               "max-md:max-h-[calc(100dvh-200px)] max-md:min-h-[min(566px,calc(100dvh-200px))]",
               "md:[&>div]:max-h-[calc(100dvh-200px)] md:[&>div]:min-h-[min(566px,calc(100dvh-200px))]",
             )}
           >
-            <div className="scrollbar-hide px-6 md:overflow-auto">
-              <div className="flex flex-col gap-3 py-4 sm:gap-6">
+            <div className={cn(
+              "scrollbar-hide md:overflow-auto w-full max-w-full min-w-0",
+              urlMode === "bulk" ? "px-4 sm:px-6" : "px-6"
+            )}>
+              <div className="flex flex-col gap-3 py-4 sm:gap-6 w-full max-w-full min-w-0">
                 {urlMode === "single" ? (
                   <>
                     <LinkBuilderDestinationUrlInput />
@@ -311,38 +394,69 @@ function LinkBuilderInner({
                 ) : (
                   <>
                     <BulkDestinationUrlInput
-                      urls={bulkUrls}
-                      onChange={setBulkUrls}
+                      urls={bulkLinkBuilder.bulkUrls}
+                      onChange={bulkLinkBuilder.setBulkUrls}
                     />
 
-                    <BulkUTMParametersSection />
-
-                    <BulkDomainSelector
-                      domains={domains}
-                      selectedDomain={domain}
-                      onChange={(newDomain) => setValue("domain", newDomain)}
+                    <BulkUTMParametersSection
+                      onTemplatesChange={bulkLinkBuilder.setBulkTemplates}
+                      onActiveTemplateChange={bulkLinkBuilder.setBulkActiveTemplateId}
                     />
 
                     <TagSelect />
-
-                    <LinkCommentsInput />
 
                     <ConversionTrackingToggle />
                   </>
                 )}
               </div>
             </div>
-            <div className="scrollbar-hide px-2 md:overflow-auto md:px-6 md:pr-4 md:pl-0">
-              <div className="rounded-3xl bg-neutral-50 px-4 py-3 ring-1 ring-neutral-200/60">
-                <div className="flex flex-col gap-6">
+            <div className={cn(
+              "scrollbar-hide md:overflow-auto w-full max-w-full min-w-0",
+              urlMode === "bulk"
+                ? "px-4 sm:px-6 lg:px-6 lg:pr-4 lg:pl-0"
+                : "px-2 md:px-6 md:pr-4 md:pl-0"
+            )}>
+              <div className="w-full max-w-full min-w-0 rounded-3xl bg-neutral-50 px-3 sm:px-4 py-3 ring-1 ring-neutral-200/60">
+                <div className="flex flex-col gap-6 w-full max-w-full min-w-0">
                   <LinkBuilderFolderSelector />
-                  <LinkPreview />
+                  {urlMode === "bulk" && (
+                    <div className="w-full max-w-full min-w-0 flex items-center justify-between gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-700">
+                      <button
+                        type="button"
+                        onClick={bulkLinkBuilder.handleBulkPrev}
+                        disabled={bulkLinkBuilder.bulkUrls.length === 0 || bulkLinkBuilder.bulkPreviewIndex === 0}
+                        className="flex items-center gap-1 rounded-md px-2 py-1 text-neutral-600 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                      >
+                        <ChevronLeft className="size-4" />
+                        Prev
+                      </button>
+                      <span className="min-w-0 max-w-full flex-1 truncate text-xs text-neutral-600">
+                        {bulkLinkBuilder.currentBulkUrl || "No destination URL selected"}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={bulkLinkBuilder.handleBulkNext}
+                        disabled={
+                          bulkLinkBuilder.bulkUrls.length === 0 ||
+                          bulkLinkBuilder.bulkPreviewIndex >= bulkLinkBuilder.bulkUrls.length - 1
+                        }
+                        className="flex items-center gap-1 rounded-md px-2 py-1 text-neutral-600 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                      >
+                        Next
+                        <ChevronRight className="size-4" />
+                      </button>
+                    </div>
+                  )}
+                  {urlMode === "bulk" && (
+                    <LinkBuilderShortLinkInput disableAutoGenerate />
+                  )}
+                  <LinkPreview showMetaFields={urlMode !== "bulk"} />
                   <QRCodePreview />
                 </div>
               </div>
             </div>
           </div>
-          <div className="sticky bottom-0 z-10 flex items-center gap-6 bg-white p-4 ring-1 ring-neutral-200/60">
+          <div className="sticky bottom-0 z-10 flex items-center gap-6 bg-white p-4 ring-1 ring-neutral-200/60 shrink-0 border-t border-neutral-200/60">
             <LinkFeatureButtons />
             {homepageDemo ? (
               <AppButton
@@ -357,20 +471,58 @@ function LinkBuilderInner({
               </AppButton>
             ) : (
               <AppButton
-                type="submit"
+                type="button"
                 variant="primary"
                 disabled={
-                  saveDisabled || (urlMode === "bulk" && bulkUrls.length === 0)
+                  saveDisabled ||
+                  (urlMode === "bulk" && bulkLinkBuilder.bulkUrls.length === 0)
                 }
-                loading={isSubmitting || isSubmitSuccessful}
+                loading={
+                  urlMode === "bulk"
+                    ? isSubmitting || bulkSubmitting
+                    : isSubmitting || isSubmitSuccessful
+                }
                 className="h-8 w-full pr-1.5 pl-2.5"
+                onClick={() => {
+                  if (urlMode !== "bulk") {
+                    formRef.current?.requestSubmit();
+                    return;
+                  }
+                  if (bulkLinkBuilder.bulkTotalCount > bulkLinksLimit) {
+                    toast.custom(
+                      () => (
+                        <UpgradeRequiredToast
+                          title="Bulk create limit exceeded"
+                          message={`Your plan allows up to ${bulkLinksLimit} links at a time in the Bulk Link Builder. Upgrade to create more.`}
+                          planToUpgradeTo={nextPlan?.name ?? "Pro"}
+                        />
+                      ),
+                      { id: "bulk-limit-exceeded" },
+                    );
+                    return;
+                  }
+                  if (exceededMonthlyLimitForBulk) {
+                    toast.custom(
+                      () => (
+                        <UpgradeRequiredToast
+                          title="Monthly links limit exceeded"
+                          message={`You can create ${remainingLinks} more link${remainingLinks === 1 ? "" : "s"} this month, but this bulk operation would add ${bulkLinkBuilder.bulkTotalCount}. Upgrade to create more.`}
+                          planToUpgradeTo={nextPlan?.name ?? "Pro"}
+                        />
+                      ),
+                      { id: "monthly-links-limit-exceeded" },
+                    );
+                    return;
+                  }
+                  formRef.current?.requestSubmit();
+                }}
               >
                 {
                   <span className="flex items-center gap-2">
                     {props
                       ? "Save changes"
                       : urlMode === "bulk"
-                        ? `Bulk create (${bulkUrls.length})`
+                        ? `Bulk create (${bulkLinkBuilder.bulkTotalCount})`
                         : "Create link"}
                     <div className="rounded border border-white/20 p-1">
                       <ArrowTurnLeft className="size-3.5" />

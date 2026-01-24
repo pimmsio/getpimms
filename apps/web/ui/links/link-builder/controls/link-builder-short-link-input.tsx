@@ -10,7 +10,8 @@ import { useLinkBuilderContext } from "../link-builder-provider";
  * @see ShortLinkInput
  */
 export const LinkBuilderShortLinkInput = memo(
-  forwardRef<HTMLInputElement>((_, ref) => {
+  forwardRef<HTMLInputElement, { disableAutoGenerate?: boolean }>(
+    ({ disableAutoGenerate }, ref) => {
     const { props } = useLinkBuilderContext();
     const { control, setValue, clearErrors } = useFormContext<LinkFormData>();
 
@@ -44,6 +45,7 @@ export const LinkBuilderShortLinkInput = memo(
         data={{ url, title, description }}
         saving={isSubmitting || isSubmitSuccessful}
         loading={loading}
+        disableAutoGenerate={disableAutoGenerate}
       />
     ) : null;
   }),

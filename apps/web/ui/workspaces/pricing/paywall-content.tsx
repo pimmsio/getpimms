@@ -13,7 +13,7 @@ const ALL_PAID_FEATURES = [
   "Support Stripe payments",
   "A/B testing",
   "Webhooks & API",
-  "Limited bulk creation",
+  "Bulk Link Builder",
   "Custom QR code",
   "Advanced link options",
   "UTM rules, groupings & templates",
@@ -35,6 +35,8 @@ function getPlanSpecificBullets(planName: "pro" | "business") {
 
   const perMonthSuffix = (n: number) => (n === INFINITY_NUMBER ? "" : "/month");
 
+  const bulkLinks = plan.limits.bulkLinks ?? 0;
+
   return [
     `${formatCount(links)} new links${perMonthSuffix(links)}`,
     `${formatCount(events)} events tracked${perMonthSuffix(events)}`,
@@ -43,6 +45,7 @@ function getPlanSpecificBullets(planName: "pro" | "business") {
     `${formatCount(users)} team member${users === 1 ? "" : "s"}`,
     `${retention} analytics retention`,
     `${formatCount(utmTemplates)} UTM templates`,
+    `${nFormatter(bulkLinks, { full: true })} links at a time in Bulk Link Builder`,
     planName === "business" ? "Priority support" : "3 months priority support",
   ];
 }

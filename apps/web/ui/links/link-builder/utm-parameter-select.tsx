@@ -9,7 +9,7 @@ import useUtmContents, { useUtmContentsCount } from "@/lib/swr/use-utm-contents"
 import { UTM_PARAMETERS_MAX_PAGE_SIZE } from "@/lib/zod/schemas/utm-parameters";
 import { Combobox } from "@dub/ui";
 import { cn } from "@dub/utils";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useDebounce } from "use-debounce";
 import { useUtmParameterCreate } from "@/lib/hooks/use-utm-parameter-create";
 import { UtmParameterType } from "@/lib/utils/utm-parameter-utils";
@@ -19,6 +19,8 @@ import {
   getUtmParameterPlural,
   getUtmParameterPlaceholder
 } from "@/lib/utils/utm-parameter-utils";
+import { TagColorProps } from "@/lib/types";
+import { COLORS_LIST } from "@/ui/links/tag-badge";
 
 interface UtmParameterSelectProps {
   parameterType: UtmParameterType;
@@ -27,6 +29,7 @@ interface UtmParameterSelectProps {
   disabled?: boolean;
   disabledTooltip?: string;
   className?: string;
+  iconBadgeColor?: TagColorProps;
 }
 
 /**
@@ -127,6 +130,7 @@ export function UtmParameterSelect({
   disabled,
   disabledTooltip,
   className,
+  iconBadgeColor,
 }: UtmParameterSelectProps) {
   const { id: workspaceId } = useWorkspace();
 
@@ -134,7 +138,8 @@ export function UtmParameterSelect({
   const [debouncedSearch] = useDebounce(search, 500);
 
   const parametersCount = useUtmParametersCount(parameterType);
-  const useAsync = parametersCount && parametersCount > UTM_PARAMETERS_MAX_PAGE_SIZE;
+  const useAsync =
+    parametersCount && parametersCount > UTM_PARAMETERS_MAX_PAGE_SIZE;
 
   const { data: parameters, loading, mutate } = useUtmParameters(
     parameterType,
@@ -142,7 +147,7 @@ export function UtmParameterSelect({
       sortBy: "name" as const,
       sortOrder: "asc" as const,
       ...(useAsync ? { search: debouncedSearch } : {}),
-    }
+    },
   );
 
   const [isOpen, setIsOpen] = useState(false);
@@ -165,11 +170,14 @@ export function UtmParameterSelect({
   };
 
   const options = useMemo(() => {
-    return parameters?.map((param) => ({
-      value: param.name,
-      label: param.name,
-    }));
-  }, [parameters]);
+    const mapped =
+      parameters?.map((param) => ({
+        value: param.name,
+        label: param.name,
+      })) ?? [];
+
+    return mapped;
+  }, [parameters, parameterType]);
 
   const selectedOption = value
     ? {
@@ -181,6 +189,21 @@ export function UtmParameterSelect({
   const Icon = getUtmParameterIcon(parameterType);
   const displayName = getUtmParameterDisplayName(parameterType);
   const plural = getUtmParameterPlural(parameterType);
+  const colorConfig = iconBadgeColor
+    ? COLORS_LIST.find((c) => c.color === iconBadgeColor)
+    : null;
+  const iconNode = iconBadgeColor ? (
+    <span
+      className={cn(
+        "flex size-6 items-center justify-center rounded-full",
+        colorConfig?.css || "bg-neutral-100 text-neutral-600",
+      )}
+    >
+      <Icon className="size-3.5" />
+    </span>
+  ) : (
+    <Icon className="size-4 text-neutral-500" />
+  );
   const placeholder = getUtmParameterPlaceholder(parameterType);
 
   return (
@@ -190,7 +213,7 @@ export function UtmParameterSelect({
         onChange(option?.value || "");
       }}
       options={loading ? undefined : options}
-      icon={<Icon className="size-4 text-neutral-500" />}
+      icon={iconNode}
       placeholder={placeholder}
       searchPlaceholder={`Search or add ${displayName.toLowerCase()}...`}
       emptyState={

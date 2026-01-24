@@ -16,8 +16,10 @@ export function BulkDestinationUrlInput({
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [urlsText, setUrlsText] = useState(urls.join("\n"));
+  const [inlineError, setInlineError] = useState<string | null>(null);
 
   const handleBlur = () => {
+    setInlineError(null);
     const lines = urlsText
       .split(/[\n,;]+/) // Split by newline, comma, or semicolon
       .map((line) => line.trim())
@@ -43,9 +45,7 @@ export function BulkDestinationUrlInput({
     });
 
     if (invalidUrls.length > 0) {
-      toast.error(
-        `Invalid URLs: ${invalidUrls.slice(0, 3).join(", ")}${invalidUrls.length > 3 ? "..." : ""}`,
-      );
+      setInlineError(`Invalid URL: ${invalidUrls[0]}`);
       return;
     }
 
@@ -80,12 +80,16 @@ export function BulkDestinationUrlInput({
         </label>
         <AppTextarea
           value={urlsText}
-          onChange={(e) => setUrlsText(e.target.value)}
+          onChange={(e) => {
+            setUrlsText(e.target.value);
+            if (inlineError) setInlineError(null);
+          }}
           onBlur={handleBlur}
           placeholder="Enter URLs, one per line"
           className="h-48 font-mono"
           autoFocus
         />
+        {inlineError && <p className="text-sm text-red-500">{inlineError}</p>}
         <p className="text-xs text-neutral-500">
           {urlsText.split(/[\n,;]+/).filter((line) => line.trim()).length} URL(s) • Click outside to save
         </p>
@@ -94,7 +98,7 @@ export function BulkDestinationUrlInput({
   }
 
   return (
-    <div className="space-y-2">
+    <div className="w-full max-w-full min-w-0 space-y-2">
       <label className="block text-sm font-medium text-neutral-900">
         Destination URLs
       </label>
@@ -102,19 +106,19 @@ export function BulkDestinationUrlInput({
         type="button"
         onClick={() => setIsExpanded(true)}
         className={cn(
-          "flex w-full items-center justify-between rounded-lg border bg-white px-4 py-3 text-left outline-none transition",
+          "flex w-full items-center justify-between rounded-lg border bg-white px-4 py-3 text-left outline-none transition min-w-0",
           error
             ? "border-red-300 focus:border-red-400 focus:ring-2 focus:ring-red-100"
             : "border-neutral-200 hover:border-neutral-300 focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200/60",
           urls.length === 0 && "text-neutral-400",
         )}
       >
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 overflow-hidden">
           {urls.length === 0 ? (
-            <span>Click to add destination URLs...</span>
+            <span className="truncate block">Click to add destination URLs...</span>
           ) : (
-            <div className="flex items-center gap-2">
-              <span className="truncate font-mono text-sm">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="truncate font-mono text-sm min-w-0">
                 {urls[0]}
               </span>
               {urls.length > 1 && (

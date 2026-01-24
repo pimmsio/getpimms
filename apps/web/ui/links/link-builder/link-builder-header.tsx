@@ -48,6 +48,7 @@ export function LinkBuilderHeader({
     name: ["url", "key", "domain", "folderId"],
   });
 
+
   const [debouncedUrl] = useDebounce(getUrlWithoutUTMParams(url), 500);
 
   const shortLink = useMemo(
@@ -147,12 +148,12 @@ export function LinkBuilderHeader({
                 className="size-5 shrink-0 sm:size-5 [&>*]:size-3 sm:[&>*]:size-4"
               />
               <h3 className="!mt-0 max-w-sm truncate text-sm font-medium">
-                {props ? `Edit ${shortLink}` : "New link"}
+                {props ? `Edit ${shortLink}` : "New links"}
               </h3>
             </div>
-            {/* {showUrlModeToggle && urlMode && onUrlModeChange && (
+            {showUrlModeToggle && urlMode && onUrlModeChange && (
               <UrlModeToggle mode={urlMode} onChange={onUrlModeChange} />
-            )} */}
+            )}
           </div>
         )}
       </div>

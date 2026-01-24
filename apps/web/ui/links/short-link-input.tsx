@@ -51,6 +51,7 @@ type ShortLinkInputProps = {
   saving: boolean;
   loading: boolean;
   onboarding?: boolean;
+  disableAutoGenerate?: boolean;
 } & Omit<HTMLProps<HTMLInputElement>, "onChange" | "data">;
 
 export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
@@ -65,6 +66,7 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
       saving,
       loading,
       onboarding,
+      disableAutoGenerate = false,
       ...inputProps
     }: ShortLinkInputProps,
     ref,
@@ -102,7 +104,13 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
       // - there is no key
       // - the input is not focused
       // - key generation is not already in progress
-      if (domain && !key && !isFocused && !generatingRandomKey) {
+      if (
+        !disableAutoGenerate &&
+        domain &&
+        !key &&
+        !isFocused &&
+        !generatingRandomKey
+      ) {
         generateRandomKey();
       }
     }, [domain, key, isFocused, generatingRandomKey, generateRandomKey]);

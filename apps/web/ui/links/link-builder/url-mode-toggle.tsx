@@ -9,18 +9,22 @@ export function UrlModeToggle({
   onChange: (mode: "single" | "bulk") => void;
 }) {
   return (
-    <div className="inline-flex items-center rounded-lg border border-neutral-200 bg-neutral-50 p-0.5">
+    <div
+      role="group"
+      aria-label="Link creation mode"
+      className="inline-flex items-center rounded-lg border border-neutral-200 bg-neutral-100/80 p-1 shadow-sm"
+    >
       <button
         type="button"
         onClick={() => onChange("single")}
         className={cn(
-          "rounded-md px-3 py-1.5 text-xs font-medium transition-all",
+          "rounded-md px-3.5 py-2 text-sm font-medium transition-all",
           mode === "single"
-            ? "bg-white text-neutral-900"
-            : "text-neutral-600 hover:text-neutral-900",
+            ? "bg-white text-neutral-900 shadow-sm ring-1 ring-neutral-200/80"
+            : "text-neutral-600 hover:text-neutral-900 hover:bg-white/50",
         )}
       >
-        Single URL
+        Single link
       </button>
       <Tooltip
         side="bottom"
@@ -35,13 +39,13 @@ export function UrlModeToggle({
           type="button"
           onClick={() => onChange("bulk")}
           className={cn(
-            "rounded-md px-3 py-1.5 text-xs font-medium transition-all",
+            "rounded-md px-3.5 py-2 text-sm font-medium transition-all",
             mode === "bulk"
-              ? "bg-white text-neutral-900"
-              : "text-neutral-600 hover:text-neutral-900",
+              ? "bg-white text-neutral-900 shadow-sm ring-1 ring-neutral-200/80"
+              : "text-neutral-600 hover:text-neutral-900 hover:bg-white/50",
           )}
         >
-          Multiple URLs
+          Multiple links
         </button>
       </Tooltip>
     </div>

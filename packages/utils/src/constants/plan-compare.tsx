@@ -330,11 +330,12 @@ export const PLAN_COMPARE_FEATURES: {
         // href: "https://dub.co/help/article/how-to-create-utm-templates",
       },
       {
-        check: {
-          default: false,
-          business: true,
-        },
-        text: "Bulk link operations",
+        text: ({ plan }) => (
+          <>
+            <strong>{nFormatter(plan.limits.bulkLinks ?? 0)}</strong> links at a
+            time in Bulk Link Builder
+          </>
+        ),
       },
     ],
   },

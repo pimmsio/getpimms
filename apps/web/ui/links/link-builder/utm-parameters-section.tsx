@@ -108,6 +108,11 @@ export function UTMParametersSection({
 
   const handleChange = (key: string, value: string) => {
     const normalized = value ? normalizeUtmValue(value) : "";
+    // Clear template FIRST when user manually clears a parameter value
+    // This prevents the template's useEffect from re-applying values
+    if (!normalized && selectedTemplateId) {
+      setSelectedTemplateId(null);
+    }
     setValue(key as any, normalized, { shouldDirty: true });
   };
 
