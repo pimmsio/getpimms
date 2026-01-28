@@ -5,7 +5,7 @@ import { useOnboardingProgress } from "@/lib/onboarding/use-onboarding-progress"
 import { useState } from "react";
 
 // Placeholder YouTube video ID - replace with actual tutorial video
-const YOUTUBE_VIDEO_ID = "dQw4w9WgXcQ"; // Replace with actual video ID
+const YOUTUBE_VIDEO_ID = "__TEbK4zonc"; // Replace with actual video ID
 
 export function Form() {
   const { finish, isLoading } = useOnboardingProgress();
