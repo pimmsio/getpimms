@@ -155,7 +155,15 @@ function WorkspaceDropdownPlaceholder() {
   );
 }
 
-const LINKS = [
+type WorkspaceLink = {
+  name: string;
+  href: string;
+  isWorkspaceLink?: boolean;
+  target?: string;
+  planRequired?: boolean;
+};
+
+const LINKS: WorkspaceLink[] = [
   {
     name: "Settings",
     href: "/{slug}/settings",
@@ -165,7 +173,6 @@ const LINKS = [
     name: "Integrations",
     href: "/{slug}/settings/integrations",
     isWorkspaceLink: true,
-    planRequired: true,
   },
   {
     name: "Guides & Tutorials",

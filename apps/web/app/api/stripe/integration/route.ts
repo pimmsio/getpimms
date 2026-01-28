@@ -94,7 +94,6 @@ export const PATCH = withWorkspace(
   },
   {
     requiredPermissions: ["workspaces.write"],
-    requiredPlan: ["pro", "business"],
   },
 );
 
