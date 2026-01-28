@@ -58,6 +58,9 @@ module.exports = withAxiom({
   images: {
     remotePatterns: [
       {
+        hostname: "img.youtube.com",
+      },
+      {
         hostname: "assets.dub.co", // for Dub's static assets
       },
       {

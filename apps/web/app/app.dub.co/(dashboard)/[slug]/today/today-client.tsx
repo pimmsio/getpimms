@@ -260,6 +260,11 @@ export default function TodayClient() {
 
       {/* Sections */}
       <div className="mt-5 border-t border-neutral-100 pt-5">
+        {/* Getting started + onboarding videos */}
+        <div className="mb-6">
+          <GettingStartedPanel />
+        </div>
+
         {/* Deep links video */}
         {/* <div className="mb-6">
           <a
@@ -363,10 +368,6 @@ export default function TodayClient() {
         {/* Lead Signal Activity */}
         <div className="mb-6 border-t border-neutral-100 pt-5">
           <LeadSignalActivitySection slug={slug} />
-        </div>
-
-        <div className="mb-6">
-          <GettingStartedPanel />
         </div>
       </div>
     </>

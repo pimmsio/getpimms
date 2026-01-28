@@ -1,6 +1,7 @@
 "use client";
 
 import { AppButton } from "@/ui/components/controls/app-button";
+import { CheckCircleFill } from "@/ui/shared/icons";
 import { useOnboardingProgress } from "@/lib/onboarding/use-onboarding-progress";
 import { useState } from "react";
 
@@ -10,6 +11,7 @@ const YOUTUBE_VIDEO_ID = "__TEbK4zonc"; // Replace with actual video ID
 export function Form() {
   const { finish, isLoading } = useOnboardingProgress();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [videoStarted, setVideoStarted] = useState(false);
 
   const handleFinish = async () => {
     setIsSubmitting(true);
@@ -30,7 +32,11 @@ export function Form() {
       </div>
 
       {/* YouTube Embed */}
-      <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+      <div
+        className="relative w-full"
+        style={{ paddingBottom: "56.25%" }}
+        onMouseEnter={() => setVideoStarted(true)}
+      >
         <iframe
           className="absolute left-0 top-0 h-full w-full rounded-lg"
           src={`https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}`}
@@ -46,6 +52,13 @@ export function Form() {
           platform.
         </p>
       </div>
+
+      {videoStarted && (
+        <div className="flex items-center justify-center gap-2 text-xs text-neutral-600">
+          <CheckCircleFill className="h-4 w-4 text-green-600" />
+          <span>Video marked as watched</span>
+        </div>
+      )}
 
       <AppButton
         type="button"
