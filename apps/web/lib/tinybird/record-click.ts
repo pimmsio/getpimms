@@ -57,10 +57,12 @@ export async function recordClick({
   trackConversion?: boolean;
   anonymousId?: string;
 }) {
+  console.log("[recordClick]", clickId, "1 start");
   const searchParams = new URL(req.url).searchParams;
 
   // only track the click when there is no `pimms-no-track` header or query param
   if (req.headers.has("pimms-no-track") || searchParams.has("pimms-no-track")) {
+    console.log("[recordClick]", clickId, "1 exit pimms-no-track");
     return null;
   }
 
@@ -68,6 +70,7 @@ export async function recordClick({
 
   // don't record clicks from bots
   if (isBot) {
+    console.log("[recordClick]", clickId, "1 exit bot");
     return null;
   }
 
@@ -76,9 +79,11 @@ export async function recordClick({
   // by default, we deduplicate clicks for a domain + key pair from the same IP address – only record 1 click per hour
   // we only need to do these if skipRatelimit is not true (we skip it in /api/track/:path endpoints)
   if (!skipRatelimit) {
+    console.log("[recordClick]", clickId, "2 dedup check");
     // here, we check if the clickId is cached in Redis within the last hour
     const cachedClickId = await clickCache.get({ domain, key, ip });
     if (cachedClickId) {
+      console.log("[recordClick]", clickId, "2 exit dedup cached", cachedClickId);
       // Dedup is for counting/recording, but TY attribution should still work.
       // If a user has a new anonymousId (e.g. cleared cookie) and we dedup the click,
       // we still want TY to find a lastClick for this visitor.
@@ -91,6 +96,7 @@ export async function recordClick({
 
       return null;
     }
+    console.log("[recordClick]", clickId, "2 dedup miss, continuing");
   }
 
   const isQr = detectQr(req);
@@ -101,9 +107,9 @@ export async function recordClick({
   const { continent, region } =
     process.env.VERCEL === "1"
       ? {
-          continent: req.headers.get("x-vercel-ip-continent"),
-          region: req.headers.get("x-vercel-ip-country-region"),
-        }
+        continent: req.headers.get("x-vercel-ip-continent"),
+        region: req.headers.get("x-vercel-ip-country-region"),
+      }
       : LOCALHOST_GEO_DATA;
 
   const geo =
@@ -155,22 +161,23 @@ export async function recordClick({
   // without needing a dedicated Tinybird pipe for workspace-wide click events.
   const clickFeedItem = workspaceId
     ? {
-        timestamp: clickData.timestamp,
-        clickId,
-        linkId,
-        domain,
-        key,
-        device: clickData.device,
-        referer: clickData.referer,
-        identityHash: clickData.identity_hash,
-      }
+      timestamp: clickData.timestamp,
+      clickId,
+      linkId,
+      domain,
+      key,
+      device: clickData.device,
+      referer: clickData.referer,
+      identityHash: clickData.identity_hash,
+    }
     : null;
 
   const hasWebhooks = webhookIds && webhookIds.length > 0;
 
+  console.log("[recordClick]", clickId, "3 before Promise.allSettled (tinybird, redis, db)");
   // NOTE: Keep this destructuring aligned with the Promise array below.
   // `workspaceRows` must refer to the "SELECT usage, usageLimit..." query result.
-  const [, , , , , , , workspaceRows] = await Promise.allSettled([
+  const [, , , , workspaceRows,] = await Promise.allSettled([
     fetch(
       `${process.env.TINYBIRD_API_URL}/v0/events?name=dub_click_events&wait=true`,
       {
@@ -185,31 +192,12 @@ export async function recordClick({
     // cache the click ID in Redis for 1 hour
     clickCache.set({ domain, key, ip, clickId }),
 
-    // TY attribution: store the most recent click per visitor per workspace (30 days).
-    // NOTE: TY links never call recordClick, so they won't overwrite last-click attribution.
-    setTyLastClick({
-      workspaceId,
-      anonymousId: clickData.identity_hash,
-      clickId,
-      linkId,
-      timestamp: clickData.timestamp,
-    }),
-
     // cache the click data for 5 mins
     // we're doing this because ingested click events are not available immediately in Tinybird
     trackConversion &&
-      redis.set(`clickCache:${clickId}`, clickData, {
-        ex: 60 * 5,
-      }),
-
-    // Push to workspace click feed (keep last 50).
-    clickFeedItem
-      ? (async () => {
-          const listKey = `workspace:click-feed:${workspaceId}`;
-          await redis.lpush(listKey, JSON.stringify(clickFeedItem));
-          await redis.ltrim(listKey, 0, 49);
-        })()
-      : null,
+    redis.set(`clickCache:${clickId}`, clickData, {
+      ex: 60 * 5,
+    }),
 
     // increment the click count for the link (based on their ID)
     // we have to use planetscale connection directly (not prismaEdge) because of connection pooling
@@ -220,31 +208,51 @@ export async function recordClick({
     // if the link has a destination URL, increment the usage count for the workspace
     // and then we have a cron that will reset it at the start of new billing cycle
     url &&
-      conn.execute(
-        "UPDATE Project p JOIN Link l ON p.id = l.projectId SET p.usage = p.usage + 1, p.totalClicks = p.totalClicks + 1 WHERE l.id = ?",
-        [linkId],
-      ),
+    conn.execute(
+      "UPDATE Project p JOIN Link l ON p.id = l.projectId SET p.usage = p.usage + 1, p.totalClicks = p.totalClicks + 1 WHERE l.id = ?",
+      [linkId],
+    ),
 
     // fetch the workspace usage for the workspace
     workspaceId && hasWebhooks
       ? conn.execute(
-          "SELECT usage, usageLimit FROM Project WHERE id = ? LIMIT 1",
-          [workspaceId],
-        )
+        "SELECT usage, usageLimit FROM Project WHERE id = ? LIMIT 1",
+        [workspaceId],
+      )
       : null,
 
     // Increment customer click count and update last event + last activity fields
     anonymousId && workspaceId
       ? conn.execute(
-          "UPDATE Customer SET totalClicks = totalClicks + 1, lastEventAt = NOW(), lastActivityLinkId = ?, lastActivityType = 'click' WHERE anonymousId = ? AND projectId = ?",
-          [linkId, anonymousId, workspaceId],
-        )
+        "UPDATE Customer SET totalClicks = totalClicks + 1, lastEventAt = NOW(), lastActivityLinkId = ?, lastActivityType = 'click' WHERE anonymousId = ? AND projectId = ?",
+        [linkId, anonymousId, workspaceId],
+      )
+      : null,
+
+    // TY attribution: store the most recent click per visitor per workspace (30 days).
+    // NOTE: TY links never call recordClick, so they won't overwrite last-click attribution.
+    setTyLastClick({
+      workspaceId,
+      anonymousId: clickData.identity_hash,
+      clickId,
+      linkId,
+      timestamp: clickData.timestamp,
+    }),
+
+    // Push to workspace click feed (keep last 50).
+    clickFeedItem
+      ? (async () => {
+          const listKey = `workspace:click-feed:${workspaceId}`;
+          await redis.lpush(listKey, JSON.stringify(clickFeedItem));
+          await redis.ltrim(listKey, 0, 49);
+        })()
       : null,
   ]);
 
+  console.log("[recordClick]", clickId, "4 after Promise.allSettled");
   // If we can identify a known customer, enqueue a hot score recompute (async)
   // This keeps Score fresh when new click events happen.
-  if (process.env.QSTASH_TOKEN && workspaceId && anonymousId) {
+  if (workspaceId && anonymousId) {
     try {
       const customers = await conn.execute(
         "SELECT id FROM Customer WHERE projectId = ? AND anonymousId = ? LIMIT 25",
@@ -273,12 +281,12 @@ export async function recordClick({
 
   const workspace =
     workspaceRows.status === "fulfilled" &&
-    workspaceRows.value &&
-    workspaceRows.value.rows.length > 0
+      workspaceRows.value &&
+      workspaceRows.value.rows.length > 0
       ? (workspaceRows.value.rows[0] as Pick<
-          WorkspaceProps,
-          "usage" | "usageLimit"
-        >)
+        WorkspaceProps,
+        "usage" | "usageLimit"
+      >)
       : null;
 
   const hasExceededUsageLimit =
@@ -286,9 +294,11 @@ export async function recordClick({
 
   // Send webhook events if link has webhooks enabled and the workspace usage has not exceeded the limit
   if (hasWebhooks && !hasExceededUsageLimit) {
+    console.log("[recordClick]", clickId, "5 sending webhooks");
     await sendLinkClickWebhooks({ webhookIds, linkId, clickData });
   }
 
+  console.log("[recordClick]", clickId, "6 done returning clickData");
   return clickData;
 }
 

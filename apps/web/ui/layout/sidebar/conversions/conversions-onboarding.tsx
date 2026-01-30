@@ -2,11 +2,10 @@
 
 import useWorkspace from "@/lib/swr/use-workspace";
 import { STORE_KEYS, useWorkspaceStore } from "@/lib/swr/use-workspace-store";
-import { ModalContext } from "@/ui/modals/modal-provider";
 import { X } from "@/ui/shared/icons";
 import { Book2Small, useMediaQuery } from "@dub/ui";
 import { ConversionOnboardingPopup } from "./conversions-onboarding-popup";
-import { useContext } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export function ConversionsOnboarding({
   referenceElement,
@@ -27,7 +26,16 @@ export function ConversionsOnboarding({
     STORE_KEYS.conversionsOnboarding,
   );
 
-  const { setShowConversionOnboardingModal } = useContext(ModalContext);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const openSetup = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("ctSetup", "1");
+    const next = params.toString();
+    router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false });
+  };
 
   const showConversionsOnboarding =
     !loading &&
@@ -47,7 +55,7 @@ export function ConversionsOnboarding({
         <ConversionOnboardingPopup
           referenceElement={referenceElement}
           onCTA={() => {
-            setShowConversionOnboardingModal(true);
+            openSetup();
             setConversionsOnboarding("nav-button");
           }}
           onDismiss={() => setConversionsOnboarding("nav-button")}
@@ -57,7 +65,7 @@ export function ConversionsOnboarding({
           <button
             type="button"
             className="flex w-full items-center gap-2 rounded bg-neutral-900/5 px-2 py-1.5 text-xs text-neutral-600 transition-colors duration-100 hover:bg-neutral-900/10"
-            onClick={() => setShowConversionOnboardingModal(true)}
+            onClick={() => openSetup()}
           >
             <Book2Small className="size-3 text-neutral-800" />
             View setup guides

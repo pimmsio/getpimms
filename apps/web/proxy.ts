@@ -17,7 +17,11 @@ import {
   isValidUrl,
   SHORT_DOMAIN,
 } from "@dub/utils";
-import { NextRequest, NextResponse } from "next/server";
+import {
+  type NextFetchEvent,
+  NextRequest,
+  NextResponse,
+} from "next/server";
 import CbeMiddleware from "./lib/middleware/cbe";
 import { supportedWellKnownFiles } from "./lib/well-known";
 
@@ -35,18 +39,8 @@ export const config = {
   ],
 };
 
-function createWaitUntil() {
-  return (promise: Promise<unknown>) => {
-    // In Node runtime we don't have NextFetchEvent.waitUntil; best-effort fire-and-forget.
-    void promise.catch(() => {});
-  };
-}
-
-export async function proxy(req: NextRequest) {
-  const waitUntil = createWaitUntil();
-
-  // Best-effort request logging. Don't break the response path if this fails.
-  AxiomMiddleware(req, waitUntil);
+export async function proxy(req: NextRequest, event: NextFetchEvent) {
+  AxiomMiddleware(req, event);
 
   const { domain, path, key, fullKey } = parse(req);
 
@@ -99,5 +93,5 @@ export async function proxy(req: NextRequest) {
     return CreateLinkMiddleware(req);
   }
 
-  return LinkMiddleware(req, { waitUntil });
+  return LinkMiddleware(req, event);
 }

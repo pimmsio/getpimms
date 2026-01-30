@@ -1,22 +1,26 @@
 "use client";
 
 import useWorkspace from "@/lib/swr/use-workspace";
+import { useOnboardingPreferences } from "@/lib/swr/use-onboarding-preferences";
 import { X } from "@/ui/shared/icons";
+import { CustomSetupSupportContent } from "@/ui/onboarding/custom-setup-support-modal";
+import { TechStackSelector } from "@/ui/onboarding/tech-stack-selector-modal";
 import {
   AnimatedSizeContainer,
   BlurImage,
   BookOpen,
   Modal,
 } from "@dub/ui";
-import { cn, fetcher, nanoid } from "@dub/utils";
+import { cn, fetcher } from "@dub/utils";
 import {
   BadgeCheck,
   Calendar,
-  ChevronLeft,
+  ChevronRight,
   Code2,
   CreditCard,
   FileText,
   Globe,
+  Loader2,
   Magnet,
   Workflow,
 } from "lucide-react";
@@ -24,7 +28,6 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Dispatch,
-  ReactNode,
   SetStateAction,
   useCallback,
   useEffect,
@@ -36,6 +39,45 @@ import { Brevo } from "./icons/brevo";
 import { Stripe } from "./icons/stripe";
 import { SystemeIO } from "./icons/systemeio";
 import { Tally } from "./icons/tally";
+import { CalcomOnboardingWizard } from "@/ui/onboarding/integrations/calcom-onboarding-wizard";
+import { CalendlyOnboardingWizard } from "@/ui/onboarding/integrations/calendly-onboarding-wizard";
+import { BrevoOnboardingWizard } from "@/ui/onboarding/integrations/brevo-onboarding-wizard";
+import { ElementorOnboardingWizard } from "@/ui/onboarding/integrations/elementor-onboarding-wizard";
+import { FramerOnboardingWizard } from "@/ui/onboarding/integrations/framer-onboarding-wizard";
+import { PodiaOnboardingWizard } from "@/ui/onboarding/integrations/podia-onboarding-wizard";
+import { StripeOnboardingWizard } from "@/ui/onboarding/integrations/stripe-onboarding-wizard";
+import { SystemeioOnboardingWizard } from "@/ui/onboarding/integrations/systemeio-onboarding-wizard";
+import { TallyOnboardingWizard } from "@/ui/onboarding/integrations/tally-onboarding-wizard";
+import { WebflowOnboardingWizard } from "@/ui/onboarding/integrations/webflow-onboarding-wizard";
+
+function providerCategoryLabel(category: SetupCategory) {
+  switch (category) {
+    case "forms":
+      return "Forms";
+    case "calendars":
+      return "Meetings";
+    case "payments":
+      return "Payments";
+    case "website":
+      return "Website";
+    case "automations":
+      return "Automations";
+    case "apis":
+      return "API";
+    default:
+      return null;
+  }
+}
+
+const EXCLUDED_PROVIDER_IDS = new Set<ProviderId>([
+  // Temporarily disabled (keep consistent with Today onboarding list).
+  "hubspotMeetings",
+  "lemcal",
+  "lovable",
+  "shopify",
+  "shopifyPayments",
+  "typeform",
+]);
 
 type SetupCategory =
   | "leadMagnet"
@@ -61,6 +103,7 @@ type ProviderId =
   | "lemcal"
   | "hubspotMeetings"
   | "brevoMeeting"
+  | "iclosedMeeting"
   | "stripe"
   | "systemeio"
   | "shopifyPayments"
@@ -90,23 +133,12 @@ type Provider = {
   icon?: any; // React component OR string path to an image in /public
   guideKey?: string; // used to map to /api/pimms/guides
   guideUrl?: string;
+  guides?: Array<{ title: string; href: string; thumbnail?: string | null }>;
   thumbnail?: string;
   externalUrl?: string; // direct integration page (e.g., Zapier)
   setupTime?: string; // human-friendly estimate, e.g. "< 1 min", "10 min"
   isMostPopular?: boolean;
 };
-
-const THANK_YOU_ALT_PROVIDER_IDS: ProviderId[] = [
-  "brevoMeeting",
-  "brevoForm",
-  "stripe",
-  "calendly",
-  "lemcal",
-  "calDotCom",
-  "hubspotMeetings",
-  "tally",
-  "podia",
-];
 
 const PROVIDERS: Provider[] = [
   // No setup
@@ -131,7 +163,12 @@ const PROVIDERS: Provider[] = [
     name: "Framer",
     category: "website",
     icon: "/static/symbols/integrations/framer.svg",
-    guideKey: "framer",
+    guides: [
+      {
+        title: "Read guide",
+        href: "https://pimms.io/guides/how-to-track-framer-form-submissions-marketing-attribution",
+      },
+    ],
     setupTime: "30 min",
   },
   {
@@ -139,7 +176,12 @@ const PROVIDERS: Provider[] = [
     name: "Webflow",
     category: "website",
     icon: "/static/symbols/integrations/webflow.svg",
-    guideKey: "webflow",
+    guides: [
+      {
+        title: "Read guide",
+        href: "https://pimms.io/guides/how-to-track-webflow-form-submissions-marketing-attribution",
+      },
+    ],
     setupTime: "30 min",
   },
   {
@@ -179,7 +221,12 @@ const PROVIDERS: Provider[] = [
     name: "Podia",
     category: "website",
     icon: "/static/symbols/integrations/podia.svg",
-    guideKey: "podia",
+    guides: [
+      {
+        title: "Read guide",
+        href: "https://pimms.io/guides/how-to-track-podia-stripe-payments",
+      },
+    ],
     setupTime: "30 min",
   },
   { id: "otherWebsite", name: "Other", category: "website" },
@@ -189,7 +236,16 @@ const PROVIDERS: Provider[] = [
     name: "Cal.com",
     category: "calendars",
     icon: "/static/symbols/integrations/calcom.svg",
-    guideKey: "cal.com",
+    guides: [
+      {
+        title: "Read guide",
+        href: "https://pimms.io/guides/calcom-direct-webhook-integration",
+      },
+      {
+        title: "Zapier setup",
+        href: "https://pimms.io/guides/how-to-track-cal-com-bookings-marketing-attribution",
+      },
+    ],
     setupTime: "5 min",
   },
   {
@@ -227,6 +283,20 @@ const PROVIDERS: Provider[] = [
     guideUrl: "https://pimms.io/guides/how-to-track-brevo-forms-and-meetings-webhook-integration",
     setupTime: "5 min",
   },
+  {
+    id: "iclosedMeeting",
+    name: "iClosed",
+    shortName: "iClosed",
+    category: "calendars",
+    icon: "/static/symbols/integrations/iclosed.svg",
+    guides: [
+      {
+        title: "Zapier setup",
+        href: "https://pimms.io/guides/how-to-track-iclosed-bookings-marketing-attribution",
+      },
+    ],
+    setupTime: "5 min",
+  },
   { id: "otherCalendars", name: "Other", category: "calendars" },
   // Payments
   {
@@ -234,7 +304,16 @@ const PROVIDERS: Provider[] = [
     name: "Stripe",
     category: "payments",
     icon: Stripe,
-    guideKey: "stripe",
+    guides: [
+      {
+        title: "Setup guide",
+        href: "https://pimms.io/guides/how-to-track-stripe-sales-marketing-attribution",
+      },
+      {
+        title: "Developer guide (Stripe Checkout)",
+        href: "https://pimms.io/guides/track-stripe-checkout-conversions-with-pimms",
+      },
+    ],
   },
   {
     id: "systemeio",
@@ -256,7 +335,12 @@ const PROVIDERS: Provider[] = [
     name: "Podia",
     category: "payments",
     icon: "/static/symbols/integrations/podia.svg",
-    guideKey: "podia",
+    guides: [
+      {
+        title: "Read guide",
+        href: "https://pimms.io/guides/how-to-track-podia-stripe-payments",
+      },
+    ],
   },
   { id: "otherPayments", name: "Other", category: "payments" },
   // Automations
@@ -297,8 +381,16 @@ const PROVIDERS: Provider[] = [
     shortName: "Tally",
     category: "forms",
     icon: Tally,
-    guideKey: "tally",
-    guideUrl: "https://pimms.io/guides/tally-direct-webhook-integration",
+    guides: [
+      {
+        title: "Read guide",
+        href: "https://pimms.io/guides/tally-direct-webhook-integration",
+      },
+      {
+        title: "Zapier setup",
+        href: "https://pimms.io/guides/how-to-track-tally-form-submissions-marketing-attribution",
+      },
+    ],
   },
   {
     id: "brevoForm",
@@ -345,6 +437,18 @@ const PROVIDERS: Provider[] = [
   },
   { id: "otherApis", name: "Other", category: "apis" },
 ];
+
+export { PROVIDERS };
+
+export function getConversionProviderDisplayName(providerId: string): string | null {
+  const p = PROVIDERS.find((x) => x.id === providerId);
+  if (!p) return null;
+  return p.shortName || p.name;
+}
+
+function isProviderId(value: string): value is ProviderId {
+  return PROVIDERS.some((p) => p.id === value);
+}
 
 const CATEGORY_CARDS: Array<{
   id: SetupCategory;
@@ -412,7 +516,7 @@ const CATEGORY_CARDS: Array<{
     },
   ];
 
-type WizardStep = "chooseCategory" | "chooseProvider" | "providerAction";
+export { CATEGORY_CARDS };
 
 type GuidesApiResponse =
   | {
@@ -448,10 +552,14 @@ function findGuide(
 function ConversionOnboardingModal({
   showConversionOnboardingModal,
   setShowConversionOnboardingModal,
+  initialProviderId,
 }: {
   showConversionOnboardingModal: boolean;
   setShowConversionOnboardingModal: Dispatch<SetStateAction<boolean>>;
+  initialProviderId?: string | null;
 }) {
+  const [wide, setWide] = useState(false);
+
   useEffect(() => {
     if (!showConversionOnboardingModal) return;
     document.documentElement.setAttribute("data-onboarding-blur", "true");
@@ -464,11 +572,16 @@ function ConversionOnboardingModal({
     <Modal
       showModal={showConversionOnboardingModal}
       setShowModal={setShowConversionOnboardingModal}
-      className="max-h-[calc(100dvh-100px)] max-w-2xl"
+      className={cn(
+        "max-h-[calc(100dvh-80px)] max-w-[96vw]",
+        wide ? "sm:max-w-4xl lg:max-w-5xl" : "sm:max-w-2xl",
+      )}
       overlayClassName="onboarding-glass-overlay"
     >
       <ConversionOnboardingModalInner
         setShowConversionOnboardingModal={setShowConversionOnboardingModal}
+        initialProviderId={initialProviderId ?? null}
+        onWideChange={setWide}
       />
     </Modal>
   );
@@ -476,17 +589,17 @@ function ConversionOnboardingModal({
 
 function ConversionOnboardingModalInner({
   setShowConversionOnboardingModal,
+  initialProviderId,
+  onWideChange,
 }: {
   setShowConversionOnboardingModal: Dispatch<SetStateAction<boolean>>;
+  initialProviderId: string | null;
+  onWideChange?: (wide: boolean) => void;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const { slug } = useWorkspace();
 
-  const [step, setStep] = useState<WizardStep>("chooseCategory");
-  const [category, setCategory] = useState<SetupCategory | null>(null);
   const [providerId, setProviderId] = useState<ProviderId | null>(null);
+  const [closeDisabled, setCloseDisabled] = useState(false);
 
   const { data: guidesResponse } = useSWR<GuidesApiResponse>(
     "/api/pimms/guides",
@@ -503,6 +616,20 @@ function ConversionOnboardingModalInner({
     const base = PROVIDERS.find((p) => p.id === providerId) ?? null;
     if (!base) return null;
     if (base.id.startsWith("other")) return base;
+    if (base.guides && base.guides.length > 0) {
+      return {
+        ...base,
+        guides: base.guides.map((g) => {
+          const found = guides.find(
+            (x) =>
+              String(x.href || "").trim() === String(g.href || "").trim() ||
+              String(x.href || "").includes(String(g.href || "")) ||
+              String(g.href || "").includes(String(x.href || "")),
+          );
+          return { ...g, thumbnail: found?.thumbnail ?? null };
+        }),
+      } as Provider;
+    }
     if (!base.guideKey) return base;
     const g = findGuide(guides, base.guideKey);
     return {
@@ -513,321 +640,210 @@ function ConversionOnboardingModalInner({
     } as Provider;
   }, [providerId, guides]);
 
-  const providersForCategory = useMemo(() => {
-    if (!category) return [];
-    return PROVIDERS.filter(
-      (p) =>
-        p.category === category && !["leadMagnet", "thankyou"].includes(p.id),
-    );
-  }, [category]);
-
-  const resetToRoot = () => {
-    setStep("chooseCategory");
-    setCategory(null);
-    setProviderId(null);
-  };
-
-  const goBack = () => {
-    if (step === "providerAction") {
-      if (category === "leadMagnet" || category === "thankyou") {
-        resetToRoot();
-      } else {
-        setStep("chooseProvider");
-      }
+  // Deep-link into a provider setup (ctProvider).
+  useEffect(() => {
+    if (!initialProviderId) {
+      setProviderId(null);
       return;
     }
-    if (step === "chooseProvider") {
-      resetToRoot();
+    if (!isProviderId(initialProviderId)) {
+      setProviderId(null);
       return;
     }
-  };
+    setProviderId(initialProviderId);
+  }, [initialProviderId]);
 
-  const handleChooseCategory = (next: SetupCategory) => {
-    setCategory(next);
-    if (next === "leadMagnet" || next === "thankyou") {
-      setProviderId(next === "leadMagnet" ? "leadMagnet" : "thankyou");
-      setStep("providerAction");
-    } else {
-      setStep("chooseProvider");
-    }
-  };
-
-  const handleChooseProvider = (id: ProviderId) => {
-    setProviderId(id);
-    setStep("providerAction");
-  };
+  useEffect(() => {
+    // Wide only when viewing a specific provider setup wizard.
+    onWideChange?.(providerId != null);
+  }, [onWideChange, providerId]);
 
   return (
     <AnimatedSizeContainer
       height
       transition={{ duration: 0.12, ease: "easeInOut" }}
     >
-      <div className="p-4 sm:p-8">
+      <div className="relative max-h-[calc(100dvh-120px)] overflow-y-auto p-4 pr-16 sm:max-h-[calc(100dvh-140px)] sm:p-8 sm:pr-20 dub-scrollbar">
+        {closeDisabled ? (
+          <div className="absolute top-5 right-16 z-20 flex items-center gap-2 text-xs font-medium text-neutral-500">
+            <Loader2 className="size-4 animate-spin" />
+            Saving…
+          </div>
+        ) : null}
         <button
           type="button"
+          disabled={closeDisabled}
           onClick={() => setShowConversionOnboardingModal(false)}
-          className="group absolute top-4 right-4 z-1 hidden rounded-full p-2 text-neutral-500 transition-all duration-75 hover:bg-neutral-100 focus:outline-none active:bg-neutral-200 md:block"
+          className={cn(
+            "group absolute top-4 right-4 z-20 rounded-full p-2 text-neutral-500 transition-all duration-75 hover:bg-neutral-100 focus:outline-none active:bg-neutral-200",
+            closeDisabled && "cursor-not-allowed opacity-60 hover:bg-transparent",
+          )}
         >
           <X className="size-5" />
         </button>
 
-        <div className="flex items-center gap-2">
-          {step !== "chooseCategory" ? (
-            <button
-              type="button"
-              onClick={goBack}
-              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-800"
-            >
-              <ChevronLeft className="size-4" />
-              Back
-            </button>
-          ) : null}
-        </div>
-
-        <ModalPage visible={step === "chooseCategory"}>
-          <ChooseCategory onChoose={handleChooseCategory} />
-        </ModalPage>
-
-        <ModalPage visible={step === "chooseProvider"}>
-          <ChooseProvider
-            category={category}
-            providers={providersForCategory}
-            onChoose={handleChooseProvider}
-          />
-        </ModalPage>
-
-        <ModalPage visible={step === "providerAction"}>
-          <ProviderAction
-            provider={provider}
-            onReset={resetToRoot}
-            workspaceSlug={slug || null}
-            onCreateLeadMagnetLink={() => {
-              // Open Link Builder in “new link” mode (ModalProvider watches ?newLink).
-              // We also pass ?leadMagnet=1 to preconfigure the form.
-              const params = new URLSearchParams(searchParams.toString());
-              params.set("newLink", "true");
-              params.set("leadMagnet", "1");
-              router.replace(`${pathname}?${params.toString()}`, {
-                scroll: false,
-              });
-              setShowConversionOnboardingModal(false);
-            }}
-            onCreateThankYouLink={() => {
-              // Open Link Builder in “new link” mode (ModalProvider watches ?newLink).
-              // We also pass ?ty=1 to preconfigure the form for a conversion callback link.
-              const params = new URLSearchParams(searchParams.toString());
-              params.set("newLink", "true");
-              params.set("ty", "1");
-              const nextTyKey = `${nanoid(8)}/thankyou`;
-              params.set("tyKey", nextTyKey);
-              router.replace(`${pathname}?${params.toString()}`, {
-                scroll: false,
-              });
-              setShowConversionOnboardingModal(false);
-            }}
-          />
-        </ModalPage>
+        <ProviderAction
+          provider={provider}
+          workspaceSlug={slug || null}
+          onSelectProvider={(id) => setProviderId(id)}
+          onCloseDisabledChange={setCloseDisabled}
+        />
       </div>
     </AnimatedSizeContainer>
   );
 }
 
-function ModalPage({
-  children,
-  visible,
-}: {
-  children: ReactNode;
-  visible: boolean;
-}) {
-  return visible ? <div className="animate-fade-in">{children}</div> : null;
-}
-
-function ChooseCategory({
-  onChoose,
-}: {
-  onChoose: (category: SetupCategory) => void;
-}) {
-  return (
-    <div>
-      <h3 className="mt-2 text-lg font-semibold text-neutral-900">
-        Start tracking beyond clicks
-      </h3>
-      <p className="mt-2 text-sm text-neutral-600">Choose your setup path.</p>
-
-      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {CATEGORY_CARDS.map(
-          ({ id, title, subtitle, icon: Icon, badge, time }) => (
-            <button
-              key={id}
-              type="button"
-              className={cn(
-                "group relative flex items-start gap-3 rounded-lg bg-neutral-200/40 p-4 text-left transition-colors hover:bg-neutral-200/60",
-                id === "leadMagnet" &&
-                "bg-neutral-900/5 ring-1 ring-neutral-900/10 hover:bg-neutral-900/10",
-              )}
-              onClick={() => onChoose(id)}
-            >
-              {time ? (
-                <span className="absolute top-3 right-3 inline-flex shrink-0 items-center rounded-full border border-neutral-200 bg-white/70 px-2 py-0.5 text-[11px] font-semibold text-neutral-700">
-                  {time}
-                </span>
-              ) : null}
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-white/70 text-neutral-800">
-                <Icon className="size-4" />
-              </div>
-              <div className={cn("min-w-0", time && "pr-16")}>
-                <div className="text-sm font-semibold text-neutral-900">
-                  {title}
-                </div>
-                <div className="mt-0.5 line-clamp-2 text-xs text-neutral-600">
-                  {subtitle}
-                </div>
-                {badge ? (
-                  <div className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-neutral-700">
-                    <span className="size-1.5 rounded-full bg-emerald-500" />
-                    {badge}
-                  </div>
-                ) : null}
-              </div>
-            </button>
-          ),
-        )}
-      </div>
-    </div>
-  );
-}
-
-function ChooseProvider({
-  category,
-  providers,
-  onChoose,
-}: {
-  category: SetupCategory | null;
-  providers: Provider[];
-  onChoose: (id: ProviderId) => void;
-}) {
-  const title =
-    category === "website"
-      ? "Choose your website builder"
-      : category === "calendars"
-        ? "Choose your calendar"
-        : category === "payments"
-          ? "Choose your payment setup"
-          : category === "automations"
-            ? "Choose your automation platform"
-            : category === "forms"
-              ? "Choose your form provider"
-              : category === "apis"
-                ? "Choose your API path"
-                : "Choose a provider";
-
-  return (
-    <div>
-      <h3 className="mt-2 text-lg font-semibold text-neutral-900">{title}</h3>
-
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {providers.map(({ id, name, shortName, icon: Icon }) => (
-          <button
-            key={id}
-            type="button"
-            className="group flex flex-col items-center rounded bg-neutral-200/40 p-6 pb-4 transition-colors duration-100 hover:bg-neutral-200/60"
-            onClick={() => onChoose(id)}
-          >
-            <div className="flex size-10 items-center justify-center rounded-md bg-white/70 text-neutral-800">
-              {Icon ? (
-                typeof Icon === "string" ? (
-                  <img
-                    alt=""
-                    src={Icon}
-                    className="h-6 w-6 object-contain"
-                    loading="lazy"
-                  />
-                ) : (
-                  <Icon className="h-6" />
-                )
-              ) : (
-                <BookOpen className="size-4" />
-              )}
-            </div>
-            <span className="mt-3 text-center text-sm font-medium text-neutral-800">
-              {shortName || name}
-            </span>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function ProviderAction({
   provider,
-  onReset,
-  onCreateLeadMagnetLink,
-  onCreateThankYouLink,
   workspaceSlug,
+  onSelectProvider,
+  onCloseDisabledChange,
 }: {
   provider: Provider | null;
-  onReset: () => void;
-  onCreateLeadMagnetLink: () => void;
-  onCreateThankYouLink: () => void;
   workspaceSlug: string | null;
+  onSelectProvider: (providerId: ProviderId) => void;
+  onCloseDisabledChange?: (disabled: boolean) => void;
 }) {
   if (!provider) {
     return (
-      <div className="py-12 text-center text-sm text-neutral-600">
-        Please select a setup option.
-      </div>
-    );
-  }
-
-  if (provider.id === "leadMagnet") {
-    return (
-      <div className="flex flex-col items-start gap-4">
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          <h3 className="text-lg font-semibold text-neutral-900">
-            Via link with Magnet
-          </h3>
-        </div>
-        <p className="mt-2 text-sm text-neutral-600">
-          Capture email as soon as users click, then redirect to your destination page.
-        </p>
-        <button
-          type="button"
-          className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
-          onClick={onCreateLeadMagnetLink}
-        >
-          Create link magnet
-        </button>
-      </div>
-    );
-  }
-
-  if (provider.id === "thankyou") {
-    return (
-      <div className="flex flex-col items-start gap-4">
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          <h3 className="text-lg font-semibold text-neutral-900">
-            Via thank you page
-          </h3>
-        </div>
-        <p className="mt-2 text-sm text-neutral-600">
-          Webhook + thank-you redirect to match conversions. Use a custom key like <code>/abc/thankyou</code> and set the
-          destination URL to your final thank-you page.
-        </p>
-
-        <button
-          type="button"
-          className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
-          onClick={onCreateThankYouLink}
-        >
-          Create thank-you link
-        </button>
-      </div>
+      <SetupTrackingList
+        onSelectProvider={onSelectProvider}
+        onCloseDisabledChange={onCloseDisabledChange}
+      />
     );
   }
 
   if (provider.id.startsWith("other")) {
     return <OtherSetupForm provider={provider} workspaceSlug={workspaceSlug} />;
+  }
+
+  if (provider.id === "calDotCom") {
+    const guideThumbnail =
+      (provider.guides && provider.guides.length > 0
+        ? provider.guides[0]?.thumbnail
+        : provider.thumbnail) ?? null;
+    return <CalcomOnboardingWizard guideThumbnail={guideThumbnail} />;
+  }
+  if (provider.id === "calendly") {
+    const guideThumbnail =
+      (provider.guides && provider.guides.length > 0
+        ? provider.guides[0]?.thumbnail
+        : provider.thumbnail) ?? null;
+    return <CalendlyOnboardingWizard guideThumbnail={guideThumbnail} />;
+  }
+  if (provider.id === "stripe") {
+    const guideThumbnail =
+      (provider.guides && provider.guides.length > 0
+        ? provider.guides[0]?.thumbnail
+        : provider.thumbnail) ?? null;
+    const setupGuideThumbnail =
+      (provider.guides && provider.guides.length > 0
+        ? provider.guides[0]?.thumbnail
+        : provider.thumbnail) ?? null;
+    const checkoutGuideThumbnail =
+      (provider.guides && provider.guides.length > 1
+        ? provider.guides[1]?.thumbnail
+        : provider.thumbnail) ?? null;
+    const setupGuideHref =
+      provider.guides && provider.guides.length > 0
+        ? provider.guides[0]?.href
+        : provider.guideUrl;
+    const checkoutGuideHref =
+      provider.guides && provider.guides.length > 1
+        ? provider.guides[1]?.href
+        : provider.guides && provider.guides.length > 0
+          ? provider.guides[0]?.href
+          : provider.guideUrl;
+
+    if (!setupGuideHref || !checkoutGuideHref) {
+      // Shouldn't happen because Stripe provider defines guides, but keep a safe fallback.
+      return (
+        <div className="py-8 text-sm text-neutral-600">
+          Missing Stripe guide configuration.
+        </div>
+      );
+    }
+
+    return (
+      <StripeOnboardingWizard
+        guideThumbnail={guideThumbnail}
+        setupGuideThumbnail={setupGuideThumbnail}
+        checkoutGuideThumbnail={checkoutGuideThumbnail}
+        setupGuideHref={setupGuideHref}
+        checkoutGuideHref={checkoutGuideHref}
+      />
+    );
+  }
+
+  if (provider.id === "brevoForm" || provider.id === "brevoMeeting") {
+    const guideThumbnail =
+      (provider.guides && provider.guides.length > 0
+        ? provider.guides[0]?.thumbnail
+        : provider.thumbnail) ?? null;
+    return <BrevoOnboardingWizard guideThumbnail={guideThumbnail} />;
+  }
+
+  if (provider.id === "wordpressElementor") {
+    const guideThumbnail =
+      (provider.guides && provider.guides.length > 0
+        ? provider.guides[0]?.thumbnail
+        : provider.thumbnail) ?? null;
+    return <ElementorOnboardingWizard guideThumbnail={guideThumbnail} />;
+  }
+
+  if (provider.id === "framer") {
+    const guideThumbnail =
+      (provider.guides && provider.guides.length > 0
+        ? provider.guides[0]?.thumbnail
+        : provider.thumbnail) ?? null;
+    return <FramerOnboardingWizard guideThumbnail={guideThumbnail} />;
+  }
+
+  if (provider.id === "webflow") {
+    const guideThumbnail =
+      (provider.guides && provider.guides.length > 0
+        ? provider.guides[0]?.thumbnail
+        : provider.thumbnail) ?? null;
+    return <WebflowOnboardingWizard guideThumbnail={guideThumbnail} />;
+  }
+
+  if (
+    provider.id === "systemeio" ||
+    provider.id === "systemeioForm" ||
+    provider.id === "systemeioWebsite"
+  ) {
+    const guideThumbnail =
+      (provider.guides && provider.guides.length > 0
+        ? provider.guides[0]?.thumbnail
+        : provider.thumbnail) ?? null;
+    const guideHref =
+      provider.guides && provider.guides.length > 0
+        ? provider.guides[0]?.href
+        : provider.guideUrl;
+    return (
+      <SystemeioOnboardingWizard guideThumbnail={guideThumbnail} guideHref={guideHref ?? undefined} />
+    );
+  }
+
+  if (provider.id === "tally") {
+    const guideThumbnail =
+      (provider.guides && provider.guides.length > 0
+        ? provider.guides[0]?.thumbnail
+        : provider.thumbnail) ?? null;
+    return <TallyOnboardingWizard guideThumbnail={guideThumbnail} />;
+  }
+
+  if (provider.id === "podia" || provider.id === "podiaWebsite") {
+    const guideThumbnail =
+      (provider.guides && provider.guides.length > 0
+        ? provider.guides[0]?.thumbnail
+        : provider.thumbnail) ?? null;
+    return (
+      <PodiaOnboardingWizard
+        guideThumbnail={guideThumbnail}
+        onContinueToStripe={() => onSelectProvider("stripe")}
+      />
+    );
   }
 
   return (
@@ -853,23 +869,32 @@ function ProviderAction({
           <h3 className="text-lg font-semibold text-neutral-900">
             {provider.name}
           </h3>
-          <p className="text-sm text-neutral-600">
-            Follow a guide or contact support
-          </p>
         </div>
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {provider.guideUrl ? (
+        {(provider.guides && provider.guides.length > 0
+          ? provider.guides
+          : provider.guideUrl
+            ? [
+                {
+                  title: "Read guide",
+                  href: provider.guideUrl,
+                  thumbnail: provider.thumbnail ?? null,
+                },
+              ]
+            : []
+        ).map((g) => (
           <Link
-            href={provider.guideUrl}
+            key={g.href}
+            href={g.href}
             target="_blank"
             className="group flex flex-col items-center rounded bg-neutral-200/40 pt-6 pb-4 transition-colors duration-100 hover:bg-neutral-200/60"
           >
             <div className="flex w-full justify-center px-6">
-              {provider.thumbnail ? (
+              {g.thumbnail ? (
                 <BlurImage
-                  src={provider.thumbnail}
+                  src={g.thumbnail}
                   alt={`${provider.name} guide thumbnail`}
                   className="aspect-1200/630 w-full max-w-[260px] rounded bg-neutral-800 object-cover"
                   width={1200}
@@ -881,10 +906,10 @@ function ProviderAction({
             </div>
             <span className="mt-4 flex items-center gap-2 px-2 text-left text-[0.8125rem] font-medium text-neutral-800">
               <BookOpen className="size-4" />
-              Read guide
+              {g.title}
             </span>
           </Link>
-        ) : null}
+        ))}
 
         {provider.externalUrl ? (
           <Link
@@ -925,38 +950,234 @@ function ProviderAction({
           </div>
         ) : null}
 
-        {THANK_YOU_ALT_PROVIDER_IDS.includes(provider.id) && (
-          <div className="flex flex-col items-center justify-center rounded bg-neutral-200/40 px-6 py-6 text-center">
-            <div className="mt-3 text-sm font-semibold text-neutral-900">
-              Alternative via thank-you page
-            </div>
-            <div className="mt-1 text-xs text-neutral-600">
-              Redirect to a Pimms thank-you link after the conversion.
-            </div>
-            <button
-              type="button"
-              className="mt-4 rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
-              onClick={onCreateThankYouLink}
-            >
-              Create thank-you link
-            </button>
-          </div>
-        )}
       </div>
 
-      <div className="mt-6">
-        <FeedbackForm
-          providerName={provider.name}
-          category={provider.category}
-          workspaceSlug={workspaceSlug}
-          defaultPlaceholder={getFeedbackPlaceholder(
-            provider.category,
-            provider.name,
-          )}
-          subject="Conversion setup feedback"
+    </div>
+  );
+}
+
+function SetupTrackingList({
+  onSelectProvider,
+  onCloseDisabledChange,
+}: {
+  onSelectProvider: (providerId: ProviderId) => void;
+  onCloseDisabledChange?: (disabled: boolean) => void;
+}) {
+  const { providerIds: selectedProviderIds, completedProviderIds } =
+    useOnboardingPreferences();
+
+  const [view, setView] = useState<"list" | "stack" | "support">("list");
+  const [savingStack, setSavingStack] = useState(false);
+
+  useEffect(() => {
+    onCloseDisabledChange?.(savingStack);
+  }, [onCloseDisabledChange, savingStack]);
+
+  const selectableProviderIds = useMemo(() => {
+    return (selectedProviderIds || []).filter(
+      (id) =>
+        id !== "leadMagnet" &&
+        id !== "thankyou" &&
+        !EXCLUDED_PROVIDER_IDS.has(id as ProviderId),
+    );
+  }, [selectedProviderIds]);
+
+  const hasOtherSelected = useMemo(() => {
+    return selectableProviderIds.some((id) => String(id).startsWith("other"));
+  }, [selectableProviderIds]);
+
+  const providersById = useMemo(() => {
+    const map = new Map<ProviderId, Provider>();
+    for (const p of PROVIDERS) map.set(p.id, p);
+    return map;
+  }, []);
+
+  const setupItems = useMemo(() => {
+    return selectableProviderIds
+      .filter((id) => !String(id).startsWith("other"))
+      .map((id) => providersById.get(id as ProviderId))
+      .filter(Boolean) as Provider[];
+  }, [providersById, selectableProviderIds]);
+
+  const hasAnyStackSelected = selectableProviderIds.length > 0;
+
+  // When user has no stack selected, show the category list directly (no extra "empty" step).
+  useEffect(() => {
+    if (!hasAnyStackSelected && view === "list") {
+      setView("stack");
+    }
+  }, [hasAnyStackSelected, view]);
+
+  if (view === "stack") {
+    return (
+      <div>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div>
+            <div className="text-lg font-semibold text-neutral-900">
+              Select your tech stack
+            </div>
+            <div className="mt-1 text-sm text-neutral-600">
+              Pick the tools you use. We’ll show the right setup steps.
+            </div>
+          </div>
+          {hasAnyStackSelected ? (
+            <button
+              type="button"
+              onClick={() => {
+                if (savingStack) return;
+                setView("list");
+              }}
+              disabled={savingStack}
+              className={cn(
+                "inline-flex items-center justify-center rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-semibold text-neutral-900 hover:bg-neutral-50",
+                savingStack && "cursor-not-allowed opacity-60 hover:bg-white",
+              )}
+            >
+              Back
+            </button>
+          ) : null}
+        </div>
+
+        <TechStackSelector
+          active
+          chrome="none"
+          showCloseButton={false}
+          showHeading={false}
+          onSavingChange={setSavingStack}
         />
       </div>
-    </div>
+    );
+  }
+
+  if (view === "support") {
+    return (
+      <>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div>
+            <div className="text-lg font-semibold text-neutral-900">
+              Contact support
+            </div>
+            <div className="mt-1 text-sm text-neutral-600">
+              Tell us what you use and what you want to track.
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setView("list")}
+            className="inline-flex items-center justify-center rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-semibold text-neutral-900 hover:bg-neutral-50"
+          >
+            Back
+          </button>
+        </div>
+
+        <CustomSetupSupportContent onClose={() => setView("list")} closeLabel="Back" />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="text-lg font-semibold text-neutral-900">
+            Setup tracking
+          </div>
+          <div className="mt-1 text-sm text-neutral-600">
+            Select your stack, then follow the setup steps.
+          </div>
+        </div>
+
+        <button
+          type="button"
+          className="inline-flex items-center justify-center rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-semibold text-neutral-900 hover:bg-neutral-50"
+          onClick={() => setView("stack")}
+        >
+          {selectableProviderIds.length > 0 ? "Edit stack" : "Select your stack"}
+        </button>
+      </div>
+
+      {selectableProviderIds.length === 0 ? (
+        <div className="mt-8 rounded-lg border border-neutral-200 bg-white p-4 text-sm text-neutral-600">
+          Choose the tools you use (Calendly, Stripe, forms, etc.) and we’ll show
+          the right setup steps.
+        </div>
+      ) : (
+        <div className="mt-6">
+          <div className="mt-3 grid gap-2">
+            {setupItems.map((p) => {
+              const tag = providerCategoryLabel(p.category);
+              const checked = completedProviderIds.includes(p.id);
+              const showStatus = p.category !== "automations" && p.category !== "apis";
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => onSelectProvider(p.id)}
+                  className="flex w-full items-center justify-between gap-3 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-left hover:bg-neutral-50"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex size-9 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-900">
+                      {p.icon ? (
+                        typeof p.icon === "string" ? (
+                          <img
+                            alt=""
+                            src={p.icon}
+                            className="h-5 w-5 object-contain"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <p.icon className="size-5" />
+                        )
+                      ) : (
+                        <BookOpen className="size-4 text-neutral-600" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className="truncate text-sm font-semibold text-neutral-900">
+                          Setup tracking for {p.name}
+                        </div>
+                        {tag ? (
+                          <span className="inline-flex shrink-0 rounded-full border border-neutral-200 bg-white px-2 py-0.5 text-[11px] font-medium text-neutral-700">
+                            {tag}
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+
+                  {showStatus && checked ? (
+                    <span className="shrink-0 rounded-md bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-800">
+                      Done
+                    </span>
+                  ) : (
+                    <ChevronRight className="size-4 shrink-0 text-neutral-400" />
+                  )}
+                </button>
+              );
+            })}
+
+            {hasOtherSelected ? (
+              <button
+                type="button"
+                onClick={() => setView("support")}
+                className="flex w-full items-center justify-between gap-3 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-left hover:bg-neutral-50"
+              >
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold text-neutral-900">
+                    Contact support for custom setup
+                  </div>
+                  <div className="mt-0.5 text-xs text-neutral-600">
+                    We’ll help you configure tracking for your stack.
+                  </div>
+                </div>
+                <ChevronRight className="size-4 shrink-0 text-neutral-400" />
+              </button>
+            ) : null}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -1072,6 +1293,7 @@ function getFeedbackPlaceholder(category: SetupCategory, providerName: string) {
 export function useConversionOnboardingModal() {
   const [showConversionOnboardingModal, setShowConversionOnboardingModal] =
     useState(false);
+  const [initialProviderId, setInitialProviderId] = useState<string | null>(null);
 
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -1081,10 +1303,13 @@ export function useConversionOnboardingModal() {
     const ctSetup = searchParams.get("ctSetup");
     if (ctSetup !== "1") return;
 
+    const ctProvider = searchParams.get("ctProvider");
     setShowConversionOnboardingModal(true);
+    setInitialProviderId(ctProvider);
 
     const params = new URLSearchParams(searchParams.toString());
     params.delete("ctSetup");
+    params.delete("ctProvider");
     const next = params.toString();
     router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false });
   }, [searchParams, pathname, router]);
@@ -1094,9 +1319,10 @@ export function useConversionOnboardingModal() {
       <ConversionOnboardingModal
         showConversionOnboardingModal={showConversionOnboardingModal}
         setShowConversionOnboardingModal={setShowConversionOnboardingModal}
+        initialProviderId={initialProviderId}
       />
     );
-  }, [showConversionOnboardingModal, setShowConversionOnboardingModal]);
+  }, [showConversionOnboardingModal, setShowConversionOnboardingModal, initialProviderId]);
 
   return useMemo(
     () => ({

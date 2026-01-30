@@ -24,7 +24,10 @@ import { updateLinksUsage } from "./update-links-usage";
 import { upsertUtmParameters } from "./upsert-utm-parameters";
 import { transformLink } from "./utils";
 
-export async function createLink(link: ProcessedLinkProps) {
+export async function createLink(
+  link: ProcessedLinkProps,
+  options?: { skipUsageIncrement?: boolean },
+) {
   let {
     key,
     url,
@@ -177,6 +180,7 @@ export async function createLink(link: ProcessedLinkProps) {
         }),
       // update links usage for workspace
       link.projectId &&
+        !options?.skipUsageIncrement &&
         updateLinksUsage({
           workspaceId: link.projectId,
           increment: 1,

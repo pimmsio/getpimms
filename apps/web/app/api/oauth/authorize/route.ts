@@ -47,10 +47,8 @@ export const POST = withWorkspace(async ({ session, req, workspace }) => {
   });
 
   if (
-    [STRIPE_INTEGRATION_ID, SHOPIFY_INTEGRATION_ID].includes(
-      app.integrationId,
-    ) &&
-    (workspace.plan === "free")
+    app.integrationId === SHOPIFY_INTEGRATION_ID &&
+    workspace.plan === "free"
   ) {
     throw new DubApiError({
       code: "bad_request",

@@ -25,6 +25,7 @@ import {
   punyEncode,
 } from "@dub/utils";
 import { ipAddress } from "@vercel/functions";
+import type { NextFetchEvent } from "next/server";
 import { NextRequest, NextResponse, userAgent } from "next/server";
 import { linkCache } from "../api/links/cache";
 import { isCaseSensitiveDomain } from "../api/links/case-sensitivity";
@@ -37,15 +38,11 @@ import { resolveABTestURL } from "./utils/resolve-ab-test-url";
 
 export default async function LinkMiddleware(
   req: NextRequest,
-  ctx?: { waitUntil?: (promise: Promise<unknown>) => void },
+  event: NextFetchEvent,
 ) {
-  const waitUntil =
-    ctx?.waitUntil ??
-    ((promise: Promise<unknown>) => {
-      void promise.catch(() => {});
-    });
-
   const { domain, fullKey: originalKey, searchParamsObj } = parse(req);
+
+  console.log("domain", domain);
 
   if (!domain) {
     return NextResponse.next();
@@ -70,8 +67,6 @@ export default async function LinkMiddleware(
     key = "_root";
   }
 
-  console.log("key", key);
-
   // we don't support .php links (too much bot traffic)
   // hence we redirect to the root domain and add `pimms-no-track` header to avoid tracking bot traffic
   if (isUnsupportedKey(key)) {
@@ -95,6 +90,7 @@ export default async function LinkMiddleware(
     if (!linkData) {
       // check if domain has notFoundUrl configured
       const domainData = await getDomainViaEdge(domain);
+      console.log("domainData", domainData);
       if (domainData?.notFoundUrl) {
         return NextResponse.redirect(domainData.notFoundUrl, {
           headers: {
@@ -115,7 +111,7 @@ export default async function LinkMiddleware(
     // format link to fit the RedisLinkProps interface
     cachedLink = formatRedisLink(linkData as any);
     // cache in Redis
-    waitUntil(linkCache.set(linkData as any));
+    event.waitUntil(linkCache.set(linkData as any));
   }
 
   const {
@@ -276,7 +272,7 @@ export default async function LinkMiddleware(
 
   // for root domain links, if there's no destination URL, rewrite to placeholder page
   if (!url) {
-    waitUntil(
+    event.waitUntil(
       recordClick({
         req,
         clickId,
@@ -309,7 +305,7 @@ export default async function LinkMiddleware(
 
   // Lead magnet gate: show email capture page (humans only), then redirect to destination.
   if (!isBot && leadMagnetEnabled) {
-    waitUntil(
+    event.waitUntil(
       recordClick({
         req,
         clickId,
@@ -364,7 +360,7 @@ export default async function LinkMiddleware(
     !isFromSameApp(ua.browser?.name, getMatchedApp(url)?.appName) &&
     !shouldIndex // we don't deeplink indexed links
   ) {
-    waitUntil(
+    event.waitUntil(
       recordClick({
         req,
         clickId,
@@ -410,7 +406,7 @@ export default async function LinkMiddleware(
     );
     // rewrite to deeplink page if the link is a mailto: or tel:
   } else if (isSupportedDeeplinkProtocol(url) && !shouldIndex) {
-    waitUntil(
+    event.waitUntil(
       recordClick({
         req,
         clickId,
@@ -448,7 +444,7 @@ export default async function LinkMiddleware(
 
     // rewrite to target URL if link cloaking is enabled
   } else if (rewrite) {
-    waitUntil(
+    event.waitUntil(
       recordClick({
         req,
         clickId,
@@ -488,7 +484,7 @@ export default async function LinkMiddleware(
 
     // redirect to iOS link if it is specified and the user is on an iOS device
   } else if (ios && userAgent(req).os?.name === "iOS") {
-    waitUntil(
+    event.waitUntil(
       recordClick({
         req,
         clickId,
@@ -522,7 +518,7 @@ export default async function LinkMiddleware(
 
     // redirect to Android link if it is specified and the user is on an Android device
   } else if (android && userAgent(req).os?.name === "Android") {
-    waitUntil(
+    event.waitUntil(
       recordClick({
         req,
         clickId,
@@ -556,7 +552,7 @@ export default async function LinkMiddleware(
 
     // redirect to geo-specific link if it is specified and the user is in the specified country
   } else if (geo && country && country in geo) {
-    waitUntil(
+    event.waitUntil(
       recordClick({
         req,
         clickId,
@@ -603,7 +599,7 @@ export default async function LinkMiddleware(
     console.log("ua.device.type", ua?.device?.type);
     console.log("shouldIndex", shouldIndex);
 
-    waitUntil(
+    event.waitUntil(
       recordClick({
         req,
         clickId,
@@ -656,7 +652,7 @@ export default async function LinkMiddleware(
     !shallShowDirectPreview(req) &&
     !shouldIndex
   ) {
-    waitUntil(
+    event.waitUntil(
       recordClick({
         req,
         clickId,
@@ -709,7 +705,7 @@ export default async function LinkMiddleware(
     );
     // direct link redirect
   } else {
-    waitUntil(
+    event.waitUntil(
       recordClick({
         req,
         clickId,

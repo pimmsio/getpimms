@@ -1,22 +1,11 @@
 "use client";
 
-import { AppButtonLink } from "@/ui/components/controls/app-button";
-import { cn, fetcher } from "@dub/utils";
-import { BookOpen } from "lucide-react";
-import Link from "next/link";
-import { useMemo, useState } from "react";
-import useSWR from "swr";
-
-type GuidesApiResponse =
-  | {
-      ok: true;
-      guides: Array<{
-        title: string;
-        href: string;
-        date?: string | null;
-      }>;
-    }
-  | { ok: false; error: string; guides: [] };
+import { useOnboardingPreferences } from "@/lib/swr/use-onboarding-preferences";
+import { getConversionProviderDisplayName } from "@/ui/layout/sidebar/conversions/conversions-onboarding-modal";
+import { AppButton } from "@/ui/components/controls/app-button";
+import { cn } from "@dub/utils";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useMemo } from "react";
 
 export default function SetupGuides({
   embedded = false,
@@ -25,23 +14,20 @@ export default function SetupGuides({
   embedded?: boolean;
   className?: string;
 }) {
-  const { data: guidesResponse } = useSWR<GuidesApiResponse>(
-    "/api/pimms/guides",
-    fetcher,
-    { revalidateOnFocus: false, keepPreviousData: true },
-  );
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { providerIds } = useOnboardingPreferences();
 
-  const guides = guidesResponse?.ok ? guidesResponse.guides : [];
-  const uniqueGuides = useMemo(() => {
-    const byHref = new Map<string, (typeof guides)[number]>();
-    for (const g of guides) {
-      if (!byHref.has(g.href)) byHref.set(g.href, g);
-    }
-    return Array.from(byHref.values());
-  }, [guides]);
-
-  const [expanded, setExpanded] = useState(false);
-  const visible = expanded ? uniqueGuides : uniqueGuides.slice(0, 3);
+  const selectedStacksLabel = useMemo(() => {
+    const ids = (providerIds || []).filter((id) => !String(id).startsWith("other"));
+    if (ids.length === 0) return "Select your stack to see the right setup steps.";
+    const labels = ids
+      .map((id) => getConversionProviderDisplayName(id) ?? id)
+      .slice(0, 3);
+    const more = Math.max(0, ids.length - labels.length);
+    return more > 0 ? `Selected: ${labels.join(", ")} +${more}` : `Selected: ${labels.join(", ")}`;
+  }, [providerIds]);
 
   return (
     <div
@@ -52,67 +38,25 @@ export default function SetupGuides({
         className,
       )}
     >
-      <div className="flex items-center justify-between gap-3">
-        <div className="text-sm font-semibold text-neutral-900">Setup guides</div>
-        <AppButtonLink
-          href="https://pimms.io/guides"
-          target="_blank"
-          rel="noreferrer"
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="text-sm font-semibold text-neutral-900">Setup guides</div>
+          <div className="mt-1 text-sm text-neutral-600">{selectedStacksLabel}</div>
+        </div>
+
+        <AppButton
           variant="secondary"
           size="sm"
+          onClick={() => {
+            const params = new URLSearchParams(searchParams.toString());
+            params.set("ctSetup", "1");
+            const next = params.toString();
+            router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false });
+          }}
         >
-          View all
-        </AppButtonLink>
+          Setup tracking
+        </AppButton>
       </div>
-
-      <div className="mt-1 text-sm text-neutral-600">
-        Quick setup help to start tracking conversions.
-      </div>
-
-      {guidesResponse && !guidesResponse.ok ? (
-        <div className="mt-4 text-sm text-neutral-600">Failed to load guides.</div>
-      ) : uniqueGuides.length === 0 ? (
-        <div className="mt-4 text-sm text-neutral-600">No guides found.</div>
-      ) : (
-        <>
-          <div className="mt-4 divide-y divide-neutral-100 rounded-md border border-neutral-100">
-            {visible.map((g) => (
-              <Link
-                key={g.href}
-                href={g.href}
-                target="_blank"
-                rel="noreferrer"
-                className="group flex items-center justify-between gap-3 px-3 py-2 transition-colors hover:bg-neutral-50"
-              >
-                <div className="min-w-0">
-                  <div className="truncate text-sm font-medium text-neutral-900">
-                    {g.title}
-                  </div>
-                  <div className="mt-0.5 text-xs text-neutral-500">
-                    {g.date ? g.date : "Guide"}
-                  </div>
-                </div>
-                <BookOpen className="size-4 shrink-0 text-neutral-400 group-hover:text-neutral-700" />
-              </Link>
-            ))}
-          </div>
-
-          {uniqueGuides.length > 3 ? (
-            <div className="mt-3 flex items-center justify-between">
-              <button
-                type="button"
-                className="text-sm font-medium text-neutral-700 underline-offset-4 hover:underline"
-                onClick={() => setExpanded((v) => !v)}
-              >
-                {expanded ? "Show less" : "Show more"}
-              </button>
-              <div className="text-xs text-neutral-500">
-                Showing {visible.length} of {uniqueGuides.length}
-              </div>
-            </div>
-          ) : null}
-        </>
-      )}
     </div>
   );
 }
