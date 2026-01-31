@@ -4,7 +4,10 @@ import useWorkspace from "@/lib/swr/use-workspace";
 import { useOnboardingPreferences } from "@/lib/swr/use-onboarding-preferences";
 import { X } from "@/ui/shared/icons";
 import { CustomSetupSupportContent } from "@/ui/onboarding/custom-setup-support-modal";
-import { TechStackSelector } from "@/ui/onboarding/tech-stack-selector-modal";
+import {
+  canonicalizeProviderId,
+  isProviderCompleted,
+} from "@/ui/onboarding/canonical-provider-id";
 import {
   AnimatedSizeContainer,
   BlurImage,
@@ -50,25 +53,6 @@ import { SystemeioOnboardingWizard } from "@/ui/onboarding/integrations/systemei
 import { TallyOnboardingWizard } from "@/ui/onboarding/integrations/tally-onboarding-wizard";
 import { WebflowOnboardingWizard } from "@/ui/onboarding/integrations/webflow-onboarding-wizard";
 
-function providerCategoryLabel(category: SetupCategory) {
-  switch (category) {
-    case "forms":
-      return "Forms";
-    case "calendars":
-      return "Meetings";
-    case "payments":
-      return "Payments";
-    case "website":
-      return "Website";
-    case "automations":
-      return "Automations";
-    case "apis":
-      return "API";
-    default:
-      return null;
-  }
-}
-
 const EXCLUDED_PROVIDER_IDS = new Set<ProviderId>([
   // Temporarily disabled (keep consistent with Today onboarding list).
   "hubspotMeetings",
@@ -111,7 +95,6 @@ type ProviderId =
   | "podiaWebsite"
   | "zapier"
   | "make"
-  | "n8n"
   | "tally"
   | "brevoForm"
   | "systemeioForm"
@@ -364,15 +347,6 @@ const PROVIDERS: Provider[] = [
     externalUrl: "https://www.make.com/",
     setupTime: "10 min",
   },
-  {
-    id: "n8n",
-    name: "n8n",
-    category: "automations",
-    icon: "/static/symbols/integrations/n8n.svg",
-    guideKey: "n8n",
-    externalUrl: "https://n8n.io/",
-    setupTime: "10 min",
-  },
   { id: "otherAutomations", name: "Other", category: "automations" },
   // Forms
   {
@@ -503,7 +477,7 @@ const CATEGORY_CARDS: Array<{
     {
       id: "automations",
       title: "Automations",
-      subtitle: "Zapier, Make.com, n8n…",
+      subtitle: "Zapier, Make.com…",
       icon: Workflow,
       time: "30 min",
     },
@@ -722,14 +696,24 @@ function ProviderAction({
       (provider.guides && provider.guides.length > 0
         ? provider.guides[0]?.thumbnail
         : provider.thumbnail) ?? null;
-    return <CalcomOnboardingWizard guideThumbnail={guideThumbnail} />;
+    return (
+      <CalcomOnboardingWizard
+        guideThumbnail={guideThumbnail}
+        providerId={provider.id}
+      />
+    );
   }
   if (provider.id === "calendly") {
     const guideThumbnail =
       (provider.guides && provider.guides.length > 0
         ? provider.guides[0]?.thumbnail
         : provider.thumbnail) ?? null;
-    return <CalendlyOnboardingWizard guideThumbnail={guideThumbnail} />;
+    return (
+      <CalendlyOnboardingWizard
+        guideThumbnail={guideThumbnail}
+        providerId={provider.id}
+      />
+    );
   }
   if (provider.id === "stripe") {
     const guideThumbnail =
@@ -771,6 +755,7 @@ function ProviderAction({
         checkoutGuideThumbnail={checkoutGuideThumbnail}
         setupGuideHref={setupGuideHref}
         checkoutGuideHref={checkoutGuideHref}
+        providerId={provider.id}
       />
     );
   }
@@ -780,7 +765,12 @@ function ProviderAction({
       (provider.guides && provider.guides.length > 0
         ? provider.guides[0]?.thumbnail
         : provider.thumbnail) ?? null;
-    return <BrevoOnboardingWizard guideThumbnail={guideThumbnail} />;
+    return (
+      <BrevoOnboardingWizard
+        guideThumbnail={guideThumbnail}
+        providerId={provider.id}
+      />
+    );
   }
 
   if (provider.id === "wordpressElementor") {
@@ -788,7 +778,12 @@ function ProviderAction({
       (provider.guides && provider.guides.length > 0
         ? provider.guides[0]?.thumbnail
         : provider.thumbnail) ?? null;
-    return <ElementorOnboardingWizard guideThumbnail={guideThumbnail} />;
+    return (
+      <ElementorOnboardingWizard
+        guideThumbnail={guideThumbnail}
+        providerId={provider.id}
+      />
+    );
   }
 
   if (provider.id === "framer") {
@@ -796,7 +791,12 @@ function ProviderAction({
       (provider.guides && provider.guides.length > 0
         ? provider.guides[0]?.thumbnail
         : provider.thumbnail) ?? null;
-    return <FramerOnboardingWizard guideThumbnail={guideThumbnail} />;
+    return (
+      <FramerOnboardingWizard
+        guideThumbnail={guideThumbnail}
+        providerId={provider.id}
+      />
+    );
   }
 
   if (provider.id === "webflow") {
@@ -804,7 +804,12 @@ function ProviderAction({
       (provider.guides && provider.guides.length > 0
         ? provider.guides[0]?.thumbnail
         : provider.thumbnail) ?? null;
-    return <WebflowOnboardingWizard guideThumbnail={guideThumbnail} />;
+    return (
+      <WebflowOnboardingWizard
+        guideThumbnail={guideThumbnail}
+        providerId={provider.id}
+      />
+    );
   }
 
   if (
@@ -821,7 +826,11 @@ function ProviderAction({
         ? provider.guides[0]?.href
         : provider.guideUrl;
     return (
-      <SystemeioOnboardingWizard guideThumbnail={guideThumbnail} guideHref={guideHref ?? undefined} />
+      <SystemeioOnboardingWizard
+        guideThumbnail={guideThumbnail}
+        guideHref={guideHref ?? undefined}
+        providerId={provider.id}
+      />
     );
   }
 
@@ -830,7 +839,12 @@ function ProviderAction({
       (provider.guides && provider.guides.length > 0
         ? provider.guides[0]?.thumbnail
         : provider.thumbnail) ?? null;
-    return <TallyOnboardingWizard guideThumbnail={guideThumbnail} />;
+    return (
+      <TallyOnboardingWizard
+        guideThumbnail={guideThumbnail}
+        providerId={provider.id}
+      />
+    );
   }
 
   if (provider.id === "podia" || provider.id === "podiaWebsite") {
@@ -842,6 +856,7 @@ function ProviderAction({
       <PodiaOnboardingWizard
         guideThumbnail={guideThumbnail}
         onContinueToStripe={() => onSelectProvider("stripe")}
+        providerId={provider.id}
       />
     );
   }
@@ -963,91 +978,33 @@ function SetupTrackingList({
   onSelectProvider: (providerId: ProviderId) => void;
   onCloseDisabledChange?: (disabled: boolean) => void;
 }) {
-  const { providerIds: selectedProviderIds, completedProviderIds } =
-    useOnboardingPreferences();
+  const { completedProviderIds } = useOnboardingPreferences();
 
-  const [view, setView] = useState<"list" | "stack" | "support">("list");
-  const [savingStack, setSavingStack] = useState(false);
+  const [view, setView] = useState<"list" | "support">("list");
 
   useEffect(() => {
-    onCloseDisabledChange?.(savingStack);
-  }, [onCloseDisabledChange, savingStack]);
-
-  const selectableProviderIds = useMemo(() => {
-    return (selectedProviderIds || []).filter(
-      (id) =>
-        id !== "leadMagnet" &&
-        id !== "thankyou" &&
-        !EXCLUDED_PROVIDER_IDS.has(id as ProviderId),
-    );
-  }, [selectedProviderIds]);
-
-  const hasOtherSelected = useMemo(() => {
-    return selectableProviderIds.some((id) => String(id).startsWith("other"));
-  }, [selectableProviderIds]);
-
-  const providersById = useMemo(() => {
-    const map = new Map<ProviderId, Provider>();
-    for (const p of PROVIDERS) map.set(p.id, p);
-    return map;
-  }, []);
+    onCloseDisabledChange?.(false);
+  }, [onCloseDisabledChange]);
 
   const setupItems = useMemo(() => {
-    return selectableProviderIds
-      .filter((id) => !String(id).startsWith("other"))
-      .map((id) => providersById.get(id as ProviderId))
-      .filter(Boolean) as Provider[];
-  }, [providersById, selectableProviderIds]);
-
-  const hasAnyStackSelected = selectableProviderIds.length > 0;
-
-  // When user has no stack selected, show the category list directly (no extra "empty" step).
-  useEffect(() => {
-    if (!hasAnyStackSelected && view === "list") {
-      setView("stack");
-    }
-  }, [hasAnyStackSelected, view]);
-
-  if (view === "stack") {
-    return (
-      <div>
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <div>
-            <div className="text-lg font-semibold text-neutral-900">
-              Select your tech stack
-            </div>
-            <div className="mt-1 text-sm text-neutral-600">
-              Pick the tools you use. We’ll show the right setup steps.
-            </div>
-          </div>
-          {hasAnyStackSelected ? (
-            <button
-              type="button"
-              onClick={() => {
-                if (savingStack) return;
-                setView("list");
-              }}
-              disabled={savingStack}
-              className={cn(
-                "inline-flex items-center justify-center rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-semibold text-neutral-900 hover:bg-neutral-50",
-                savingStack && "cursor-not-allowed opacity-60 hover:bg-white",
-              )}
-            >
-              Back
-            </button>
-          ) : null}
-        </div>
-
-        <TechStackSelector
-          active
-          chrome="none"
-          showCloseButton={false}
-          showHeading={false}
-          onSavingChange={setSavingStack}
-        />
-      </div>
+    const filtered = PROVIDERS.filter(
+      (p) =>
+        p.id !== "leadMagnet" &&
+        p.id !== "thankyou" &&
+        !EXCLUDED_PROVIDER_IDS.has(p.id),
     );
-  }
+    // Deduplicate by canonical ID (e.g. podiaWebsite + podia both → one "Podia" entry).
+    // Prefer the provider whose id matches the canonical ID when multiple exist.
+    const byCanonical = new Map<string, typeof filtered[0]>();
+    for (const p of filtered) {
+      const canonical = canonicalizeProviderId(p.id);
+      const existing = byCanonical.get(canonical);
+      if (!existing || p.id === canonical) {
+        byCanonical.set(canonical, p);
+      }
+    }
+    return Array.from(byCanonical.values());
+  }, []);
 
   if (view === "support") {
     return (
@@ -1058,7 +1015,7 @@ function SetupTrackingList({
               Contact support
             </div>
             <div className="mt-1 text-sm text-neutral-600">
-              Tell us what you use and what you want to track.
+              Tell us what you want to track.
             </div>
           </div>
           <button
@@ -1070,7 +1027,12 @@ function SetupTrackingList({
           </button>
         </div>
 
-        <CustomSetupSupportContent onClose={() => setView("list")} closeLabel="Back" />
+        <CustomSetupSupportContent
+          onClose={() => setView("list")}
+          closeLabel="Back"
+          showHeader={false}
+          showClose={false}
+        />
       </>
     );
   }
@@ -1083,30 +1045,17 @@ function SetupTrackingList({
             Setup tracking
           </div>
           <div className="mt-1 text-sm text-neutral-600">
-            Select your stack, then follow the setup steps.
+            Choose one setup and follow the steps.
           </div>
         </div>
-
-        <button
-          type="button"
-          className="inline-flex items-center justify-center rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-semibold text-neutral-900 hover:bg-neutral-50"
-          onClick={() => setView("stack")}
-        >
-          {selectableProviderIds.length > 0 ? "Edit stack" : "Select your stack"}
-        </button>
       </div>
 
-      {selectableProviderIds.length === 0 ? (
-        <div className="mt-8 rounded-lg border border-neutral-200 bg-white p-4 text-sm text-neutral-600">
-          Choose the tools you use (Calendly, Stripe, forms, etc.) and we’ll show
-          the right setup steps.
-        </div>
-      ) : (
-        <div className="mt-6">
-          <div className="mt-3 grid gap-2">
-            {setupItems.map((p) => {
-              const tag = providerCategoryLabel(p.category);
-              const checked = completedProviderIds.includes(p.id);
+      <div className="mt-6">
+        <div className="mt-3 grid gap-2">
+          {setupItems
+            .filter((p) => !String(p.id).startsWith("other"))
+            .map((p) => {
+              const checked = isProviderCompleted(p.id, completedProviderIds);
               const showStatus = p.category !== "automations" && p.category !== "apis";
               return (
                 <button
@@ -1133,15 +1082,8 @@ function SetupTrackingList({
                       )}
                     </div>
                     <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <div className="truncate text-sm font-semibold text-neutral-900">
-                          Setup tracking for {p.name}
-                        </div>
-                        {tag ? (
-                          <span className="inline-flex shrink-0 rounded-full border border-neutral-200 bg-white px-2 py-0.5 text-[11px] font-medium text-neutral-700">
-                            {tag}
-                          </span>
-                        ) : null}
+                      <div className="truncate text-sm font-semibold text-neutral-900">
+                        Setup tracking for {p.name}
                       </div>
                     </div>
                   </div>
@@ -1157,26 +1099,23 @@ function SetupTrackingList({
               );
             })}
 
-            {hasOtherSelected ? (
-              <button
-                type="button"
-                onClick={() => setView("support")}
-                className="flex w-full items-center justify-between gap-3 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-left hover:bg-neutral-50"
-              >
-                <div className="min-w-0">
-                  <div className="text-sm font-semibold text-neutral-900">
-                    Contact support for custom setup
-                  </div>
-                  <div className="mt-0.5 text-xs text-neutral-600">
-                    We’ll help you configure tracking for your stack.
-                  </div>
-                </div>
-                <ChevronRight className="size-4 shrink-0 text-neutral-400" />
-              </button>
-            ) : null}
-          </div>
+          <button
+            type="button"
+            onClick={() => setView("support")}
+            className="flex w-full items-center justify-between gap-3 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-left hover:bg-neutral-50"
+          >
+            <div className="min-w-0">
+              <div className="text-sm font-semibold text-neutral-900">
+              Contact support
+              </div>
+              <div className="mt-0.5 text-xs text-neutral-600">
+              Custom setup help.
+              </div>
+            </div>
+            <ChevronRight className="size-4 shrink-0 text-neutral-400" />
+          </button>
         </div>
-      )}
+      </div>
     </>
   );
 }

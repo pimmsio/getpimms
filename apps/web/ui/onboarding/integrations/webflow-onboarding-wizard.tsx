@@ -13,7 +13,6 @@ import { InstallScriptStep } from "@/ui/onboarding/integrations/steps/install-sc
 import { ScriptInstallVerifyStep } from "@/ui/onboarding/integrations/steps/script-install-verify-step";
 import { WaitForLeadStep } from "@/ui/onboarding/integrations/steps/wait-for-lead-step";
 import { WebhookConfigStep } from "@/ui/onboarding/integrations/steps/webhook-config-step";
-import { canonicalizeProviderId } from "@/ui/onboarding/canonical-provider-id";
 import { useEffect, useMemo, useState } from "react";
 
 const GUIDE_URL =
@@ -26,11 +25,13 @@ const INJECT_FORM_SCRIPT =
 
 export function WebflowOnboardingWizard({
   guideThumbnail,
+  providerId = "webflow",
 }: {
   guideThumbnail?: string | null;
+  providerId?: string;
 }) {
   const { id: workspaceId } = useWorkspace();
-  const { completedProviderIds, setCompletedProviderIds } =
+  const { completedProviderIds, setCompletedProviderIds, markProviderStarted } =
     useOnboardingPreferences();
 
   const [scriptInstalled, setScriptInstalled] = useState(false);
@@ -54,13 +55,14 @@ export function WebflowOnboardingWizard({
 
   useEffect(() => {
     if (!done) return;
-    const canonical = canonicalizeProviderId("webflow");
-    const has = completedProviderIds.some(
-      (id) => canonicalizeProviderId(id) === canonical,
-    );
-    if (has) return;
-    void setCompletedProviderIds([...completedProviderIds, canonical]);
-  }, [completedProviderIds, done, setCompletedProviderIds]);
+    if (completedProviderIds.includes(providerId)) return;
+    void setCompletedProviderIds([...completedProviderIds, providerId]);
+  }, [completedProviderIds, done, providerId, setCompletedProviderIds]);
+
+  useEffect(() => {
+    if (!scriptInstalled) return;
+    void markProviderStarted(providerId);
+  }, [markProviderStarted, providerId, scriptInstalled]);
 
   const completed = useMemo(
     () => [scriptInstalled, scriptVerified, formOk, webhookOk, Boolean(created), done],
@@ -71,7 +73,7 @@ export function WebflowOnboardingWizard({
 
   const webhookUrl = useMemo(() => {
     if (!workspaceId) return "";
-    return `https://app.pimms.io/api/webflow/webhook?workspace_id=${encodeURIComponent(
+    return `https://api.pimms.io/webflow/webhook?workspace_id=${encodeURIComponent(
       workspaceId,
     )}`;
   }, [workspaceId]);

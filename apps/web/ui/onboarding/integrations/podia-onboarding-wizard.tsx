@@ -9,15 +9,13 @@ import { InstallScriptStep } from "@/ui/onboarding/integrations/steps/install-sc
 import { CreateTestLinkStep } from "@/ui/onboarding/integrations/steps/create-test-link-step";
 import { WaitForLeadStep } from "@/ui/onboarding/integrations/steps/wait-for-lead-step";
 import { StepCard } from "@/ui/onboarding/integrations/components/step-card";
-import { CopyField } from "@/ui/onboarding/integrations/components/copy-field";
 import { useAvailableDomains } from "@/ui/links/use-available-domains";
-import { canonicalizeProviderId, canonicalizeProviderIds } from "@/ui/onboarding/canonical-provider-id";
+import { canonicalizeProviderIds } from "@/ui/onboarding/canonical-provider-id";
 import { useCreateOnboardingTestLink } from "@/ui/onboarding/integrations/use-create-onboarding-test-link";
 import { useSavedThankYouLink } from "@/ui/onboarding/integrations/use-saved-thank-you-link";
 import { useLinearWizard } from "@/ui/onboarding/integrations/use-linear-wizard";
 import { useWaitForLinkLead } from "@/ui/onboarding/integrations/use-wait-for-link-lead";
 import { cn, nanoid } from "@dub/utils";
-import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const PODIA_GUIDE_URL =
@@ -28,9 +26,11 @@ const PODIA_SCRIPT_BASE = "https://assets.pimms.io/detect-podia.min.v1.0.1.js";
 export function PodiaOnboardingWizard({
   guideThumbnail,
   onContinueToStripe,
+  providerId = "podia",
 }: {
   guideThumbnail?: string | null;
   onContinueToStripe: () => void;
+  providerId?: string;
 }) {
   const { id: workspaceId } = useWorkspace();
   const { integrations } = useIntegrations();
@@ -39,6 +39,7 @@ export function PodiaOnboardingWizard({
     setProviderIds,
     completedProviderIds,
     setCompletedProviderIds,
+    markProviderStarted,
   } = useOnboardingPreferences();
 
   const [trackingDomain, setTrackingDomain] = useState("");
@@ -57,7 +58,6 @@ export function PodiaOnboardingWizard({
     clear: clearSavedThankYou,
   } = useSavedThankYouLink({ workspaceId, providerKey: "podia" });
 
-  const [destinationUrl, setDestinationUrl] = useState("");
   const [creatingThankYou, setCreatingThankYou] = useState(false);
   const [createThankYouError, setCreateThankYouError] = useState<string | null>(null);
   const [thankYouLink, setThankYouLink] = useState<{
@@ -71,7 +71,6 @@ export function PodiaOnboardingWizard({
   useEffect(() => {
     if (!savedThankYou) return;
     setTrackingDomain(savedThankYou.domain);
-    setDestinationUrl(savedThankYou.destinationUrl);
     setThankYouLink({
       id: savedThankYou.linkId,
       key: savedThankYou.key,
@@ -98,13 +97,9 @@ export function PodiaOnboardingWizard({
   // Mark Podia complete once a sale is detected.
   useEffect(() => {
     if (!done) return;
-    const canonical = canonicalizeProviderId("podia");
-    const has = completedProviderIds.some(
-      (id) => canonicalizeProviderId(id) === canonical,
-    );
-    if (has) return;
-    void setCompletedProviderIds([...completedProviderIds, canonical]);
-  }, [completedProviderIds, done, setCompletedProviderIds]);
+    if (completedProviderIds.includes(providerId)) return;
+    void setCompletedProviderIds([...completedProviderIds, providerId]);
+  }, [completedProviderIds, done, providerId, setCompletedProviderIds]);
 
   const createThankYou = useCallback(async () => {
     setCreateThankYouError(null);
@@ -113,17 +108,13 @@ export function PodiaOnboardingWizard({
       return;
     }
     if (!trackingDomain) {
-      setCreateThankYouError("Please select a domain.");
-      return;
-    }
-    const dest = destinationUrl.trim();
-    if (!dest) {
-      setCreateThankYouError("Please paste your thank-you page destination URL.");
+      setCreateThankYouError("Missing tracking domain.");
       return;
     }
 
     setCreatingThankYou(true);
     try {
+      const dest = "https://www.google.com/";
       const key = `${nanoid(8)}/thankyou`;
       const res = await fetch(
         `/api/links?workspaceId=${encodeURIComponent(workspaceId)}`,
@@ -135,6 +126,7 @@ export function PodiaOnboardingWizard({
             key,
             domain: trackingDomain,
             trackConversion: true,
+            title: "Auto-generated Podia tracking (thank-you)",
           }),
         },
       );
@@ -162,13 +154,7 @@ export function PodiaOnboardingWizard({
     } finally {
       setCreatingThankYou(false);
     }
-  }, [destinationUrl, persistSavedThankYou, trackingDomain, workspaceId]);
-
-  const clearSavedAndRegenerate = useCallback(() => {
-    setThankYouLink(null);
-    setScriptDone(false);
-    void clearSavedThankYou();
-  }, [clearSavedThankYou]);
+  }, [persistSavedThankYou, trackingDomain, workspaceId]);
 
   const podiaScript = useMemo(() => {
     if (!thankYouLink?.shortLink) return "";
@@ -184,6 +170,11 @@ export function PodiaOnboardingWizard({
       integrations.some((i) => String(i.slug) === "stripe");
     return installed || selected;
   }, [integrations, providerIds]);
+
+  useEffect(() => {
+    if (!stripeReady) return;
+    void markProviderStarted(providerId);
+  }, [markProviderStarted, providerId, stripeReady]);
 
   const completed = useMemo(
     () => [stripeReady, Boolean(thankYouLink), scriptDone, Boolean(createdTestLink), done],
@@ -219,52 +210,46 @@ export function PodiaOnboardingWizard({
       },
       {
         id: "podia-step-2",
-        title: "Create thank-you link",
+        title: "Select short link domain",
         isComplete: Boolean(thankYouLink),
         content: (
           <StepCard
-            title="Create your Pimms thank-you link"
-            description="This is the tracking link Podia will call after checkout."
+            title="Pick a domain for the Podia short link"
+            description="We create a short link and use it in the Podia script. This link is what ties sales back to Pimms."
           >
-            <div className="space-y-4">
-              <div>
-                <div className="text-sm font-semibold text-neutral-900">
-                  1. Choose the domain of your Pimms thank-you link
-                </div>
-                <select
-                  value={trackingDomain}
-                  onChange={(e) => setTrackingDomain(e.target.value)}
-                  className="mt-2 h-10 w-full rounded-md border border-neutral-200 bg-white px-3 text-sm text-neutral-900"
-                  disabled={creatingThankYou || Boolean(thankYouLink)}
-                >
-                  <option value="" disabled>
-                    Select a domain…
+            <div className="space-y-3">
+              <select
+                value={trackingDomain}
+                onChange={(e) => {
+                  const next = e.target.value;
+                  if (next === trackingDomain) return;
+                  setTrackingDomain(next);
+                  if (thankYouLink) {
+                    setThankYouLink(null);
+                    setScriptDone(false);
+                    setCreateThankYouError(null);
+                    void clearSavedThankYou();
+                  }
+                }}
+                className="h-10 w-full rounded-md border border-neutral-200 bg-white px-3 text-sm text-neutral-900"
+                disabled={creatingThankYou}
+              >
+                <option value="" disabled>
+                  Select a domain…
+                </option>
+                {domains.map((d: any) => (
+                  <option key={String(d.slug)} value={String(d.slug)}>
+                    {String(d.slug)}
                   </option>
-                  {domains.map((d: any) => (
-                    <option key={String(d.slug)} value={String(d.slug)}>
-                      {String(d.slug)}
-                    </option>
-                  ))}
-                </select>
-                {loadingSaved ? (
-                  <div className="mt-2 text-sm text-neutral-500">Loading saved setup…</div>
-                ) : savedThankYou ? (
-                  <div className="mt-2 text-sm text-neutral-500">Saved for this workspace.</div>
-                ) : null}
-              </div>
-
-              <div>
-                <div className="text-sm font-semibold text-neutral-900">
-                  2. Set the destination URL (your real thank-you page)
-                </div>
-                <input
-                  value={destinationUrl}
-                  onChange={(e) => setDestinationUrl(e.target.value)}
-                  placeholder="https://your-domain.com/thank-you"
-                  className="mt-2 h-10 w-full rounded-md border border-neutral-200 bg-white px-3 text-sm text-neutral-900 placeholder:text-neutral-400"
-                  disabled={creatingThankYou || Boolean(thankYouLink)}
-                />
-              </div>
+                ))}
+              </select>
+              {loadingSaved ? (
+                <div className="text-sm text-neutral-500">Loading saved setup…</div>
+              ) : savedThankYou ? (
+                  <div className="text-sm text-neutral-500">
+                    A tracking link is already saved for this workspace.
+                  </div>
+              ) : null}
             </div>
 
             {createThankYouError ? (
@@ -273,48 +258,22 @@ export function PodiaOnboardingWizard({
               </div>
             ) : null}
 
-            {thankYouLink ? (
-              <div className="mt-5 space-y-3">
-                <CopyField label="Pimms thank-you link" value={thankYouLink.shortLink} />
-                <button
-                  type="button"
-                  className="inline-flex w-full items-center justify-center rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-semibold text-neutral-900 hover:bg-neutral-50 sm:w-auto"
-                  onClick={clearSavedAndRegenerate}
-                >
-                  Generate a new link
-                </button>
-              </div>
-            ) : (
-              <div className="mt-5">
+            {!thankYouLink ? (
+              <div className="mt-4">
                 <button
                   type="button"
                   className={cn(
                     "inline-flex w-full items-center justify-center gap-2 rounded-md bg-neutral-900 px-3 py-2 text-sm font-semibold text-white hover:bg-neutral-800 sm:w-auto",
-                    (creatingThankYou ||
-                      !destinationUrl.trim() ||
-                      !workspaceId ||
-                      !trackingDomain) &&
+                    (creatingThankYou || !workspaceId || !trackingDomain) &&
                       "cursor-not-allowed opacity-60 hover:bg-neutral-900",
                   )}
                   onClick={() => void createThankYou()}
-                  disabled={
-                    creatingThankYou ||
-                    !destinationUrl.trim() ||
-                    !workspaceId ||
-                    !trackingDomain
-                  }
+                  disabled={creatingThankYou || !workspaceId || !trackingDomain}
                 >
-                  {creatingThankYou ? (
-                    <>
-                      <Loader2 className="size-4 animate-spin" />
-                      Generating…
-                    </>
-                  ) : (
-                    "Generate thank-you link"
-                  )}
+                  {creatingThankYou ? "Generating…" : "Generate short link"}
                 </button>
               </div>
-            )}
+            ) : null}
           </StepCard>
         ),
       },
@@ -325,7 +284,12 @@ export function PodiaOnboardingWizard({
         content: (
           <InstallScriptStep
             title="Add the Podia tracking script"
-            description="In Podia → Settings → Analytics → Third-party code → Website tracking code."
+            description="This script includes your Podia short link."
+            info={
+              thankYouLink?.shortLink
+                ? `Tracking uses this short link: ${thankYouLink.shortLink}`
+                : "Tracking uses your generated short link."
+            }
             scripts={[
               {
                 label: "Podia script",
@@ -391,15 +355,13 @@ export function PodiaOnboardingWizard({
     ];
   }, [
     checkoutUrl,
-    clearSavedAndRegenerate,
+    createThankYou,
     createTestError,
     createTestLink,
-    createThankYou,
     createThankYouError,
     createdTestLink,
     creatingTest,
     creatingThankYou,
-    destinationUrl,
     done,
     domains,
     loadingSaved,
@@ -418,6 +380,7 @@ export function PodiaOnboardingWizard({
     waiting,
     wizard,
     workspaceId,
+    clearSavedThankYou,
   ]);
 
   return (

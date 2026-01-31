@@ -1,14 +1,14 @@
 {
-  "name": "com.example.pimms",
-  "version": "0.0.9",
+  "name": "com.pimms.stripe",
+  "version": "0.1.0",
   "description": "PIMMS",
   "private": true,
   "license": "~~proprietary~~",
   "dependencies": {
     "@stripe/ui-extension-sdk": "^9.1.0",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "stripe": "^20.1.0"
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "stripe": "^20.3.0"
   },
   "engines": {
     "node": ">=14"
@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@stripe/ui-extension-tools": "^0.0.1",
-    "@types/react": "^19.2.7",
-    "@types/react-dom": "^19.2.3"
+    "@types/react": "18.3.1",
+    "@types/react-dom": "18.3.1"
   }
 }

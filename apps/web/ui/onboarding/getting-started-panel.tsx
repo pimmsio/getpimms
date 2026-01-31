@@ -1,14 +1,12 @@
 "use client";
 
-import useCustomersCount from "@/lib/swr/use-customers-count";
 import useDomainsCount from "@/lib/swr/use-domains-count";
 import { useOnboardingPreferences } from "@/lib/swr/use-onboarding-preferences";
 import useUsers from "@/lib/swr/use-users";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { UtmTemplateWithUserProps } from "@/lib/types";
 import { PROVIDERS, getConversionProviderDisplayName } from "@/ui/layout/sidebar/conversions/conversions-onboarding-modal";
-import { CustomSetupSupportModal } from "@/ui/onboarding/custom-setup-support-modal";
-import { GetAClickModal } from "@/ui/onboarding/get-a-click-modal";
+import { canonicalizeProviderId, isProviderCompleted } from "@/ui/onboarding/canonical-provider-id";
 import { CheckCircleFill } from "@/ui/shared/icons";
 import { ModalContext } from "@/ui/modals/modal-provider";
 import { CircleDotted } from "@dub/ui/icons";
@@ -78,28 +76,9 @@ const EXCLUDED_PROVIDER_IDS = new Set([
   "typeform",
 ]);
 
-function providerCategoryLabel(category: string | undefined) {
-  switch (category) {
-    case "forms":
-      return "Forms";
-    case "calendars":
-      return "Meetings";
-    case "payments":
-      return "Payments";
-    case "website":
-      return "Website";
-    case "automations":
-      return "Automations";
-    case "apis":
-      return "API";
-    default:
-      return null;
-  }
-}
-
 export function GettingStartedPanel() {
   const { setShowLinkBuilder } = useContext(ModalContext);
-  const { slug, totalLinks, totalClicks } = useWorkspace({
+  const { slug, totalLinks } = useWorkspace({
     swrOpts: {
       dedupingInterval: 5 * 60 * 1000,
       revalidateOnFocus: false,
@@ -112,11 +91,7 @@ export function GettingStartedPanel() {
     ignoreParams: true,
   });
 
-  const { data: customersCount } = useCustomersCount();
-  const {
-    providerIds: selectedProviderIds,
-    completedProviderIds,
-  } = useOnboardingPreferences();
+  const { completedProviderIds, startedProviderIds } = useOnboardingPreferences();
 
   const { users, loading: usersLoading } = useUsers();
   const { users: invites, loading: invitesLoading } = useUsers({
@@ -140,9 +115,6 @@ export function GettingStartedPanel() {
   const [activeVideo, setActiveVideo] = useState<OnboardingVideo | null>(null);
   const [watchedVideoIds, setWatchedVideoIds] = useState<string[]>([]);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [showGetAClickModal, setShowGetAClickModal] = useState(false);
-  const [showCustomSetupSupportModal, setShowCustomSetupSupportModal] =
-    useState(false);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -172,27 +144,38 @@ export function GettingStartedPanel() {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [pathname, router, searchParams]);
 
-  const selectedStacksLabel = useMemo(() => {
-    const names = (selectedProviderIds || [])
-      .filter((id) => !EXCLUDED_PROVIDER_IDS.has(id))
-      .map((id) => {
-        if (id.startsWith("other")) return "Other";
-        const p = PROVIDERS.find((x) => x.id === id);
-        const label = providerCategoryLabel(p?.category);
-        const name = getConversionProviderDisplayName(id) || id;
-        return label ? `${name} (${label})` : name;
-      })
-      .filter(Boolean)
-      .sort((a, b) => a.localeCompare(b));
-    if (names.length === 0) return null;
-    const head = names.slice(0, 2).join(", ");
-    const remaining = names.length - 2;
-    return remaining > 0 ? `${head} +${remaining}` : head;
-  }, [selectedProviderIds]);
+  const startedProviderIdsList = useMemo(
+    () => (startedProviderIds || []).map((entry) => entry.id),
+    [startedProviderIds],
+  );
 
-  const hasCustomSetupSelection = useMemo(() => {
-    return (selectedProviderIds || []).some((id) => id.startsWith("other"));
-  }, [selectedProviderIds]);
+  const resolvedTrackingProviderIds = useMemo(() => {
+    const raw = new Set([
+      ...(startedProviderIdsList || []),
+      ...(completedProviderIds || []),
+    ]);
+    const resolved: string[] = [];
+    for (const id of raw) {
+      if (PROVIDERS.some((p) => p.id === id)) {
+        resolved.push(id);
+        continue;
+      }
+      const match = PROVIDERS.find((p) => canonicalizeProviderId(p.id) === id);
+      if (match) resolved.push(match.id);
+    }
+    // Deduplicate by canonical ID (e.g. podiaWebsite + podia → one entry).
+    // Prefer the canonical ID when it exists in PROVIDERS.
+    const byCanonical = new Map<string, string>();
+    for (const id of resolved) {
+      const canonical = canonicalizeProviderId(id);
+      const existing = byCanonical.get(canonical);
+      const hasCanonicalProvider = PROVIDERS.some((p) => p.id === canonical);
+      if (!existing || (hasCanonicalProvider && id === canonical)) {
+        byCanonical.set(canonical, id);
+      }
+    }
+    return Array.from(byCanonical.values());
+  }, [completedProviderIds, startedProviderIdsList]);
 
   const { data: videoProgress } = useSWR<{ watched: string[] }>(
     "/api/onboarding-videos",
@@ -267,14 +250,6 @@ export function GettingStartedPanel() {
         onClick: () => setShowLinkBuilder(true),
       },
       {
-        id: "get-a-click",
-        display: "Get a Click",
-        description: "Share a link and confirm traffic is coming in.",
-        cta: `/${slug}/analytics`,
-        checked: Boolean(totalClicks && totalClicks > 0),
-        onClick: () => setShowGetAClickModal(true),
-      },
-      {
         id: "capture-new-leads",
         display: "Capture new leads in one step",
         badge: "New",
@@ -294,45 +269,29 @@ export function GettingStartedPanel() {
         display: "Setup tracking beyond clicks",
         badge: "Popular",
         badgeVariant: "brand",
-        description: selectedStacksLabel
-          ? `Selected: ${selectedStacksLabel} (click to edit)`
-          : "Choose the tools you use (Stripe, Calendly, Framer, etc.)",
+        description: "Pick a setup and start tracking beyond clicks.",
         cta: `/${slug}/today`,
-        checked: Boolean(selectedProviderIds.length > 0),
+        checked: false,
         onClick: openConversionSetupList,
+        showStatus: false,
       },
-      ...(selectedProviderIds || [])
+      ...resolvedTrackingProviderIds
         .filter((providerId) => !EXCLUDED_PROVIDER_IDS.has(providerId))
         .filter((providerId) => !providerId.startsWith("other"))
         .map((providerId) => {
           const name = getConversionProviderDisplayName(providerId) || providerId;
           const p = PROVIDERS.find((x) => x.id === providerId);
-          const category = providerCategoryLabel(p?.category);
           return {
             id: `setup:${providerId}`,
             display: `Setup tracking for ${name}`,
             description: "",
             cta: `/${slug}/today`,
-            checked: completedProviderIds.includes(providerId),
+            checked: isProviderCompleted(providerId, completedProviderIds),
             onClick: () => openConversionSetup(providerId),
             icon: p?.icon,
-            tag: category ?? undefined,
             showStatus: p?.category !== "automations" && p?.category !== "apis",
           } satisfies Task;
         }),
-      ...(hasCustomSetupSelection
-        ? ([
-            {
-              id: "contact-support-custom-setup",
-              display: "Contact support for custom setup",
-              description: "Tell us what you use and what you want to track.",
-              cta: `/${slug}/today`,
-              checked: false,
-              onClick: () => setShowCustomSetupSupportModal(true),
-              showStatus: false,
-            } satisfies Task,
-          ] as Task[])
-        : []),
     ];
 
     const moreActionsTasks: Task[] = [
@@ -369,17 +328,11 @@ export function GettingStartedPanel() {
     slug,
     domainsCount,
     totalLinks,
-    totalClicks,
-    customersCount,
-    selectedProviderIds,
     completedProviderIds,
-    selectedStacksLabel,
-    hasCustomSetupSelection,
+    resolvedTrackingProviderIds,
     users,
     invites,
     utmTemplates,
-    setShowGetAClickModal,
-    setShowCustomSetupSupportModal,
     setShowLinkBuilder,
     openLeadMagnetLinkBuilder,
     openConversionSetup,
@@ -530,7 +483,6 @@ export function GettingStartedPanel() {
                       badge,
                       badgeVariant,
                       icon,
-                      tag,
                       showStatus,
                     }) => {
                       const content = (
@@ -553,11 +505,6 @@ export function GettingStartedPanel() {
                                         return <Icon className="h-4 w-4" />;
                                       })()
                                     )}
-                                  </span>
-                                ) : null}
-                                {tag ? (
-                                  <span className="inline-flex items-center rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-semibold text-neutral-700">
-                                    {tag}
                                   </span>
                                 ) : null}
                                 <span>{display}</span>
@@ -775,15 +722,7 @@ export function GettingStartedPanel() {
         )}
       </Modal>
 
-      <GetAClickModal
-        showModal={showGetAClickModal}
-        setShowModal={setShowGetAClickModal}
-      />
 
-      <CustomSetupSupportModal
-        showModal={showCustomSetupSupportModal}
-        setShowModal={setShowCustomSetupSupportModal}
-      />
     </div>
   );
 }

@@ -70,8 +70,8 @@ type LeadSignalRow = ClickRow | LeadRow;
 // TODO: re-enable video section once content is ready.
 const featuredVideo = {
   title: "Deep links on Pimms (opens the official app)",
-  href: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-  thumbnail: "https://assets.pimms.io/blog/new-link-builder.jpg",
+  href: "https://www.youtube.com/watch?v=__TEbK4zonc",
+  thumbnail: "https://img.youtube.com/vi/__TEbK4zonc/hqdefault.jpg",
   description:
     "1 minute. See how Pimms links open YouTube/Instagram in the official app on mobile.",
 } as const;

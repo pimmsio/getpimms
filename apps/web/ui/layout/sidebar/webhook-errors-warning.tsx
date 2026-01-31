@@ -2,7 +2,7 @@
 
 import { useWebhookErrors } from "@/lib/swr/use-webhook-errors";
 import { Modal } from "@dub/ui";
-import { TriangleAlert } from "lucide-react";
+import { Info } from "lucide-react";
 import { useState } from "react";
 import { WebhookErrorsModal } from "./webhook-errors-modal";
 
@@ -18,12 +18,16 @@ export function WebhookErrorsWarning() {
   return (
     <>
       <div
-        className="flex w-full md:w-fit cursor-pointer items-start space-x-2 rounded-xl ring-1 ring-amber-200 bg-amber-50 p-2 mx-1 md:mx-0 transition-colors hover:bg-amber-100"
+        className="flex w-full sm:w-fit cursor-pointer items-start gap-2 rounded-xl ring-1 ring-blue-200 bg-blue-50 px-3 py-2 mx-1 md:mx-0 transition-colors hover:bg-blue-100"
         onClick={() => setShowModal(true)}
       >
-        <TriangleAlert className="mt-0.5 h-4 w-4 flex-none text-amber-500" />
-        <div className="text-sm text-neutral-700 truncate">
-          <span className="hidden md:inline truncate">{errors.length} Lead{errors.length > 1 ? "s" : ""} missed</span>{" "}<span className="italic md:hidden">Missed leads?</span><span className="italic hidden md:inline">View details?</span>
+        <Info className="h-4 w-4 flex-none text-blue-600" />
+        <div className="flex items-center gap-1 text-xs text-neutral-700 truncate">
+          <span className="truncate">
+            {errors.length} lead{errors.length > 1 ? "s" : ""} not matched
+          </span>
+          <span className="text-neutral-400">•</span>
+          <span className="text-blue-700">Details</span>
         </div>
       </div>
 

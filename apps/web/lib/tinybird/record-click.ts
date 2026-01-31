@@ -177,7 +177,7 @@ export async function recordClick({
   console.log("[recordClick]", clickId, "3 before Promise.allSettled (tinybird, redis, db)");
   // NOTE: Keep this destructuring aligned with the Promise array below.
   // `workspaceRows` must refer to the "SELECT usage, usageLimit..." query result.
-  const [, , , , workspaceRows,] = await Promise.allSettled([
+  const [, , , , , workspaceRows] = await Promise.allSettled([
     fetch(
       `${process.env.TINYBIRD_API_URL}/v0/events?name=dub_click_events&wait=true`,
       {

@@ -8,5 +8,5 @@ import Stripe from "stripe";
 // dashboard credentials to make requests.
 export const stripe: Stripe = new Stripe(STRIPE_API_KEY, {
   httpClient: createHttpClient() as Stripe.HttpClient,
-  apiVersion: "2023-08-16",
+  apiVersion: "2025-12-15.clover",
 });

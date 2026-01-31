@@ -9,6 +9,7 @@ import React from "react";
 export function CreateTestLinkStep({
   title,
   description,
+  info,
   urlValue,
   urlPlaceholder,
   onChangeUrl,
@@ -20,6 +21,7 @@ export function CreateTestLinkStep({
 }: {
   title: string;
   description?: string;
+  info?: string;
   urlValue: string;
   urlPlaceholder?: string;
   onChangeUrl: (next: string) => void;
@@ -50,6 +52,12 @@ export function CreateTestLinkStep({
       {error ? (
         <div className="mt-3 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900">
           {error}
+        </div>
+      ) : null}
+
+      {info ? (
+        <div className="mt-3 rounded-md bg-blue-50 px-3 py-2 text-xs text-blue-900">
+          {info}
         </div>
       ) : null}
 

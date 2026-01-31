@@ -34,9 +34,13 @@ export function CustomSetupSupportModal({
 export function CustomSetupSupportContent({
   onClose,
   closeLabel = "Close",
+  showHeader = true,
+  showClose = true,
 }: {
   onClose?: () => void;
   closeLabel?: string;
+  showHeader?: boolean;
+  showClose?: boolean;
 }) {
   const { slug: workspaceSlug } = useWorkspace();
   const { providerIds } = useOnboardingPreferences();
@@ -55,17 +59,24 @@ export function CustomSetupSupportContent({
 
   return (
     <div className="w-full max-w-full overflow-x-hidden px-4 py-4 sm:px-6 sm:py-5">
-      <div className="text-sm font-semibold text-neutral-900">
-        Contact support for custom setup
-      </div>
-      <div className="mt-1 text-sm text-neutral-600">
-        Tell us what you use and what you want to track.
-      </div>
+      {showHeader ? (
+        <>
+          <div className="text-sm font-semibold text-neutral-900">
+            Contact support
+          </div>
+          <div className="mt-1 text-sm text-neutral-600">
+            Describe your setup and what you want to track.
+          </div>
+        </>
+      ) : null}
 
       <textarea
-        className="mt-4 block w-full resize-none rounded border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0 focus:outline-none"
+        className={cn(
+          "block w-full resize-none rounded border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0 focus:outline-none",
+          showHeader ? "mt-4" : "mt-1",
+        )}
         rows={6}
-        placeholder="Example: We use X for payments and Y for forms. We want to track leads and sales and attribute them to clicks."
+        placeholder="Example: We use X for payments and Y for forms. We want to track leads and sales."
         value={message}
         onChange={(e) => {
           setMessage(e.target.value);
@@ -116,12 +127,12 @@ export function CustomSetupSupportContent({
           href={BOOK_TRACKING_MEETING_URL}
           target="_blank"
           rel="noreferrer"
-          className="rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+          className="rounded-md px-3 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100"
         >
-          Book a call with an expert
+          Book a call
         </a>
 
-        {onClose ? (
+        {showClose && onClose ? (
           <button
             type="button"
             className="rounded-md px-3 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100"

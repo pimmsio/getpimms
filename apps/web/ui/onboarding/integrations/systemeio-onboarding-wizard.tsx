@@ -23,12 +23,15 @@ const SYSTEMEIO_SCRIPT =
 export function SystemeioOnboardingWizard({
   guideHref = GUIDE_URL,
   guideThumbnail,
+  providerId = "systemeio",
 }: {
   guideHref?: string;
   guideThumbnail?: string | null;
+  providerId?: string;
 }) {
   const { id: workspaceId } = useWorkspace();
-  const { completedProviderIds, setCompletedProviderIds } = useOnboardingPreferences();
+  const { completedProviderIds, setCompletedProviderIds, markProviderStarted } =
+    useOnboardingPreferences();
 
   const [scriptInstalled, setScriptInstalled] = useState(false);
   const [scriptVerified, setScriptVerified] = useState(false);
@@ -56,9 +59,14 @@ export function SystemeioOnboardingWizard({
   // Persist completion once a lead is detected.
   useEffect(() => {
     if (!validated) return;
-    if (completedProviderIds.includes("systemeio")) return;
-    void setCompletedProviderIds([...completedProviderIds, "systemeio"]);
-  }, [completedProviderIds, setCompletedProviderIds, validated]);
+    if (completedProviderIds.includes(providerId)) return;
+    void setCompletedProviderIds([...completedProviderIds, providerId]);
+  }, [completedProviderIds, providerId, setCompletedProviderIds, validated]);
+
+  useEffect(() => {
+    if (!scriptInstalled) return;
+    void markProviderStarted(providerId);
+  }, [markProviderStarted, providerId, scriptInstalled]);
 
   const completed = useMemo(
     () => [
@@ -90,7 +98,7 @@ export function SystemeioOnboardingWizard({
         content: (
           <InstallScriptStep
             title="Install the Pimms tracking script"
-            description="Paste this script into your Systeme.io tracking code (funnel/footer settings), then continue."
+            description="Paste this script into Systeme.io → Settings → Sales funnels → Tracking code, then continue."
             scriptLabel="Tracking script"
             script={SYSTEMEIO_SCRIPT}
             guideStepHref={GUIDE_STEP_1_URL}

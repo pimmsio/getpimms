@@ -35,7 +35,7 @@ export function TableLinkCellContent({
   isSkeleton?: boolean;
 }) {
   if (isSkeleton) {
-    return <LinksRowSkeleton showUtmRow={false} showMetrics={false} />;
+    return <LinksRowSkeleton />;
   }
 
   if (!link) {

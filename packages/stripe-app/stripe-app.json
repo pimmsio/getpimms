@@ -1,8 +1,12 @@
 {
-  "id": "pimms.io",
-  "version": "0.0.9",
-  "name": "PIMMS",
+  "allowed_redirect_uris": [
+    "https://app.pimms.io/api/stripe/integration/callback"
+  ],
+  "connect_permissions": null,
+  "distribution_type": "public",
   "icon": "./stripe-icon.png",
+  "id": "pimms.io",
+  "name": "PIMMS",
   "permissions": [
     {
       "permission": "customer_read",
@@ -41,14 +45,12 @@
       "purpose": "Allows storing PIMMS access tokens in Stripe for an account."
     }
   ],
-  "connect_permissions": null,
+  "post_install_action": {
+    "type": "settings"
+  },
+  "sandbox_install_compatible": true,
+  "stripe_api_access_type": "oauth",
   "ui_extension": {
-    "views": [
-      {
-        "viewport": "settings",
-        "component": "AppSettings"
-      }
-    ],
     "content_security_policy": {
       "connect-src": [
         "https://app.pimms.io/api/oauth/",
@@ -56,15 +58,13 @@
       ],
       "image-src": null,
       "purpose": ""
-    }
+    },
+    "views": [
+      {
+        "component": "AppSettings",
+        "viewport": "settings"
+      }
+    ]
   },
-  "post_install_action": {
-    "type": "settings",
-    "url": ""
-  },
-  "allowed_redirect_uris": [
-    "https://app.pimms.io/api/stripe/integration/callback"
-  ],
-  "stripe_api_access_type": "oauth",
-  "distribution_type": "public"
+  "version": "0.1.0"
 }

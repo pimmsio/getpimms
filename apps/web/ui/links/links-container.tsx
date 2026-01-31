@@ -380,7 +380,7 @@ function LinksList({
                         utmVisibility={utmVisibility}
                       />
                     ))
-                  : Array.from({ length: 8 }).map((_, idx) => (
+                  : Array.from({ length: 5 }).map((_, idx) => (
                       <div
                         key={idx}
                         className="pointer-events-none animate-pulse px-2 py-2 sm:px-5 sm:py-3"

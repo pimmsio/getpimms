@@ -11,7 +11,7 @@ import { useWaitForLinkLead } from "@/ui/onboarding/integrations/use-wait-for-li
 import { CreateTestLinkStep } from "@/ui/onboarding/integrations/steps/create-test-link-step";
 import { ManualConfirmStep } from "@/ui/onboarding/integrations/steps/manual-confirm-step";
 import { WaitForLeadStep } from "@/ui/onboarding/integrations/steps/wait-for-lead-step";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Info, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const CALENDLY_GUIDE_URL =
@@ -37,12 +37,15 @@ async function fetchInstallUrl({
 
 export function CalendlyOnboardingWizard({
   guideThumbnail,
+  providerId = "calendly",
 }: {
   guideThumbnail?: string | null;
+  providerId?: string;
 }) {
   const { id: workspaceId, slug } = useWorkspace();
   const { integrations } = useIntegrations();
-  const { completedProviderIds, setCompletedProviderIds } = useOnboardingPreferences();
+  const { completedProviderIds, setCompletedProviderIds, markProviderStarted } =
+    useOnboardingPreferences();
 
   const calendlyInstalled = Boolean(
     integrations?.some((i) => String(i.slug) === "calendly"),
@@ -65,9 +68,14 @@ export function CalendlyOnboardingWizard({
   // Persist completion once a lead is detected.
   useEffect(() => {
     if (!done) return;
-    if (completedProviderIds.includes("calendly")) return;
-    void setCompletedProviderIds([...completedProviderIds, "calendly"]);
-  }, [completedProviderIds, done, setCompletedProviderIds]);
+    if (completedProviderIds.includes(providerId)) return;
+    void setCompletedProviderIds([...completedProviderIds, providerId]);
+  }, [completedProviderIds, done, providerId, setCompletedProviderIds]);
+
+  useEffect(() => {
+    if (!calendlyInstalled) return;
+    void markProviderStarted(providerId);
+  }, [calendlyInstalled, markProviderStarted, providerId]);
 
   const completed = useMemo(
     () => [calendlyInstalled, Boolean(created), done],
@@ -123,6 +131,12 @@ export function CalendlyOnboardingWizard({
         isComplete: calendlyInstalled,
         content: (
           <div className="space-y-3">
+            <div className="flex gap-2 rounded-md bg-blue-50 px-3 py-2 text-sm text-blue-900">
+              <Info className="mt-0.5 size-4 shrink-0" />
+              <p>
+                This integration requires at least a Calendly paid plan (Standard).
+              </p>
+            </div>
             <ManualConfirmStep
               title="Connect your Calendly account"
               description="Click the button to enable the integration in your workspace."

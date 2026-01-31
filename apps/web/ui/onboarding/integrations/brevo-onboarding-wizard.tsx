@@ -3,11 +3,11 @@
 import { useOnboardingPreferences } from "@/lib/swr/use-onboarding-preferences";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { useAvailableDomains } from "@/ui/links/use-available-domains";
-import { canonicalizeProviderId } from "@/ui/onboarding/canonical-provider-id";
 import { CopyField } from "@/ui/onboarding/integrations/components/copy-field";
 import { GuideCard } from "@/ui/onboarding/integrations/components/guide-card";
 import { StepCard } from "@/ui/onboarding/integrations/components/step-card";
 import { IntegrationOnboardingWizard } from "@/ui/onboarding/integrations/integration-onboarding-wizard";
+import { Brevo } from "@/ui/layout/sidebar/conversions/icons/brevo";
 import { CreateTestLinkStep } from "@/ui/onboarding/integrations/steps/create-test-link-step";
 import { WaitForLeadStep } from "@/ui/onboarding/integrations/steps/wait-for-lead-step";
 import { useSavedThankYouLink } from "@/ui/onboarding/integrations/use-saved-thank-you-link";
@@ -39,11 +39,13 @@ function buildBrevoWebhookUrl({
 
 export function BrevoOnboardingWizard({
   guideThumbnail,
+  providerId = "brevoForm",
 }: {
   guideThumbnail?: string | null;
+  providerId?: string;
 }) {
   const { id: workspaceId } = useWorkspace();
-  const { completedProviderIds, setCompletedProviderIds } =
+  const { completedProviderIds, setCompletedProviderIds, markProviderStarted } =
     useOnboardingPreferences();
 
   const [step1Done, setStep1Done] = useState(false);
@@ -114,13 +116,14 @@ export function BrevoOnboardingWizard({
   // Persist completion only once verification succeeded.
   useEffect(() => {
     if (!done) return;
-    const canonical = canonicalizeProviderId("brevo");
-    const has = completedProviderIds.some(
-      (id) => canonicalizeProviderId(id) === canonical,
-    );
-    if (has) return;
-    void setCompletedProviderIds([...completedProviderIds, canonical]);
-  }, [completedProviderIds, done, setCompletedProviderIds]);
+    if (completedProviderIds.includes(providerId)) return;
+    void setCompletedProviderIds([...completedProviderIds, providerId]);
+  }, [completedProviderIds, done, providerId, setCompletedProviderIds]);
+
+  useEffect(() => {
+    if (!step1Done) return;
+    void markProviderStarted(providerId);
+  }, [markProviderStarted, providerId, step1Done]);
 
   const createThankYouLink = useCallback(async () => {
     setCreateError(null);
@@ -151,6 +154,7 @@ export function BrevoOnboardingWizard({
             key,
             domain: trackingDomain,
             trackConversion: true,
+            title: "Auto-generated Brevo tracking (thank-you)",
           }),
         },
       );
@@ -449,6 +453,7 @@ export function BrevoOnboardingWizard({
     <IntegrationOnboardingWizard
       title="Brevo setup"
       subtitle="Setup Brevo webhooks and a redirect link to attribute conversions."
+      headerActions={<Brevo className="size-6" />}
       contentTop={
         <GuideCard title="Brevo guide" href={BREVO_GUIDE_URL} thumbnail={guideThumbnail ?? null} />
       }

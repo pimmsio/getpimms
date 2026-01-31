@@ -7,23 +7,34 @@ import { IntegrationOnboardingWizard } from "@/ui/onboarding/integrations/integr
 import { CreateTestLinkStep } from "@/ui/onboarding/integrations/steps/create-test-link-step";
 import { ManualConfirmStep } from "@/ui/onboarding/integrations/steps/manual-confirm-step";
 import { WaitForLeadStep } from "@/ui/onboarding/integrations/steps/wait-for-lead-step";
+import { WebhookConfigStep } from "@/ui/onboarding/integrations/steps/webhook-config-step";
 import { useCreateOnboardingTestLink } from "@/ui/onboarding/integrations/use-create-onboarding-test-link";
 import { useLinearWizard } from "@/ui/onboarding/integrations/use-linear-wizard";
 import { useWaitForLinkLead } from "@/ui/onboarding/integrations/use-wait-for-link-lead";
 import { useEffect, useMemo, useState } from "react";
 
 const TALLY_GUIDE_URL =
-  "https://pimms.io/guides/how-to-track-tally-form-submissions-marketing-attribution";
+  "https://pimms.io/guides/tally-direct-webhook-integration";
+
+const TALLY_WEBHOOK_BASE = "https://api.pimms.io/webhook/tally";
+
+function buildTallyWebhookUrl(workspaceId: string) {
+  return `${TALLY_WEBHOOK_BASE}?workspace_id=${encodeURIComponent(workspaceId)}`;
+}
 
 export function TallyOnboardingWizard({
   guideThumbnail,
+  providerId = "tally",
 }: {
   guideThumbnail?: string | null;
+  providerId?: string;
 }) {
    const { id: workspaceId } = useWorkspace();
-   const { completedProviderIds, setCompletedProviderIds } = useOnboardingPreferences();
+   const { completedProviderIds, setCompletedProviderIds, markProviderStarted } =
+     useOnboardingPreferences();
  
-   const [guideDone, setGuideDone] = useState(false);
+   const [step1Done, setStep1Done] = useState(false);
+   const [step2Done, setStep2Done] = useState(false);
  
    const {
      url: formUrl,
@@ -41,38 +52,50 @@ export function TallyOnboardingWizard({
  
    useEffect(() => {
      if (!done) return;
-     if (completedProviderIds.includes("tally")) return;
-     void setCompletedProviderIds([...completedProviderIds, "tally"]);
-   }, [completedProviderIds, done, setCompletedProviderIds]);
+     if (completedProviderIds.includes(providerId)) return;
+     void setCompletedProviderIds([...completedProviderIds, providerId]);
+   }, [completedProviderIds, done, providerId, setCompletedProviderIds]);
+
+   useEffect(() => {
+     if (!step1Done) return;
+     void markProviderStarted(providerId);
+   }, [markProviderStarted, providerId, step1Done]);
  
    const completed = useMemo(
-     () => [guideDone, Boolean(created), done],
-     [created, done, guideDone],
+     () => [step1Done, step2Done, Boolean(created), done],
+     [created, done, step1Done, step2Done],
    );
    const wizard = useLinearWizard({ completed, initialStepIndex: 0 });
  
+   const webhookUrl = useMemo(
+     () => (workspaceId ? buildTallyWebhookUrl(workspaceId) : ""),
+     [workspaceId],
+   );
+
    const steps = useMemo(() => {
      return [
        {
          id: "tally-step-1",
          title: "Setup in Tally",
-         isComplete: guideDone,
+         isComplete: step1Done,
          content: (
            <ManualConfirmStep
-             title="Follow the guide in Tally"
-             description="Open the guide and complete the setup in Tally, then continue."
-             isDone={guideDone}
+             title="Add the pimms_id field"
+             description="Follow the guide step and add the hidden field to your Tally form."
+             isDone={step1Done}
              onConfirm={() => {
-               setGuideDone(true);
+               setStep1Done(true);
                wizard.advance();
              }}
              actions={
                <button
                  type="button"
-                 className="inline-flex items-center justify-center rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-semibold text-neutral-900 hover:bg-neutral-50"
-                 onClick={() => window.open(TALLY_GUIDE_URL, "_blank", "noopener,noreferrer")}
+                 className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+                 onClick={() => {
+                   window.open(TALLY_GUIDE_URL, "_blank", "noopener,noreferrer");
+                 }}
                >
-                 Open guide
+                 Open step 1 in guide
                </button>
              }
            />
@@ -80,14 +103,43 @@ export function TallyOnboardingWizard({
        },
        {
          id: "tally-step-2",
-         title: "Test link",
+         title: "Set up the webhook in Tally",
+         isComplete: step2Done,
+         content: (
+           <WebhookConfigStep
+             title="Webhook configuration"
+             description="Paste these values into Tally.so → Integrations → Webhooks."
+             fields={[
+               {
+                 label: "Webhook URL",
+                 value: webhookUrl,
+                 disabled: !webhookUrl,
+               },
+               {
+                 label: "Signing Secret",
+                 value: workspaceId ?? "",
+                 disabled: !workspaceId,
+               },
+             ]}
+             isDone={step2Done}
+             confirmDisabled={!workspaceId}
+             onConfirm={() => {
+               setStep2Done(true);
+               wizard.advance();
+             }}
+           />
+         ),
+       },
+       {
+         id: "tally-step-3",
+         title: "Create a test link",
          isComplete: Boolean(created),
          content: (
            <CreateTestLinkStep
              title="Create a test link (expires in 24h)"
              description="Paste the URL of the page that hosts your Tally form."
              urlValue={formUrl}
-             urlPlaceholder="https://your-site.com/page-with-tally-form"
+             urlPlaceholder="https://tally.so/r/your-form or https://your-site.com/page-with-tally-form"
              onChangeUrl={setFormUrl}
              creating={creating}
              error={createError}
@@ -95,26 +147,26 @@ export function TallyOnboardingWizard({
              onCreate={async () => {
                try {
                  await createTestLink();
-                 wizard.forceGoTo(2);
+                 wizard.forceGoTo(3);
                } catch {
                  // error already set by hook
                }
              }}
              onOpenCreated={() => {
-               wizard.forceGoTo(2);
+               wizard.forceGoTo(3);
                startWaitingForLead();
              }}
            />
          ),
        },
        {
-         id: "tally-step-3",
-         title: "Verify",
+         id: "tally-step-4",
+         title: "Verify the tracking works",
          isComplete: done,
          content: (
            <WaitForLeadStep
-             title="Verify tracking works"
-             description="Submit a test Tally form using the test link. We’ll wait for the lead."
+             title="Submit a test form"
+             description="Open your test link in an incognito tab and submit the Tally form with a test email."
              linkHref={created?.shortLink ?? null}
              canStart={Boolean(created?.id)}
              waiting={waiting}
@@ -133,11 +185,14 @@ export function TallyOnboardingWizard({
      creating,
      done,
      formUrl,
-     guideDone,
      setFormUrl,
      startWaitingForLead,
+     step1Done,
+     step2Done,
      waiting,
+     webhookUrl,
      wizard,
+     workspaceId,
    ]);
  
    return (

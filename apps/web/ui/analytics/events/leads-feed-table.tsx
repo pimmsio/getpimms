@@ -32,7 +32,6 @@ import {
   downloadLeadsAsCSV,
 } from "./leads-export";
 import { ModalContext } from "@/ui/modals/modal-provider";
-import SetupGuides from "./setup-guides";
 
 
 type LeadLink = {
@@ -112,7 +111,7 @@ export default function LeadsFeedTable() {
   const customers = data?.customers ?? [];
   const skeletonRows = useMemo<LeadsFeedCustomer[]>(
     () =>
-      Array.from({ length: 8 }).map((_, idx) => ({
+      Array.from({ length: 5 }).map((_, idx) => ({
         id: `skeleton-${idx}`,
         name: null,
         email: null,
@@ -205,7 +204,7 @@ export default function LeadsFeedTable() {
             return (
               <div className="group flex w-full items-center justify-between gap-4 px-2 py-1.5 sm:px-5 sm:py-3 select-none">
                 <div className="flex min-w-0 flex-1 items-center gap-3">
-                  <div className="size-10 shrink-0 rounded-full bg-neutral-100 ring-1 ring-neutral-200/60" />
+                  <div className="size-8 shrink-0 rounded-full bg-neutral-100 ring-1 ring-neutral-200/60" />
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-sm font-medium text-neutral-900">
                       Anonymous
@@ -231,16 +230,15 @@ export default function LeadsFeedTable() {
         {
           id: "lastActivity",
           header: () => <TableHeader>Last Activity</TableHeader>,
-          enableHiding: false,
-          minSize: 140,
-          size: 160,
+        enableHiding: false,
+        minSize: 160,
+        size: 180,
           cell: () => (
-            <div className="flex flex-col gap-0.5">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-xs font-medium text-neutral-700">
-                  Click
-                </span>
-              </div>
+            <div className="flex items-center gap-2 text-xs text-neutral-500">
+              <span className="inline-flex rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[11px] font-medium text-neutral-700">
+                Click
+              </span>
+              <span>—</span>
             </div>
           ),
         },
@@ -250,19 +248,19 @@ export default function LeadsFeedTable() {
     return [
       {
         id: "hotScore",
-        header: () => <TableHeader>Score</TableHeader>,
+        header: () => (
+          <span className="block text-left">
+            <TableHeader>Score</TableHeader>
+          </span>
+        ),
         accessorKey: "hotScore",
         enableHiding: false,
-        minSize: 60,
-        size: 60,
-        maxSize: 80,
+        minSize: 72,
+        size: 72,
+        maxSize: 90,
         cell: ({ row }) => {
           if (row.original.__skeleton) {
-            return (
-              <div className="flex w-full items-center justify-center">
-                <div className="h-6 w-14 animate-pulse rounded bg-neutral-200" />
-              </div>
-            );
+            return <div className="h-3.5 w-8 animate-pulse rounded bg-neutral-200" />;
           }
           const score = row.original.hotScore ?? 0;
           const lastUpdated = row.original.lastHotScoreAt;
@@ -282,9 +280,9 @@ export default function LeadsFeedTable() {
                 </div>
               }
             >
-              <div className="flex w-full items-center justify-center gap-2">
-                <SingleFlameIcon className="h-5 w-5" score={score} />
-                <span className="text-xs font-semibold tabular-nums text-neutral-900">
+              <div className="flex w-full items-center justify-start gap-2 text-left">
+                <SingleFlameIcon className="h-5 w-5 shrink-0" score={score} />
+                <span className="text-[10px] font-semibold tabular-nums text-neutral-900">
                   {score}
                 </span>
               </div>
@@ -302,16 +300,7 @@ export default function LeadsFeedTable() {
           if (row.original.__skeleton) {
             return (
               <div className="px-2 py-1.5 sm:px-5 sm:py-3">
-                <div className="flex w-full items-center justify-between gap-4">
-                  <div className="flex min-w-0 flex-1 items-center gap-3">
-                    <div className="size-10 shrink-0 animate-pulse rounded-full bg-neutral-200" />
-                    <div className="min-w-0 flex-1">
-                      <div className="h-4 w-36 animate-pulse rounded bg-neutral-200" />
-                      <div className="mt-1 h-3 w-44 animate-pulse rounded bg-neutral-200/70" />
-                    </div>
-                  </div>
-                  <div className="h-4 w-12 shrink-0 animate-pulse rounded bg-neutral-200/70" />
-                </div>
+                <div className="h-4 w-40 animate-pulse rounded bg-neutral-200" />
               </div>
             );
           }
@@ -326,7 +315,7 @@ export default function LeadsFeedTable() {
                     c.avatar ||
                     `${OG_AVATAR_URL}${c.id}&name=${encodeURIComponent(c.name || c.email || "")}`
                   }
-                  className="size-10 shrink-0 rounded-full"
+                  className="size-8 shrink-0 rounded-full ring-1 ring-neutral-200/60 grayscale"
                 />
                 <div className="min-w-0 flex-1">
                   <div
@@ -358,17 +347,12 @@ export default function LeadsFeedTable() {
         id: "lastActivity",
         header: () => <TableHeader>Last Activity</TableHeader>,
         enableHiding: false,
-        minSize: 120,
-        size: 140,
-        maxSize: 160,
+        minSize: 160,
+        size: 180,
+        maxSize: 220,
         cell: ({ row }) => {
           if (row.original.__skeleton) {
-            return (
-              <div className="flex flex-col gap-1">
-                <div className="h-4 w-20 animate-pulse rounded bg-neutral-200" />
-                <div className="h-3 w-24 animate-pulse rounded bg-neutral-200" />
-              </div>
-            );
+            return <div className="h-3.5 w-20 animate-pulse rounded bg-neutral-200" />;
           }
           const kind = row.original.lastActivityType;
           const ts = row.original.lastEventAt;
@@ -377,17 +361,15 @@ export default function LeadsFeedTable() {
             kind === "click" ? "Click" : kind === "lead" ? "Opt-in" : kind === "sale" ? "Sale" : null;
 
           return (
-            <div className="flex flex-col gap-0.5">
-              <div className="flex items-center gap-2">
-                {label ? (
-                  <span className="inline-flex rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-xs font-medium text-neutral-700">
-                    {label}
-                  </span>
-                ) : null}
-              </div>
-              <div className="text-xs text-neutral-500">
-                {ts ? timeAgo(new Date(ts), { withAgo: true }) : "-"}
-              </div>
+            <div className="flex items-center gap-2 text-xs text-neutral-500 whitespace-nowrap">
+              {label ? (
+                <span className="inline-flex rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[11px] font-medium text-neutral-700">
+                  {label}
+                </span>
+              ) : (
+                <span className="text-neutral-400">-</span>
+              )}
+              <span>{ts ? timeAgo(new Date(ts), { withAgo: true }) : "-"}</span>
             </div>
           );
         },
@@ -397,13 +379,12 @@ export default function LeadsFeedTable() {
         header: () => <TableHeader>Touchpoints</TableHeader>,
         accessorKey: "totalClicks",
         enableHiding: true,
-        minSize: 120,
-        size: 120,
+        minSize: 160,
+        size: 180,
+        maxSize: 220,
         cell: ({ row }) => {
           if (row.original.__skeleton) {
-            return (
-              <div className="h-4 w-12 animate-pulse rounded bg-neutral-200" />
-            );
+            return <div className="h-3.5 w-10 animate-pulse rounded bg-neutral-200" />;
           }
           const touchpoints = row.original.totalClicks;
           const customerId = row.original.id;
@@ -412,8 +393,8 @@ export default function LeadsFeedTable() {
             return <span className="text-neutral-400">-</span>;
           }
           return (
-            <div className="flex items-center justify-end gap-2">
-              <div className="text-xs font-medium text-neutral-700">
+            <div className="flex items-center gap-2 whitespace-nowrap">
+              <div className="text-xs font-medium text-neutral-700 tabular-nums">
                 {touchpoints}
               </div>
               <Link
@@ -421,7 +402,7 @@ export default function LeadsFeedTable() {
                 onClick={(e) => e.stopPropagation()}
                 className="flex shrink-0 items-center gap-1 pr-1 text-xs font-medium text-blue-600 transition-transform group-hover:translate-x-1 whitespace-nowrap"
               >
-                <span>See timeline</span>
+                <span>Timeline</span>
                 <ChevronRight className="size-3" />
               </Link>
             </div>
@@ -437,9 +418,7 @@ export default function LeadsFeedTable() {
         maxSize: 120,
         cell: ({ row }) => {
           if (row.original.__skeleton) {
-            return (
-              <div className="h-4 w-20 animate-pulse rounded bg-neutral-200" />
-            );
+            return <div className="h-3.5 w-14 animate-pulse rounded bg-neutral-200" />;
           }
           const country = row.original.country;
           if (!country || country === "Unknown") {
@@ -476,9 +455,7 @@ export default function LeadsFeedTable() {
         maxSize: 120,
         cell: ({ row }) => {
           if (row.original.__skeleton) {
-            return (
-              <div className="h-4 w-20 animate-pulse rounded bg-neutral-200" />
-            );
+            return <div className="h-3.5 w-14 animate-pulse rounded bg-neutral-200" />;
           }
           const referer = row.original.referer;
           if (!referer) {
@@ -496,14 +473,12 @@ export default function LeadsFeedTable() {
         header: () => <TableHeader>Created</TableHeader>,
         accessorKey: "createdAt",
         enableHiding: true,
-        minSize: 80,
-        size: 80,
-        maxSize: 100,
+        minSize: 120,
+        size: 130,
+        maxSize: 160,
         cell: ({ row }) => {
           if (row.original.__skeleton) {
-            return (
-              <div className="h-4 w-20 animate-pulse rounded bg-neutral-200" />
-            );
+            return <div className="h-3.5 w-14 animate-pulse rounded bg-neutral-200" />;
           }
           const createdAt = row.original.createdAt;
           // Only show if we have the data
@@ -511,7 +486,7 @@ export default function LeadsFeedTable() {
             return <span className="text-xs text-neutral-400">-</span>;
           }
           return (
-            <div className="text-xs text-neutral-700">
+            <div className="text-xs text-neutral-700 whitespace-nowrap">
               {formatDate(createdAt, {
                 month: "short",
                 day: "numeric",
@@ -557,39 +532,44 @@ export default function LeadsFeedTable() {
     resourceName: (plural) => `lead${plural ? "s" : ""}`,
   });
 
-  return (
-    <div className="mt-4 rounded-xl border border-neutral-200 bg-white p-4 sm:p-6">
-      {showMaskedPreview ? (
-        <div className="mb-4">
-          <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
-            <div>
-              <div className="text-sm font-semibold text-neutral-900">
-                No leads yet
-              </div>
-            </div>
-            <AppButton
-              type="button"
-              variant="primary"
-              size="sm"
-              className="w-fit shrink-0"
-              onClick={() => setShowConversionOnboardingModal(true)}
-            >
-              Reveal leads
-            </AppButton>
+  if (showMaskedPreview) {
+    return (
+      <div className="mt-4 rounded-xl border border-neutral-200 bg-white p-4 sm:p-6">
+        <div className="text-center">
+          <div className="text-base font-semibold text-neutral-900">
+            No leads yet
           </div>
-        </div>
-      ) : null}
-
-      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap items-center gap-2">
+          <div className="mt-2 text-sm text-neutral-600">
+            Set up lead tracking to capture your first leads here.
+          </div>
           <AppButton
             type="button"
-            variant="secondary"
+            variant="primary"
             size="sm"
-            className="w-auto"
+            className="mt-4"
             onClick={() => setShowConversionOnboardingModal(true)}
           >
-            Setup guides
+            Open setup guide
+          </AppButton>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-4 rounded-xl border border-neutral-200 bg-white p-4 sm:p-6">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="text-xs text-neutral-600">
+          Update your setup anytime as marketing changes.
+        </div>
+        <div className="flex items-center gap-2">
+          <AppButton
+            type="button"
+            variant="primary"
+            size="sm"
+            onClick={() => setShowConversionOnboardingModal(true)}
+          >
+            Open setup guide
           </AppButton>
           <AppButton
             type="button"
@@ -611,7 +591,7 @@ export default function LeadsFeedTable() {
             }}
           >
             <ClipboardCopy className="mr-2 h-4 w-4 text-neutral-500" />
-            Copy (Sheets)
+            Copy
           </AppButton>
           <AppButton
             type="button"
@@ -630,14 +610,12 @@ export default function LeadsFeedTable() {
             }}
           >
             <Download className="mr-2 h-4 w-4 text-neutral-500" />
-            Download CSV
+            CSV
           </AppButton>
         </div>
       </div>
 
       <Table {...tableProps} table={table} />
-
-      <SetupGuides embedded className="mt-4" />
     </div>
   );
 }

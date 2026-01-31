@@ -8,6 +8,7 @@ import React from "react";
 export function InstallScriptStep({
   title,
   description,
+  info,
   scripts,
   script,
   scriptLabel = "Script",
@@ -20,6 +21,7 @@ export function InstallScriptStep({
 }: {
   title: string;
   description?: string;
+  info?: React.ReactNode;
   /**
    * Preferred: provide one or more scripts (e.g. detection + inject-form).
    * If omitted, falls back to `script` + `scriptLabel`.
@@ -63,6 +65,12 @@ export function InstallScriptStep({
           <CopyField key={s.label} label={s.label} value={s.value} copyValue={s.value} />
         ))}
       </div>
+
+      {info ? (
+        <div className="mt-3 rounded-md bg-blue-50 px-3 py-2 text-xs text-blue-900">
+          {info}
+        </div>
+      ) : null}
 
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
         {isDone ? (

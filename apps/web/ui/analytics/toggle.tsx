@@ -1099,7 +1099,7 @@ export default function Toggle({
   };
 
   const filterSelect = (
-    <div className="flex w-full gap-2 md:w-fit">
+    <div className="flex w-full flex-wrap gap-2 md:w-fit">
       <Filter.Select
         className="app-btn-secondary w-full justify-between md:w-fit md:min-w-[100px]"
         filters={regularFilters}
@@ -1247,10 +1247,10 @@ export default function Toggle({
         >
           <div
             className={cn(
-              "flex w-full flex-col items-center justify-between gap-2 md:flex-row",
+              "flex w-full flex-col items-start justify-between gap-2 md:flex-row md:items-center",
               {
                 "flex-col md:flex-row": !key,
-                "items-center": key,
+                "items-center md:items-center": key,
               },
             )}
           >
@@ -1280,13 +1280,13 @@ export default function Toggle({
             )}
             <div
               className={cn(
-                "flex w-full flex-col-reverse items-center gap-2 min-[550px]:flex-row",
+                "flex w-full flex-col-reverse items-stretch gap-2 min-[550px]:flex-row min-[550px]:items-center min-[550px]:flex-wrap",
                 dashboardProps && "md:w-auto",
               )}
             >
               {isMobile ? dateRangePicker : filterSelect}
               <div
-                className={cn("flex w-full grow items-center gap-2 md:w-auto", {
+                className={cn("flex w-full grow flex-wrap items-center gap-2 md:w-auto", {
                   "grow-0": dashboardProps,
                 })}
               >

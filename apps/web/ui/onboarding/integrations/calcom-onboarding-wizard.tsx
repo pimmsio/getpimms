@@ -18,11 +18,14 @@ const GUIDE_STEP_1_URL = `${GUIDE_BASE_URL}#1-add-the-pimms_id-field-to-your-cal
 
 export function CalcomOnboardingWizard({
   guideThumbnail,
+  providerId = "calDotCom",
 }: {
   guideThumbnail?: string | null;
+  providerId?: string;
 }) {
   const { id: workspaceId } = useWorkspace();
-  const { completedProviderIds, setCompletedProviderIds } = useOnboardingPreferences();
+  const { completedProviderIds, setCompletedProviderIds, markProviderStarted } =
+    useOnboardingPreferences();
 
   const [step1Done, setStep1Done] = useState(false);
   const [step2Done, setStep2Done] = useState(false);
@@ -57,9 +60,14 @@ export function CalcomOnboardingWizard({
 
   useEffect(() => {
     if (!validated) return;
-    if (completedProviderIds.includes("calDotCom")) return;
-    void setCompletedProviderIds([...completedProviderIds, "calDotCom"]);
-  }, [completedProviderIds, setCompletedProviderIds, validated]);
+    if (completedProviderIds.includes(providerId)) return;
+    void setCompletedProviderIds([...completedProviderIds, providerId]);
+  }, [completedProviderIds, providerId, setCompletedProviderIds, validated]);
+
+  useEffect(() => {
+    if (!step1Done) return;
+    void markProviderStarted(providerId);
+  }, [markProviderStarted, providerId, step1Done]);
 
   const completed = useMemo(
     () => [step1Done, step2Done, Boolean(created), validated],

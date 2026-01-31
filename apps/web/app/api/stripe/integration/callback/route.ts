@@ -9,7 +9,10 @@ import { NextRequest } from "next/server";
 
 const schema = z.object({
   state: z.string(),
+  // OAuth v2 legacy
   stripe_user_id: z.string().optional(),
+  // Install Links (preferred for external installs)
+  account_id: z.string().optional(),
   error: z.string().optional(),
   error_description: z.string().optional(),
 });
@@ -30,10 +33,14 @@ export const GET = async (req: NextRequest) => {
 
   const {
     state,
-    stripe_user_id: stripeAccountId,
+    stripe_user_id: stripeUserIdLegacy,
+    account_id: accountId,
     error,
     error_description,
   } = parsed.data;
+
+  // Install Links returns account_id; OAuth v2 returns stripe_user_id
+  const stripeAccountId = accountId ?? stripeUserIdLegacy;
 
   // Find workspace that initiated the Stripe app install
   const workspaceId = await redis.get<string>(`stripe:install:state:${state}`);

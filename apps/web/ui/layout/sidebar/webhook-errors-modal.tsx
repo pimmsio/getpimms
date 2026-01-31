@@ -28,22 +28,20 @@ export function WebhookErrorsModal({ onClose }: WebhookErrorsModalProps) {
           content={
             <div className="max-w-xs p-2">
               <div className="mb-2 text-sm font-medium text-gray-900">
-                Lead missed - Possible reasons:
+                No pimms_id was found
               </div>
               <div className="space-y-1 text-xs text-gray-700">
-                <div>• Person accessed form without Pimms link</div>
-                <div>
-                  • Person used Pimms link but conversion tracking disabled
-                </div>
+                <div>• The form was reached without a Pimms short link</div>
+                <div>• Tracking was disabled when the link was shared</div>
               </div>
               <div className="mt-2 text-xs text-gray-600">
-                Check your settings and ensure you always share Pimms links.
+                Share Pimms short links in emails, ads, and social posts.
               </div>
             </div>
           }
         >
           <div className="truncate text-gray-900">
-            Lead missed - Missing pimms_id
+            Missing pimms_id (no Pimms link)
           </div>
         </Tooltip>
       );
@@ -60,7 +58,7 @@ export function WebhookErrorsModal({ onClose }: WebhookErrorsModalProps) {
       <div className="flex flex-col items-start gap-2 sm:py-3 md:flex-row md:items-center md:justify-between">
         <div className="flex min-w-0 items-center gap-2 px-1">
           <h3 className="text-md truncate font-medium">
-            Missed leads - Actions to improve tracking
+            Leads without Pimms link
           </h3>
         </div>
         <div className="flex items-center gap-4">
@@ -77,6 +75,10 @@ export function WebhookErrorsModal({ onClose }: WebhookErrorsModalProps) {
       </div>
 
       <div className="space-y-6">
+        <div className="px-1 text-sm text-neutral-600">
+          These leads were received, but attribution couldn’t be matched to a
+          Pimms short link.
+        </div>
         {!conversionEnabled && (
           <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
             <div className="flex items-start gap-3">
@@ -97,13 +99,13 @@ export function WebhookErrorsModal({ onClose }: WebhookErrorsModalProps) {
             </div>
           </div>
         )}
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
           <div className="flex items-center gap-3">
-            <Info className="mt-0.5 h-5 w-5 text-gray-600" />
-            <div className="text-sm text-gray-700">
-              <strong>Tip:</strong> Always share Pimms links for example on
-              emails and social posts to ensure your conversions are tracked and
-              you don't miss potential leads.
+            <Info className="mt-0.5 h-5 w-5 text-blue-600" />
+            <div className="text-sm text-blue-900">
+              This does not mean your setup is wrong. It usually means someone
+              reached your form without a Pimms short link, so we couldn't match
+              the conversion.
             </div>
           </div>
         </div>
@@ -119,7 +121,7 @@ export function WebhookErrorsModal({ onClose }: WebhookErrorsModalProps) {
           </div>
         </div>
 
-        <h2 className="text-md mt-2 font-medium">Recent missed leads</h2>
+        <h2 className="text-md mt-2 font-medium">Recent unmatched leads</h2>
         <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
           <div className="border-b border-gray-200 bg-gray-50 px-4 py-3">
             <div className="grid grid-cols-3 gap-4 text-xs font-medium tracking-wide text-gray-600 uppercase">
