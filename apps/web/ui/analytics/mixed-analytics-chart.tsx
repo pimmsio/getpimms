@@ -2,7 +2,7 @@ import { formatDateTooltip } from "@/lib/analytics/format-date-tooltip";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { HelpTooltip, useRouterStuff } from "@dub/ui";
 import { TimeSeriesChart, XAxis, YAxis } from "@dub/ui/charts";
-import { nFormatter } from "@dub/utils";
+import { currencyFormatter, nFormatter } from "@dub/utils";
 import { useMemo } from "react";
 import { AnalyticsLoadingSpinner } from "./analytics-loading-spinner";
 import { MixedAreasAndBars } from "./mixed-areas-bars";
@@ -27,7 +27,8 @@ export default function MixedAnalyticsChart({
   const { workspace } = useAnalyticsWorkspace();
 
   const { searchParams } = useRouterStuff();
-  const { slug } = useWorkspace();
+  const { slug, currency } = useWorkspace();
+  const displayCurrency = (currency ?? "EUR").toUpperCase() as "EUR" | "USD";
   const { createdAt } = workspace || {};
 
   // Create the hot leads URL without causing re-renders
@@ -153,7 +154,7 @@ export default function MixedAnalyticsChart({
           {clicksSaved > 0 ? (
             <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
               <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
-                <span>Clicks saved</span>
+                <span>Clicks preserved</span>
                 <HelpTooltip content="Mobile + tablet clicks." />
               </div>
               <div className="text-sm font-bold text-gray-800 sm:text-xl">
@@ -169,7 +170,7 @@ export default function MixedAnalyticsChart({
           <div className="bg-brand-primary-light border-brand-primary/10 rounded-lg border px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
             <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
               <div className="bg-brand-primary h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2"></div>
-              <span>Clics</span>
+              <span>Clicks</span>
             </div>
             <div className="text-sm font-bold text-gray-800 sm:text-xl">
               {additionalMetrics.clicks > 999
@@ -183,7 +184,7 @@ export default function MixedAnalyticsChart({
             <div className="bg-data-leads/15 border-data-leads/20 rounded-lg border px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
               <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
                 <div className="bg-data-leads h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2"></div>
-                <span>Leads</span>
+                <span>Contacts</span>
               </div>
               <div className="text-sm font-bold text-gray-800 sm:text-xl">
                 {additionalMetrics.leads > 999
@@ -198,13 +199,14 @@ export default function MixedAnalyticsChart({
             <div className="bg-data-sales/15 border-data-sales/20 rounded-lg border px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
               <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-2 sm:text-sm">
                 <div className="bg-data-sales h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2"></div>
-                <span>Ventes</span>
+                <span>Revenue</span>
               </div>
               <div className="text-sm font-bold text-gray-800 sm:text-xl">
-                €
-                {additionalMetrics.saleAmount > 999
-                  ? (additionalMetrics.saleAmount / 1000).toFixed(1) + "k"
-                  : additionalMetrics.saleAmount.toLocaleString()}
+                {currencyFormatter(additionalMetrics.saleAmount, {
+                  currency: displayCurrency,
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </div>
             </div>
           )}
@@ -227,11 +229,15 @@ export default function MixedAnalyticsChart({
           {additionalMetrics.revenuePerClick > 0 && (
             <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
               <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
-                <span>RPC</span>
-                <HelpTooltip content="Revenue Per Click - Average revenue generated per click on your links" />
+                <span>Revenue/click</span>
+                <HelpTooltip content="Revenue per click – average revenue generated per link click" />
               </div>
               <div className="text-sm font-bold text-gray-800 sm:text-xl">
-                ${(additionalMetrics.revenuePerClick || 0).toFixed(1)}
+                {currencyFormatter(additionalMetrics.revenuePerClick || 0, {
+                  currency: displayCurrency,
+                  minimumFractionDigits: 1,
+                  maximumFractionDigits: 1,
+                })}
               </div>
             </div>
           )}
@@ -240,8 +246,8 @@ export default function MixedAnalyticsChart({
           {additionalMetrics.clickToLeadRate > 0 && (
             <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
               <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
-                <span>CVR</span>
-                <HelpTooltip content="Conversion Rate - Percentage of visitors who become qualified leads" />
+                <span>Conv %</span>
+                <HelpTooltip content="Conversion rate – percentage of visitors who become contacts" />
               </div>
               <div className="text-sm font-bold text-gray-800 sm:text-xl">
                 {Math.round(additionalMetrics.clickToLeadRate || 0)}%
@@ -253,8 +259,8 @@ export default function MixedAnalyticsChart({
           {additionalMetrics.leadToSaleRate > 0 && (
             <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
               <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
-                <span>Close Rate</span>
-                <HelpTooltip content="Close Rate - Percentage of leads that convert to sales" />
+                <span>Sales rate</span>
+                <HelpTooltip content="Percentage of contacts that convert to sales" />
               </div>
               <div className="text-sm font-bold text-gray-800 sm:text-xl">
                 {Math.round(additionalMetrics.leadToSaleRate || 0)}%
@@ -266,11 +272,15 @@ export default function MixedAnalyticsChart({
           {additionalMetrics.avgOrderValue > 0 && (
             <div className="rounded-lg border border-gray-200/50 bg-gray-50 px-2 py-2 sm:rounded-xl sm:px-4 sm:py-3 lg:min-w-[90px] lg:flex-shrink-0">
               <div className="mb-1 flex items-center gap-1 text-xs text-neutral-600 sm:mb-2 sm:gap-1.5 sm:text-sm">
-                <span>AOV</span>
-                <HelpTooltip content="Average Order Value - Average value of each order generated" />
+                <span>Avg order</span>
+                <HelpTooltip content="Average order value – average value of each sale" />
               </div>
               <div className="text-sm font-bold text-gray-800 sm:text-xl">
-                {Math.round(additionalMetrics.avgOrderValue || 0)}€
+                {currencyFormatter(additionalMetrics.avgOrderValue || 0, {
+                  currency: displayCurrency,
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                })}
               </div>
             </div>
           )}

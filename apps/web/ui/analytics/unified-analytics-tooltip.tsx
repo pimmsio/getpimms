@@ -1,4 +1,5 @@
-import { getGoogleFavicon, getParamsFromURL } from "@dub/utils";
+import useWorkspace from "@/lib/swr/use-workspace";
+import { currencyFormatter, getGoogleFavicon, getParamsFromURL } from "@dub/utils";
 import { createPortal } from "react-dom";
 
 // Base metrics that appear in all tooltips
@@ -57,6 +58,8 @@ export function UnifiedAnalyticsTooltip({
   position, 
   disablePositioning = false
 }: UnifiedTooltipProps) {
+  const { currency } = useWorkspace();
+  const displayCurrency = (currency ?? "EUR").toUpperCase() as "EUR" | "USD";
   // If positioning is disabled (for chart libraries), just return the content
   if (disablePositioning) {
     return (
@@ -71,7 +74,7 @@ export function UnifiedAnalyticsTooltip({
         }}
       >
         {sections.map((section, index) => (
-          <TooltipSection key={index} section={section} isLast={index === sections.length - 1} />
+          <TooltipSection key={index} section={section} isLast={index === sections.length - 1} currency={displayCurrency} />
         ))}
       </div>
     );
@@ -177,7 +180,7 @@ export function UnifiedAnalyticsTooltip({
         }}
       >
         {sections.map((section, index) => (
-          <TooltipSection key={index} section={section} isLast={index === sections.length - 1} />
+          <TooltipSection key={index} section={section} isLast={index === sections.length - 1} currency={displayCurrency} />
         ))}
       </div>
     </div>
@@ -190,7 +193,7 @@ export function UnifiedAnalyticsTooltip({
   return createPortal(tooltipContent, document.body);
 }
 
-function TooltipSection({ section, isLast }: { section: TooltipSection; isLast: boolean }) {
+function TooltipSection({ section, isLast, currency = "EUR" }: { section: TooltipSection; isLast: boolean; currency?: string }) {
   const borderClass = isLast ? "" : "border-b border-neutral-100";
 
   switch (section.type) {
@@ -221,7 +224,7 @@ function TooltipSection({ section, isLast }: { section: TooltipSection; isLast: 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <div className="h-2 w-2 shrink-0 rounded bg-yellow-400"></div>
-                <span className="text-neutral-600 text-xs">Leads</span>
+                <span className="text-neutral-600 text-xs">Contacts</span>
               </div>
               <span className="font-medium text-neutral-900 tabular-nums text-xs">
                 {section.data.leads.toLocaleString()}
@@ -232,7 +235,7 @@ function TooltipSection({ section, isLast }: { section: TooltipSection; isLast: 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <div className="h-2 w-2 shrink-0 rounded bg-green-400"></div>
-                <span className="text-neutral-600 text-xs">Sales</span>
+                <span className="text-neutral-600 text-xs">Revenue</span>
               </div>
               <span className="font-medium text-neutral-900 tabular-nums text-xs">
                 {section.data.sales.toLocaleString()}
@@ -246,21 +249,24 @@ function TooltipSection({ section, isLast }: { section: TooltipSection; isLast: 
       return (
         <div className={`px-3 py-2 space-y-1.5 ${borderClass}`}>
           <div className="flex items-center justify-between">
-            <span className="text-neutral-600 text-xs">Conversion Rate</span>
+            <span className="text-neutral-600 text-xs">Conversion rate</span>
             <span className="font-medium text-neutral-900 tabular-nums text-xs">
               {section.data.conversionRate.toFixed(1)}%
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-neutral-600 text-xs">Close Rate</span>
+            <span className="text-neutral-600 text-xs">Sales rate</span>
             <span className="font-medium text-neutral-900 tabular-nums text-xs">
               {section.data.closedRate.toFixed(1)}%
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-neutral-600 text-xs">Avg Order Value</span>
+            <span className="text-neutral-600 text-xs">Avg order</span>
             <span className="font-medium text-neutral-900 tabular-nums text-xs">
-              ${section.data.averageOrderValue.toFixed(0)}
+              {currencyFormatter(section.data.averageOrderValue, {
+                currency: (currency ?? "EUR").toUpperCase() as "EUR" | "USD",
+                maximumFractionDigits: 0,
+              })}
             </span>
           </div>
         </div>

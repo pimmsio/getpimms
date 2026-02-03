@@ -281,8 +281,8 @@ export default function IntegrationPageClient({
                 loading={isPending}
                 variant="primary"
                 className="flex items-center gap-2"
+                icon={<ConnectedDots className="size-4" />}
               >
-                <ConnectedDots className="size-4" />
                 Enable
               </AppButton>
             )}
@@ -300,8 +300,8 @@ export default function IntegrationPageClient({
                 loading={isPending}
                 variant="secondary"
                 className="flex items-center gap-2"
+                icon={<ConnectedDots className="size-4" />}
               >
-                <ConnectedDots className="size-4" />
                 Enable (Test)
               </AppButton>
             )}

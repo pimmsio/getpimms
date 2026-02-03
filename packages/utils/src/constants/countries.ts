@@ -283,3 +283,29 @@ export const EU_COUNTRY_CODES = [
   "SI",
   "SK",
 ];
+
+/** Countries where SaaS pricing is typically shown in USD */
+export const USD_COUNTRY_CODES = [
+  "US",
+  "CA",
+  "GB",
+  "AU",
+  "NZ",
+  "SG",
+  "HK",
+  "JP",
+  "IN",
+  "MX",
+  "BR",
+  "ZA",
+  "AE",
+  "SA",
+  "IL",
+  "KR",
+  "TW",
+  "MY",
+  "TH",
+  "PH",
+  "ID",
+  "VN",
+];

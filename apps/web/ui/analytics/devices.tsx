@@ -44,7 +44,7 @@ export default function Devices({
 
   return (
     <AnalyticsCard
-      tabs={[{ id: "devices", label: "Devices & Tech", icon: MobilePhone }]}
+      tabs={[{ id: "devices", label: "Devices & browsers", icon: MobilePhone }]}
       selectedTabId="devices"
       onSelectTab={() => {}}
       expandLimit={5}
@@ -60,7 +60,7 @@ export default function Devices({
             <NoDataYetEmptyState
               icon={MobilePhone}
               dataType="device data"
-              description="Device, browser, and OS analytics will appear once visitors start clicking your links"
+              description="Device, browser, and OS stats appear once visitors start clicking your links"
             />
           ) : (
             <div className="flex flex-col divide-y divide-neutral-100">

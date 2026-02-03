@@ -63,10 +63,10 @@ export function LinksRowMetricPills({
     <div className={cn("flex items-center gap-2", className)}>
       <Metric label="CLK" value={nFormatter(clicks)} tone="clicks" active={clicks > 0} />
       <div className="h-6 w-px bg-neutral-200/70" />
-      <Metric label="LEAD" value={nFormatter(leads)} tone="leads" active={leads > 0} />
+      <Metric label="CTT" value={nFormatter(leads)} tone="leads" active={leads > 0} />
       <div className="h-6 w-px bg-neutral-200/70" />
       <Metric
-        label="REV"
+        label="SAL"
         value={currencyFormatter(revenue, {
           currency: currency ?? "EUR",
           maximumFractionDigits: 0,

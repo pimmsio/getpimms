@@ -1,10 +1,14 @@
 export const currencyFormatter = (
   value: number,
   options?: Intl.NumberFormatOptions,
-) =>
-  Intl.NumberFormat("en-US", {
+) => {
+  const { currency = "EUR", ...rest } = options ?? {};
+  const currencyCode = (currency ?? "EUR").toUpperCase();
+  return Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "EUR",
+    currency: currencyCode,
+    currencyDisplay: "narrowSymbol", // Use symbol: € for EUR, $ for USD
     maximumFractionDigits: 0,
-    ...options,
+    ...rest,
   }).format(value);
+};

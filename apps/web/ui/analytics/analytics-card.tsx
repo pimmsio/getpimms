@@ -20,8 +20,8 @@ import { AnalyticsContext } from "./analytics-provider";
 import { card } from "../design/tokens";
 
 const EVENT_LABELS = {
-  sales: "Sales",
-  leads: "Leads",
+  sales: "Revenue",
+  leads: "Contacts",
   clicks: "Clicks",
 };
 

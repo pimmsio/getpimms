@@ -57,11 +57,11 @@ const NAV_AREAS: SidebarNavAreas<{
             href: buildAnalyticsUrl(`/${slug}/analytics`),
           },
           {
-            name: "Lead Signals",
+            name: "Contacts",
             href: buildAnalyticsUrl(`/${slug}/conversions`, { event: "leads" }),
           },
           {
-            name: "Reporting",
+            name: "Reports",
             href: buildAnalyticsUrl(`/${slug}/insights`),
           },
         ],
@@ -123,7 +123,7 @@ const NAV_AREAS: SidebarNavAreas<{
         ],
       },
       {
-        name: "Developer",
+        name: "Developer tools",
         items: [
           {
             name: "API Keys",

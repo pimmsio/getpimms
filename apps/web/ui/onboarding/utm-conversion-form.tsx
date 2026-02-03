@@ -97,7 +97,7 @@ export function UtmConversionForm() {
             If you track conversions, which ones matter?
           </h3>
           <div className="space-y-2">
-            {["Leads", "Sign-ups", "Bookings", "Sales"].map((option) => (
+            {["Contacts", "Sign-ups", "Bookings", "Sales"].map((option) => (
               <label key={option} className="flex items-center gap-3">
                 <input
                   type="checkbox"

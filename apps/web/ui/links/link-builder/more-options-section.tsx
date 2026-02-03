@@ -125,7 +125,7 @@ export function MoreOptionsSection() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <div className="text-sm font-medium text-neutral-900">
-                        App Stores
+                        Mobile app links
                       </div>
                       {targetingEnabled && (
                         <span className="inline-flex items-center rounded-md bg-neutral-200/70 px-2 py-0.5 text-xs font-medium text-neutral-700">
@@ -135,8 +135,8 @@ export function MoreOptionsSection() {
                     </div>
                     <div className="mt-0.5 text-xs text-neutral-500">
                       {targetingEnabled
-                        ? "Redirect iOS/Android users to app stores"
-                        : "Set custom links for mobile app stores"}
+                        ? "iOS/Android users redirect to app stores"
+                        : "Custom links for App Store and Play Store"}
                     </div>
                   </div>
                 </div>

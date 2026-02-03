@@ -298,10 +298,10 @@ function GridInsightsTable({
                     CLK
                   </th>
                   <th className="bg-neutral-50 px-3 py-2 text-center text-[10px] font-medium text-neutral-500">
-                    LEAD
+                    CTT
                   </th>
                   <th className="bg-neutral-50 px-3 py-2 text-center text-[10px] font-medium text-neutral-500">
-                    REV
+                    SAL
                   </th>
                 </React.Fragment>
               ))}

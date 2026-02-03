@@ -85,12 +85,12 @@ export default function TopLinks({
                               </span>
                               {d.leads > 0 && (
                                 <span className="text-neutral-500">
-                                  Leads: <strong>{d.leads}</strong>
+                                  Contacts: <strong>{d.leads}</strong>
                                 </span>
                               )}
                               {d.sales > 0 && (
                                 <span className="text-neutral-500">
-                                  Sales: <strong>{d.sales}</strong>
+                                  Revenue: <strong>{d.sales}</strong>
                                 </span>
                               )}
                             </div>
@@ -164,7 +164,7 @@ export default function TopLinks({
           ) : (
             <AnalyticsEmptyState
               icon={Hyperlink}
-              title="No links data yet"
+              title="No link data yet"
               description="Compare performance across all your short links"
             />
           )

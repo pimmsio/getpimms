@@ -86,9 +86,9 @@ export function MetricsLabels({ className }: { className?: string }) {
     <div className={cn("flex items-center gap-2.5 text-xs text-neutral-400 font-medium", className)}>
       <span>Clicks</span>
       <span>|</span>
-      <span>Leads</span>
+      <span>Contacts</span>
       <span>|</span>
-      <span>Sales</span>
+      <span>Revenue</span>
     </div>
   );
 }

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { cn } from "@dub/utils";
 
-export function SettingsLink() {
+function SettingsLink() {
   const { slug } = useParams() as { slug?: string };
 
   return slug ? (
@@ -22,4 +22,6 @@ export function SettingsLink() {
     </Link>
   ) : null;
 }
+
+export { SettingsLink };
 

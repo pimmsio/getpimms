@@ -95,7 +95,7 @@ export function UnifiedActivityList({
       {conversions.length > 0 && (
         <div className="space-y-3">
           <h3 className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
-            Leads
+            Contacts
           </h3>
           <div className="space-y-2">
             {conversions.map((event, index) => (

@@ -33,13 +33,13 @@ export default function Main() {
           ? [
               {
                 id: "leads",
-                label: "Leads",
+                label: "Contacts",
                 colorClassName: "text-yellow",
                 conversions: true,
               },
               {
                 id: "sales",
-                label: "Sales",
+                label: "Revenue",
                 colorClassName: "text-green",
                 conversions: true,
               },

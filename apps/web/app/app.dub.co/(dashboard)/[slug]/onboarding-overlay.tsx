@@ -75,8 +75,8 @@ export function OnboardingOverlay() {
                     opt-in, payments.
                   </div>
                   <div>
-                    Lead Signals show live activity + scoring so you focus on
-                    prospects most likely to convert.
+                    Contact activity shows live updates and scoring so you focus on
+                    contacts most likely to convert.
                   </div>
                 </div>
               </div>

@@ -31,7 +31,7 @@ const adminNavItems = [
     href: "/analytics",
   },
   {
-    name: "Leads",
+    name: "Contacts",
     href: "/leads",
   },
 ];

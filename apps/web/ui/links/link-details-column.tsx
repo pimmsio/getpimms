@@ -179,7 +179,7 @@ function LinkMetricsStrip({ link }: { link: ResponseLink }) {
       />
       <div className="h-6 w-px bg-neutral-200/70" />
       <Metric
-        label="LEAD"
+        label="CTT"
         value={leadsValue}
         muted={isConversionCallback || !leadsActive}
         tone="leads"
@@ -187,7 +187,7 @@ function LinkMetricsStrip({ link }: { link: ResponseLink }) {
       />
       <div className="h-6 w-px bg-neutral-200/70" />
       <Metric
-        label="REV"
+        label="SAL"
         value={revenueValue}
         muted={isConversionCallback || !revenueActive}
         tone="revenue"

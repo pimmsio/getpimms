@@ -195,7 +195,7 @@ export default function DestinationUrls({
               <AnalyticsEmptyState
                 icon={ExternalLink}
                 title="No destination data yet"
-                description="Track which destination URLs get the most clicks"
+                description="See which destination URLs get the most clicks"
               />
             )
           ) : (

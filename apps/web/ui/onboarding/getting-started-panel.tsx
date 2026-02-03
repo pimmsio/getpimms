@@ -41,12 +41,12 @@ type OnboardingVideo = {
 const ONBOARDING_VIDEOS: OnboardingVideo[] = [
   {
     id: "__TEbK4zonc",
-    title: "Getting started with Pimms (1 min)",
+    title: "Pimms quick start (1 min)",
     thumbnail: "https://img.youtube.com/vi/__TEbK4zonc/hqdefault.jpg",
   },
   {
     id: "9DRh7aYNqUk",
-    title: "Short links are the foundation of Pimms (4 min)",
+    title: "How short links work in Pimms (4 min)",
     thumbnail: "https://img.youtube.com/vi/9DRh7aYNqUk/hqdefault.jpg",
   },
   {
@@ -56,7 +56,7 @@ const ONBOARDING_VIDEOS: OnboardingVideo[] = [
   },
   {
     id: undefined,
-    title: "Get started with lead tracking",
+    title: "Get started with contact tracking",
     thumbnail: undefined,
   },
   {
@@ -251,7 +251,7 @@ export function GettingStartedPanel() {
       },
       {
         id: "capture-new-leads",
-        display: "Capture new leads in one step",
+        display: "Capture new contacts in one step",
         badge: "New",
         badgeVariant: "success",
         description: "Works on any link — add an email form before redirecting.",
@@ -640,7 +640,7 @@ export function GettingStartedPanel() {
           {moreActionsTasks.length > 0 && (
             <div className="space-y-2 w-full max-w-full">
               <div className="text-sm font-semibold text-neutral-900">
-                More actions you can do
+                More options
               </div>
               <div className="grid grid-cols-1 divide-y divide-neutral-100 overflow-hidden rounded-lg border border-neutral-200 bg-white sm:grid-cols-3 sm:divide-y-0 sm:divide-x w-full max-w-full">
                 {moreActionsTasks.map(

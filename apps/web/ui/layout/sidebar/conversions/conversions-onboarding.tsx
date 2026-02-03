@@ -68,7 +68,7 @@ export function ConversionsOnboarding({
             onClick={() => openSetup()}
           >
             <Book2Small className="size-3 text-neutral-800" />
-            View setup guides
+            View configuration guides
           </button>
           <div className="absolute right-0 top-0 flex h-full items-center p-1">
             <button

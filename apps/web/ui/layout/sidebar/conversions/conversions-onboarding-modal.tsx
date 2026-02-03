@@ -393,7 +393,7 @@ const PROVIDERS: Provider[] = [
   // APIs
   {
     id: "trackLeadApi",
-    name: "Track Lead API",
+    name: "Track Contact API",
     category: "apis",
     guideKey: "step-by-step-guide-for-developers-to-set-conversion-tracking",
     thumbnail: "https://assets.pimms.io/javascript-guide-pimms.webp",

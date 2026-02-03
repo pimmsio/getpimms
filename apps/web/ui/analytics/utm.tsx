@@ -335,7 +335,7 @@ function BreakdownColumn({
   return (
     <div className="flex flex-col px-4 py-3">
       <div className="mb-2 flex items-center justify-between">
-        <p className="text-xs font-medium text-neutral-500">By UTM</p>
+        <p className="text-xs font-medium text-neutral-500">UTM breakdown</p>
         <ToggleGroup
           options={options}
           selected={mode}
@@ -487,7 +487,7 @@ function UTMEmptyState({
     <AnalyticsEmptyState
       icon={TrendingUp}
       title="No UTM data yet"
-      description="Add UTM parameters to your links to see top combinations and campaign performance."
+      description="Add UTM parameters to your links to see top combinations and campaign performance"
       className="h-[220px]"
     />
   );

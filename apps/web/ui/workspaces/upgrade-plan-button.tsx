@@ -2,7 +2,13 @@
 
 import useWorkspace from "@/lib/swr/use-workspace";
 import { AppButton, AppButtonProps } from "@/ui/components/controls/app-button";
-import { APP_DOMAIN, capitalize, cn, SELF_SERVE_PAID_PLANS } from "@dub/utils";
+import {
+  APP_DOMAIN,
+  BillingCurrency,
+  capitalize,
+  cn,
+  SELF_SERVE_PAID_PLANS,
+} from "@dub/utils";
 import { usePlausible } from "next-plausible";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
@@ -12,6 +18,7 @@ export function UpgradePlanButton({
   plan,
   period,
   mode = "subscription",
+  currency,
   className,
   text,
   ...rest
@@ -19,12 +26,18 @@ export function UpgradePlanButton({
   plan: string;
   period: "monthly" | "yearly";
   mode?: "subscription" | "lifetime";
+  currency?: BillingCurrency;
   text?: string;
 } & Partial<AppButtonProps>) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { slug: workspaceSlug, plan: currentPlan } = useWorkspace();
+  const { slug: workspaceSlug, plan: currentPlan, currency: workspaceCurrency } =
+    useWorkspace();
+
+  // Always pass currency: prefer prop, fallback to workspace (avoids EUR when USD selected)
+  const effectiveCurrency =
+    (currency ?? (workspaceCurrency as BillingCurrency)) ?? "EUR";
 
   const plausible = usePlausible();
 
@@ -62,6 +75,7 @@ export function UpgradePlanButton({
             period: mode === "lifetime" ? "lifetime" : period,
             baseUrl,
             onboarding,
+            currency: effectiveCurrency,
           }),
         },
       );

@@ -15,7 +15,7 @@ const ConversionsClient = dynamic(
 export default function WorkspaceAnalyticsConversions() {
   return (
     <PageContent
-      title="Leads"
+      title="Contacts"
       headerPlacement="content"
     >
       <ConversionsClient />

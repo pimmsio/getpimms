@@ -145,6 +145,7 @@
     "zod-openapi": "^4.2.4"
   },
   "devDependencies": {
+    "@csstools/postcss-oklab-function": "^5.0.1",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/he": "^1.2.3",
     "@types/html-escaper": "^3.0.4",

@@ -76,7 +76,7 @@ export default function Channel({
 
   return (
     <AnalyticsCard
-      tabs={[{ id: "referers", label: "Top Referrers", icon: ReferredVia }]}
+      tabs={[{ id: "referers", label: "Top traffic sources", icon: ReferredVia }]}
       selectedTabId="referers"
       onSelectTab={() => {}}
       expandLimit={5}
@@ -101,8 +101,8 @@ export default function Channel({
           ) : !hasData ? (
             <AnalyticsEmptyState
               icon={ReferredVia}
-              title="No referrer data yet"
-              description="Discover where your traffic comes from — social media, search engines, direct visits, and more"
+              title="No traffic source data yet"
+              description="See where your traffic comes from: social media, search engines, direct visits, and more"
             />
           ) : (
             <div className="flex flex-col px-4 py-3">
@@ -199,7 +199,7 @@ export default function Channel({
                   onClick={() => setShowModal(true)}
                   className="app-btn-muted mt-4 w-full"
                 >
-                  View all {sortedReferersData?.length} referrers →
+                  View all {sortedReferersData?.length} traffic sources →
                 </button>
               )}
             </div>

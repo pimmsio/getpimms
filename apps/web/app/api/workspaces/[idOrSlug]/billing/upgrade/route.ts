@@ -5,20 +5,29 @@ import { APP_DOMAIN } from "@dub/utils";
 import { NextResponse } from "next/server";
 
 export const POST = withWorkspace(async ({ req, workspace, session }) => {
-  let { plan, period, baseUrl, onboarding } = await req.json();
+  let { plan, period, baseUrl, onboarding, currency } = await req.json();
 
   if (!plan || !period) {
     return new Response("Invalid plan or period", { status: 400 });
   }
 
   plan = plan.replace(" ", "+");
+  const currencyCode = (currency ?? workspace.currency ?? "EUR")
+    .toString()
+    .toLowerCase() as "eur" | "usd";
+
+  // Stripe allows only one lookup_key per price. Use currency suffix: pro_monthly_eur, pro_monthly_usd
+  const lookupKey = `${plan}_${period}_${currencyCode}`;
 
   const prices = await stripe.prices.list({
-    lookup_keys: [`${plan}_${period}`],
+    lookup_keys: [lookupKey],
   });
 
   if (!prices.data || prices.data.length === 0) {
-    return new Response(`Price not found for ${plan}_${period}`, { status: 404 });
+    return new Response(
+      `Price not found for ${lookupKey}`,
+      { status: 404 },
+    );
   }
 
   const priceId = prices.data[0].id;

@@ -38,12 +38,17 @@ export const PLANS = [
     name: "Pro",
     price: {
       monthly: 19,
+      monthlyUSD: 19,
       lifetime: 129,
+      lifetimeUSD: 129,
+      // used in webhooks
       ids: [
-        "price_1SQBYHBN5sOoOmBUxCM8iTy8", // prod monthly
-        "price_1SQBYHBN5sOoOmBUs2reZG2N", // prod lifetime
-        "price_1SshGGBL7DFxjjSQ50AZD1Ta", // staging monthly
-        "price_1SshGGBL7DFxjjSQY8rBy8K7", // staging lifetime
+        "price_1SvzZDBN5sOoOmBUaN4QLJiP", // prod monthly EUR
+        "price_1SvzcOBN5sOoOmBUIfIofPft", // prod monthly USD
+        "price_1Svza7BN5sOoOmBUr6pYShpL", // prod lifetime EUR
+        "price_1SvzctBN5sOoOmBU91r83ZTS", // prod monthly USD
+        "price_1SshGGBL7DFxjjSQ50AZD1Ta", // staging monthly EUR
+        "price_1SshGGBL7DFxjjSQY8rBy8K7", // staging lifetime EUR
       ],
     },
     limits: {
@@ -77,12 +82,16 @@ export const PLANS = [
     name: "Business",
     price: {
       monthly: 69,
+      monthlyUSD: 69,
       yearly: 690,
+      yearlyUSD: 690,
       ids: [
-        "price_1SQBqRBN5sOoOmBUMXE1IUA8", // prod monthly
-        "price_1SQBqRBN5sOoOmBUkOtzh1lV", // prod yearly
-        "price_1SshGgBL7DFxjjSQoiz9zKmZ", // staging monthly
-        "price_1SshH5BL7DFxjjSQUthdqQQY", // staging yearly
+        "price_1SvzeSBN5sOoOmBUsjJUxlm8", // prod monthly EUR
+        "price_1SvzhDBN5sOoOmBUX14nOuFE", // prod monthly USD
+        "price_1SvzekBN5sOoOmBUoXU1EIhK", // prod yearly EUR
+        "price_1SvzhRBN5sOoOmBU7x0EqbTw", // prod yearly USD
+        "price_1SshGgBL7DFxjjSQoiz9zKmZ", // staging monthly EUR
+        "price_1SshH5BL7DFxjjSQUthdqQQY", // staging yearly EUR
       ],
     },
     limits: {
@@ -127,6 +136,34 @@ export const FREE_WORKSPACES_LIMIT = 2;
 export const getPlanFromPriceId = (priceId: string) => {
   return PLANS.find((plan) => plan.price.ids?.includes(priceId)) || null;
 };
+
+export type BillingCurrency = "EUR" | "USD";
+
+export function getPlanPrice(
+  planName: string,
+  period: "monthly" | "yearly" | "lifetime",
+  currency: BillingCurrency = "EUR",
+): number {
+  const plan = PLANS.find((p) => p.name.toLowerCase() === planName);
+  if (!plan?.price) return 0;
+  const p = plan.price as {
+    monthly?: number;
+    monthlyUSD?: number;
+    yearly?: number;
+    yearlyUSD?: number;
+    lifetime?: number;
+    lifetimeUSD?: number;
+  };
+  if (currency === "USD") {
+    if (period === "monthly") return p.monthlyUSD ?? p.monthly ?? 0;
+    if (period === "yearly") return p.yearlyUSD ?? p.yearly ?? 0;
+    if (period === "lifetime") return p.lifetimeUSD ?? p.lifetime ?? 0;
+  }
+  if (period === "monthly") return p.monthly ?? 0;
+  if (period === "yearly") return p.yearly ?? 0;
+  if (period === "lifetime") return p.lifetime ?? 0;
+  return 0;
+}
 
 export const getPlanDetails = (plan: string) => {
   return SELF_SERVE_PAID_PLANS.find(

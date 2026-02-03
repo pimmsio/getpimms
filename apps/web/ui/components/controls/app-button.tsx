@@ -49,6 +49,8 @@ export type AppButtonProps = {
   className?: string;
   children: ReactNode;
   loading?: boolean;
+  /** When set, the loading spinner replaces this icon (no extra icon when loading). */
+  icon?: ReactNode;
   disabledTooltip?: ReactNode | string;
 } & ComponentProps<"button">;
 
@@ -60,6 +62,7 @@ export const AppButton = forwardRef<HTMLButtonElement, AppButtonProps>(
       className,
       children,
       loading,
+      icon,
       disabledTooltip,
       ...props
     },
@@ -77,8 +80,13 @@ export const AppButton = forwardRef<HTMLButtonElement, AppButtonProps>(
       >
         {loading ? (
           <>
-            <Spinner className="mr-2 opacity-80" />
-            <span className="opacity-70">{children}</span>
+            <Spinner className="mr-2 shrink-0 opacity-80" />
+            <span className={icon ? undefined : "opacity-70"}>{children}</span>
+          </>
+        ) : icon != null ? (
+          <>
+            <span className="shrink-0">{icon}</span>
+            {children}
           </>
         ) : (
           children

@@ -194,7 +194,7 @@ export function SystemeioOnboardingWizard({
             done={validated}
             onStartWaiting={startWaitingForLead}
             waitingLabel="Waiting for lead…"
-            successLabel="Lead recorded. Tracking works."
+            successLabel="Contact recorded. Tracking works."
           />
         ),
       },

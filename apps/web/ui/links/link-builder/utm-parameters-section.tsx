@@ -10,7 +10,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import useSWR from "swr";
 import { UtmSectionProvider } from "./utm-section-context";
-import { Badge } from "@dub/ui";
 
 export function UTMParametersSection({
   autoExpand,
@@ -179,10 +178,7 @@ export function UTMParametersSection({
         >
           <div className="flex items-center gap-2">
             <div className="text-sm font-medium text-neutral-800">
-              <Badge variant="neutral" className="text-sm font-medium">
-                ?utm_
-              </Badge>{" "}
-              parameters
+              UTM parameters
             </div>
             {hasUtmParams && (
               <span className="inline-flex items-center rounded-md bg-neutral-200/70 px-2 py-0.5 text-xs font-medium text-neutral-700">

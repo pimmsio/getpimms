@@ -26,7 +26,7 @@ export default function Channels({
 
   return (
     <AnalyticsCard
-      tabs={[{ id: "channels", label: "Top Channels", icon: Filter }]}
+      tabs={[{ id: "channels", label: "Traffic channels", icon: Filter }]}
       selectedTabId="channels"
       onSelectTab={() => {}}
       expandLimit={5}
@@ -40,8 +40,8 @@ export default function Channels({
           ) : !hasData ? (
             <NoDataYetEmptyState
               icon={Filter}
-              dataType="channel data"
-              description="See traffic distribution across different channels"
+              dataType="traffic channel data"
+              description="See traffic breakdown by marketing channel"
             />
           ) : (
             <ChannelPieChart 

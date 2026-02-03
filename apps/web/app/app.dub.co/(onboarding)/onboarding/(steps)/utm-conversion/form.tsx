@@ -154,7 +154,7 @@ export function Form() {
               What content do you want to track?
             </label>
             <div className="space-y-2">
-              {["Leads", "Sales", "Bookings", "Sign-ups", "Downloads"].map(
+              {["Contacts", "Sales", "Bookings", "Sign-ups", "Downloads"].map(
                 (option) => (
                   <label key={option} className="flex items-center gap-3">
                     <input

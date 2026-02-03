@@ -3,8 +3,18 @@
 import useWorkspace from "@/lib/swr/use-workspace";
 import { UpgradePlanButton } from "@/ui/workspaces/upgrade-plan-button";
 import { Check } from "@dub/ui";
-import { cn, INFINITY_NUMBER, nFormatter, PLANS } from "@dub/utils";
-import { useMemo, useState } from "react";
+import {
+  BillingCurrency,
+  cn,
+  getPlanPrice,
+  INFINITY_NUMBER,
+  nFormatter,
+  PLANS,
+} from "@dub/utils";
+import { useCallback, useMemo, useState } from "react";
+import { mutate } from "swr";
+import { toast } from "sonner";
+import { CurrencyToggle } from "./currency-toggle";
 import { PaidPlanId, PaidPlanPicker } from "./paid-plan-picker";
 import { PricingOptionCard } from "./pricing-option-card";
 
@@ -79,7 +89,46 @@ export function PaywallContent({
 }: {
   className?: string;
 }) {
-  const { plan: currentPlan } = useWorkspace();
+  const {
+    id: workspaceId,
+    plan: currentPlan,
+    currency: workspaceCurrency,
+    mutate: mutateWorkspace,
+  } = useWorkspace();
+  const [pendingCurrency, setPendingCurrency] = useState<BillingCurrency | null>(
+    null,
+  );
+  const currency: BillingCurrency =
+    pendingCurrency ??
+    ((workspaceCurrency as BillingCurrency) ?? "EUR");
+
+  const handleCurrencyChange = useCallback(
+    async (next: BillingCurrency) => {
+      if (!workspaceId) return;
+      if (next === currency) return;
+      setPendingCurrency(next);
+      try {
+        const res = await fetch(`/api/workspaces/${workspaceId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ currency: next }),
+        });
+        if (!res.ok) {
+          const { error } = await res.json().catch(() => ({}));
+          throw new Error(error?.message ?? "Failed to update currency");
+        }
+        await Promise.all([mutate("/api/workspaces"), mutateWorkspace()]);
+        toast.success("Currency updated");
+      } catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : "Failed to update currency",
+        );
+      } finally {
+        setPendingCurrency(null);
+      }
+    },
+    [workspaceId, mutateWorkspace, currency],
+  );
 
   const defaultSelectedPaidPlan = useMemo<PaidPlanId>(() => {
     if (currentPlan === "pro") return "pro";
@@ -100,12 +149,18 @@ export function PaywallContent({
   const primaryCta =
     selectedPaidPlan === "business" ? "Subscribe yearly" : "Subscribe monthly";
 
+  const monthlyBusiness = getPlanPrice("business", "monthly", currency);
+  const yearlyBusiness = getPlanPrice("business", "yearly", currency);
+
   return (
     <div className={cn("w-full", className)}>
-      <div className="text-sm text-neutral-500">
-        You are currently on the{" "}
-        <span className="font-medium text-neutral-900 capitalize">{currentPlan}</span>{" "}
-        plan
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="text-sm text-neutral-500">
+          You are currently on the{" "}
+          <span className="font-medium text-neutral-900 capitalize">{currentPlan}</span>{" "}
+          plan
+        </div>
+        <CurrencyToggle value={currency} onChange={handleCurrencyChange} />
       </div>
 
       <div className="mt-4">
@@ -117,12 +172,14 @@ export function PaywallContent({
           <>
             <PricingOptionCard
               title="Monthly"
-              price={selectedPlan.price.monthly!}
+              price={getPlanPrice("pro", "monthly", currency)}
               periodLabel="/month"
+              currency={currency}
               cta={
                 <UpgradePlanButton
                   plan="pro"
                   period="monthly"
+                  currency={currency}
                   className="h-10 w-full rounded-lg"
                   variant="outline"
                   text="Subscribe monthly"
@@ -131,8 +188,9 @@ export function PaywallContent({
             />
             <PricingOptionCard
               title="Lifetime"
-              price={selectedPlan.price.lifetime!}
+              price={getPlanPrice("pro", "lifetime", currency)}
               periodLabel=""
+              currency={currency}
               badge="Most popular"
               helperTop={<span className="font-medium">One-time payment</span>}
               cta={
@@ -140,6 +198,7 @@ export function PaywallContent({
                   plan="pro"
                   period="monthly"
                   mode="lifetime"
+                  currency={currency}
                   className="h-10 w-full rounded-lg"
                   variant="primary"
                   text="Unlock lifetime access"
@@ -151,12 +210,14 @@ export function PaywallContent({
           <>
             <PricingOptionCard
               title="Monthly"
-              price={selectedPlan.price.monthly!}
+              price={getPlanPrice("business", "monthly", currency)}
               periodLabel="/month"
+              currency={currency}
               cta={
                 <UpgradePlanButton
                   plan="business"
                   period="monthly"
+                  currency={currency}
                   className="h-10 w-full rounded-lg"
                   variant="outline"
                   text="Subscribe monthly"
@@ -165,12 +226,23 @@ export function PaywallContent({
             />
             <PricingOptionCard
               title="Yearly"
-              price={selectedPlan.price.yearly!}
+              price={yearlyBusiness}
               periodLabel="/year"
+              currency={currency}
               badge="Most popular"
               helperTop={
                 <span className="text-neutral-500">
-                  <span className="line-through">€69/month</span>{" "}
+                  <span className="line-through">
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency,
+                      maximumFractionDigits: 0,
+                      ...(currency === "USD" && {
+                        currencyDisplay: "narrowSymbol",
+                      }),
+                    }).format(monthlyBusiness)}
+                    /month
+                  </span>{" "}
                   <span className="text-blue-600">2 months free</span>
                 </span>
               }
@@ -178,6 +250,7 @@ export function PaywallContent({
                 <UpgradePlanButton
                   plan="business"
                   period="yearly"
+                  currency={currency}
                   className="h-10 w-full rounded-lg"
                   variant="primary"
                   text="Subscribe yearly"

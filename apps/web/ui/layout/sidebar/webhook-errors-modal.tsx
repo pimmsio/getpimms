@@ -58,7 +58,7 @@ export function WebhookErrorsModal({ onClose }: WebhookErrorsModalProps) {
       <div className="flex flex-col items-start gap-2 sm:py-3 md:flex-row md:items-center md:justify-between">
         <div className="flex min-w-0 items-center gap-2 px-1">
           <h3 className="text-md truncate font-medium">
-            Leads without Pimms link
+            Contacts without Pimms link
           </h3>
         </div>
         <div className="flex items-center gap-4">
@@ -125,7 +125,7 @@ export function WebhookErrorsModal({ onClose }: WebhookErrorsModalProps) {
         <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
           <div className="border-b border-gray-200 bg-gray-50 px-4 py-3">
             <div className="grid grid-cols-3 gap-4 text-xs font-medium tracking-wide text-gray-600 uppercase">
-              <div>Lead details</div>
+              <div>Contact details</div>
               <div>Destination URL</div>
               <div>Date</div>
             </div>

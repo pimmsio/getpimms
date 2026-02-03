@@ -112,7 +112,11 @@ export default function WorkspaceSettingsClient() {
             body: JSON.stringify(data),
           }).then(async (res) => {
             if (res.status === 200) {
-              await Promise.all([mutate("/api/workspaces"), mutate(`/api/workspaces/${id}`)]);
+              await Promise.all([
+                mutate("/api/workspaces"),
+                mutate(`/api/workspaces/${id}`),
+                slug && mutate(`/api/workspaces/${slug}`),
+              ]);
               toast.success("Successfully updated workspace currency!");
             } else {
               const { error } = await res.json();

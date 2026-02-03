@@ -162,8 +162,8 @@ export function StripeOnboardingWizard({
                         loading={connecting}
                         variant="primary"
                         className="flex gap-2"
+                        icon={<ConnectedDots className="size-4" />}
                       >
-                        <ConnectedDots className="size-4" />
                         Connect Stripe
                       </AppButton>
                       <AppButton
@@ -172,8 +172,8 @@ export function StripeOnboardingWizard({
                         loading={connecting}
                         variant="secondary"
                         className="flex gap-2"
+                        icon={<ConnectedDots className="size-4" />}
                       >
-                        <ConnectedDots className="size-4" />
                         Connect Stripe (Test)
                       </AppButton>
                     </>

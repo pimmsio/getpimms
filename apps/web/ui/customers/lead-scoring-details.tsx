@@ -31,7 +31,7 @@ export function LeadScoringDetails({ customerActivity, clickHistory, customerId,
     return (
       <div className={cn(card.base, "p-6")}>
         <h2 className={cn(text.sectionTitle, "mb-4 text-lg")}>
-          Lead Scoring
+          Contact scoring
         </h2>
         <div className="py-8 text-center text-neutral-500">
           No scoring data available
@@ -97,7 +97,7 @@ export function LeadScoringDetails({ customerActivity, clickHistory, customerId,
     <div className={cn(card.base, "p-4")}>
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h2 className={cn(text.sectionTitle, "text-base")}>Lead Scoring</h2>
+          <h2 className={cn(text.sectionTitle, "text-base")}>Contact scoring</h2>
           {hot.lastHotScoreAt && (
             <p className="mt-1 text-xs text-neutral-500">
               Last updated: {formatDateTimeSmart(hot.lastHotScoreAt)}
@@ -133,7 +133,7 @@ export function LeadScoringDetails({ customerActivity, clickHistory, customerId,
         </div>
         <div className="rounded-lg bg-neutral-50 p-3 text-center">
           <div className="text-lg font-bold text-neutral-900">{conversionEvents.length}</div>
-          <div className="text-xs text-neutral-500">{conversionEvents.length === 1 ? "Lead" : "Leads"}</div>
+          <div className="text-xs text-neutral-500">{conversionEvents.length === 1 ? "Contact" : "Contacts"}</div>
         </div>
         <div className="rounded-lg bg-neutral-50 p-3 text-center">
           <div className="text-lg font-bold text-neutral-900">

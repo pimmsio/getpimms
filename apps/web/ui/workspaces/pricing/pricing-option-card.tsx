@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@dub/ui";
-import { cn } from "@dub/utils";
+import { BillingCurrency, cn } from "@dub/utils";
 import NumberFlow from "@number-flow/react";
 import { ReactNode } from "react";
 
@@ -9,6 +9,7 @@ export function PricingOptionCard({
   title,
   price,
   periodLabel,
+  currency = "EUR",
   helperTop,
   helperBottom,
   badge,
@@ -18,6 +19,7 @@ export function PricingOptionCard({
   title: string;
   price: number;
   periodLabel: string;
+  currency?: BillingCurrency;
   helperTop?: ReactNode;
   helperBottom?: ReactNode;
   badge?: string;
@@ -48,8 +50,11 @@ export function PricingOptionCard({
               className="text-3xl font-semibold tabular-nums text-neutral-900"
               format={{
                 style: "currency",
-                currency: "EUR",
+                currency,
                 maximumFractionDigits: 0,
+                ...(currency === "USD" && {
+                  currencyDisplay: "narrowSymbol" as const,
+                }),
               }}
             />
             <div className="pb-1 text-base font-medium text-neutral-500">

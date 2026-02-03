@@ -13,8 +13,8 @@ export function WaitForLeadStep({
   waiting,
   done,
   onStartWaiting,
-  waitingLabel = "Waiting for lead…",
-  successLabel = "Lead recorded. Tracking works.",
+  waitingLabel = "Waiting for contact…",
+  successLabel = "Contact recorded. Tracking works.",
 }: {
   title: string;
   description?: string;

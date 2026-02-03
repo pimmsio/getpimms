@@ -97,7 +97,7 @@ const STATUS_CONFIG: Record<
     className: "bg-green-100 text-green-600",
   },
   idle: {
-    message: "Enter a valid domain to check availability.",
+    message: "Enter a domain to check availability.",
   },
 };
 
@@ -520,13 +520,13 @@ export function AddEditDomainForm({
                           id === "appleAppSiteAssociation" || id === "assetLinks" ? (
                             <AppTextarea
                               {...register(id)}
-                              placeholder="Paste JSON here"
+                              placeholder="Paste JSON config here"
                               className="min-h-[120px] font-mono"
                             />
                           ) : (
                             <AppInput
                               {...register(id)}
-                              placeholder="https://yourwebsite.com"
+                              placeholder="https://example.com"
                               className="max-w-none"
                             />
                           )
@@ -678,8 +678,8 @@ const DOMAIN_OPTIONS: {
   // },
   {
     id: "notFoundUrl",
-    title: "Not found URL",
-    description: "Where to redirect when shortlinks don't exist",
+    title: "404 redirect",
+    description: "Where to redirect when short links don't exist",
     icon: Binoculars,
     proFeature: true,
   },
@@ -694,15 +694,15 @@ const DOMAIN_OPTIONS: {
 const ADVANCED_OPTIONS = [
   {
     id: "appleAppSiteAssociation",
-    title: "Apple App Site Association",
-    description: "Provide a config file for iOS deep linking",
+    title: "iOS deep links (AASA)",
+    description: "JSON config for iOS app deep linking",
     icon: AppleLogo,
     proFeature: true,
   },
   {
     id: "assetLinks",
-    title: "Asset Link",
-    description: "Provide a config file for Android deep linking",
+    title: "Android deep links (assetlinks.json)",
+    description: "JSON config for Android app deep linking",
     icon: AndroidLogo,
     proFeature: true,
   },

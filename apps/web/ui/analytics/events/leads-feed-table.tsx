@@ -221,7 +221,7 @@ export default function LeadsFeedTable() {
                   onClick={() => setShowConversionOnboardingModal(true)}
                   className="opacity-0 transition-opacity group-hover:opacity-100 rounded-md bg-neutral-900 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-neutral-800"
                 >
-                  Reveal
+                  Show
                 </button>
               </div>
             );
@@ -537,10 +537,10 @@ export default function LeadsFeedTable() {
       <div className="mt-4 rounded-xl border border-neutral-200 bg-white p-4 sm:p-6">
         <div className="text-center">
           <div className="text-base font-semibold text-neutral-900">
-            No leads yet
+            No contacts yet
           </div>
           <div className="mt-2 text-sm text-neutral-600">
-            Set up lead tracking to capture your first leads here.
+            Set up contact tracking to capture your first contacts here.
           </div>
           <AppButton
             type="button"
@@ -549,7 +549,7 @@ export default function LeadsFeedTable() {
             className="mt-4"
             onClick={() => setShowConversionOnboardingModal(true)}
           >
-            Open setup guide
+            Open configuration guide
           </AppButton>
         </div>
       </div>
@@ -569,7 +569,7 @@ export default function LeadsFeedTable() {
             size="sm"
             onClick={() => setShowConversionOnboardingModal(true)}
           >
-            Open setup guide
+            Open configuration guide
           </AppButton>
           <AppButton
             type="button"

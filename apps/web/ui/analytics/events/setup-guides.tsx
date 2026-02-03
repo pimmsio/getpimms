@@ -40,7 +40,7 @@ export default function SetupGuides({
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="text-sm font-semibold text-neutral-900">Setup guides</div>
+          <div className="text-sm font-semibold text-neutral-900">Configuration guides</div>
           <div className="mt-1 text-sm text-neutral-600">{selectedStacksLabel}</div>
         </div>
 

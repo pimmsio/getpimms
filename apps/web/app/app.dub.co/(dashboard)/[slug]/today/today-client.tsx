@@ -352,7 +352,7 @@ export default function TodayClient() {
           <div className="mt-3 rounded-lg bg-neutral-50 px-4 py-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
-                Clicks saved last week
+                Clicks preserved last week
               </div>
               <div className="text-lg font-semibold text-neutral-900 tabular-nums">
                 {clicksSaved7d.toLocaleString()}
@@ -365,7 +365,7 @@ export default function TodayClient() {
           </div>
         </div>
 
-        {/* Lead Signal Activity */}
+        {/* Contact activity */}
         <div className="mb-6 border-t border-neutral-100 pt-5">
           <LeadSignalActivitySection slug={slug} />
         </div>
@@ -560,7 +560,7 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
                   onClick={() => setShowConversionOnboardingModal(true)}
                   className="rounded-md bg-neutral-900 px-2.5 py-1.5 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-neutral-800"
                 >
-                  Reveal
+                  Show
                 </button>
               </div>
             );
@@ -758,7 +758,7 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
     <div className="mt-6">
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
-          Lead Signal
+          Contact activity
           <HelpTooltip content="Last 7 days (default)." />
         </div>
         <div className="flex items-center gap-2">
@@ -769,7 +769,7 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
               setShowConversionOnboardingModal(true);
             }}
           >
-            {hasLeads ? "Setup guides" : "Reveal leads"}
+            {hasLeads ? "Configuration guides" : "Show contacts"}
           </button>
           <AppButtonLink
             href={`/${slug}/conversions?interval=7d`}
@@ -786,7 +786,7 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
         <div className="mb-3 flex items-start justify-between gap-3">
           <div>
             <div className="text-sm font-semibold text-neutral-900">
-              No leads yet — but you’re getting clicks
+              No contacts yet — but you’re getting clicks
             </div>
             <div className="mt-1 text-sm text-neutral-600">
               Showing your most recent clicks from the last 7 days (up to 5).
@@ -797,8 +797,7 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
         <div className="mb-3 flex items-start justify-between gap-3">
           <div>
             <div className="mt-1 text-sm text-neutral-600">
-              Demo data below. Complete setup to see real activity and
-              identities.
+              Sample data. Set up tracking to see real contacts and activity.
             </div>
           </div>
         </div>
@@ -852,7 +851,7 @@ function IntervalMetrics({
       ) : (
         <div className="grid grid-cols-3 gap-2">
           <Metric label="Clicks" value={clicks} />
-          <Metric label="Leads" value={leads} />
+          <Metric label="Contacts" value={leads} />
           <Metric
             label="Revenue"
             value={revenue}

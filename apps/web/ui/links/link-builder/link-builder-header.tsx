@@ -148,7 +148,7 @@ export function LinkBuilderHeader({
                 className="size-5 shrink-0 sm:size-5 [&>*]:size-3 sm:[&>*]:size-4"
               />
               <h3 className="!mt-0 max-w-sm truncate text-sm font-medium">
-                {props ? `Edit ${shortLink}` : "New links"}
+                {props ? `Edit ${shortLink}` : "Create link"}
               </h3>
             </div>
             {showUrlModeToggle && urlMode && onUrlModeChange && (

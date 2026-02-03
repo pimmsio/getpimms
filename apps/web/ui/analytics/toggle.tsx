@@ -1126,7 +1126,7 @@ export default function Toggle({
         }
         hideIcon
       >
-        By UTM
+        UTM filters
       </Filter.Select>
     </div>
   );
@@ -1460,8 +1460,8 @@ function SortSelector() {
 
   const sortOptions = [
     { value: "clicks", label: "Clicks", icon: <MousePointerClick className="h-3.5 w-3.5" /> },
-    { value: "leads", label: "Leads", icon: <TrendingUp className="h-3.5 w-3.5" /> },
-    { value: "sales", label: "Sales", icon: <DollarSign className="h-3.5 w-3.5" /> },
+    { value: "leads", label: "Contacts", icon: <TrendingUp className="h-3.5 w-3.5" /> },
+    { value: "sales", label: "Revenue", icon: <DollarSign className="h-3.5 w-3.5" /> },
   ];
 
   const currentSort = sortOptions.find(s => s.value === selectedTab) || sortOptions[0];
