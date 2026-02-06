@@ -132,8 +132,8 @@ importers:
         specifier: ^8.6.0
         version: 8.6.0
       '@svgdotjs/svg.js':
-        specifier: ^3.2.5
-        version: 3.2.5
+        specifier: 3.2.4
+        version: 3.2.4
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@19.2.3)(react@19.2.3)
@@ -6432,10 +6432,6 @@ packages:
 
   /@svgdotjs/svg.js@3.2.4:
     resolution: {integrity: sha512-BjJ/7vWNowlX3Z8O4ywT58DqbNRyYlkk6Yz/D13aB7hGmfQTvGX4Tkgtm/ApYlu9M7lCQi15xUEidqMUmdMYwg==}
-    dev: false
-
-  /@svgdotjs/svg.js@3.2.5:
-    resolution: {integrity: sha512-/VNHWYhNu+BS7ktbYoVGrCmsXDh+chFMaONMwGNdIBcFHrWqk2jY8fNyr3DLdtQUIalvkPfM554ZSFa3dm3nxQ==}
     dev: false
 
   /@swc/helpers@0.5.15:

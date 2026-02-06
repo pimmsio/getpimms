@@ -49,7 +49,7 @@
     "@splinetool/react-spline": "^4.1.0",
     "@splinetool/runtime": "^1.12.23",
     "@stripe/stripe-js": "^8.6.0",
-    "@svgdotjs/svg.js": "^3.2.5",
+    "@svgdotjs/svg.js": "3.2.4",
     "@tanstack/react-table": "^8.21.3",
     "@team-plain/typescript-sdk": "^5.11.0",
     "@types/base-x": "^3.0.10",

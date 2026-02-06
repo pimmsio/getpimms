@@ -122,10 +122,9 @@ export function fromZodError(error: ZodError): ErrorResponse {
 }
 
 export function handleApiError(error: any): ErrorResponse & { status: number } {
-  console.error("API error occurred", error.message);
-
   // Zod errors
   if (error instanceof ZodError) {
+    console.error("API error occurred", error.message);
     return {
       ...fromZodError(error),
       status: errorCodeToHttpStatus.unprocessable_entity,
@@ -134,6 +133,11 @@ export function handleApiError(error: any): ErrorResponse & { status: number } {
 
   // DubApiError errors
   if (error instanceof DubApiError) {
+    if (error.code === "exceeded_limit") {
+      console.warn("API warning:", error.message);
+    } else {
+      console.error("API error occurred:", error.message);
+    }
     return {
       error: {
         code: error.code,
@@ -145,6 +149,7 @@ export function handleApiError(error: any): ErrorResponse & { status: number } {
   }
 
   // Prisma record not found error
+  console.error("API error occurred:", error.message);
   if (error.code === "P2025") {
     return {
       error: {

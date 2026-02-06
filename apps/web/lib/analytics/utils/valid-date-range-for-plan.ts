@@ -32,7 +32,7 @@ export const validDateRangeForPlan = ({
   ) {
     if (throwError) {
       throw new DubApiError({
-        code: "forbidden",
+        code: "exceeded_limit",
         message:
           "You can only get analytics for up to 30 days on a Free plan. Upgrade to Starter or Pro to get analytics for longer periods.",
       });
@@ -49,7 +49,7 @@ export const validDateRangeForPlan = ({
   ) {
     if (throwError) {
       throw new DubApiError({
-        code: "forbidden",
+        code: "exceeded_limit",
         message:
           "You can only get analytics for up to 1 year on a Pro plan. Upgrade to Business to get analytics for longer periods.",
       });
