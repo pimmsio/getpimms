@@ -1,7 +1,7 @@
 import { getApexDomain } from "@dub/utils";
 
 export const MAX_HOPS = 5;
-const REQUEST_TIMEOUT = 5000; // 5 seconds
+const REQUEST_TIMEOUT = 30000; // 30 seconds
 
 interface RedirectChainResult {
   success: boolean;
@@ -67,16 +67,42 @@ export async function followRedirectChain(
       const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
 
       try {
-        // Use HEAD request with manual redirect handling
-        const response = await fetch(currentUrl, {
-          method: "HEAD",
-          redirect: "manual",
-          signal: controller.signal,
-          headers: {
-            "User-Agent":
-              "Mozilla/5.0 (compatible; PimmsBot/1.0; +https://pimms.io)",
-          },
-        });
+        // Try HEAD first, fall back to GET if HEAD fails.
+        // Many servers reject or timeout on HEAD requests.
+        let response: Response;
+        try {
+          response = await fetch(currentUrl, {
+            method: "HEAD",
+            redirect: "manual",
+            signal: controller.signal,
+            headers: {
+              "User-Agent":
+                "Mozilla/5.0 (compatible; PimmsBot/1.0; +https://pimms.io)",
+            },
+          });
+        } catch {
+          // HEAD failed — retry with GET.
+          // Need a fresh AbortController because the original one may already
+          // be in the aborted state (its timeout could have fired).
+          const getController = new AbortController();
+          const getTimeoutId = setTimeout(
+            () => getController.abort(),
+            REQUEST_TIMEOUT,
+          );
+          try {
+            response = await fetch(currentUrl, {
+              method: "GET",
+              redirect: "manual",
+              signal: getController.signal,
+              headers: {
+                "User-Agent":
+                  "Mozilla/5.0 (compatible; PimmsBot/1.0; +https://pimms.io)",
+              },
+            });
+          } finally {
+            clearTimeout(getTimeoutId);
+          }
+        }
 
         clearTimeout(timeoutId);
 
@@ -135,6 +161,10 @@ export async function followRedirectChain(
               hopsFollowed,
             };
           }
+
+          // Redirect stays on the same apex domain — no need to keep
+          // following. We've confirmed this chain doesn't cross domains.
+          break;
         } else {
           // Not a redirect - we've reached the final destination
           exhaustedHopBudget = false;

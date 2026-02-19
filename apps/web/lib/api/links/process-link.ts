@@ -642,7 +642,7 @@ export async function processLink<T extends Record<string, any>>({
 /**
  * Check redirect restrictions including count limits and plan restrictions
  */
-async function checkRedirectRestrictions({
+export async function checkRedirectRestrictions({
   url,
   workspacePlan,
   userId,
