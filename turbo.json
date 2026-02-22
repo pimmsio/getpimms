@@ -74,6 +74,9 @@
         "ZAPIER_INTEGRATION_ID"
       ]
     },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

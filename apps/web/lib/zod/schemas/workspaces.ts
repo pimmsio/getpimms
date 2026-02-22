@@ -80,6 +80,20 @@ export const WorkspaceSchema = z
     dotLinkClaimed: z
       .boolean()
       .describe("Whether the workspace has claimed a free domain."),
+    trialUsed: z
+      .boolean()
+      .default(false)
+      .describe("Whether the workspace has already used the free Pro trial."),
+
+    utmSpaceChar: z
+      .string()
+      .describe("Character used to replace spaces in UTM parameters."),
+    utmProhibitedChars: z
+      .string()
+      .describe("Comma-separated list of prohibited characters in UTM parameters."),
+    utmForceLowercase: z
+      .boolean()
+      .describe("Whether to force all campaign parameters to lowercase."),
 
     createdAt: z
       .date()
@@ -144,9 +158,14 @@ export const createWorkspaceSchema = z.object({
   conversionEnabled: z.boolean().optional(),
 });
 
+export const utmSpaceCharSchema = z.enum(["-", "_", ".", ""]);
+
 export const updateWorkspaceSchema = createWorkspaceSchema.partial().extend({
   allowedHostnames: z.array(z.string()).optional(),
   currency: currencySchema.optional(),
+  utmSpaceChar: utmSpaceCharSchema.optional(),
+  utmProhibitedChars: z.string().max(200).optional(),
+  utmForceLowercase: z.boolean().optional(),
 });
 
 export const notificationTypes = z.enum([

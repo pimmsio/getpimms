@@ -270,7 +270,7 @@ export async function processLink<T extends Record<string, any>>({
 
   // checks for pim.ms links
   if (domain === SHORT_DOMAIN) {
-    // for dub.link: check if workspace plan is pro+
+    // for dub.link: check if workspace plan is pro
     // if (domain === "dub.link" && (!workspace || workspace.plan === "free")) {
     //   return {
     //     link: payload,
@@ -337,7 +337,7 @@ export async function processLink<T extends Record<string, any>>({
       code: "forbidden",
     };
 
-    // else, check if the domain is a free .link and whether the workspace is pro+
+    // else, check if the domain is a free .link and whether the workspace is pro
   } else if (domain.endsWith(".link") && workspace?.plan === "free") {
     // Dub provisioned .link domains can only be used on a Pro plan and above
     const domainId = domains?.find((d) => d.slug === domain)?.id;

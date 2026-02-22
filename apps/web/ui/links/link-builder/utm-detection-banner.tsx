@@ -1,6 +1,6 @@
 "use client";
 
-import { normalizeUtmValue, getParamsFromURL, getUrlFromString } from "@dub/utils";
+import { normalizeUtmValue, getParamsFromURL, getUrlFromString, UtmConventionOptions } from "@dub/utils";
 import { AlertCircle, X, Loader2 } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
@@ -15,7 +15,12 @@ export function UtmDetectionBanner() {
   const { control, setValue } = useFormContext<LinkFormData>();
   const url = useWatch({ control, name: "url" });
   const utmSectionContext = useUtmSectionContextOptional();
-  const { id: workspaceId } = useWorkspace();
+  const { id: workspaceId, utmSpaceChar, utmProhibitedChars, utmForceLowercase } = useWorkspace();
+  const conventionOptions: UtmConventionOptions = {
+    spaceChar: utmSpaceChar ?? "-",
+    prohibitedChars: utmProhibitedChars ?? "",
+    forceLowercase: utmForceLowercase ?? true,
+  };
 
   const [dismissedUrls, setDismissedUrls] = useState<Set<string>>(new Set());
   const [detectedUtms, setDetectedUtms] = useState<Record<string, string>>({});
@@ -158,7 +163,7 @@ export function UtmDetectionBanner() {
 
       // Populate form fields with normalized values
       Object.entries(detectedUtms).forEach(([key, value]) => {
-        const normalizedValue = normalizeUtmValue(value);
+        const normalizedValue = normalizeUtmValue(value, conventionOptions);
         setValue(key as keyof LinkFormData, normalizedValue, {
           shouldDirty: true,
         });
@@ -176,7 +181,7 @@ export function UtmDetectionBanner() {
           const existenceChecks = await Promise.all(
             Object.entries(detectedUtms).map(async ([key, value]) => {
               const type = key.replace('utm_', '') as UtmParameterType;
-              const normalizedValue = normalizeUtmValue(value);
+              const normalizedValue = normalizeUtmValue(value, conventionOptions);
               const exists = await checkUtmParameterExists(type, normalizedValue, workspaceId);
               return { key, exists };
             })

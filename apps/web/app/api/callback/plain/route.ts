@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  let { cardKeys, customer } = await req.json();
+  const { cardKeys, customer } = await req.json();
 
   if (!cardKeys || !customer) {
     return new Response("Invalid payload", { status: 400 });

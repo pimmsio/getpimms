@@ -8,6 +8,7 @@ import {
   getUtmTermsQuerySchemaExtended,
 } from "@/lib/zod/schemas/utm-parameters";
 import { prisma } from "@dub/prisma";
+import { normalizeUtmValue } from "@dub/utils";
 import { NextResponse } from "next/server";
 
 // GET /api/utm-terms - get all UTM terms for a workspace
@@ -53,7 +54,12 @@ export const GET = withWorkspace(
 // POST /api/utm-terms - create a UTM term for a workspace
 export const POST = withWorkspace(
   async ({ req, workspace, headers }) => {
-    const { name } = createUtmTermBodySchema.parse(await req.json());
+    const { name: rawName } = createUtmTermBodySchema.parse(await req.json());
+    const name = normalizeUtmValue(rawName, {
+      spaceChar: workspace.utmSpaceChar ?? "-",
+      prohibitedChars: workspace.utmProhibitedChars ?? "",
+      forceLowercase: workspace.utmForceLowercase ?? true,
+    });
 
     const existingUtmTerm = await prisma.utmTerm.findFirst({
       where: {

@@ -15,7 +15,7 @@ import { WaitForLeadStep } from "@/ui/onboarding/integrations/steps/wait-for-lea
 import { AppButton } from "@/ui/components/controls/app-button";
 import { BlurImage } from "@dub/ui";
 import { ConnectedDots } from "@dub/ui/icons";
-import { BookOpen, CheckCircle2 } from "lucide-react";
+import { BookOpen, CheckCircle2, ExternalLink } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 export function StripeOnboardingWizard({
@@ -70,12 +70,14 @@ export function StripeOnboardingWizard({
     void markProviderStarted(providerId);
   }, [markProviderStarted, providerId, stripeInstalled]);
 
+  const [permissionsConfirmed, setPermissionsConfirmed] = useState(false);
+
   const completed = useMemo(
-    () => [stripeInstalled, Boolean(created), done],
-    [stripeInstalled, created, done],
+    () => [stripeInstalled, permissionsConfirmed, Boolean(created), done],
+    [stripeInstalled, permissionsConfirmed, created, done],
   );
-  const OPTIONAL_STEP_INDEX = 3;
-  const STEPS_COUNT = 4;
+  const OPTIONAL_STEP_INDEX = 4;
+  const STEPS_COUNT = 5;
   const { activeStepIndex, maxReachableStepIndex, goTo, forceGoTo } = useLinearWizard({
     completed,
     initialStepIndex: 0,
@@ -86,12 +88,19 @@ export function StripeOnboardingWizard({
   const [connecting, setConnecting] = useState(false);
   const [connectError, setConnectError] = useState<string | null>(null);
 
-  // When Stripe becomes connected (async), auto-advance to next step.
+  // When Stripe becomes connected (async), auto-advance to permissions step.
   useEffect(() => {
     if (!stripeInstalled) return;
     if (activeStepIndex !== 0) return;
     forceGoTo(1);
   }, [activeStepIndex, forceGoTo, stripeInstalled]);
+
+  // When permissions are confirmed, auto-advance to test link step.
+  useEffect(() => {
+    if (!permissionsConfirmed) return;
+    if (activeStepIndex !== 1) return;
+    forceGoTo(2);
+  }, [activeStepIndex, forceGoTo, permissionsConfirmed]);
 
   const startConnectFlow = useCallback(
     async (testMode = false) => {
@@ -192,6 +201,51 @@ export function StripeOnboardingWizard({
       },
       {
         id: "stripe-step-2",
+        title: "Approve permissions",
+        isComplete: permissionsConfirmed,
+        content: (
+          <ManualConfirmStep
+            title="Approve permissions"
+            description="Open the PiMMS app in your Stripe Dashboard and click Connect workspace, then accept permissions."
+            isDone={permissionsConfirmed}
+            confirmLabel="I've done this"
+            onConfirm={() => {
+              setPermissionsConfirmed(true);
+              forceGoTo(2);
+            }}
+            actions={
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <a
+                    href="https://dashboard.stripe.com/settings/apps/pimms.io"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 rounded-md bg-neutral-900 px-3 py-2 text-sm font-semibold text-white hover:bg-neutral-800"
+                  >
+                    <ExternalLink className="size-4" />
+                    Open Stripe Dashboard
+                  </a>
+                  <a
+                    href="https://dashboard.stripe.com/test/settings/apps/pimms.io"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm font-semibold text-neutral-800 hover:bg-neutral-50"
+                  >
+                    <ExternalLink className="size-4" />
+                    Open Stripe Dashboard (Test)
+                  </a>
+                </div>
+                <p className="text-xs text-neutral-500">
+                  If the link does not work, go to Settings &rarr; Team and
+                  security &rarr; Apps, find PiMMS and click Connect workspace.
+                </p>
+              </div>
+            }
+          />
+        ),
+      },
+      {
+        id: "stripe-step-3",
         title: "Create a test link",
         isComplete: Boolean(created),
         content: (
@@ -208,20 +262,20 @@ export function StripeOnboardingWizard({
             onCreate={async () => {
               try {
                 await createTestLink();
-              forceGoTo(2);
+                forceGoTo(3);
               } catch {
                 // error already set by hook
               }
             }}
             onOpenCreated={() => {
-            forceGoTo(2);
+              forceGoTo(3);
               startWaitingForSale();
             }}
           />
         ),
       },
       {
-        id: "stripe-step-3",
+        id: "stripe-step-4",
         title: "Verify tracking works",
         isComplete: done,
         content: (
@@ -303,6 +357,7 @@ export function StripeOnboardingWizard({
     done,
     forceGoTo,
     paymentLinkUrl,
+    permissionsConfirmed,
     setPaymentLinkUrl,
     setupGuideHref,
     startConnectFlow,

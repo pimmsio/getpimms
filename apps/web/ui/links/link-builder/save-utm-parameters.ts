@@ -1,5 +1,3 @@
-import { normalizeUtmValue } from "@dub/utils";
-
 export interface SaveUtmParametersResult {
   source?: { success: boolean; error?: string };
   medium?: { success: boolean; error?: string };
@@ -35,7 +33,6 @@ export async function saveUtmParameters(
     .filter(([key, value]) => parameterMap[key] && value && value.trim())
     .map(async ([key, value]) => {
       const { endpoint, key: resultKey } = parameterMap[key];
-      const normalizedValue = normalizeUtmValue(value);
 
       try {
         const response = await fetch(
@@ -45,7 +42,7 @@ export async function saveUtmParameters(
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ name: normalizedValue }),
+            body: JSON.stringify({ name: value.trim() }),
           },
         );
 

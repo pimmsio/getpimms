@@ -22,7 +22,7 @@ import {
   SatelliteDish,
   Trash,
 } from "@dub/ui/icons";
-import { cn, normalizeUtmValue } from "@dub/utils";
+import { cn } from "@dub/utils";
 import { useState } from "react";
 import { toast } from "sonner";
 import { getUtmParameterPlaceholder, UtmParameterType } from "@/lib/utils/utm-parameter-utils";
@@ -155,16 +155,16 @@ function ParameterColumn({
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newValue.trim()) return;
+    const trimmed = newValue.trim();
+    if (!trimmed) return;
 
     setIsAdding(true);
-    const normalizedValue = normalizeUtmValue(newValue);
 
     try {
       const res = await fetch(`/api/${apiEndpoint}?workspaceId=${workspaceId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: normalizedValue }),
+        body: JSON.stringify({ name: trimmed }),
       });
 
       if (res.ok) {

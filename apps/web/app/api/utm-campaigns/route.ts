@@ -8,6 +8,7 @@ import {
   getUtmCampaignsQuerySchemaExtended,
 } from "@/lib/zod/schemas/utm-parameters";
 import { prisma } from "@dub/prisma";
+import { normalizeUtmValue } from "@dub/utils";
 import { NextResponse } from "next/server";
 
 // GET /api/utm-campaigns - get all UTM campaigns for a workspace
@@ -53,8 +54,13 @@ export const GET = withWorkspace(
 // POST /api/utm-campaigns - create a UTM campaign for a workspace
 export const POST = withWorkspace(
   async ({ req, workspace, headers }) => {
-    const { name } = createUtmCampaignBodySchema.parse(await req.json());
-
+    const body = await req.json();
+    const { name: rawName } = createUtmCampaignBodySchema.parse(body);
+    const name = normalizeUtmValue(rawName, {
+      spaceChar: workspace.utmSpaceChar ?? "-",
+      prohibitedChars: workspace.utmProhibitedChars ?? "",
+      forceLowercase: workspace.utmForceLowercase ?? true,
+    });
     const existingUtmCampaign = await prisma.utmCampaign.findFirst({
       where: {
         projectId: workspace.id,

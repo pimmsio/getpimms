@@ -4,7 +4,7 @@ import { LinkFormData } from "@/ui/links/link-builder/link-builder-provider";
 import { UtmParameterSelect } from "@/ui/links/link-builder/utm-parameter-select";
 import { UtmTemplateSelect } from "@/ui/links/link-builder/utm-template-select";
 import { COLORS_LIST } from "@/ui/links/tag-badge";
-import { cn, fetcher, normalizeUtmValue, getUrlFromString } from "@dub/utils";
+import { cn, fetcher, normalizeUtmValue, getUrlFromString, UtmConventionOptions } from "@dub/utils";
 import { Check, ChevronDown, Copy } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
@@ -16,7 +16,12 @@ export function UTMParametersSection({
 }: {
   autoExpand?: boolean;
 } = {}) {
-  const { id: workspaceId } = useWorkspace();
+  const { id: workspaceId, utmSpaceChar, utmProhibitedChars, utmForceLowercase } = useWorkspace();
+  const conventionOptions: UtmConventionOptions = {
+    spaceChar: utmSpaceChar ?? "-",
+    prohibitedChars: utmProhibitedChars ?? "",
+    forceLowercase: utmForceLowercase ?? true,
+  };
   const { control, setValue } = useFormContext<LinkFormData>();
   const [url, utm_campaign, utm_medium, utm_source, utm_content, utm_term] =
     useWatch({
@@ -106,7 +111,7 @@ export function UTMParametersSection({
   }, [selectedTemplate, setValue]);
 
   const handleChange = (key: string, value: string) => {
-    const normalized = value ? normalizeUtmValue(value) : "";
+    const normalized = value ? normalizeUtmValue(value, conventionOptions) : "";
     // Clear template FIRST when user manually clears a parameter value
     // This prevents the template's useEffect from re-applying values
     if (!normalized && selectedTemplateId) {

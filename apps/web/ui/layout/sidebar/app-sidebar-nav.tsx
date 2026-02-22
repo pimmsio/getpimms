@@ -78,6 +78,10 @@ const NAV_AREAS: SidebarNavAreas<{
             href: `/${slug}/settings/utm/templates`,
           },
           {
+            name: "UTM convention",
+            href: `/${slug}/settings/utm/convention`,
+          },
+          {
             name: "Custom domains",
             href: `/${slug}/settings/domains`,
           },

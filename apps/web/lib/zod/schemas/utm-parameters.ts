@@ -1,5 +1,4 @@
 import z from "@/lib/zod";
-import { normalizeUtmValue } from "@dub/utils";
 import { booleanQuerySchema, getPaginationQuerySchema } from "./misc";
 
 export const UTM_PARAMETERS_MAX_PAGE_SIZE = 100;
@@ -98,14 +97,13 @@ export const getUtmContentsCountQuerySchema = getUtmContentsQuerySchema.omit({
   pageSize: true,
 });
 
-// Create/Update body schemas with normalization
+// Create/Update body schemas (normalization is done client-side using workspace conventions)
 export const createUtmSourceBodySchema = z.object({
   name: z
     .string()
     .trim()
     .min(1)
     .max(190)
-    .transform((v) => normalizeUtmValue(v))
     .describe("The UTM source value to create."),
 });
 
@@ -115,7 +113,6 @@ export const createUtmMediumBodySchema = z.object({
     .trim()
     .min(1)
     .max(190)
-    .transform((v) => normalizeUtmValue(v))
     .describe("The UTM medium value to create."),
 });
 
@@ -125,7 +122,6 @@ export const createUtmCampaignBodySchema = z.object({
     .trim()
     .min(1)
     .max(190)
-    .transform((v) => normalizeUtmValue(v))
     .describe("The UTM campaign value to create."),
 });
 
@@ -135,7 +131,6 @@ export const createUtmTermBodySchema = z.object({
     .trim()
     .min(1)
     .max(190)
-    .transform((v) => normalizeUtmValue(v))
     .describe("The UTM term value to create."),
 });
 
@@ -145,7 +140,6 @@ export const createUtmContentBodySchema = z.object({
     .trim()
     .min(1)
     .max(190)
-    .transform((v) => normalizeUtmValue(v))
     .describe("The UTM content value to create."),
 });
 

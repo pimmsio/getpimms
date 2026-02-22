@@ -44,6 +44,12 @@ model Project {
   ssoEnabled        Boolean @default(false)
   dotLinkClaimed    Boolean @default(false)
 
+  trialUsed          Boolean  @default(false)
+
+  utmSpaceChar       String?  @default("-")
+  utmProhibitedChars String?  @default("")
+  utmForceLowercase  Boolean? @default(true)
+
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   usageLastChecked DateTime @default(now())

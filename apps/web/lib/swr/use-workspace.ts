@@ -40,6 +40,8 @@ export default function useWorkspace({
     exceededClicks: workspace && workspace.usage >= workspace.usageLimit,
     exceededLinks: workspace && workspace.linksUsage >= workspace.linksLimit,
     exceededAI: workspace && workspace.aiUsage >= workspace.aiLimit,
+    exceededFolders:
+      workspace && workspace.foldersUsage >= workspace.foldersLimit,
     exceededDomains:
       workspace?.domains && workspace.domains.length >= workspace.domainsLimit,
     error,

@@ -5,7 +5,7 @@ import UtmTemplateBadge from "@/ui/links/utm-template-badge";
 import { Combobox } from "@dub/ui";
 import { DiamondTurnRight } from "@dub/ui/icons";
 import { fetcher } from "@dub/utils";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import useSWR from "swr";
 
 export function UtmTemplateSelect({
@@ -19,6 +19,7 @@ export function UtmTemplateSelect({
 }) {
   const { id: workspaceId } = useWorkspace();
   const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
   const { data: templates, isLoading, mutate } = useSWR<UtmTemplateWithUserProps[]>(
     workspaceId ? `/api/utm?workspaceId=${workspaceId}` : null,
@@ -28,11 +29,23 @@ export function UtmTemplateSelect({
     },
   );
 
-  const { AddEditUtmTemplateModal, setShowAddEditUtmTemplateModal } =
+  // Stabilize callbacks so AddEditUtmTemplateModal doesn't remount (and reset
+  // its form) every time UtmTemplateSelect re-renders.
+  const handleMutate = useCallback(async () => {
+    await mutate();
+  }, [mutate]);
+
+  const handleCreated = useCallback(
+    (templateId: string) => {
+      onChange(templateId);
+    },
+    [onChange],
+  );
+
+  const { AddEditUtmTemplateModal, openWithName } =
     useAddEditUtmTemplateModal({
-      mutate: async () => {
-        await mutate();
-      },
+      mutate: handleMutate,
+      onCreated: handleCreated,
     });
 
   const options = useMemo(
@@ -64,6 +77,13 @@ export function UtmTemplateSelect({
         options={isLoading ? undefined : options}
         icon={<DiamondTurnRight className="size-4 text-neutral-500" />}
         searchPlaceholder="Search or add a template..."
+        onSearchChange={setSearch}
+        createLabel={(s) => `Create template "${s}"`}
+        onCreate={async (s) => {
+          setIsOpen(false);
+          openWithName(s);
+          return false;
+        }}
         emptyState={
           <div className="p-2 text-center">
             <p className="text-sm text-neutral-500">No templates found</p>
@@ -71,7 +91,7 @@ export function UtmTemplateSelect({
               type="button"
               onClick={() => {
                 setIsOpen(false);
-                setShowAddEditUtmTemplateModal(true);
+                openWithName(search || undefined);
               }}
               className="mt-2 text-sm font-medium text-neutral-700 underline-offset-2 hover:text-neutral-900 hover:underline"
             >

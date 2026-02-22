@@ -20,7 +20,7 @@ import useUtmContents, {
   useUtmContentsCount,
 } from "@/lib/swr/use-utm-contents";
 import { UtmParameterType } from "@/lib/utils/utm-parameter-utils";
-import { cn, fetcher, normalizeUtmValue } from "@dub/utils";
+import { cn, fetcher, normalizeUtmValue, UtmConventionOptions } from "@dub/utils";
 import { HelpTooltip } from "@dub/ui";
 import { X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -140,7 +140,12 @@ export function BulkUTMParametersSection({
   onTemplatesChange?: (templates: BulkUtmTemplateSelection[]) => void;
   onActiveTemplateChange?: (instanceId: string | null) => void;
 }) {
-  const { id: workspaceId } = useWorkspace();
+  const { id: workspaceId, utmSpaceChar, utmProhibitedChars, utmForceLowercase } = useWorkspace();
+  const conventionOptions: UtmConventionOptions = {
+    spaceChar: utmSpaceChar ?? "-",
+    prohibitedChars: utmProhibitedChars ?? "",
+    forceLowercase: utmForceLowercase ?? true,
+  };
   const { setValue } = useFormContext<LinkFormData>();
 
   // Selected template instances for bulk (allow duplicates)
@@ -329,7 +334,7 @@ export function BulkUTMParametersSection({
   }, [onTemplatesChange, resolvedTemplates]);
 
   const handleFieldSelect = (key: keyof typeof defaultUtms, value: string) => {
-    const normalized = value ? normalizeUtmValue(value) : "";
+    const normalized = value ? normalizeUtmValue(value, conventionOptions) : "";
     setDefaultUtms((prev) => ({ ...prev, [key]: normalized }));
     if (selectedTemplateInstances.length === 0) {
       setValue(key as any, normalized, { shouldDirty: true });

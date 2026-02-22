@@ -12,6 +12,7 @@ import {
   Dispatch,
   SetStateAction,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -23,11 +24,15 @@ function AddEditUtmTemplateModal({
   setShowAddEditUtmTemplateModal,
   props,
   mutate,
+  initialName,
+  onCreated,
 }: {
   showAddEditUtmTemplateModal: boolean;
   setShowAddEditUtmTemplateModal: Dispatch<SetStateAction<boolean>>;
   props?: UtmTemplateProps;
   mutate: () => Promise<any>;
+  initialName?: string;
+  onCreated?: (templateId: string) => void;
 }) {
   const { id } = props || {};
   const { id: workspaceId } = useWorkspace();
@@ -55,6 +60,14 @@ function AddEditUtmTemplateModal({
     values: props,
   });
 
+  // Pre-fill the name field from the combobox search text when creating a new
+  // template. Using setValue with shouldDirty so the Save button is enabled.
+  useEffect(() => {
+    if (!props && initialName) {
+      setValue("name", initialName, { shouldDirty: true });
+    }
+  }, [initialName, props, setValue]);
+
   const values = watch();
 
   const endpoint = useMemo(
@@ -79,42 +92,52 @@ function AddEditUtmTemplateModal({
       setShowModal={setShowAddEditUtmTemplateModal}
     >
       <form
-        onSubmit={handleSubmit(async (data) => {
-          try {
-            const res = await fetch(endpoint.url, {
-              method: endpoint.method,
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(data),
-            });
+        onSubmit={(e) => {
+          // Prevent submit from bubbling through the React portal tree and
+          // accidentally triggering the parent link builder form.
+          e.stopPropagation();
+          handleSubmit(async (data) => {
+            try {
+              const res = await fetch(endpoint.url, {
+                method: endpoint.method,
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+              });
 
-            if (!res.ok) {
-              const { error } = await res.json();
-              toast.error(error.message);
-              setError("root", { message: error.message });
-              return;
+              if (!res.ok) {
+                const { error } = await res.json();
+                toast.error(error.message);
+                setError("root", { message: error.message });
+                return;
+              }
+
+              const created = await res.json();
+
+              posthog.capture(
+                props ? "utm-template_edited" : "utm-template_created",
+                {
+                  utmTemplateId: id ?? created?.id,
+                  utmTemplateName: data.name,
+                },
+              );
+
+              await mutate();
+
+              // Auto-select the newly created template in the parent selector.
+              if (!props && created?.id) {
+                onCreated?.(created.id);
+              }
+
+              toast.success(endpoint.successMessage);
+              setShowAddEditUtmTemplateModal(false);
+            } catch (e) {
+              toast.error("Failed to save template");
+              setError("root", { message: "Failed to save template" });
             }
-
-            await res.json();
-            
-            posthog.capture(
-              props ? "utm-template_edited" : "utm-template_created",
-              {
-                utmTemplateId: id,
-                utmTemplateName: data.name,
-              },
-            );
-            
-            await mutate();
-            
-            toast.success(endpoint.successMessage);
-            setShowAddEditUtmTemplateModal(false);
-          } catch (e) {
-            toast.error("Failed to save template");
-            setError("root", { message: "Failed to save template" });
-          }
-        })}
+          })(e);
+        }}
         className="flex max-h-[85vh] flex-col"
       >
         <div className="shrink-0 border-b border-neutral-100 px-5 py-4">
@@ -194,12 +217,20 @@ function AddUtmTemplateButton({
 export function useAddEditUtmTemplateModal({
   props,
   mutate,
+  onCreated,
 }: { 
   props?: UtmTemplateProps;
   mutate: () => Promise<any>;
+  onCreated?: (templateId: string) => void;
 }) {
   const [showAddEditUtmTemplateModal, setShowAddEditUtmTemplateModal] =
     useState(false);
+  const [initialName, setInitialName] = useState<string | undefined>(undefined);
+
+  const openWithName = useCallback((name?: string) => {
+    setInitialName(name);
+    setShowAddEditUtmTemplateModal(true);
+  }, []);
 
   const AddEditUtmTemplateModalCallback = useCallback(() => {
     return (
@@ -208,9 +239,11 @@ export function useAddEditUtmTemplateModal({
         setShowAddEditUtmTemplateModal={setShowAddEditUtmTemplateModal}
         props={props}
         mutate={mutate}
+        initialName={initialName}
+        onCreated={onCreated}
       />
     );
-  }, [showAddEditUtmTemplateModal, setShowAddEditUtmTemplateModal, props, mutate]);
+  }, [showAddEditUtmTemplateModal, setShowAddEditUtmTemplateModal, props, mutate, initialName, onCreated]);
 
   const AddUtmTemplateButtonCallback = useCallback(() => {
     return (
@@ -223,11 +256,13 @@ export function useAddEditUtmTemplateModal({
   return useMemo(
     () => ({
       setShowAddEditUtmTemplateModal,
+      openWithName,
       AddEditUtmTemplateModal: AddEditUtmTemplateModalCallback,
       AddUtmTemplateButton: AddUtmTemplateButtonCallback,
     }),
     [
       setShowAddEditUtmTemplateModal,
+      openWithName,
       AddEditUtmTemplateModalCallback,
       AddUtmTemplateButtonCallback,
     ],

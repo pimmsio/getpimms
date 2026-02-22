@@ -1,10 +1,10 @@
+import { AppIconLink } from "@/ui/components/controls/app-icon-button";
+import { layout, radius, surface, text } from "@/ui/design/tokens";
 import { MaxWidthWrapper } from "@dub/ui";
 import { cn } from "@dub/utils";
 import { ChevronLeft } from "lucide-react";
 import { PropsWithChildren, ReactNode } from "react";
 import { NavButton } from "./nav-button";
-import { layout, radius, spacing, surface, text } from "@/ui/design/tokens";
-import { AppIconLink } from "@/ui/components/controls/app-icon-button";
 
 export function PageContent({
   title,
@@ -47,16 +47,11 @@ export function PageContent({
   const hasTitle = title !== undefined;
   const hasDescription = description !== undefined;
   const isTextTitle = typeof title === "string" || typeof title === "number";
-  const showShellHeader = headerPlacement === "shell" && (hasTitle || hasDescription);
+  const showShellHeader =
+    headerPlacement === "shell" && (hasTitle || hasDescription);
 
   return (
-    <div
-      className={cn(
-        spacing.pageTop,
-        showShellHeader && "md:mt-5",
-        className,
-      )}
-    >
+    <div className={cn(showShellHeader && "md:mt-5", className)}>
       {headerPlacement === "shell" && (
         <MaxWidthWrapper>
           <div className="flex items-center justify-between gap-4">
@@ -67,7 +62,10 @@ export function PageContent({
                   {hasTitle && (
                     <div className="flex min-w-0 items-center gap-2">
                       {titleBackButtonLink && (
-                        <AppIconLink href={titleBackButtonLink} className="app-icon-btn">
+                        <AppIconLink
+                          href={titleBackButtonLink}
+                          className="app-icon-btn"
+                        >
                           <ChevronLeft className="size-5" />
                         </AppIconLink>
                       )}
@@ -82,14 +80,21 @@ export function PageContent({
                     </div>
                   )}
                   {hasDescription && (
-                    <p className={cn("mt-1 hidden md:block", text.pageDescription)}>
+                    <p
+                      className={cn(
+                        "mt-1 hidden md:block",
+                        text.pageDescription,
+                      )}
+                    >
                       {description}
                     </p>
                   )}
                 </div>
               )}
             </div>
-            {titleControls && <div className="hidden md:block">{titleControls}</div>}
+            {titleControls && (
+              <div className="hidden md:block">{titleControls}</div>
+            )}
             {/* <div className="flex items-center gap-4 md:hidden">
                 {!hideReferButton && <ReferButton />}
                 <HelpButtonRSC />
@@ -117,7 +122,10 @@ export function PageContent({
                       {hasTitle && (
                         <div className="flex min-w-0 items-center gap-2">
                           {titleBackButtonLink && (
-                            <AppIconLink href={titleBackButtonLink} className="app-icon-btn">
+                            <AppIconLink
+                              href={titleBackButtonLink}
+                              className="app-icon-btn"
+                            >
                               <ChevronLeft className="size-5" />
                             </AppIconLink>
                           )}
@@ -132,26 +140,28 @@ export function PageContent({
                         </div>
                       )}
                       {hasDescription && (
-                        <p className={cn("mt-1 hidden md:block", text.pageDescription)}>
+                        <p
+                          className={cn(
+                            "mt-1 hidden md:block",
+                            text.pageDescription,
+                          )}
+                        >
                           {description}
                         </p>
                       )}
                     </div>
                   )}
                 </div>
-                {titleControls && <div className="hidden md:block">{titleControls}</div>}
+                {titleControls && (
+                  <div className="hidden md:block">{titleControls}</div>
+                )}
               </div>
             </MaxWidthWrapper>
           </div>
         )}
         {hasDescription && (
           <MaxWidthWrapper>
-            <p
-              className={cn(
-                "mb-3 mt-1 md:hidden",
-                text.pageDescription,
-              )}
-            >
+            <p className={cn("mt-1 mb-3 md:hidden", text.pageDescription)}>
               {description}
             </p>
           </MaxWidthWrapper>

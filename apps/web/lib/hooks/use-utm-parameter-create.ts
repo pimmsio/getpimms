@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { normalizeUtmValue } from "@dub/utils";
 import { KeyedMutator } from "swr";
 import { UtmParameterType } from "../utils/utm-parameter-utils";
 
@@ -59,17 +58,12 @@ export function useUtmParameterCreate({
     previousValue = "",
     onChange,
   }: CreateUtmParameterOptions): Promise<boolean> => {
-    const normalizedName = normalizeUtmValue(name);
+    const trimmedName = name.trim();
     const paramLabel = PARAMETER_LABELS[parameterType];
     
-    if (!normalizedName) {
+    if (!trimmedName) {
       toast.message(`Please enter a valid ${PARAMETER_NAMES[parameterType]}.`);
       return false;
-    }
-
-    // Optimistic update
-    if (onChange) {
-      onChange(normalizedName);
     }
 
     setIsCreating(true);
@@ -80,14 +74,18 @@ export function useUtmParameterCreate({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name: normalizedName }),
+        body: JSON.stringify({ name: trimmedName }),
       });
 
       if (res.ok) {
         const newParameter = await res.json();
         toast.success(`Successfully created ${paramLabel}!`);
         
-        // Call bound mutate function to refresh cache
+        // Use the server-normalized name (conventions applied server-side)
+        if (onChange) {
+          onChange(newParameter.name);
+        }
+
         await mutate();
         
         if (onSuccess) {
@@ -97,10 +95,13 @@ export function useUtmParameterCreate({
         setIsCreating(false);
         return true;
       } else if (res.status === 409) {
-        // Already exists – treat as success and keep selection
         toast.message(`${paramLabel.charAt(0).toUpperCase() + paramLabel.slice(1)} already exists — selected.`);
         
-        // Still refresh cache to ensure it's in the list
+        // Use the trimmed name as-is for conflict (already exists in DB)
+        if (onChange) {
+          onChange(trimmedName);
+        }
+
         await mutate();
         
         if (onSuccess) {
@@ -131,7 +132,6 @@ export function useUtmParameterCreate({
         return false;
       }
     } catch (error) {
-      // Revert optimistic update
       if (onChange) {
         onChange(previousValue);
       }

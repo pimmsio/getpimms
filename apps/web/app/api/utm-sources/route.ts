@@ -8,6 +8,7 @@ import {
   getUtmSourcesQuerySchemaExtended,
 } from "@/lib/zod/schemas/utm-parameters";
 import { prisma } from "@dub/prisma";
+import { normalizeUtmValue } from "@dub/utils";
 import { NextResponse } from "next/server";
 
 // GET /api/utm-sources - get all UTM sources for a workspace
@@ -53,7 +54,12 @@ export const GET = withWorkspace(
 // POST /api/utm-sources - create a UTM source for a workspace
 export const POST = withWorkspace(
   async ({ req, workspace, headers }) => {
-    const { name } = createUtmSourceBodySchema.parse(await req.json());
+    const { name: rawName } = createUtmSourceBodySchema.parse(await req.json());
+    const name = normalizeUtmValue(rawName, {
+      spaceChar: workspace.utmSpaceChar ?? "-",
+      prohibitedChars: workspace.utmProhibitedChars ?? "",
+      forceLowercase: workspace.utmForceLowercase ?? true,
+    });
 
     const existingUtmSource = await prisma.utmSource.findFirst({
       where: {
@@ -92,4 +98,3 @@ export const POST = withWorkspace(
     requiredPermissions: ["links.write"],
   },
 );
-

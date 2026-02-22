@@ -183,6 +183,9 @@ function LinkBuilderInner({
 
   useEffect(() => {
     // for a new link (no props or duplicateProps), set the domain to the primary domain
+    // Note: `domain` is intentionally excluded from deps — this effect only initializes
+    // the domain once when data loads. Re-running on domain changes would reset any
+    // user selection back to the primary domain.
     if (urlMode === "bulk") return;
     if (!loading && primaryDomain && !props && !duplicateProps) {
       setValue("domain", primaryDomain, {
@@ -190,7 +193,8 @@ function LinkBuilderInner({
         shouldDirty: false,
       });
     }
-  }, [loading, primaryDomain, props, duplicateProps, setValue, urlMode, domain]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, primaryDomain, props, duplicateProps, setValue, urlMode]);
 
   useEffect(() => {
     // TY preset: only prefill the key (leave the rest untouched).

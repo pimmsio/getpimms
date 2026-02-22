@@ -8,6 +8,7 @@ import {
   getUtmContentsQuerySchemaExtended,
 } from "@/lib/zod/schemas/utm-parameters";
 import { prisma } from "@dub/prisma";
+import { normalizeUtmValue } from "@dub/utils";
 import { NextResponse } from "next/server";
 
 // GET /api/utm-contents - get all UTM contents for a workspace
@@ -53,7 +54,12 @@ export const GET = withWorkspace(
 // POST /api/utm-contents - create a UTM content for a workspace
 export const POST = withWorkspace(
   async ({ req, workspace, headers }) => {
-    const { name } = createUtmContentBodySchema.parse(await req.json());
+    const { name: rawName } = createUtmContentBodySchema.parse(await req.json());
+    const name = normalizeUtmValue(rawName, {
+      spaceChar: workspace.utmSpaceChar ?? "-",
+      prohibitedChars: workspace.utmProhibitedChars ?? "",
+      forceLowercase: workspace.utmForceLowercase ?? true,
+    });
 
     const existingUtmContent = await prisma.utmContent.findFirst({
       where: {

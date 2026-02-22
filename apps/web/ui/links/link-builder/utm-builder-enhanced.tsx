@@ -1,6 +1,6 @@
 "use client";
 
-import { cn, normalizeUtmValue } from "@dub/utils";
+import { cn, normalizeUtmValue, UtmConventionOptions } from "@dub/utils";
 import { ReactNode } from "react";
 import { UtmParameterSelect } from "./utm-parameter-select";
 import { UtmParameterType } from "@/lib/utils/utm-parameter-utils";
@@ -61,16 +61,17 @@ export function UTMBuilderEnhanced({
   disabled,
   disabledTooltip,
   className,
+  conventionOptions,
 }: {
   values: Record<string, string | null | undefined>;
   onChange: (key: string, value: string) => void;
   disabled?: boolean;
   disabledTooltip?: string | ReactNode;
   className?: string;
+  conventionOptions?: UtmConventionOptions;
 }) {
   const handleChange = (key: string, value: string) => {
-    // Apply normalization when value changes
-    const normalized = value ? normalizeUtmValue(value) : "";
+    const normalized = value ? normalizeUtmValue(value, conventionOptions) : "";
     onChange(key, normalized);
   };
 
