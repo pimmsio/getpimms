@@ -11,6 +11,7 @@ import {
   getCustomersQuerySchema,
 } from "@/lib/zod/schemas/customers";
 import { prisma } from "@dub/prisma";
+import { REQUIRED_PLAN_ALL } from "@dub/utils";
 import { Customer, Link } from "@prisma/client";
 import { NextResponse } from "next/server";
 
@@ -47,7 +48,7 @@ export const GET = withWorkspace(
     );
   },
   {
-    requiredPlan: ["free", "pro", "business"],
+    requiredPlan: REQUIRED_PLAN_ALL,
   },
 );
 
@@ -93,6 +94,6 @@ export const POST = withWorkspace(
     }
   },
   {
-    requiredPlan: ["free", "pro", "business"],
+    requiredPlan: REQUIRED_PLAN_ALL,
   },
 );

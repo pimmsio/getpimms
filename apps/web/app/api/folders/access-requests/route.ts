@@ -1,5 +1,6 @@
 import { withWorkspace } from "@/lib/auth";
 import { prisma } from "@dub/prisma";
+import { REQUIRED_PLAN_BUSINESS_ONLY } from "@dub/utils";
 import { NextResponse } from "next/server";
 
 // GET /api/folders/access-requests - get access requests made by the authenticated user
@@ -20,7 +21,7 @@ export const GET = withWorkspace(
   },
   {
     requiredPermissions: ["folders.read"],
-    requiredPlan: ["business"],
+    requiredPlan: REQUIRED_PLAN_BUSINESS_ONLY,
     featureFlag: "linkFolders",
   },
 );

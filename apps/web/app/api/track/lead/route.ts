@@ -20,7 +20,7 @@ import {
   trackLeadResponseSchema,
 } from "@/lib/zod/schemas/leads";
 import { prisma } from "@dub/prisma";
-import { nanoid } from "@dub/utils";
+import { nanoid, REQUIRED_PLAN_ALL } from "@dub/utils";
 import { Customer } from "@prisma/client";
 import { waitUntil } from "@vercel/functions";
 import { NextResponse } from "next/server";
@@ -318,7 +318,7 @@ export const POST = withWorkspace(
     });
   },
   {
-    requiredPlan: ["free", "pro", "business"],
+    requiredPlan: REQUIRED_PLAN_ALL,
     requiredPermissions: ["lead.write"],
   },
 );

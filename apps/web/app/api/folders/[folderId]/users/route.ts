@@ -4,6 +4,7 @@ import {
   verifyFolderAccess,
 } from "@/lib/folder/permissions";
 import { prisma } from "@dub/prisma";
+import { REQUIRED_PLAN_BUSINESS_ONLY } from "@dub/utils";
 import { NextResponse } from "next/server";
 
 // GET /api/folders/[folderId]/users – get users with access to a folder
@@ -74,7 +75,7 @@ export const GET = withWorkspace(
   },
   {
     requiredPermissions: ["folders.read"],
-    requiredPlan: ["business"],
+    requiredPlan: REQUIRED_PLAN_BUSINESS_ONLY,
     featureFlag: "linkFolders",
   },
 );

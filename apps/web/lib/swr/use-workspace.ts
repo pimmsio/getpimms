@@ -2,7 +2,7 @@
 
 import { ExpandedWorkspaceProps } from "@/lib/types";
 import { useWorkspaceSlug } from "../hooks/use-workspace-slug";
-import { PRO_PLAN, fetcher, getNextPlan } from "@dub/utils";
+import { TINY_PLAN, fetcher, getNextPlan } from "@dub/utils";
 import useSWR, { SWRConfiguration } from "swr";
 
 export default function useWorkspace({
@@ -34,7 +34,7 @@ export default function useWorkspace({
 
   return {
     ...(workspace ?? {}),
-    nextPlan: workspace?.plan ? getNextPlan(workspace.plan) : PRO_PLAN,
+    nextPlan: workspace?.plan ? getNextPlan(workspace.plan) : TINY_PLAN,
     role: (workspace?.users && workspace.users[0].role) || "member",
     isOwner: Boolean(workspace?.users && workspace.users[0].role === "owner"),
     exceededClicks: workspace && workspace.usage >= workspace.usageLimit,

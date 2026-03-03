@@ -276,7 +276,7 @@ function LinkBuilderInner({
             <UpgradeRequiredToast
               title="Bulk create limit exceeded"
               message={`Your plan allows up to ${bulkLinksLimit} links at a time in the Bulk Link Builder. Upgrade to create more.`}
-              planToUpgradeTo={nextPlan?.name ?? "Pro"}
+              planToUpgradeTo={nextPlan?.name ?? "Tiny"}
             />
           ),
           { id: "bulk-limit-exceeded" },
@@ -289,7 +289,7 @@ function LinkBuilderInner({
             <UpgradeRequiredToast
               title="Monthly links limit exceeded"
               message={`You can create ${remainingLinks} more link${remainingLinks === 1 ? "" : "s"} this month, but this bulk operation would add ${bulkLinkBuilder.bulkTotalCount}. Upgrade to create more.`}
-              planToUpgradeTo={nextPlan?.name ?? "Pro"}
+              planToUpgradeTo={nextPlan?.name ?? "Tiny"}
             />
           ),
           { id: "monthly-links-limit-exceeded" },
@@ -498,7 +498,7 @@ function LinkBuilderInner({
                         <UpgradeRequiredToast
                           title="Bulk create limit exceeded"
                           message={`Your plan allows up to ${bulkLinksLimit} links at a time in the Bulk Link Builder. Upgrade to create more.`}
-                          planToUpgradeTo={nextPlan?.name ?? "Pro"}
+                          planToUpgradeTo={nextPlan?.name ?? "Tiny"}
                         />
                       ),
                       { id: "bulk-limit-exceeded" },
@@ -511,7 +511,7 @@ function LinkBuilderInner({
                         <UpgradeRequiredToast
                           title="Monthly links limit exceeded"
                           message={`You can create ${remainingLinks} more link${remainingLinks === 1 ? "" : "s"} this month, but this bulk operation would add ${bulkLinkBuilder.bulkTotalCount}. Upgrade to create more.`}
-                          planToUpgradeTo={nextPlan?.name ?? "Pro"}
+                          planToUpgradeTo={nextPlan?.name ?? "Tiny"}
                         />
                       ),
                       { id: "monthly-links-limit-exceeded" },

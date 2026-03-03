@@ -15,7 +15,7 @@ import {
   trackSaleResponseSchema,
 } from "@/lib/zod/schemas/sales";
 import { prisma } from "@dub/prisma";
-import { nanoid } from "@dub/utils";
+import { nanoid, REQUIRED_PLAN_ALL } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -275,7 +275,7 @@ export const POST = withWorkspace(
     });
   },
   {
-    requiredPlan: ["free", "pro", "business"],
+    requiredPlan: REQUIRED_PLAN_ALL,
     requiredPermissions: ["sale.write"],
   },
 );

@@ -22,7 +22,7 @@ export const proLinkFeaturesCheck = (payload: NewLinkProps) => {
     );
 
     throw new Error(
-      `You can only use ${proFeaturesString} on a Pro plan and above. Upgrade to Pro to use these features.`,
+      `You can only use ${proFeaturesString} on a Solo plan and above. Upgrade to Solo to use these features.`,
     );
   }
 };
@@ -54,7 +54,7 @@ export const proFeaturesCheck = (payload: NewLinkProps) => {
     );
 
     throw new Error(
-      `You can only use ${starterFeaturesString} on a Pro plan and above. Upgrade to Pro to use these features.`,
+      `You can only use ${starterFeaturesString} on a Solo plan and above. Upgrade to Solo to use these features.`,
     );
   }
 };

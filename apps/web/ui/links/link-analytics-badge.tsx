@@ -76,7 +76,7 @@ export function LinkAnalyticsBadge({
     "folders.links.write",
   );
 
-  const analyticsHref = `/${slug}/analytics?domain=${domain}&key=${key}${url ? `&url=${url}` : ""}&interval=${plan === "free" ? "30d" : plan === "pro" ? "1y" : "all"}`;
+  const analyticsHref = `/${slug}/analytics?domain=${domain}&key=${key}${url ? `&url=${url}` : ""}&interval=${plan === "free" ? "30d" : ["tiny", "solo", "pro"].includes(plan ?? "") ? "1y" : "all"}`;
 
   return isMobile ? (
     isConversionCallback ? (

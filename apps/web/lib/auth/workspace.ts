@@ -2,7 +2,11 @@ import { DubApiError, handleAndReturnErrorResponse } from "@/lib/api/errors";
 import { BetaFeatures, PlanProps, WorkspaceWithUsers } from "@/lib/types";
 import { ratelimit } from "@/lib/upstash";
 import { prisma } from "@dub/prisma";
-import { API_DOMAIN, getSearchParams } from "@dub/utils";
+import {
+  API_DOMAIN,
+  getSearchParams,
+  REQUIRED_PLAN_ALL,
+} from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
 import { AxiomRequest, withAxiom } from "next-axiom";
 import {
@@ -40,12 +44,12 @@ interface WithWorkspaceHandler {
 export const withWorkspace = (
   handler: WithWorkspaceHandler,
   {
-    requiredPlan = ["free", "pro", "business"], // if the action needs a specific plan
+    requiredPlan = REQUIRED_PLAN_ALL, // if the action needs a specific plan
     featureFlag, // if the action needs a specific feature flag
     requiredPermissions = [],
     skipPermissionChecks, // if the action doesn't need to check for required permission(s)
   }: {
-    requiredPlan?: Array<PlanProps>;
+    requiredPlan?: readonly PlanProps[];
     featureFlag?: BetaFeatures;
     requiredPermissions?: PermissionAction[];
     skipPermissionChecks?: boolean;

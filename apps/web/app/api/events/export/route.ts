@@ -8,7 +8,7 @@ import { withWorkspace } from "@/lib/auth";
 import { verifyFolderAccess } from "@/lib/folder/permissions";
 import { ClickEvent, LeadEvent, SaleEvent } from "@/lib/types";
 import { eventsQuerySchema } from "@/lib/zod/schemas/analytics";
-import { COUNTRIES, capitalize } from "@dub/utils";
+import { COUNTRIES, REQUIRED_PLAN_WEBHOOKS, capitalize } from "@dub/utils";
 import { z } from "zod";
 
 type Row = ClickEvent | LeadEvent | SaleEvent;
@@ -115,7 +115,7 @@ export const GET = withWorkspace(
     });
   },
   {
-    requiredPlan: ["pro", "business"],
+    requiredPlan: REQUIRED_PLAN_WEBHOOKS,
     requiredPermissions: ["analytics.read"],
   },
 );

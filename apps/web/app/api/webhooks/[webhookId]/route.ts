@@ -9,6 +9,7 @@ import { toggleWebhooksForWorkspace } from "@/lib/webhook/update-webhook";
 import { isLinkLevelWebhook } from "@/lib/webhook/utils";
 import { updateWebhookSchema } from "@/lib/zod/schemas/webhooks";
 import { prisma } from "@dub/prisma";
+import { REQUIRED_PLAN_WEBHOOKS } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
 import { NextResponse } from "next/server";
 
@@ -38,7 +39,7 @@ export const GET = withWorkspace(
   },
   {
     requiredPermissions: ["webhooks.read"],
-    requiredPlan: ["pro", "business"],
+    requiredPlan: REQUIRED_PLAN_WEBHOOKS,
   },
 );
 
@@ -233,7 +234,7 @@ export const PATCH = withWorkspace(
   },
   {
     requiredPermissions: ["webhooks.write"],
-    requiredPlan: ["pro", "business"],
+    requiredPlan: REQUIRED_PLAN_WEBHOOKS,
   },
 );
 
@@ -295,6 +296,6 @@ export const DELETE = withWorkspace(
   },
   {
     requiredPermissions: ["webhooks.write"],
-    requiredPlan: ["pro", "business"],
+    requiredPlan: REQUIRED_PLAN_WEBHOOKS,
   },
 );

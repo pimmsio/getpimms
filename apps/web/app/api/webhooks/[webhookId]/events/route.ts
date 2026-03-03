@@ -1,6 +1,7 @@
 import { withWorkspace } from "@/lib/auth";
 import { getWebhookEvents } from "@/lib/tinybird/get-webhook-events";
 import { prisma } from "@dub/prisma";
+import { REQUIRED_PLAN_WEBHOOKS } from "@dub/utils";
 import { NextResponse } from "next/server";
 
 // GET /api/webhooks/[webhookId]/events - get logs for a webhook
@@ -28,6 +29,6 @@ export const GET = withWorkspace(
   },
   {
     requiredPermissions: ["webhooks.read"],
-    requiredPlan: ["pro", "business"],
+    requiredPlan: REQUIRED_PLAN_WEBHOOKS,
   },
 );

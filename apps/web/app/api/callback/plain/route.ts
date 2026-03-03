@@ -172,7 +172,7 @@ export async function POST(req: NextRequest) {
                     badgeColor:
                       plan === "business"
                         ? "GREEN"
-                        : plan === "pro"
+                        : ["solo", "pro"].includes(plan ?? "")
                           ? "BLUE"
                           : "GREY",
                   },

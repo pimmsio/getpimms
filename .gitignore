@@ -22,6 +22,7 @@ dist/
 .env*.local
 .env.production
 .env.development
+.env.dev
 .env.test
 .env.staging
 .env

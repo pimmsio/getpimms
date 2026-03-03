@@ -3,7 +3,7 @@ import { parseRequestBody } from "@/lib/api/utils";
 import { withWorkspace } from "@/lib/auth";
 import { installIntegration } from "@/lib/integrations/install";
 import { prisma } from "@dub/prisma";
-import { SHOPIFY_INTEGRATION_ID } from "@dub/utils";
+import { REQUIRED_PLAN_WEBHOOKS, SHOPIFY_INTEGRATION_ID } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -86,6 +86,6 @@ export const PATCH = withWorkspace(
   },
   {
     requiredPermissions: ["workspaces.write"],
-    requiredPlan: ["pro", "business"],
+    requiredPlan: REQUIRED_PLAN_WEBHOOKS,
   },
 );

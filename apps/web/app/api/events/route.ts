@@ -7,6 +7,7 @@ import { throwIfEventsUsageExceeded } from "@/lib/api/links/usage-checks";
 import { withWorkspace } from "@/lib/auth";
 import { verifyFolderAccess } from "@/lib/folder/permissions";
 import { eventsQuerySchema } from "@/lib/zod/schemas/analytics";
+import { REQUIRED_PLAN_ALL } from "@dub/utils";
 import { Folder, Link } from "@dub/prisma/client";
 import { NextResponse } from "next/server";
 
@@ -85,7 +86,7 @@ export const GET = withWorkspace(
     return NextResponse.json(response);
   },
   {
-    requiredPlan: ["free", "pro", "business"],
+    requiredPlan: REQUIRED_PLAN_ALL,
     requiredPermissions: ["analytics.read"],
   },
 );

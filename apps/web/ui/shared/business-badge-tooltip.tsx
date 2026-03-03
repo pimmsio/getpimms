@@ -11,7 +11,7 @@ import { Crown } from "lucide-react";
 export function BusinessBadgeTooltip(props: Omit<TooltipProps, "children">) {
   const { plan } = useWorkspace();
 
-  return ["free", "pro"].includes(plan!) ? (
+  return ["free", "tiny", "solo", "pro"].includes(plan!) ? (
     <BadgeTooltip {...props}>
       <div className="flex items-center space-x-1">
         <Crown size={12} />

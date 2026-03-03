@@ -171,13 +171,13 @@ export async function processLink<T extends Record<string, any>>({
 
   const normalizedPlan = workspace?.plan || "free";
 
-  // free plan restrictions
-  if (!workspace || normalizedPlan === "free") {
+  // free and tiny plan restrictions
+  if (!workspace || ["free", "tiny"].includes(normalizedPlan)) {
     if (key === "_root" && url) {
       return {
         link: payload,
         error:
-          "You can only set a redirect for a root domain link on a Pro plan and above. Upgrade to Pro to use this feature.",
+          "You can only set a redirect for a root domain link on a Solo plan and above. Upgrade to Solo to use this feature.",
         code: "forbidden",
       };
     }
@@ -192,7 +192,7 @@ export async function processLink<T extends Record<string, any>>({
         code: "forbidden",
       };
     }
-  } else if (normalizedPlan === "pro") {
+  } else if (["solo", "pro"].includes(normalizedPlan)) {
     try {
       businessFeaturesCheck(payload);
     } catch (error) {

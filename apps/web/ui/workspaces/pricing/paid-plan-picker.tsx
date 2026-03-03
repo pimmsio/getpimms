@@ -1,11 +1,11 @@
 "use client";
 
 import { Combobox } from "@dub/ui";
-import { cn } from "@dub/utils";
+import { cn, PaidPlanId, SELF_SERVE_PAID_PLANS } from "@dub/utils";
 import { ChevronsUpDown } from "lucide-react";
 import { useMemo } from "react";
 
-export type PaidPlanId = "pro" | "business";
+export type { PaidPlanId };
 
 export function PaidPlanPicker({
   value,
@@ -17,10 +17,11 @@ export function PaidPlanPicker({
   className?: string;
 }) {
   const options = useMemo(
-    () => [
-      { value: "pro" as const, label: "Pro" },
-      { value: "business" as const, label: "Business" },
-    ],
+    () =>
+      SELF_SERVE_PAID_PLANS.map((p) => ({
+        value: p.name.toLowerCase() as PaidPlanId,
+        label: p.name,
+      })),
     [],
   );
 

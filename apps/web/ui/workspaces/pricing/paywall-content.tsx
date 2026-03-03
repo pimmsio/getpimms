@@ -10,12 +10,13 @@ import {
   INFINITY_NUMBER,
   nFormatter,
   PLANS,
+  PaidPlanId,
 } from "@dub/utils";
 import { useCallback, useMemo, useState } from "react";
 import { mutate } from "swr";
 import { toast } from "sonner";
 import { CurrencyToggle } from "./currency-toggle";
-import { PaidPlanId, PaidPlanPicker } from "./paid-plan-picker";
+import { PaidPlanPicker } from "./paid-plan-picker";
 import { PricingOptionCard } from "./pricing-option-card";
 
 const ALL_PAID_FEATURES = [
@@ -33,7 +34,7 @@ function formatCount(val: number) {
   return val === INFINITY_NUMBER ? "Unlimited" : nFormatter(val, { full: true });
 }
 
-function getPlanSpecificBullets(planName: "pro" | "business") {
+function getPlanSpecificBullets(planName: PaidPlanId) {
   const plan = PLANS.find((p) => p.name.toLowerCase() === planName)!;
   const links = plan.limits.links;
   const events = plan.limits.clicks;
@@ -47,6 +48,13 @@ function getPlanSpecificBullets(planName: "pro" | "business") {
 
   const bulkLinks = plan.limits.bulkLinks ?? 0;
 
+  const supportText =
+    planName === "business" || planName === "pro"
+      ? "Priority support"
+      : planName === "solo"
+        ? "3 months priority support included"
+        : "Email support";
+
   return [
     `${formatCount(links)} new links${perMonthSuffix(links)}`,
     `${formatCount(events)} events tracked${perMonthSuffix(events)}`,
@@ -56,7 +64,7 @@ function getPlanSpecificBullets(planName: "pro" | "business") {
     `${retention} analytics retention`,
     `${formatCount(utmTemplates)} UTM templates`,
     `${nFormatter(bulkLinks, { full: true })} links at a time in Bulk Link Builder`,
-    planName === "business" ? "Priority support" : "3 months priority support",
+    supportText,
   ];
 }
 
@@ -83,6 +91,8 @@ function FeatureList({
     </ul>
   );
 }
+
+const PAID_PLAN_IDS: PaidPlanId[] = ["tiny", "solo", "pro", "business"];
 
 export function PaywallContent({
   className,
@@ -131,33 +141,44 @@ export function PaywallContent({
   );
 
   const defaultSelectedPaidPlan = useMemo<PaidPlanId>(() => {
-    if (currentPlan === "pro") return "pro";
-    if (currentPlan === "business") return "business";
+    if (PAID_PLAN_IDS.includes(currentPlan as PaidPlanId)) {
+      return currentPlan as PaidPlanId;
+    }
     return "pro";
   }, [currentPlan]);
 
   const [selectedPaidPlan, setSelectedPaidPlan] =
     useState<PaidPlanId>(defaultSelectedPaidPlan);
 
-  const selectedPlan = PLANS.find((p) => p.name.toLowerCase() === selectedPaidPlan)!;
+  const selectedPlan = PLANS.find(
+    (p) => p.name.toLowerCase() === selectedPaidPlan,
+  )!;
 
   const includedInSelectedPlan = useMemo(
     () => getPlanSpecificBullets(selectedPaidPlan),
     [selectedPaidPlan],
   );
 
-  const primaryCta =
-    selectedPaidPlan === "business" ? "Subscribe yearly" : "Subscribe monthly";
+  const hasLifetime = selectedPlan.price.lifetime != null;
+  const hasYearly = selectedPlan.price.yearly != null;
 
-  const monthlyBusiness = getPlanPrice("business", "monthly", currency);
-  const yearlyBusiness = getPlanPrice("business", "yearly", currency);
+  const monthlySelected = getPlanPrice(
+    selectedPaidPlan,
+    "monthly",
+    currency,
+  );
+  const yearlySelected = hasYearly
+    ? getPlanPrice(selectedPaidPlan, "yearly", currency)
+    : 0;
 
   return (
     <div className={cn("w-full", className)}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="text-sm text-neutral-500">
           You are currently on the{" "}
-          <span className="font-medium text-neutral-900 capitalize">{currentPlan}</span>{" "}
+          <span className="font-medium text-neutral-900 capitalize">
+            {currentPlan}
+          </span>{" "}
           plan
         </div>
         <CurrencyToggle value={currency} onChange={handleCurrencyChange} />
@@ -168,103 +189,84 @@ export function PaywallContent({
       </div>
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
-        {selectedPaidPlan === "pro" ? (
-          <>
-            <PricingOptionCard
-              title="Monthly"
-              price={getPlanPrice("pro", "monthly", currency)}
-              periodLabel="/month"
+        <PricingOptionCard
+          title="Monthly"
+          price={monthlySelected}
+          periodLabel="/month"
+          currency={currency}
+          cta={
+            <UpgradePlanButton
+              plan={selectedPaidPlan}
+              period="monthly"
               currency={currency}
-              cta={
-                <UpgradePlanButton
-                  plan="pro"
-                  period="monthly"
-                  currency={currency}
-                  className="h-10 w-full rounded-lg"
-                  variant="outline"
-                  text="Subscribe monthly"
-                />
-              }
+              className="h-10 w-full rounded-lg"
+              variant="outline"
+              text="Subscribe monthly"
             />
-            <PricingOptionCard
-              title="Lifetime"
-              price={getPlanPrice("pro", "lifetime", currency)}
-              periodLabel=""
-              currency={currency}
-              badge="Most popular"
-              helperTop={<span className="font-medium">One-time payment</span>}
-              cta={
-                <UpgradePlanButton
-                  plan="pro"
-                  period="monthly"
-                  mode="lifetime"
-                  currency={currency}
-                  className="h-10 w-full rounded-lg"
-                  variant="primary"
-                  text="Unlock lifetime access"
-                />
-              }
-            />
-          </>
-        ) : (
-          <>
-            <PricingOptionCard
-              title="Monthly"
-              price={getPlanPrice("business", "monthly", currency)}
-              periodLabel="/month"
-              currency={currency}
-              cta={
-                <UpgradePlanButton
-                  plan="business"
-                  period="monthly"
-                  currency={currency}
-                  className="h-10 w-full rounded-lg"
-                  variant="outline"
-                  text="Subscribe monthly"
-                />
-              }
-            />
-            <PricingOptionCard
-              title="Yearly"
-              price={yearlyBusiness}
-              periodLabel="/year"
-              currency={currency}
-              badge="Most popular"
-              helperTop={
-                <span className="text-neutral-500">
-                  <span className="line-through">
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency,
-                      maximumFractionDigits: 0,
-                      ...(currency === "USD" && {
-                        currencyDisplay: "narrowSymbol",
-                      }),
-                    }).format(monthlyBusiness)}
-                    /month
-                  </span>{" "}
-                  <span className="text-blue-600">2 months free</span>
-                </span>
-              }
-              cta={
-                <UpgradePlanButton
-                  plan="business"
-                  period="yearly"
-                  currency={currency}
-                  className="h-10 w-full rounded-lg"
-                  variant="primary"
-                  text="Subscribe yearly"
-                />
-              }
-            />
-          </>
-        )}
+          }
+        />
+        {hasLifetime ? (
+          <PricingOptionCard
+            title="Lifetime"
+            price={getPlanPrice(selectedPaidPlan, "lifetime", currency)}
+            periodLabel=""
+            currency={currency}
+            badge="Most popular"
+            helperTop={<span className="font-medium">One-time payment</span>}
+            cta={
+              <UpgradePlanButton
+                plan={selectedPaidPlan}
+                period="monthly"
+                mode="lifetime"
+                currency={currency}
+                className="h-10 w-full rounded-lg"
+                variant="primary"
+                text="Unlock lifetime access"
+              />
+            }
+          />
+        ) : hasYearly ? (
+          <PricingOptionCard
+            title="Yearly"
+            price={yearlySelected}
+            periodLabel="/year"
+            currency={currency}
+            badge="Most popular"
+            helperTop={
+              <span className="text-neutral-500">
+                <span className="line-through">
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency,
+                    maximumFractionDigits: 0,
+                    ...(currency === "USD" && {
+                      currencyDisplay: "narrowSymbol",
+                    }),
+                  }).format(monthlySelected)}
+                  /month
+                </span>{" "}
+                <span className="text-blue-600">2 months free</span>
+              </span>
+            }
+            cta={
+              <UpgradePlanButton
+                plan={selectedPaidPlan}
+                period="yearly"
+                currency={currency}
+                className="h-10 w-full rounded-lg"
+                variant="primary"
+                text="Subscribe yearly"
+              />
+            }
+          />
+        ) : null}
       </div>
 
       <div className="mt-6 space-y-6">
         <div>
           <div className="text-sm font-semibold text-neutral-900">
-            Included in <span className="capitalize">{selectedPaidPlan}</span> plan
+            Included in{" "}
+            <span className="capitalize">{selectedPaidPlan}</span> plan
           </div>
           <div className="mt-3">
             <FeatureList items={includedInSelectedPlan} />
@@ -283,5 +285,3 @@ export function PaywallContent({
     </div>
   );
 }
-
-

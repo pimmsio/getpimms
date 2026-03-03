@@ -205,7 +205,7 @@ export type ProcessedLinkProps = Omit<NewLinkProps, ProcessedLinkOverrides> &
     id?: string;
   };
 
-export const plans = ["free", "pro", "business"] as const;
+export const plans = ["free", "tiny", "solo", "pro", "business"] as const;
 
 export const roles = ["owner", "member"] as const;
 

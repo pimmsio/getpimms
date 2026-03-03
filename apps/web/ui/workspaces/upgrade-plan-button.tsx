@@ -55,8 +55,8 @@ export function UpgradePlanButton({
   const onboarding = searchParams.get("workspace");
 
   const handleUpgrade = async () => {
-    if (mode === "lifetime" && selectedPlan.name.toLowerCase() !== "pro") {
-      alert("Lifetime is only available for the Pro plan.");
+    if (mode === "lifetime" && !selectedPlan.price.lifetime) {
+      alert("Lifetime is only available for Tiny and Solo plans.");
       return;
     }
 

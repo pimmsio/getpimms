@@ -6,6 +6,7 @@ import { verifyFolderAccess } from "@/lib/folder/permissions";
 import { getPlanCapabilities } from "@/lib/plan-capabilities";
 import { FolderSchema, updateFolderSchema } from "@/lib/zod/schemas/folders";
 import { prisma } from "@dub/prisma";
+import { REQUIRED_PLAN_FOLDERS } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
 import { NextResponse } from "next/server";
 
@@ -25,7 +26,7 @@ export const GET = withWorkspace(
   },
   {
     requiredPermissions: ["folders.read"],
-    requiredPlan: ["pro", "business"],
+    requiredPlan: REQUIRED_PLAN_FOLDERS,
     featureFlag: "linkFolders",
   },
 );
@@ -87,7 +88,7 @@ export const PATCH = withWorkspace(
   },
   {
     requiredPermissions: ["folders.write"],
-    requiredPlan: ["pro", "business"],
+    requiredPlan: REQUIRED_PLAN_FOLDERS,
     featureFlag: "linkFolders",
   },
 );
@@ -150,7 +151,7 @@ export const DELETE = withWorkspace(
   },
   {
     requiredPermissions: ["folders.write"],
-    requiredPlan: ["pro", "business"],
+    requiredPlan: REQUIRED_PLAN_FOLDERS,
     featureFlag: "linkFolders",
   },
 );

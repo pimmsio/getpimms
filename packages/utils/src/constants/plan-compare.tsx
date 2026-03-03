@@ -16,6 +16,8 @@ export const PLAN_COMPARE_FEATURES: {
       | {
           default?: boolean;
           free?: boolean;
+          tiny?: boolean;
+          solo?: boolean;
           pro?: boolean;
           business?: boolean;
         };
@@ -83,6 +85,7 @@ export const PLAN_COMPARE_FEATURES: {
       {
         check: {
           free: false,
+          tiny: false,
           default: true,
         },
         text: "A/B testing",
@@ -169,6 +172,7 @@ export const PLAN_COMPARE_FEATURES: {
       {
         check: {
           default: false,
+          solo: true,
           pro: true,
           business: true,
         },
@@ -177,6 +181,7 @@ export const PLAN_COMPARE_FEATURES: {
       {
         check: {
           default: false,
+          solo: true,
           pro: true,
           business: true,
         },
@@ -191,6 +196,8 @@ export const PLAN_COMPARE_FEATURES: {
       {
         check: {
           default: false,
+          tiny: true,
+          solo: true,
           pro: true,
           business: true,
         },
@@ -202,16 +209,21 @@ export const PLAN_COMPARE_FEATURES: {
               <strong>
                 {plan.name === "Business"
                   ? "Unlimited"
-                  : `€${nFormatter(plan.limits.sales / 100)}`}
+                  : plan.limits.sales >= INFINITY_NUMBER
+                    ? "Unlimited"
+                    : `€${nFormatter(plan.limits.sales / 100)}`}
               </strong>{" "}
               tracked sales
-              {plan.name === "Business" ? "" : "/mo"}
+              {plan.name === "Business" || plan.limits.sales >= INFINITY_NUMBER
+                ? ""
+                : "/mo"}
             </>
           ),
       },
       {
         check: {
           default: false,
+          solo: true,
           pro: true,
           business: true,
         },
@@ -289,6 +301,7 @@ export const PLAN_COMPARE_FEATURES: {
       {
         check: {
           default: false,
+          solo: true,
           pro: true,
           business: true,
         },
@@ -350,9 +363,11 @@ export const PLAN_COMPARE_FEATURES: {
               {
                 {
                   free: "Basic support",
-                  pro: "3 months priority support",
+                  tiny: "Email support",
+                  solo: "3 months priority support",
+                  pro: "Priority support",
                   business: "Priority support",
-                }[id]
+                }[id] ?? "—"
               }
             </strong>
           </>

@@ -10,6 +10,7 @@ import {
   updateCustomerBodySchema,
 } from "@/lib/zod/schemas/customers";
 import { prisma } from "@dub/prisma";
+import { REQUIRED_PLAN_ALL } from "@dub/utils";
 import { NextResponse } from "next/server";
 
 // GET /api/customers/:id – Get a customer by ID
@@ -32,7 +33,7 @@ export const GET = withWorkspace(
     );
   },
   {
-    requiredPlan: ["free", "pro", "business"],
+    requiredPlan: REQUIRED_PLAN_ALL,
   },
 );
 
@@ -86,7 +87,7 @@ export const PATCH = withWorkspace(
     }
   },
   {
-    requiredPlan: ["free", "pro", "business"],
+    requiredPlan: REQUIRED_PLAN_ALL,
   },
 );
 
@@ -111,6 +112,6 @@ export const DELETE = withWorkspace(
     });
   },
   {
-    requiredPlan: ["free", "pro", "business"],
+    requiredPlan: REQUIRED_PLAN_ALL,
   },
 );

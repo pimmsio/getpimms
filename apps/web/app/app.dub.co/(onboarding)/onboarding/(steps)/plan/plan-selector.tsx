@@ -1,6 +1,9 @@
 "use client";
 
-import { PaidPlanId, PaidPlanPicker } from "@/ui/workspaces/pricing/paid-plan-picker";
+import {
+  PaidPlanId,
+  PaidPlanPicker,
+} from "@/ui/workspaces/pricing/paid-plan-picker";
 import { PricingOptionCard } from "@/ui/workspaces/pricing/pricing-option-card";
 import { CurrencyToggle } from "@/ui/workspaces/pricing/currency-toggle";
 import { UpgradePlanButton } from "@/ui/workspaces/upgrade-plan-button";
@@ -10,6 +13,8 @@ import { useCallback, useMemo, useState } from "react";
 import { mutate } from "swr";
 import { toast } from "sonner";
 import { LaterButton } from "../../later-button";
+
+const PAID_PLAN_IDS: PaidPlanId[] = ["tiny", "solo", "pro", "business"];
 
 export function PlanSelector() {
   const {
@@ -56,15 +61,19 @@ export function PlanSelector() {
   const currentPlanId = currentPlan;
 
   const defaultSelectedPaidPlan = useMemo<PaidPlanId>(() => {
-    return currentPlanId === "pro" || currentPlanId === "business"
-      ? "business"
-      : "pro";
+    if (PAID_PLAN_IDS.includes(currentPlanId as PaidPlanId)) {
+      return currentPlanId as PaidPlanId;
+    }
+    return "pro";
   }, [currentPlanId]);
 
   const [selectedPaidPlan, setSelectedPaidPlan] =
     useState<PaidPlanId>(defaultSelectedPaidPlan);
 
-  const monthlyBusiness = getPlanPrice("business", "monthly", currency);
+  const selectedPlanPrice = getPlanPrice(selectedPaidPlan, "monthly", currency);
+  const hasLifetime =
+    getPlanPrice(selectedPaidPlan, "lifetime", currency) > 0;
+  const hasYearly = getPlanPrice(selectedPaidPlan, "yearly", currency) > 0;
 
   return (
     <div className="flex flex-col gap-y-6">
@@ -79,7 +88,9 @@ export function PlanSelector() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="text-sm text-neutral-500">
             You are currently on the{" "}
-            <span className="font-medium text-neutral-900 capitalize">{currentPlan}</span>{" "}
+            <span className="font-medium text-neutral-900 capitalize">
+              {currentPlan}
+            </span>{" "}
             plan
           </div>
           <CurrencyToggle value={currency} onChange={handleCurrencyChange} />
@@ -90,69 +101,50 @@ export function PlanSelector() {
         </div>
 
         <div className="mt-6 grid gap-4 md:grid-cols-2">
-          {selectedPaidPlan === "pro" ? (
-            <>
-              <PricingOptionCard
-                title="Monthly"
-                price={getPlanPrice("pro", "monthly", currency)}
-                periodLabel="/month"
+          <PricingOptionCard
+            title="Monthly"
+            price={selectedPlanPrice}
+            periodLabel="/month"
+            currency={currency}
+            cta={
+              <UpgradePlanButton
+                plan={selectedPaidPlan}
+                period="monthly"
                 currency={currency}
-                cta={
-                  <UpgradePlanButton
-                    plan="pro"
-                    period="monthly"
-                    currency={currency}
-                    className="h-10 w-full rounded-lg"
-                    variant="outline"
-                    text="Subscribe"
-                  />
-                }
+                className="h-10 w-full rounded-lg"
+                variant="outline"
+                text="Subscribe"
               />
-              <PricingOptionCard
-                title="Lifetime"
-                price={getPlanPrice("pro", "lifetime", currency)}
-                periodLabel=""
-                currency={currency}
-                helperTop={<span className="font-medium">One-time payment</span>}
-                cta={
-                  <UpgradePlanButton
-                    plan="pro"
-                    period="monthly"
-                    mode="lifetime"
-                    currency={currency}
-                    className="h-10 w-full rounded-lg"
-                    text="Unlock lifetime access"
-                  />
-                }
-              />
-            </>
-          ) : (
-            <>
-              <PricingOptionCard
-                title="Monthly"
-                price={getPlanPrice("business", "monthly", currency)}
-                periodLabel="/month"
-                currency={currency}
-                cta={
-                  <UpgradePlanButton
-                    plan="business"
-                    period="monthly"
-                    currency={currency}
-                    className="h-10 w-full rounded-lg"
-                    variant="outline"
-                    text="Subscribe"
-                  />
-                }
-              />
-              <PricingOptionCard
-                title="Yearly"
-                price={getPlanPrice("business", "yearly", currency)}
-                periodLabel="/year"
-                currency={currency}
-                badge="2 months free"
-                helperTop={
-                  <span className="text-neutral-500">
-                    <span className="line-through">
+            }
+          />
+          {hasLifetime ? (
+            <PricingOptionCard
+              title="Lifetime"
+              price={getPlanPrice(selectedPaidPlan, "lifetime", currency)}
+              periodLabel=""
+              currency={currency}
+              helperTop={<span className="font-medium">One-time payment</span>}
+              cta={
+                <UpgradePlanButton
+                  plan={selectedPaidPlan}
+                  period="monthly"
+                  mode="lifetime"
+                  currency={currency}
+                  className="h-10 w-full rounded-lg"
+                  text="Unlock lifetime access"
+                />
+              }
+            />
+          ) : hasYearly ? (
+            <PricingOptionCard
+              title="Yearly"
+              price={getPlanPrice(selectedPaidPlan, "yearly", currency)}
+              periodLabel="/year"
+              currency={currency}
+              badge="2 months free"
+              helperTop={
+                <span className="text-neutral-500">
+                  <span className="line-through">
                     {new Intl.NumberFormat("en-US", {
                       style: "currency",
                       currency,
@@ -160,25 +152,24 @@ export function PlanSelector() {
                       ...(currency === "USD" && {
                         currencyDisplay: "narrowSymbol",
                       }),
-                    }).format(monthlyBusiness)}
-                      /month
-                    </span>{" "}
-                    <span className="text-blue-600">2 months free</span>
-                  </span>
-                }
-                cta={
-                  <UpgradePlanButton
-                    plan="business"
-                    period="yearly"
-                    currency={currency}
-                    className="h-10 w-full rounded-lg"
-                    variant="primary"
-                    text="Subscribe"
-                  />
-                }
-              />
-            </>
-          )}
+                    }).format(selectedPlanPrice)}
+                    /month
+                  </span>{" "}
+                  <span className="text-blue-600">2 months free</span>
+                </span>
+              }
+              cta={
+                <UpgradePlanButton
+                  plan={selectedPaidPlan}
+                  period="yearly"
+                  currency={currency}
+                  className="h-10 w-full rounded-lg"
+                  variant="primary"
+                  text="Subscribe"
+                />
+              }
+            />
+          ) : null}
         </div>
       </div>
     </div>
