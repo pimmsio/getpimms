@@ -3,8 +3,8 @@ import { includeTags } from "@/lib/api/links/include-tags";
 import { getClickEvent, recordLead } from "@/lib/tinybird";
 import {
   computeAnonymousCustomerFields,
+  extractUserFields,
   getClickData,
-  getFirstAvailableField,
   getLink,
   isValidPimmsId,
 } from "@/lib/webhook/custom";
@@ -37,16 +37,7 @@ export async function getCustomerData(
   link: Link,
   clickData: ClickData,
 ): Promise<CustomerCreatedData> {
-  const email = getFirstAvailableField(data, ["email"], true);
-  const firstName = getFirstAvailableField(data, ["firstname", "prenom"], true);
-  const lastName = getFirstAvailableField(data, ["lastname", "nom"], true);
-  const fullName = getFirstAvailableField(
-    data,
-    ["fullname", "name", "nom"],
-    true,
-  );
-
-  console.log("email", email);
+  const { email, firstname, lastname, fullname } = extractUserFields(data);
 
   if (!email || !pimmsId) {
     throw new WebhookError("Missing email or pimmsId, skipping...", 200);
@@ -57,8 +48,7 @@ export async function getCustomerData(
   }
 
   const workspaceId = link.projectId;
-
-  const name = getName(firstName, lastName, fullName);
+  const name = getName(firstname, lastname, fullname);
 
   return {
     clickData,
@@ -77,8 +67,8 @@ export const getName = (
   fullName: string | null,
 ) => {
   return (
-    (firstName && lastName && `${firstName} ${lastName}`) ||
     fullName ||
+    (firstName && lastName && `${firstName} ${lastName}`) ||
     firstName ||
     lastName ||
     generateRandomName()

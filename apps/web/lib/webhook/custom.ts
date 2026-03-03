@@ -4,29 +4,66 @@ import { Link } from "@prisma/client";
 import { fixSomeWorkspaceId, WebhookError } from "./utils";
 import z from "../zod";
 
+const normalize = (str: string) =>
+  str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "");
+
+/** For tokenization: lowercased, accents removed, but separators preserved */
+const toTokenizable = (str: string) =>
+  str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+const TOKEN_SEP = /[\s_\-/,]+|et|and|&/;
+const FIRST_NAME_TOKENS = new Set(["prenom", "firstname", "first"]);
+const LAST_NAME_TOKENS = new Set(["nom", "lastname", "surname", "last"]);
+
+/**
+ * Detects if a field key/label represents a compound name field (first + last name combined).
+ * Token-based: splits by separators so "prenom" and "nom" are distinct (avoids "nom" inside "prenom").
+ */
+export function isCompoundNameField(fieldKey: string): boolean {
+  const tokens = new Set(
+    toTokenizable(fieldKey)
+      .split(TOKEN_SEP)
+      .map((t) => t.replace(/[^a-z0-9]/g, ""))
+      .filter(Boolean),
+  );
+  const hasFirst = [...FIRST_NAME_TOKENS].some((t) => tokens.has(t));
+  const hasLast = [...LAST_NAME_TOKENS].some((t) => tokens.has(t));
+  return hasFirst && hasLast;
+}
+
+/** Word boundary: key must be preceded/followed by non-alphanumeric or start/end */
+const wordBoundaryMatch = (fieldKey: string, normKey: string) =>
+  fieldKey === normKey ||
+  new RegExp(`(^|[^a-z0-9])${normKey.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}($|[^a-z0-9])`).test(
+    fieldKey,
+  );
+
 export function getFirstAvailableField(
   data: Record<string, any>,
   keys: string[],
   matchPrefix: boolean = false,
+  excludeCompoundNameFields: boolean = false,
 ): string | null {
-  const normalize = (str: string) =>
-    str
-      .toLowerCase()
-      .normalize("NFD") // decompose accents
-      .replace(/[\u0300-\u036f]/g, "") // remove diacritics
-      .replace(/[^a-z0-9]/g, ""); // remove all non-alphanum
-
-  const normalizedEntries = Object.entries(data).map(([key, value]) => [
-    normalize(key),
-    value,
-  ]);
+  const normalizedEntries: Array<[string, { key: string; value: any }]> =
+    Object.entries(data).map(([key, value]) => [
+      normalize(key),
+      { key, value },
+    ]);
 
   for (const key of keys) {
     const normKey = normalize(key);
 
-    for (const [fieldKey, value] of normalizedEntries) {
+    for (const [fieldKey, entry] of normalizedEntries) {
+      const { key: originalKey, value } = entry;
+      if (excludeCompoundNameFields && isCompoundNameField(originalKey)) {
+        continue;
+      }
       const isMatch = matchPrefix
-        ? fieldKey.includes(normKey) // prefix or suffix
+        ? wordBoundaryMatch(fieldKey, normKey)
         : fieldKey === normKey;
 
       if (isMatch && value) return value;
@@ -39,14 +76,19 @@ export function getFirstAvailableField(
 /**
  * Converts an array of field objects with label/value to a flat object
  * Useful for webhooks that send fields as arrays (e.g., Tally)
+ * Uses both label and key (slug) when available so compound fields are findable via either
  */
 export function fieldsArrayToMap(
-  fields: Array<{ label?: string; value?: any; [key: string]: any }>,
+  fields: Array<{ label?: string; key?: string; value?: any; [key: string]: any }>,
 ): Record<string, any> {
   const fieldsMap: Record<string, any> = {};
   for (const field of fields) {
-    if (field.label && field.value !== undefined && field.value !== null) {
+    if (field.value === undefined || field.value === null) continue;
+    if (field.label) {
       fieldsMap[field.label] = field.value;
+    }
+    if (field.key) {
+      fieldsMap[field.key] = field.value;
     }
   }
   return fieldsMap;
@@ -54,7 +96,7 @@ export function fieldsArrayToMap(
 
 /**
  * Extracts common user fields (email, name, firstname, lastname) from data
- * Uses getFirstAvailableField with smart matching for common field names
+ * Detects compound name fields (e.g. "Prénom et nom") and uses them as fullName only
  */
 export function extractUserFields(
   data: Record<string, any>,
@@ -66,21 +108,46 @@ export function extractUserFields(
   fullname: string | null;
 } {
   const email = getFirstAvailableField(data, ["email"], true);
-  const firstName = getFirstAvailableField(data, ["firstname", "prenom"], true);
-  const lastName = getFirstAvailableField(data, ["lastname", "nom"], true);
-  const fullName = getFirstAvailableField(data, ["fullname", "name", "nom"], true);
 
-  // Build name: prefer fullName, otherwise combine firstName + lastName, fallback to firstName or lastName
+  // Priority 1: explicit compound field detection (covers slugs, atypical keys)
+  let fullName: string | null = null;
+  for (const [key, value] of Object.entries(data)) {
+    if (value && isCompoundNameField(key)) {
+      fullName = String(value).trim();
+      break;
+    }
+  }
+
+  // Exclude compound fields from first/last to avoid double attribution
+  const firstName = getFirstAvailableField(
+    data,
+    ["firstname", "prenom"],
+    true,
+    true,
+  );
+  const lastName = getFirstAvailableField(
+    data,
+    ["lastname", "surname", "nom"],
+    true,
+    true,
+  );
+
+  // Fallback: fullName from standard keys if no compound found
+  // Exclude "nom" alone — it typically means last name, not full name
+  if (!fullName) {
+    fullName = getFirstAvailableField(
+      data,
+      ["fullname", "name", "nomcomplet"],
+      true,
+      false,
+    );
+  }
+
   const name =
     fullName ||
     (firstName && lastName
       ? `${firstName} ${lastName}`
       : firstName || lastName || null);
-
-  console.log("email", email);
-  console.log("firstName", firstName);
-  console.log("lastName", lastName);
-  console.log("fullName", fullName);
 
   return {
     email,

@@ -5,6 +5,7 @@ import { recordLead, recordSale } from "@/lib/tinybird";
 import { redis } from "@/lib/upstash";
 import {
   computeAnonymousCustomerFields,
+  extractUserFields,
   findLink,
   findWorkspace,
   getClickData,
@@ -235,11 +236,17 @@ const getClickId = async (body: any, untrustedWorkspaceId: string) => {
 };
 
 const getCustomerName = (body: any) => {
+  const fields = body?.customer?.fields;
+  if (!fields || typeof fields !== "object") return null;
+  const { name } = extractUserFields(fields);
+  if (name?.trim()) return name.trim();
+  // Fallback for Systeme.io slug structure (full_name, first_name, last_name)
   return (
     body?.customer?.fields?.full_name?.trim() ||
     [body?.customer?.fields?.first_name, body?.customer?.fields?.last_name]
       .filter(Boolean)
       .join(" ")
-      .trim()
+      .trim() ||
+    null
   );
 };
