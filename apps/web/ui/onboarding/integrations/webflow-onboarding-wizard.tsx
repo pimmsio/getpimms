@@ -46,6 +46,7 @@ export function WebflowOnboardingWizard({
     error: createError,
     created,
     create: createTestLink,
+    reset: resetTestLink,
   } = useCreateOnboardingTestLink({ workspaceId });
 
   const { waiting, done, start: startWaitingForLead } = useWaitForLinkLead({
@@ -190,6 +191,7 @@ export function WebflowOnboardingWizard({
               wizard.forceGoTo(5);
               startWaitingForLead();
             }}
+            onReset={resetTestLink}
           />
         ),
       },
@@ -218,6 +220,7 @@ export function WebflowOnboardingWizard({
     done,
     formOk,
     pageUrl,
+    resetTestLink,
     scriptInstalled,
     scriptVerified,
     setPageUrl,

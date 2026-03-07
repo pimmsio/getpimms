@@ -21,7 +21,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 const PODIA_GUIDE_URL =
   "https://pimms.io/guides/how-to-track-podia-stripe-payments";
 
-const PODIA_SCRIPT_BASE = "https://assets.pimms.io/detect-podia.min.v1.0.1.js";
+const DETECTION_SCRIPT_SRC = "https://cdn.pimms.io/analytics/script.detection.js";
 
 export function PodiaOnboardingWizard({
   guideThumbnail,
@@ -85,6 +85,7 @@ export function PodiaOnboardingWizard({
     error: createTestError,
     created: createdTestLink,
     create: createTestLink,
+    reset: resetTestLink,
   } = useCreateOnboardingTestLink({ workspaceId, domain: trackingDomain });
 
   const { waiting, done, start: startWaitingForSale } = useWaitForLinkLead({
@@ -158,9 +159,8 @@ export function PodiaOnboardingWizard({
 
   const podiaScript = useMemo(() => {
     if (!thankYouLink?.shortLink) return "";
-    return `<script src="${PODIA_SCRIPT_BASE}?url=${encodeURIComponent(
-      thankYouLink.shortLink,
-    )}" async></script>`;
+    const domains = JSON.stringify({ "thank-you": thankYouLink.shortLink });
+    return `<script defer src="${DETECTION_SCRIPT_SRC}" data-domains='${domains}'></script>`;
   }, [thankYouLink?.shortLink]);
 
   const stripeReady = useMemo(() => {
@@ -181,6 +181,13 @@ export function PodiaOnboardingWizard({
     [createdTestLink, done, scriptDone, stripeReady, thankYouLink],
   );
   const wizard = useLinearWizard({ completed, initialStepIndex: 0, stepsCount: 5 });
+
+  // When Stripe is already connected, auto-advance past step 0.
+  useEffect(() => {
+    if (!stripeReady) return;
+    if (wizard.activeStepIndex !== 0) return;
+    wizard.forceGoTo(1);
+  }, [stripeReady, wizard.activeStepIndex, wizard.forceGoTo]);
 
   const steps = useMemo(() => {
     return [
@@ -228,6 +235,7 @@ export function PodiaOnboardingWizard({
                     setThankYouLink(null);
                     setScriptDone(false);
                     setCreateThankYouError(null);
+                    resetTestLink();
                     void clearSavedThankYou();
                   }
                 }}
@@ -258,8 +266,8 @@ export function PodiaOnboardingWizard({
               </div>
             ) : null}
 
-            {!thankYouLink ? (
-              <div className="mt-4">
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
+              {!thankYouLink ? (
                 <button
                   type="button"
                   className={cn(
@@ -272,19 +280,27 @@ export function PodiaOnboardingWizard({
                 >
                   {creatingThankYou ? "Generating…" : "Generate short link"}
                 </button>
-              </div>
-            ) : null}
+              ) : (
+                <button
+                  type="button"
+                  className="inline-flex w-full items-center justify-center rounded-md bg-neutral-900 px-3 py-2 text-sm font-semibold text-white hover:bg-neutral-800 sm:ml-auto sm:w-auto"
+                  onClick={() => wizard.advance()}
+                >
+                  Next
+                </button>
+              )}
+            </div>
           </StepCard>
         ),
       },
       {
         id: "podia-step-3",
-        title: "Install Podia script",
+        title: "Install detection script",
         isComplete: scriptDone,
         content: (
           <InstallScriptStep
-            title="Add the Podia tracking script"
-            description="This script includes your Podia short link."
+            title="Add the Pimms detection script"
+            description="Copy this script and paste it into your Podia site: Settings → Website → Website tracking code. It detects thank-you page visits and fires a conversion event."
             info={
               thankYouLink?.shortLink
                 ? `Tracking uses this short link: ${thankYouLink.shortLink}`
@@ -292,7 +308,7 @@ export function PodiaOnboardingWizard({
             }
             scripts={[
               {
-                label: "Podia script",
+                label: "Detection script (with thank-you tracking)",
                 value: podiaScript,
               },
             ]}
@@ -312,7 +328,11 @@ export function PodiaOnboardingWizard({
         content: (
           <CreateTestLinkStep
             title="Create a test link (expires in 24h)"
-            description="Paste your Podia checkout / sales page URL. We’ll create a test short link."
+            description={
+              createdTestLink
+                ? "Your test link is ready. Open it in an incognito tab, then complete a test purchase."
+                : "Paste your Podia checkout / sales page URL. We'll create a test short link."
+            }
             urlValue={checkoutUrl}
             urlPlaceholder="https://your-site.podia.com/..."
             onChangeUrl={setCheckoutUrl}
@@ -322,15 +342,16 @@ export function PodiaOnboardingWizard({
             onCreate={async () => {
               try {
                 await createTestLink();
-                wizard.forceGoTo(3);
+                wizard.forceGoTo(4);
               } catch {
                 // error already set by hook
               }
             }}
             onOpenCreated={() => {
-              wizard.forceGoTo(3);
+              wizard.forceGoTo(4);
               startWaitingForSale();
             }}
+            onReset={resetTestLink}
           />
         ),
       },
@@ -341,7 +362,7 @@ export function PodiaOnboardingWizard({
         content: (
           <WaitForLeadStep
             title="Verify tracking works"
-            description="Open the test link and complete a test purchase in Podia. We’ll wait for the sale."
+            description="Open the test link and complete a test purchase in Podia. We'll wait for the sale."
             linkHref={createdTestLink?.shortLink ?? null}
             canStart={Boolean(createdTestLink?.id)}
             waiting={waiting}
@@ -369,6 +390,7 @@ export function PodiaOnboardingWizard({
     onContinueToStripe,
     podiaScript,
     providerIds,
+    resetTestLink,
     scriptDone,
     savedThankYou,
     setCheckoutUrl,
@@ -397,4 +419,3 @@ export function PodiaOnboardingWizard({
     />
   );
 }
-

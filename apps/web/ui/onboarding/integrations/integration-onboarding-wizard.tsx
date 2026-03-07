@@ -74,8 +74,8 @@ export function IntegrationOnboardingWizard({
         </div>
 
         <div className={cn("min-w-0")}>
+          {contentTop ? <div className="mb-4">{contentTop}</div> : null}
           {current ? current.content : null}
-          {contentTop ? <div className="mt-4">{contentTop}</div> : null}
         </div>
       </div>
     </div>

@@ -9,7 +9,7 @@ import { PROVIDERS, getConversionProviderDisplayName } from "@/ui/layout/sidebar
 import { canonicalizeProviderId, isProviderCompleted } from "@/ui/onboarding/canonical-provider-id";
 import { CheckCircleFill } from "@/ui/shared/icons";
 import { ModalContext } from "@/ui/modals/modal-provider";
-import { CircleDotted } from "@dub/ui/icons";
+import { ArrowRight, CircleDotted } from "@dub/ui/icons";
 import { Modal } from "@dub/ui";
 import { fetcher } from "@dub/utils";
 import Image from "next/image";
@@ -34,6 +34,7 @@ type Task = {
 
 type OnboardingVideo = {
   id?: string;
+  href?: string;
   title: string;
   thumbnail?: string;
 };
@@ -50,19 +51,9 @@ const ONBOARDING_VIDEOS: OnboardingVideo[] = [
     thumbnail: "https://img.youtube.com/vi/9DRh7aYNqUk/hqdefault.jpg",
   },
   {
-    id: "kV-8EN778Dw",
-    title: "The ultimate power of UTMs (6 min)",
-    thumbnail: "https://img.youtube.com/vi/kV-8EN778Dw/hqdefault.jpg?v=2",
-  },
-  {
-    id: undefined,
-    title: "Get started with contact tracking",
-    thumbnail: undefined,
-  },
-  {
-    id: undefined,
-    title: "Analyze your campaigns with Pimms Analytics",
-    thumbnail: undefined,
+    href: "https://pim.ms/6jkGQmq",
+    title: "The complete tracking plan (free guide)",
+    thumbnail: "https://assets.pimms.io/tracking-plan.webp",
   },
 ];
 
@@ -266,10 +257,11 @@ export function GettingStartedPanel() {
     const trackingTasks: Task[] = [
       {
         id: "setup-tracking-beyond-clicks",
-        display: "Setup tracking beyond clicks",
-        badge: "Popular",
+        display: "Track your first conversion",
+        badge: "Important",
         badgeVariant: "brand",
-        description: "Pick a setup and start tracking beyond clicks.",
+        description:
+          "Pick your tool (Stripe, Calendly, Cal.com…) and follow the guide — takes 2 minutes.",
         cta: `/${slug}/today`,
         checked: false,
         onClick: openConversionSetupList,
@@ -471,97 +463,105 @@ export function GettingStartedPanel() {
               </div>
 
               {trackingTasks.length > 0 ? (
-                <div className="grid divide-y divide-neutral-100 overflow-hidden rounded-lg border border-neutral-200 bg-white w-full max-w-full">
-                  {trackingTasks.map(
-                    ({
-                      id,
-                      display,
-                      description,
-                      cta,
-                      checked,
-                      onClick,
-                      badge,
-                      badgeVariant,
-                      icon,
-                      showStatus,
-                    }) => {
-                      const content = (
-                        <div className="flex min-h-[74px] items-center justify-between gap-4 pl-4 pr-8 py-3 transition-colors group-hover:bg-neutral-50">
-                          <div className="flex min-w-0 items-start gap-3">
-                            <div className="min-w-0">
-                              <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-neutral-900 transition-colors group-hover:text-neutral-700">
-                                {icon ? (
-                                  <span className="inline-flex size-5 items-center justify-center rounded bg-neutral-50">
-                                    {typeof icon === "string" ? (
-                                      <img
-                                        alt=""
-                                        src={icon}
-                                        className="h-4 w-4 object-contain"
-                                        loading="lazy"
-                                      />
-                                    ) : (
-                                      (() => {
-                                        const Icon = icon as any;
-                                        return <Icon className="h-4 w-4" />;
-                                      })()
-                                    )}
-                                  </span>
-                                ) : null}
-                                <span>{display}</span>
-                                {badge ? (
-                                  <span
-                                    className={[
-                                      "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold",
-                                      badgeClassName(badgeVariant),
-                                    ].join(" ")}
-                                  >
-                                    {badge}
-                                  </span>
+                <div className="space-y-1.5">
+                  <p className="text-xs font-semibold text-brand-primary">
+                    Recommended
+                  </p>
+                  <div className="grid divide-y divide-brand-primary/10 overflow-hidden rounded-lg border border-brand-primary/25 bg-brand-primary/3 ring-1 ring-brand-primary/10 w-full max-w-full">
+                    {trackingTasks.map(
+                      ({
+                        id,
+                        display,
+                        description,
+                        cta,
+                        checked,
+                        onClick,
+                        badge,
+                        badgeVariant,
+                        icon,
+                        showStatus,
+                      }) => {
+                        const isHero = id === "setup-tracking-beyond-clicks";
+                        const content = (
+                          <div className="flex min-h-[74px] items-center justify-between gap-4 pl-4 pr-8 py-3 transition-colors group-hover:bg-brand-primary/4">
+                            <div className="flex min-w-0 items-start gap-3">
+                              <div className="min-w-0">
+                                <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-neutral-900 transition-colors group-hover:text-neutral-700">
+                                  {icon ? (
+                                    <span className="inline-flex size-5 items-center justify-center rounded bg-neutral-50">
+                                      {typeof icon === "string" ? (
+                                        <img
+                                          alt=""
+                                          src={icon}
+                                          className="h-4 w-4 object-contain"
+                                          loading="lazy"
+                                        />
+                                      ) : (
+                                        (() => {
+                                          const Icon = icon as any;
+                                          return <Icon className="h-4 w-4" />;
+                                        })()
+                                      )}
+                                    </span>
+                                  ) : null}
+                                  <span>{display}</span>
+                                  {badge ? (
+                                    <span
+                                      className={[
+                                        "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold",
+                                        badgeClassName(badgeVariant),
+                                      ].join(" ")}
+                                    >
+                                      {badge}
+                                    </span>
+                                  ) : null}
+                                </div>
+                                {description ? (
+                                  <div className="mt-0.5 text-xs text-neutral-500">
+                                    {description}
+                                  </div>
                                 ) : null}
                               </div>
-                              {description ? (
-                                <div className="mt-0.5 text-xs text-neutral-500">
-                                  {description}
-                                </div>
+                            </div>
+                            <div className="ml-3 shrink-0">
+                              {showStatus !== false ? (
+                                checked ? (
+                                  <CheckCircleFill className="size-5 text-green-600 transition-colors" />
+                                ) : (
+                                  <CircleDotted className="size-5 text-neutral-400 transition-colors group-hover:text-neutral-500" />
+                                )
+                              ) : isHero ? (
+                                <ArrowRight className="size-5 text-neutral-300 transition-colors group-hover:text-neutral-500" />
                               ) : null}
                             </div>
                           </div>
-                          {showStatus === false ? null : (
-                            <div className="ml-3 shrink-0">
-                              {checked ? (
-                                <CheckCircleFill className="size-5 text-green-600 transition-colors" />
-                              ) : (
-                                <CircleDotted className="size-5 text-neutral-400 transition-colors group-hover:text-neutral-500" />
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      );
+                        );
 
-                      if (onClick) {
+                        if (onClick) {
+                          return (
+                            <button
+                              key={id}
+                              type="button"
+                              onClick={onClick}
+                              className="group w-full text-left transition-colors first:rounded-t-lg last:rounded-b-lg"
+                            >
+                              {content}
+                            </button>
+                          );
+                        }
+
                         return (
-                          <button
+                          <Link
                             key={id}
-                            type="button"
-                            onClick={onClick}
-                            className="group w-full text-left transition-colors first:rounded-t-lg last:rounded-b-lg"
+                            href={cta}
+                            className="group transition-colors first:rounded-t-lg last:rounded-b-lg"
                           >
                             {content}
-                          </button>
+                          </Link>
                         );
-                      }
-
-                      return (
-                        <Link
-                          key={id}
-                          href={cta}
-                          className="group transition-colors first:rounded-t-lg last:rounded-b-lg"
-                        >
-                          {content}
-                        </Link>
-                      );
-                    },
-                  )}
+                      },
+                    )}
+                  </div>
                 </div>
               ) : null}
 
@@ -570,13 +570,52 @@ export function GettingStartedPanel() {
             <div className="space-y-3 w-full max-w-full">
               <div className="grid divide-y divide-neutral-100 overflow-hidden rounded-lg border border-neutral-200 bg-white w-full max-w-full">
                 {ONBOARDING_VIDEOS.map((video) => {
-                  const isComingSoon = !video.id;
+                  const trackingId = video.id || video.href;
                   const watched =
-                    !!video.id &&
-                    (watchedVideoIds.includes(video.id) ||
-                      watchedFromServer.includes(video.id));
+                    !!trackingId &&
+                    (watchedVideoIds.includes(trackingId) ||
+                      watchedFromServer.includes(trackingId));
 
-                  if (isComingSoon) {
+                  if (video.href) {
+                    return (
+                      <a
+                        key={video.title}
+                        href={video.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={() => {
+                          if (video.href) markVideoWatched(video.href);
+                        }}
+                        className="group flex w-full min-h-[74px] items-center gap-4 pl-4 pr-6 py-3 text-left transition-colors hover:bg-neutral-50 first:rounded-t-lg last:rounded-b-lg"
+                      >
+                        <div className="relative h-14 w-24 shrink-0 overflow-hidden rounded-md bg-neutral-100">
+                          {video.thumbnail && (
+                            <Image
+                              src={video.thumbnail}
+                              alt={video.title}
+                              fill
+                              sizes="96px"
+                              className="object-cover"
+                            />
+                          )}
+                        </div>
+                        <div className="flex min-w-0 flex-1">
+                          <div className="line-clamp-2 wrap-break-word text-sm font-medium text-neutral-900 transition-colors group-hover:text-neutral-700">
+                            {video.title}
+                          </div>
+                        </div>
+                        <div className="ml-3 shrink-0">
+                          {watched ? (
+                            <CheckCircleFill className="size-5 text-green-600 transition-colors" />
+                          ) : (
+                            <CircleDotted className="size-5 text-neutral-400 transition-colors group-hover:text-neutral-500" />
+                          )}
+                        </div>
+                      </a>
+                    );
+                  }
+
+                  if (!video.id) {
                     return (
                       <div
                         key={video.title}

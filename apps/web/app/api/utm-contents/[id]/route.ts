@@ -5,13 +5,19 @@ import {
   updateUtmContentBodySchema,
 } from "@/lib/zod/schemas/utm-parameters";
 import { prisma } from "@dub/prisma";
+import { normalizeUtmValue } from "@dub/utils";
 import { NextResponse } from "next/server";
 
 // PATCH /api/utm-contents/[id] – update a UTM content for a workspace
 export const PATCH = withWorkspace(
   async ({ req, params, workspace }) => {
     const { id } = params;
-    const { name } = updateUtmContentBodySchema.parse(await req.json());
+    const { name: rawName } = updateUtmContentBodySchema.parse(await req.json());
+    const name = normalizeUtmValue(rawName, {
+      spaceChar: workspace.utmSpaceChar ?? "-",
+      prohibitedChars: workspace.utmProhibitedChars ?? "",
+      forceLowercase: workspace.utmForceLowercase ?? true,
+    });
 
     const utmContent = await prisma.utmContent.findFirst({
       where: {

@@ -49,6 +49,7 @@ export function StripeOnboardingWizard({
     error: createError,
     created,
     create: createTestLink,
+    reset: resetTestLink,
   } = useCreateOnboardingTestLink({ workspaceId });
 
   const { waiting, done, start: startWaitingForSale } = useWaitForLinkLead({
@@ -271,6 +272,7 @@ export function StripeOnboardingWizard({
               forceGoTo(3);
               startWaitingForSale();
             }}
+            onReset={resetTestLink}
           />
         ),
       },
@@ -348,6 +350,7 @@ export function StripeOnboardingWizard({
     ];
   }, [
     checkoutGuideHref,
+    checkoutGuideThumbnail,
     connectError,
     connecting,
     createError,
@@ -356,10 +359,13 @@ export function StripeOnboardingWizard({
     creating,
     done,
     forceGoTo,
+    guideThumbnail,
     paymentLinkUrl,
     permissionsConfirmed,
+    resetTestLink,
     setPaymentLinkUrl,
     setupGuideHref,
+    setupGuideThumbnail,
     startConnectFlow,
     startWaitingForSale,
     stripeInstalled,

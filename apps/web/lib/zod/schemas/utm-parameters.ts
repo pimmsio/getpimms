@@ -150,6 +150,16 @@ export const updateUtmCampaignBodySchema = createUtmCampaignBodySchema;
 export const updateUtmTermBodySchema = createUtmTermBodySchema;
 export const updateUtmContentBodySchema = createUtmContentBodySchema;
 
+// Bulk create schema
+export const bulkCreateUtmParametersBodySchema = z.object({
+  type: z.enum(["source", "medium", "campaign", "term", "content"]),
+  names: z
+    .array(z.string().trim().min(1).max(190))
+    .min(1)
+    .max(100)
+    .describe("The UTM parameter values to create in bulk."),
+});
+
 // Response schemas
 export const UtmSourceSchema = z.object({
   id: z.string().describe("The unique ID of the UTM source."),

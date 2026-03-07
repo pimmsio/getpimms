@@ -6,7 +6,7 @@ import { prisma } from "@dub/prisma";
 import { getPlanFromPriceId, nanoid } from "@dub/utils";
 import type Stripe from "stripe";
 
-const EMAIL_WINDOW_SECONDS = 60 * 30;
+const EMAIL_WINDOW_SECONDS = 60 * 60 * 24;
 const MAX_ITEMS = 20;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 

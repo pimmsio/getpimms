@@ -227,6 +227,9 @@ export default function TodayClient() {
       return sum;
     }, 0) ?? 0;
 
+  const hasAnyData = todayClicks > 0 || last7dClicks > 0 || last30dClicks > 0;
+  const metricsLoading = todayLoading || last7dLoading || last30dLoading;
+
   return (
     <>
       <LinkBuilder />
@@ -234,19 +237,13 @@ export default function TodayClient() {
       {/* Header */}
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="min-w-0">
-          <div className="text-sm font-medium text-neutral-600">
+          <div className="text-xl font-semibold text-neutral-900">
             Welcome {firstName}
-          </div>
-          <div className="mt-0.5 text-xl font-semibold text-neutral-900">
-            Here's what's happening today
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <CreateLinkButton />
-          <AppButtonLink href={`/${slug}/links`} variant="secondary" size="md">
-            View links
-          </AppButtonLink>
           <AppButtonLink
             href="https://pim.ms/dAXN6jl"
             target="_blank"
@@ -303,67 +300,69 @@ export default function TodayClient() {
           </a>
         </div> */}
 
-        {/* Metrics */}
-        <div className="mb-6">
-          <div className="mb-3 flex items-center justify-between">
-            <div className="text-sm font-semibold text-neutral-900">
-              Metrics
-            </div>
-            <AppButtonLink
-              href={`/${slug}/analytics`}
-              variant="secondary"
-              size="sm"
-            >
-              Analytics
-              <ChevronRight className="ml-1 size-3 text-neutral-500" />
-            </AppButtonLink>
-          </div>
-
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
-            <IntervalMetrics
-              label="Today"
-              loading={todayLoading}
-              error={Boolean(todayError)}
-              clicks={todayClicks}
-              leads={todayLeads}
-              revenue={todayRevenue}
-              cvr={todayCvr}
-            />
-            <IntervalMetrics
-              label="7d"
-              loading={last7dLoading}
-              error={Boolean(last7dError)}
-              clicks={last7dClicks}
-              leads={last7dLeads}
-              revenue={last7dRevenue}
-              cvr={last7dCvr}
-            />
-            <IntervalMetrics
-              label="30d"
-              loading={last30dLoading}
-              error={Boolean(last30dError)}
-              clicks={last30dClicks}
-              leads={last30dLeads}
-              revenue={last30dRevenue}
-              cvr={last30dCvr}
-            />
-          </div>
-
-          <div className="mt-3 rounded-lg bg-neutral-50 px-4 py-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
-                Clicks preserved last week
+        {/* Metrics - hidden until user has real data */}
+        {(hasAnyData || metricsLoading) && (
+          <div className="mb-6">
+            <div className="mb-3 flex items-center justify-between">
+              <div className="text-sm font-semibold text-neutral-900">
+                Metrics
               </div>
-              <div className="text-lg font-semibold text-neutral-900 tabular-nums">
-                {clicksSaved7d.toLocaleString()}
+              <AppButtonLink
+                href={`/${slug}/analytics`}
+                variant="secondary"
+                size="sm"
+              >
+                Analytics
+                <ChevronRight className="ml-1 size-3 text-neutral-500" />
+              </AppButtonLink>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+              <IntervalMetrics
+                label="Today"
+                loading={todayLoading}
+                error={Boolean(todayError)}
+                clicks={todayClicks}
+                leads={todayLeads}
+                revenue={todayRevenue}
+                cvr={todayCvr}
+              />
+              <IntervalMetrics
+                label="7d"
+                loading={last7dLoading}
+                error={Boolean(last7dError)}
+                clicks={last7dClicks}
+                leads={last7dLeads}
+                revenue={last7dRevenue}
+                cvr={last7dCvr}
+              />
+              <IntervalMetrics
+                label="30d"
+                loading={last30dLoading}
+                error={Boolean(last30dError)}
+                clicks={last30dClicks}
+                leads={last30dLeads}
+                revenue={last30dRevenue}
+                cvr={last30dCvr}
+              />
+            </div>
+
+            <div className="mt-3 rounded-lg bg-neutral-50 px-4 py-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
+                  Clicks preserved last week
+                </div>
+                <div className="text-lg font-semibold text-neutral-900 tabular-nums">
+                  {clicksSaved7d.toLocaleString()}
+                </div>
+              </div>
+              <div className="mt-1 text-sm text-neutral-600">
+                Your links open the official apps on mobile instead of in-app
+                browsers.
               </div>
             </div>
-            <div className="mt-1 text-sm text-neutral-600">
-              Your links open the official apps on mobile instead of in-app
-              browsers.
-            </div>
           </div>
-        </div>
+        )}
 
         {/* Contact activity */}
         <div className="mb-6 border-t border-neutral-100 pt-5">
@@ -753,6 +752,7 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
   });
 
   if (!slug) return null;
+  if (showDemoFallback) return null;
 
   return (
     <div className="mt-6">
@@ -769,7 +769,7 @@ function LeadSignalActivitySection({ slug }: { slug?: string }) {
               setShowConversionOnboardingModal(true);
             }}
           >
-            {hasLeads ? "Configuration guides" : "Show contacts"}
+            Setup guides
           </button>
           <AppButtonLink
             href={`/${slug}/conversions?interval=7d`}

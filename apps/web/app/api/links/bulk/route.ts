@@ -27,7 +27,7 @@ import { R2_URL } from "@dub/utils";
 import { waitUntil } from "@vercel/functions";
 import { NextResponse } from "next/server";
 
-// POST /api/links/bulk – bulk create up to 100 links
+// POST /api/links/bulk bulk create up to 100 links
 export const POST = withWorkspace(
   async ({ req, headers, session, workspace }) => {
     if (!workspace) {
@@ -70,6 +70,21 @@ export const POST = withWorkspace(
       });
     }
 
+    // Check for duplicate externalIds within the batch
+    const externalIds = links
+      .map((link) => link.externalId)
+      .filter(Boolean) as string[];
+    const duplicateExternalIds = externalIds.filter(
+      (id, index) => externalIds.indexOf(id) !== index,
+    );
+
+    if (duplicateExternalIds.length > 0) {
+      throw new DubApiError({
+        code: "bad_request",
+        message: `Duplicate externalIds found: ${[...new Set(duplicateExternalIds)].join(", ")}`,
+      });
+    }
+
     const processedLinks = await Promise.all(
       links.map(async (link) =>
         processLink({
@@ -86,7 +101,7 @@ export const POST = withWorkspace(
       .filter(({ error }) => error == null)
       .map(({ link }) => link) as ProcessedLinkProps[];
 
-    let errorLinks = processedLinks
+    const errorLinks = processedLinks
       .filter(({ error }) => error != null)
       .map(({ link, error, code }) => ({
         link,
@@ -124,6 +139,8 @@ export const POST = withWorkspace(
         name.toLowerCase(),
       );
 
+      const invalidTagLinkIndices = new Set<number>();
+
       validLinks.forEach((link, index) => {
         const combinedTagIds =
           combineTagIds({
@@ -136,13 +153,13 @@ export const POST = withWorkspace(
         );
 
         if (invalidTagIds.length > 0) {
-          // remove link from validLinks and add error to errorLinks
-          validLinks = validLinks.filter((_, i) => i !== index);
+          invalidTagLinkIndices.add(index);
           errorLinks.push({
             error: `Invalid tagIds detected: ${invalidTagIds.join(", ")}`,
             code: "unprocessable_entity",
             link,
           });
+          return;
         }
 
         const invalidTagNames = link.tagNames?.filter(
@@ -150,7 +167,7 @@ export const POST = withWorkspace(
         );
 
         if (invalidTagNames?.length) {
-          validLinks = validLinks.filter((_, i) => i !== index);
+          invalidTagLinkIndices.add(index);
           errorLinks.push({
             error: `Invalid tagNames detected: ${invalidTagNames.join(", ")}`,
             code: "unprocessable_entity",
@@ -158,6 +175,10 @@ export const POST = withWorkspace(
           });
         }
       });
+
+      validLinks = validLinks.filter(
+        (_, index) => !invalidTagLinkIndices.has(index),
+      );
     }
 
     if (checkIfLinksHaveFolders(validLinks)) {
@@ -209,37 +230,51 @@ export const POST = withWorkspace(
 
     if (checkIfLinksHaveWebhooks(validLinks)) {
       if (workspace.plan === "free") {
-        throw new DubApiError({
-          code: "forbidden",
-          message:
-            "You can only use webhooks on a Pro plan and above. Upgrade to Pro to use this feature.",
+        // Move webhook links to errors instead of failing the entire batch
+        validLinks = validLinks.filter((link) => {
+          if (link.webhookIds?.length) {
+            errorLinks.push({
+              error:
+                "You can only use webhooks on a Pro plan and above. Upgrade to Pro to use this feature.",
+              code: "forbidden",
+              link,
+            });
+            return false;
+          }
+          return true;
         });
-      }
+      } else {
+        const webhookIds = validLinks
+          .map((link) => link.webhookIds)
+          .flat()
+          .filter(Boolean) as string[];
 
-      const webhookIds = validLinks
-        .map((link) => link.webhookIds)
-        .flat()
-        .filter(Boolean) as string[];
+        const webhooks = await prisma.webhook.findMany({
+          where: { projectId: workspace.id, id: { in: webhookIds } },
+        });
 
-      const webhooks = await prisma.webhook.findMany({
-        where: { projectId: workspace.id, id: { in: webhookIds } },
-      });
+        const workspaceWebhookIds = webhooks.map(({ id }) => id);
 
-      const workspaceWebhookIds = webhooks.map(({ id }) => id);
+        const invalidWebhookLinkIndices = new Set<number>();
 
-      validLinks.forEach((link, index) => {
-        const invalidWebhookIds = link.webhookIds?.filter(
-          (id) => !workspaceWebhookIds.includes(id),
+        validLinks.forEach((link, index) => {
+          const invalidWebhookIds = link.webhookIds?.filter(
+            (id) => !workspaceWebhookIds.includes(id),
+          );
+          if (invalidWebhookIds && invalidWebhookIds.length > 0) {
+            invalidWebhookLinkIndices.add(index);
+            errorLinks.push({
+              error: `Invalid webhookIds detected: ${invalidWebhookIds.join(", ")}`,
+              code: "unprocessable_entity",
+              link,
+            });
+          }
+        });
+
+        validLinks = validLinks.filter(
+          (_, index) => !invalidWebhookLinkIndices.has(index),
         );
-        if (invalidWebhookIds && invalidWebhookIds.length > 0) {
-          validLinks = validLinks.filter((_, i) => i !== index);
-          errorLinks.push({
-            error: `Invalid webhookIds detected: ${invalidWebhookIds.join(", ")}`,
-            code: "unprocessable_entity",
-            link,
-          });
-        }
-      });
+      }
     }
 
     const validLinksResponse =
@@ -254,7 +289,7 @@ export const POST = withWorkspace(
   },
 );
 
-// PATCH /api/links/bulk – bulk update up to 100 links with the same data
+// PATCH /api/links/bulk – bulk update up to 100 links with the same data
 export const PATCH = withWorkspace(
   async ({ req, workspace, headers, session }) => {
     const { linkIds, externalIds, data } = bulkUpdateLinksBodySchema.parse(
@@ -294,7 +329,7 @@ export const PATCH = withWorkspace(
           })),
       );
 
-    let { tagNames, expiresAt } = data;
+    const { tagNames, expiresAt } = data;
     const tagIds = combineTagIds(data);
     // tag checks
     if (tagIds && tagIds.length > 0) {

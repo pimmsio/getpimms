@@ -23,7 +23,7 @@ export function VerticalStepper({
   canSelectStep?: (index: number, step: VerticalStep) => boolean;
 }) {
   return (
-    <ol className="space-y-6">
+    <ol className="space-y-1">
       {steps.map((step, idx) => {
         const isLast = idx === steps.length - 1;
         const isComplete = step.status === "complete";
@@ -34,13 +34,13 @@ export function VerticalStepper({
 
         return (
           <li key={step.id} className="relative flex gap-3">
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center py-2">
               <button
                 type="button"
                 disabled={!selectable}
                 onClick={() => onSelectStep?.(idx)}
                 className={cn(
-                  "flex size-7 items-center justify-center rounded-full border text-sm",
+                  "flex size-7 shrink-0 items-center justify-center rounded-full border text-sm",
                   isComplete && "border-brand-primary bg-brand-primary text-white",
                   isCurrent && "border-neutral-900 bg-white text-neutral-900",
                   step.status === "upcoming" &&
@@ -68,10 +68,18 @@ export function VerticalStepper({
               ) : null}
             </div>
 
-            <div className="min-w-0 pt-0.5">
+            <button
+              type="button"
+              disabled={!selectable}
+              onClick={() => onSelectStep?.(idx)}
+              className={cn(
+                "min-w-0 py-2 text-left",
+                selectable ? "cursor-pointer" : "cursor-default",
+              )}
+            >
               <div
                 className={cn(
-                  "text-sm font-semibold",
+                  "text-sm font-semibold leading-7",
                   isComplete && "text-neutral-900",
                   isCurrent && "text-neutral-900",
                   step.status === "upcoming" && "text-neutral-500",
@@ -79,11 +87,10 @@ export function VerticalStepper({
               >
                 {step.title}
               </div>
-            </div>
+            </button>
           </li>
         );
       })}
     </ol>
   );
 }
-

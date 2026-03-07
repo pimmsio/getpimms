@@ -8,13 +8,18 @@ import { useLinearWizard } from "@/ui/onboarding/integrations/use-linear-wizard"
 import { useWaitForLinkLead } from "@/ui/onboarding/integrations/use-wait-for-link-lead";
 import { CreateTestLinkStep } from "@/ui/onboarding/integrations/steps/create-test-link-step";
 import { GuideCard } from "@/ui/onboarding/integrations/components/guide-card";
+import { InstallScriptStep } from "@/ui/onboarding/integrations/steps/install-script-step";
 import { ManualConfirmStep } from "@/ui/onboarding/integrations/steps/manual-confirm-step";
+import { ScriptInstallVerifyStep } from "@/ui/onboarding/integrations/steps/script-install-verify-step";
 import { WaitForLeadStep } from "@/ui/onboarding/integrations/steps/wait-for-lead-step";
 import { WebhookConfigStep } from "@/ui/onboarding/integrations/steps/webhook-config-step";
 import { useEffect, useMemo, useState } from "react";
 
 const GUIDE_BASE_URL = "https://pimms.io/guides/calcom-direct-webhook-integration";
 const GUIDE_STEP_1_URL = `${GUIDE_BASE_URL}#1-add-the-pimms_id-field-to-your-calcom-form`;
+
+const CALCOM_DETECTION_SCRIPT =
+  `<script defer src="https://cdn.pimms.io/analytics/script.detection.js" data-domains='{"outbound":"cal.com"}'></script>`;
 
 export function CalcomOnboardingWizard({
   guideThumbnail,
@@ -27,6 +32,8 @@ export function CalcomOnboardingWizard({
   const { completedProviderIds, setCompletedProviderIds, markProviderStarted } =
     useOnboardingPreferences();
 
+  const [scriptInstalled, setScriptInstalled] = useState(false);
+  const [scriptVerified, setScriptVerified] = useState(false);
   const [step1Done, setStep1Done] = useState(false);
   const [step2Done, setStep2Done] = useState(false);
 
@@ -37,6 +44,7 @@ export function CalcomOnboardingWizard({
     error: createError,
     created,
     create: createTestLink,
+    reset: resetTestLink,
   } = useCreateOnboardingTestLink({
     workspaceId,
   });
@@ -65,13 +73,13 @@ export function CalcomOnboardingWizard({
   }, [completedProviderIds, providerId, setCompletedProviderIds, validated]);
 
   useEffect(() => {
-    if (!step1Done) return;
+    if (!scriptInstalled) return;
     void markProviderStarted(providerId);
-  }, [markProviderStarted, providerId, step1Done]);
+  }, [markProviderStarted, providerId, scriptInstalled]);
 
   const completed = useMemo(
-    () => [step1Done, step2Done, Boolean(created), validated],
-    [created, step1Done, step2Done, validated],
+    () => [scriptInstalled, scriptVerified, step1Done, step2Done, Boolean(created), validated],
+    [created, scriptInstalled, scriptVerified, step1Done, step2Done, validated],
   );
   const wizard = useLinearWizard({ completed, initialStepIndex: 0 });
 
@@ -79,6 +87,50 @@ export function CalcomOnboardingWizard({
     return [
       {
         id: "calcom-step-1",
+        title: "Install the script",
+        isComplete: scriptInstalled,
+        content: (
+          <InstallScriptStep
+            title="Add the Pimms script"
+            description="Install the detection script on the page where your Cal.com booking is embedded. It auto-injects pimms_id into Cal.com embeds and links."
+            scripts={[{ label: "Detection script (with Cal.com outbound)", value: CALCOM_DETECTION_SCRIPT }]}
+            mergeNote={
+              <>
+                Already have the Pimms detection script from another integration? Update the existing{" "}
+                <code className="font-mono text-xs">data-domains</code> attribute to include{" "}
+                <code className="font-mono text-xs">cal.com</code> in the outbound list (e.g.{" "}
+                <code className="font-mono text-xs">{`"outbound":"cal.com,tally.so"`}</code>) instead of adding a duplicate script tag.
+              </>
+            }
+            isDone={scriptInstalled}
+            confirmDisabled={!workspaceId}
+            onConfirm={() => {
+              setScriptInstalled(true);
+              wizard.advance();
+            }}
+          />
+        ),
+      },
+      {
+        id: "calcom-step-2",
+        title: "Verify installation",
+        isComplete: scriptVerified,
+        content: (
+          <ScriptInstallVerifyStep
+            title="Verify the script is detected"
+            description="Paste the URL of the page where your Cal.com booking is embedded. We'll check for the detection script and Cal.com outbound config."
+            required={{ detection: true, outbound: "cal.com" }}
+            initialUrlPlaceholder="your-site.com/page-with-calcom-booking"
+            autoVerify
+            onNext={() => {
+              setScriptVerified(true);
+              wizard.advance();
+            }}
+          />
+        ),
+      },
+      {
+        id: "calcom-step-3",
         title: "Edit your Cal.com forms",
         isComplete: step1Done,
         content: (
@@ -88,7 +140,6 @@ export function CalcomOnboardingWizard({
             isDone={step1Done}
             onConfirm={() => {
               setStep1Done(true);
-              // auto-advance immediately (state updates are async)
               wizard.advance();
             }}
             actions={
@@ -99,14 +150,14 @@ export function CalcomOnboardingWizard({
                   window.open(GUIDE_STEP_1_URL, "_blank", "noopener,noreferrer");
                 }}
               >
-                Open step 1 in guide
+                Open step in guide
               </button>
             }
           />
         ),
       },
       {
-        id: "calcom-step-2",
+        id: "calcom-step-4",
         title: "Set up the webhook in Cal.com",
         isComplete: step2Done,
         content: (
@@ -121,20 +172,19 @@ export function CalcomOnboardingWizard({
             confirmDisabled={!workspaceId}
             onConfirm={() => {
               setStep2Done(true);
-              // auto-advance immediately (state updates are async)
               wizard.advance();
             }}
           />
         ),
       },
       {
-        id: "calcom-step-3",
+        id: "calcom-step-5",
         title: "Create a test link",
         isComplete: Boolean(created),
         content: (
           <CreateTestLinkStep
             title="Create a test link (expires in 24h)"
-            description="Paste your booking URL. We’ll create a test short link."
+            description="Paste your booking URL. We'll create a test short link."
             urlValue={bookingUrl}
             urlPlaceholder="https://cal.com/your-name/your-event"
             onChangeUrl={setBookingUrl}
@@ -144,20 +194,21 @@ export function CalcomOnboardingWizard({
             onCreate={async () => {
               try {
                 await createTestLink();
-                wizard.forceGoTo(3);
+                wizard.forceGoTo(5);
               } catch {
                 // error is already set in the hook
               }
             }}
             onOpenCreated={() => {
-              wizard.forceGoTo(3);
+              wizard.forceGoTo(5);
               startWaitingForLead();
             }}
+            onReset={resetTestLink}
           />
         ),
       },
       {
-        id: "calcom-step-4",
+        id: "calcom-step-6",
         title: "Verify the tracking works",
         isComplete: validated,
         content: (
@@ -179,6 +230,9 @@ export function CalcomOnboardingWizard({
     created,
     createTestLink,
     creating,
+    resetTestLink,
+    scriptInstalled,
+    scriptVerified,
     secret,
     step1Done,
     step2Done,
@@ -191,25 +245,22 @@ export function CalcomOnboardingWizard({
   ]);
 
   return (
-    <>
-      <IntegrationOnboardingWizard
-        title="Cal.com setup"
-        subtitle="Follow the steps to validate your Cal.com booking tracking."
-        contentTop={
-          <GuideCard
-            title="Cal.com guide"
-            href={GUIDE_BASE_URL}
-            thumbnail={guideThumbnail ?? null}
-          />
-        }
-        steps={steps}
-        currentStepIndex={wizard.activeStepIndex}
-        maxSelectableStepIndex={wizard.maxReachableStepIndex}
-        onSelectStep={(idx) => {
-          wizard.goTo(idx);
-        }}
-      />
-    </>
+    <IntegrationOnboardingWizard
+      title="Cal.com setup"
+      subtitle="Install the script, configure the webhook, then validate tracking with a test booking."
+      contentTop={
+        <GuideCard
+          title="Cal.com guide"
+          href={GUIDE_BASE_URL}
+          thumbnail={guideThumbnail ?? null}
+        />
+      }
+      steps={steps}
+      currentStepIndex={wizard.activeStepIndex}
+      maxSelectableStepIndex={wizard.maxReachableStepIndex}
+      onSelectStep={(idx) => {
+        wizard.goTo(idx);
+      }}
+    />
   );
 }
-

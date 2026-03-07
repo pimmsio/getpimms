@@ -27,6 +27,12 @@ export function useWaitForLinkLead({
     setWaiting(false);
   }, []);
 
+  // Reset state when the tracked link changes (e.g. "Create another").
+  useEffect(() => {
+    setDone(false);
+    setWaiting(false);
+  }, [linkId]);
+
   useEffect(() => {
     if (!workspaceId || !linkId) return;
     if (!waiting) return;

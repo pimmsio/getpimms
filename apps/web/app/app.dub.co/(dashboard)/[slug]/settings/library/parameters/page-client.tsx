@@ -11,7 +11,7 @@ import useWorkspace from "@/lib/swr/use-workspace";
 import { AppButton } from "@/ui/components/controls/app-button";
 import { AppIconButton } from "@/ui/components/controls/app-icon-button";
 import { text } from "@/ui/design/tokens";
-import { AnimatedSizeContainer, Tooltip } from "@dub/ui";
+import { Tooltip, ToggleGroup } from "@dub/ui";
 import {
   Flag6,
   GlobePointer,
@@ -23,7 +23,7 @@ import {
   Trash,
 } from "@dub/ui/icons";
 import { cn } from "@dub/utils";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 import { getUtmParameterPlaceholder, UtmParameterType } from "@/lib/utils/utm-parameter-utils";
 
@@ -34,8 +34,21 @@ interface Parameter {
   name: string;
 }
 
+const PARAMETER_TABS: {
+  value: ParameterType;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+}[] = [
+  { value: "source", label: "Source", icon: GlobePointer },
+  { value: "medium", label: "Medium", icon: SatelliteDish },
+  { value: "campaign", label: "Campaign", icon: Flag6 },
+  { value: "term", label: "Term", icon: InputSearch },
+  { value: "content", label: "Content", icon: Page2 },
+];
+
 export default function WorkspaceUtmParametersClient() {
   const { id: workspaceId } = useWorkspace();
+  const [activeTab, setActiveTab] = useState<ParameterType>("source");
 
   const { utmSources, loading: loadingSources, mutate: mutateSources } = useUtmSources({
     query: { sortBy: "name", sortOrder: "asc" },
@@ -53,11 +66,48 @@ export default function WorkspaceUtmParametersClient() {
     query: { sortBy: "name", sortOrder: "asc" },
   });
 
-  const { data: sourcesCount } = useUtmSourcesCount();
-  const { data: mediumsCount } = useUtmMediumsCount();
-  const { data: campaignsCount } = useUtmCampaignsCount();
-  const { data: termsCount } = useUtmTermsCount();
-  const { data: contentsCount } = useUtmContentsCount();
+  const { data: sourcesCount, mutate: mutateSourcesCount } = useUtmSourcesCount();
+  const { data: mediumsCount, mutate: mutateMediumsCount } = useUtmMediumsCount();
+  const { data: campaignsCount, mutate: mutateCampaignsCount } = useUtmCampaignsCount();
+  const { data: termsCount, mutate: mutateTermsCount } = useUtmTermsCount();
+  const { data: contentsCount, mutate: mutateContentsCount } = useUtmContentsCount();
+
+  const tabData: Record<
+    ParameterType,
+    {
+      parameters: Parameter[];
+      count?: number;
+      loading: boolean;
+      mutateCache: (data?: any, opts?: any) => Promise<any>;
+      mutateCount: (data?: any, opts?: any) => Promise<any>;
+    }
+  > = {
+    source: { parameters: utmSources || [], count: sourcesCount, loading: loadingSources, mutateCache: mutateSources, mutateCount: mutateSourcesCount },
+    medium: { parameters: utmMediums || [], count: mediumsCount, loading: loadingMediums, mutateCache: mutateMediums, mutateCount: mutateMediumsCount },
+    campaign: { parameters: utmCampaigns || [], count: campaignsCount, loading: loadingCampaigns, mutateCache: mutateCampaigns, mutateCount: mutateCampaignsCount },
+    term: { parameters: utmTerms || [], count: termsCount, loading: loadingTerms, mutateCache: mutateTerms, mutateCount: mutateTermsCount },
+    content: { parameters: utmContents || [], count: contentsCount, loading: loadingContents, mutateCache: mutateContents, mutateCount: mutateContentsCount },
+  };
+
+  const activeConfig = PARAMETER_TABS.find((t) => t.value === activeTab)!;
+  const activeData = tabData[activeTab];
+
+  const toggleOptions = PARAMETER_TABS.map((tab) => {
+    const Icon = tab.icon;
+    const count = tabData[tab.value].count;
+    return {
+      value: tab.value,
+      label: (
+        <span className="flex items-center gap-1.5">
+          <Icon className="size-3.5" />
+          <span>{tab.label}</span>
+          {count !== undefined && (
+            <span className="text-neutral-400">({count})</span>
+          )}
+        </span>
+      ),
+    };
+  });
 
   return (
     <div className="grid gap-6">
@@ -69,56 +119,27 @@ export default function WorkspaceUtmParametersClient() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 divide-y divide-neutral-100 rounded-md bg-white md:grid-cols-5 md:divide-x md:divide-y-0">
-          <ParameterColumn
-            type="source"
-            icon={GlobePointer}
-            title="Source"
-            parameters={utmSources || []}
-            count={sourcesCount}
-            loading={loadingSources}
-            workspaceId={workspaceId}
-            mutateCache={mutateSources}
+        <div className="px-4 pb-2">
+          <ToggleGroup
+            options={toggleOptions}
+            selected={activeTab}
+            selectAction={(value) => setActiveTab(value as ParameterType)}
+            className="flex-wrap"
           />
+        </div>
+
+        <div className="rounded-md bg-white">
           <ParameterColumn
-            type="medium"
-            icon={SatelliteDish}
-            title="Medium"
-            parameters={utmMediums || []}
-            count={mediumsCount}
-            loading={loadingMediums}
+            key={activeTab}
+            type={activeTab}
+            icon={activeConfig.icon}
+            title={activeConfig.label}
+            parameters={activeData.parameters}
+            count={activeData.count}
+            loading={activeData.loading}
             workspaceId={workspaceId}
-            mutateCache={mutateMediums}
-          />
-          <ParameterColumn
-            type="campaign"
-            icon={Flag6}
-            title="Campaign"
-            parameters={utmCampaigns || []}
-            count={campaignsCount}
-            loading={loadingCampaigns}
-            workspaceId={workspaceId}
-            mutateCache={mutateCampaigns}
-          />
-          <ParameterColumn
-            type="term"
-            icon={InputSearch}
-            title="Term"
-            parameters={utmTerms || []}
-            count={termsCount}
-            loading={loadingTerms}
-            workspaceId={workspaceId}
-            mutateCache={mutateTerms}
-          />
-          <ParameterColumn
-            type="content"
-            icon={Page2}
-            title="Content"
-            parameters={utmContents || []}
-            count={contentsCount}
-            loading={loadingContents}
-            workspaceId={workspaceId}
-            mutateCache={mutateContents}
+            mutateCache={activeData.mutateCache}
+            mutateCount={activeData.mutateCount}
           />
         </div>
       </div>
@@ -135,6 +156,7 @@ function ParameterColumn({
   loading,
   workspaceId,
   mutateCache,
+  mutateCount,
 }: {
   type: ParameterType;
   icon: React.ComponentType<{ className?: string }>;
@@ -144,38 +166,87 @@ function ParameterColumn({
   loading: boolean;
   workspaceId: string | undefined;
   mutateCache: (data?: any, opts?: any) => Promise<any>;
+  mutateCount: (data?: any, opts?: any) => Promise<any>;
 }) {
   const placeholder = getUtmParameterPlaceholder(type);
   if (!workspaceId) return null;
   const [newValue, setNewValue] = useState("");
   const [isAdding, setIsAdding] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const apiEndpoint = `utm-${type}s`;
 
+  const autoResize = useCallback(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, []);
+
+  /** Split input by comma, semicolon, or newline and deduplicate */
+  const parseValues = (raw: string): string[] => {
+    return [...new Set(
+      raw.split(/[,;\n]+/).map((v) => v.trim()).filter(Boolean),
+    )];
+  };
+
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = newValue.trim();
-    if (!trimmed) return;
+    const values = parseValues(newValue);
+    if (values.length === 0) return;
 
     setIsAdding(true);
 
     try {
-      const res = await fetch(`/api/${apiEndpoint}?workspaceId=${workspaceId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: trimmed }),
-      });
+      const res = await fetch(
+        `/api/utm-parameters/bulk?workspaceId=${workspaceId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type, names: values }),
+        },
+      );
 
-      if (res.ok) {
-        toast.success(`Successfully added ${title.toLowerCase()}!`);
-        setNewValue("");
-        await mutateCache(undefined, { revalidate: true });
-      } else {
-        const { error } = await res.json();
-        toast.error(error.message);
+      if (!res.ok) {
+        try {
+          const { error } = await res.json();
+          toast.error(error?.message ?? "Something went wrong");
+        } catch {
+          toast.error("Something went wrong");
+        }
+        return;
       }
-    } catch (error) {
+
+      const { created, duplicatesInInput, alreadyExist } =
+        (await res.json()) as {
+          created: number;
+          duplicatesInInput: number;
+          alreadyExist: number;
+        };
+
+      const label = title.toLowerCase();
+      const details: string[] = [];
+      if (duplicatesInInput > 0)
+        details.push(`${duplicatesInInput} duplicate${duplicatesInInput > 1 ? "s" : ""} removed`);
+      if (alreadyExist > 0)
+        details.push(`${alreadyExist} already existed`);
+      const suffix = details.length > 0 ? ` (${details.join(", ")})` : "";
+
+      if (created > 0) {
+        toast.success(
+          `Added ${created} ${label}${created > 1 ? "s" : ""}${suffix}`,
+        );
+        setNewValue("");
+        requestAnimationFrame(autoResize);
+        await Promise.all([
+          mutateCache(undefined, { revalidate: true }),
+          mutateCount(undefined, { revalidate: true }),
+        ]);
+      } else {
+        toast.info(`No new ${label}s to add${suffix}`);
+      }
+    } catch {
       toast.error(`Failed to add ${title.toLowerCase()}`);
     } finally {
       setIsAdding(false);
@@ -191,69 +262,77 @@ function ParameterColumn({
 
       if (res.ok) {
         toast.success(`Successfully deleted ${title.toLowerCase()}!`);
-        await mutateCache(undefined, { revalidate: true });
+        await Promise.all([
+          mutateCache(undefined, { revalidate: true }),
+          mutateCount(undefined, { revalidate: true }),
+        ]);
       } else {
         const { error } = await res.json();
         toast.error(error.message);
       }
-    } catch (error) {
+    } catch {
       toast.error(`Failed to delete ${title.toLowerCase()}`);
     } finally {
       setDeletingId(null);
     }
   };
 
+  const parsedCount = parseValues(newValue).length;
+
   return (
     <div className="flex flex-col bg-white">
-      <div className="px-4 py-3">
-        <div className="flex items-center gap-2">
-          <Icon className="size-4 text-neutral-600" />
-          <h3 className="font-medium text-neutral-900">{title}</h3>
-          {count !== undefined && (
-            <span className="text-sm text-neutral-500">({count})</span>
-          )}
-        </div>
-      </div>
-
       <div className="p-4">
         <form onSubmit={handleAdd} className="mb-4">
-          <div className="flex gap-2">
-            <input
-              type="text"
+          <div className="flex items-start gap-2">
+            <textarea
+              ref={textareaRef}
               value={newValue}
-              onChange={(e) => setNewValue(e.target.value)}
-              placeholder={placeholder || `Add ${title.toLowerCase()}...`}
-              className="app-input h-9 !placeholder:text-neutral-400"
+              onChange={(e) => {
+                setNewValue(e.target.value);
+                autoResize();
+              }}
+              placeholder={
+                placeholder
+                  ? `${placeholder} (separate multiple with commas or newlines)`
+                  : `Add ${title.toLowerCase()}s separated by commas or newlines...`
+              }
+              rows={2}
+              className="app-input min-h-[56px] resize-none !placeholder:text-neutral-400"
               disabled={isAdding}
             />
             <AppButton
               type="submit"
               variant="secondary"
               size="sm"
-              className="h-9 px-2"
+              className="h-9 shrink-0 px-2"
               disabled={isAdding || !newValue.trim()}
             >
               {isAdding ? (
                 <LoadingSpinner className="size-4" />
               ) : (
-                <Plus className="size-4" />
+                <span className="flex items-center gap-1">
+                  <Plus className="size-4" />
+                  {parsedCount > 1 && (
+                    <span className="text-xs">{parsedCount}</span>
+                  )}
+                </span>
               )}
             </AppButton>
           </div>
         </form>
 
-        <div className="space-y-1">
-          {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <LoadingSpinner className="size-5" />
-            </div>
-          ) : parameters.length > 0 ? (
-            parameters.map((param) => (
+        {loading ? (
+          <div className="flex items-center justify-center py-8">
+            <LoadingSpinner className="size-5" />
+          </div>
+        ) : parameters.length > 0 ? (
+          <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {parameters.map((param) => (
               <div
                 key={param.id}
-                className="group flex items-center justify-between rounded-md px-2 py-1.5 hover:bg-neutral-50"
+                className="group flex items-center justify-between rounded-md border border-neutral-100 px-2.5 py-1.5 hover:border-neutral-200 hover:bg-neutral-50"
               >
-                <span className="text-sm text-neutral-700 truncate">
+                <span className="truncate text-sm text-neutral-700">
                   {param.name}
                 </span>
                 <Tooltip content="Delete">
@@ -261,7 +340,7 @@ function ParameterColumn({
                     onClick={() => handleDelete(param.id)}
                     disabled={deletingId === param.id}
                     className={cn(
-                      "h-7 w-7 text-neutral-400 hover:text-red-600 disabled:cursor-not-allowed",
+                      "h-7 w-7 shrink-0 text-neutral-400 hover:text-red-600 disabled:cursor-not-allowed",
                       deletingId === param.id
                         ? "opacity-100"
                         : "opacity-0 group-hover:opacity-100",
@@ -275,13 +354,13 @@ function ParameterColumn({
                   </AppIconButton>
                 </Tooltip>
               </div>
-            ))
-          ) : (
-            <p className="py-8 text-center text-sm text-neutral-500">
-              No {title.toLowerCase()}s yet
-            </p>
-          )}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <p className="py-8 text-center text-sm text-neutral-500">
+            No {title.toLowerCase()}s yet
+          </p>
+        )}
       </div>
     </div>
   );

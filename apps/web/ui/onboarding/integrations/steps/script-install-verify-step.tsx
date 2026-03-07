@@ -3,7 +3,7 @@
 import { StepCard } from "@/ui/onboarding/integrations/components/step-card";
 import { cn } from "@dub/utils";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type ScriptCheckResponse = {
   detected: boolean;
@@ -21,7 +21,7 @@ export function ScriptInstallVerifyStep({
 }: {
   title: string;
   description?: string;
-  required: { detection: boolean; injectForm?: boolean; expose?: boolean };
+  required: { detection: boolean; injectForm?: boolean; expose?: boolean; outbound?: string };
   initialUrlPlaceholder?: string;
   autoVerify?: boolean;
   autoVerifyIntervalMs?: number;
@@ -29,6 +29,7 @@ export function ScriptInstallVerifyStep({
 }) {
   const [url, setUrl] = useState("");
   const [checking, setChecking] = useState(false);
+  const checkingRef = useRef(false);
   const [result, setResult] = useState<ScriptCheckResponse | null>(null);
 
   const requirementsMet = useMemo(() => {
@@ -46,12 +47,14 @@ export function ScriptInstallVerifyStep({
 
     const value = url.trim();
     if (!value) return;
+    checkingRef.current = true;
     setChecking(true);
     try {
       const params = new URLSearchParams();
       params.set("url", value);
       if (required.injectForm) params.set("requireInjectForm", "1");
       if (required.expose) params.set("requireExpose", "1");
+      if (required.outbound) params.set("requireOutbound", required.outbound);
 
       const res = await fetch(`/api/onboarding/script-check?${params.toString()}`);
       const data = (await res.json()) as any;
@@ -60,11 +63,13 @@ export function ScriptInstallVerifyStep({
         error: typeof data?.error === "string" ? data.error : null,
       });
     } finally {
+      checkingRef.current = false;
       setChecking(false);
     }
-  }, [onNext, required.expose, required.injectForm, requirementsMet, url]);
+  }, [onNext, required.expose, required.injectForm, required.outbound, requirementsMet, url]);
 
-  // Periodic verification (opt-in).
+  // Periodic verification (opt-in). Uses checkingRef to avoid
+  // tearing down / recreating the interval on every verify cycle.
   useEffect(() => {
     if (!autoVerify) return;
     if (requirementsMet) return;
@@ -75,7 +80,7 @@ export function ScriptInstallVerifyStep({
 
     const tick = async () => {
       if (cancelled) return;
-      if (checking) return;
+      if (checkingRef.current) return;
       await verify();
     };
 
@@ -87,7 +92,7 @@ export function ScriptInstallVerifyStep({
       if (timer) window.clearTimeout(timer);
       window.clearInterval(interval);
     };
-  }, [autoVerify, autoVerifyIntervalMs, checking, requirementsMet, url, verify]);
+  }, [autoVerify, autoVerifyIntervalMs, requirementsMet, url, verify]);
 
   return (
     <StepCard title={title} description={description}>
@@ -96,7 +101,6 @@ export function ScriptInstallVerifyStep({
         onChange={(e) => setUrl(e.target.value)}
         placeholder={initialUrlPlaceholder ?? "https://your-site.com"}
         className="h-10 w-full rounded-md border border-neutral-200 bg-white px-3 text-sm text-neutral-900 placeholder:text-neutral-400"
-        disabled={checking}
       />
 
       {result?.error ? (
@@ -109,10 +113,12 @@ export function ScriptInstallVerifyStep({
         <div className="flex items-center justify-between gap-3 py-3">
           <div className="text-sm font-medium text-neutral-900">Detected</div>
           <div className="shrink-0">
-            {result?.detected ? (
+            {result === null ? (
+              <div className="size-4 rounded-full border-2 border-neutral-200" />
+            ) : result.detected ? (
               <CheckCircle2 className="size-4 text-emerald-600" />
             ) : (
-              <XCircle className="size-4 text-neutral-300" />
+              <XCircle className="size-4 text-red-400" />
             )}
           </div>
         </div>
@@ -142,4 +148,3 @@ export function ScriptInstallVerifyStep({
     </StepCard>
   );
 }
-

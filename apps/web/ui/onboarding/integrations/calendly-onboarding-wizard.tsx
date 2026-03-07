@@ -58,6 +58,7 @@ export function CalendlyOnboardingWizard({
     error: createError,
     created,
     create: createTestLink,
+    reset: resetTestLink,
   } = useCreateOnboardingTestLink({ workspaceId });
 
   const { waiting, done, start: startWaitingForLead } = useWaitForLinkLead({
@@ -205,6 +206,7 @@ export function CalendlyOnboardingWizard({
               forceGoTo(2);
               startWaitingForLead();
             }}
+            onReset={resetTestLink}
           />
         ),
       },
@@ -236,6 +238,7 @@ export function CalendlyOnboardingWizard({
     creating,
     done,
     forceGoTo,
+    resetTestLink,
     startConnectFlow,
     startWaitingForLead,
     waiting,

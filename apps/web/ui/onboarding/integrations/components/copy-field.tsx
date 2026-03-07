@@ -54,7 +54,7 @@ export function CopyField({
           readOnly
           onClick={copy}
           className={cn(
-            "h-10 w-full rounded-md border border-neutral-200 bg-neutral-50 px-3 text-sm text-neutral-900",
+            "h-10 w-full rounded-md border border-neutral-200 bg-neutral-50 px-3 font-mono text-xs text-neutral-900",
             !disabled && textToCopy ? "cursor-pointer" : "cursor-default opacity-60",
           )}
         />

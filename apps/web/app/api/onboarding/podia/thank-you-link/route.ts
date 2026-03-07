@@ -37,4 +37,3 @@ export const DELETE = withWorkspace(async ({ workspace }) => {
   });
   return NextResponse.json({ ok: true });
 });
-

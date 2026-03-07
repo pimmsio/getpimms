@@ -68,4 +68,3 @@ export async function deleteStoredThankYouLink({
 }) {
   await redis.del(thankYouRedisKey({ workspaceId, providerKey }));
 }
-

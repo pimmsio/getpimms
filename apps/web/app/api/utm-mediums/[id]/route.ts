@@ -5,13 +5,19 @@ import {
   updateUtmMediumBodySchema,
 } from "@/lib/zod/schemas/utm-parameters";
 import { prisma } from "@dub/prisma";
+import { normalizeUtmValue } from "@dub/utils";
 import { NextResponse } from "next/server";
 
 // PATCH /api/utm-mediums/[id] – update a UTM medium for a workspace
 export const PATCH = withWorkspace(
   async ({ req, params, workspace }) => {
     const { id } = params;
-    const { name } = updateUtmMediumBodySchema.parse(await req.json());
+    const { name: rawName } = updateUtmMediumBodySchema.parse(await req.json());
+    const name = normalizeUtmValue(rawName, {
+      spaceChar: workspace.utmSpaceChar ?? "-",
+      prohibitedChars: workspace.utmProhibitedChars ?? "",
+      forceLowercase: workspace.utmForceLowercase ?? true,
+    });
 
     const utmMedium = await prisma.utmMedium.findFirst({
       where: {

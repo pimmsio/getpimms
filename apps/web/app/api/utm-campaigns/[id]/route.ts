@@ -5,13 +5,19 @@ import {
   updateUtmCampaignBodySchema,
 } from "@/lib/zod/schemas/utm-parameters";
 import { prisma } from "@dub/prisma";
+import { normalizeUtmValue } from "@dub/utils";
 import { NextResponse } from "next/server";
 
 // PATCH /api/utm-campaigns/[id] – update a UTM campaign for a workspace
 export const PATCH = withWorkspace(
   async ({ req, params, workspace }) => {
     const { id } = params;
-    const { name } = updateUtmCampaignBodySchema.parse(await req.json());
+    const { name: rawName } = updateUtmCampaignBodySchema.parse(await req.json());
+    const name = normalizeUtmValue(rawName, {
+      spaceChar: workspace.utmSpaceChar ?? "-",
+      prohibitedChars: workspace.utmProhibitedChars ?? "",
+      forceLowercase: workspace.utmForceLowercase ?? true,
+    });
 
     const utmCampaign = await prisma.utmCampaign.findFirst({
       where: {

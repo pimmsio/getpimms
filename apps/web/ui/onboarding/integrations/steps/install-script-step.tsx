@@ -9,6 +9,7 @@ export function InstallScriptStep({
   title,
   description,
   info,
+  mergeNote,
   scripts,
   script,
   scriptLabel = "Script",
@@ -22,6 +23,8 @@ export function InstallScriptStep({
   title: string;
   description?: string;
   info?: React.ReactNode;
+  /** Shown as a warning when the user may already have a detection script from another integration. */
+  mergeNote?: React.ReactNode;
   /**
    * Preferred: provide one or more scripts (e.g. detection + inject-form).
    * If omitted, falls back to `script` + `scriptLabel`.
@@ -69,6 +72,12 @@ export function InstallScriptStep({
       {info ? (
         <div className="mt-3 rounded-md bg-blue-50 px-3 py-2 text-xs text-blue-900">
           {info}
+        </div>
+      ) : null}
+
+      {mergeNote ? (
+        <div className="mt-3 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-900">
+          {mergeNote}
         </div>
       ) : null}
 

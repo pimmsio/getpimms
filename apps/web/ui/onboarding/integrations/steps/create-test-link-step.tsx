@@ -3,7 +3,7 @@
 import { OnboardingTestLink } from "@/ui/onboarding/integrations/onboarding-test-link";
 import { StepCard } from "@/ui/onboarding/integrations/components/step-card";
 import { cn } from "@dub/utils";
-import { ExternalLink, Loader2 } from "lucide-react";
+import { ExternalLink, Loader2, RotateCcw } from "lucide-react";
 import React from "react";
 
 export function CreateTestLinkStep({
@@ -18,6 +18,7 @@ export function CreateTestLinkStep({
   created,
   onCreate,
   onOpenCreated,
+  onReset,
 }: {
   title: string;
   description?: string;
@@ -30,6 +31,7 @@ export function CreateTestLinkStep({
   created: OnboardingTestLink | null;
   onCreate: () => Promise<void> | void;
   onOpenCreated?: () => void;
+  onReset?: () => void;
 }) {
   return (
     <StepCard title={title} description={description}>
@@ -83,22 +85,50 @@ export function CreateTestLinkStep({
             )}
           </button>
         ) : created.shortLink ? (
-          <button
-            type="button"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-neutral-900 px-3 py-2 text-sm font-semibold text-white hover:bg-neutral-800 sm:w-auto"
-            onClick={() => {
-              try {
-                window.open(created.shortLink, "_blank", "noopener,noreferrer");
-              } catch {
-                // ignore
-              }
-              onOpenCreated?.();
-            }}
-          >
-            Open test link
-            <ExternalLink className="size-4" />
-          </button>
-        ) : null}
+          <>
+            <button
+              type="button"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-neutral-900 px-3 py-2 text-sm font-semibold text-white hover:bg-neutral-800 sm:w-auto"
+              onClick={() => {
+                try {
+                  window.open(created.shortLink, "_blank", "noopener,noreferrer");
+                } catch {
+                  // ignore
+                }
+                onOpenCreated?.();
+              }}
+            >
+              Open test link
+              <ExternalLink className="size-4" />
+            </button>
+            {onReset ? (
+              <button
+                type="button"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 sm:w-auto"
+                onClick={onReset}
+              >
+                <RotateCcw className="size-3.5" />
+                Create another
+              </button>
+            ) : null}
+          </>
+        ) : (
+          <>
+            <div className="text-sm text-amber-900">
+              Link created but no short link was returned. Please try again.
+            </div>
+            {onReset ? (
+              <button
+                type="button"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 sm:w-auto"
+                onClick={onReset}
+              >
+                <RotateCcw className="size-3.5" />
+                Try again
+              </button>
+            ) : null}
+          </>
+        )}
       </div>
     </StepCard>
   );

@@ -20,6 +20,8 @@ const GUIDE_URL =
 const GUIDE_STEP_2_URL = `${GUIDE_URL}#2-build-a-pimms-compatible-form`;
 const DETECTION_SCRIPT =
   '<script defer src="https://cdn.pimms.io/analytics/script.detection.js"></script>';
+const INJECT_FORM_SCRIPT =
+  '<script defer src="https://cdn.pimms.io/analytics/script.inject-form.js"></script>';
 
 export function ElementorOnboardingWizard({
   guideThumbnail,
@@ -44,6 +46,7 @@ export function ElementorOnboardingWizard({
     error: createError,
     created,
     create: createTestLink,
+    reset: resetTestLink,
   } = useCreateOnboardingTestLink({ workspaceId });
 
   const { waiting, done, start: startWaitingForLead } = useWaitForLinkLead({
@@ -80,13 +83,16 @@ export function ElementorOnboardingWizard({
     return [
       {
         id: "elementor-step-1",
-        title: "Install the script",
+        title: "Install scripts",
         isComplete: scriptInstalled,
         content: (
           <InstallScriptStep
-            title="Add the Pimms script"
-            description="Install the script on your Elementor site, then continue."
-            scripts={[{ label: "Detection script", value: DETECTION_SCRIPT }]}
+            title="Add the Pimms scripts"
+            description="Elementor forms require the detection script and the form injection script. The inject-form script auto-adds a hidden pimms_id field to all forms."
+            scripts={[
+              { label: "Detection script", value: DETECTION_SCRIPT },
+              { label: "Inject form script", value: INJECT_FORM_SCRIPT },
+            ]}
             isDone={scriptInstalled}
             confirmDisabled={!workspaceId}
             onConfirm={() => {
@@ -102,9 +108,9 @@ export function ElementorOnboardingWizard({
         isComplete: scriptVerified,
         content: (
           <ScriptInstallVerifyStep
-            title="Verify the script is detected"
-            description="Paste a public URL of a page containing your Elementor form. We’ll check it periodically until it’s detected."
-            required={{ detection: true }}
+            title="Verify the scripts are detected"
+            description="Paste a public URL of a page containing your Elementor form. We'll check it periodically until both scripts are detected."
+            required={{ detection: true, injectForm: true }}
             initialUrlPlaceholder="your-site.com/page-with-form"
             autoVerify
             onNext={() => {
@@ -148,7 +154,7 @@ export function ElementorOnboardingWizard({
         content: (
           <WebhookConfigStep
             title="Add the Elementor webhook"
-            description="In Elementor → Actions After Submit → Webhook, paste this URL."
+            description="In Elementor > Actions After Submit > Webhook, paste this URL."
             fields={[{ label: "Webhook URL", value: webhookUrl, disabled: !webhookUrl }]}
             isDone={webhookOk}
             confirmDisabled={!workspaceId}
@@ -166,7 +172,7 @@ export function ElementorOnboardingWizard({
         content: (
           <CreateTestLinkStep
             title="Create a test link (expires in 24h)"
-            description="Paste your page URL (the one with the form). We’ll create a test short link."
+            description="Paste your page URL (the one with the form). We'll create a test short link."
             urlValue={pageUrl}
             urlPlaceholder="https://your-site.com/lead-form"
             onChangeUrl={setPageUrl}
@@ -185,6 +191,7 @@ export function ElementorOnboardingWizard({
               wizard.forceGoTo(5);
               startWaitingForLead();
             }}
+            onReset={resetTestLink}
           />
         ),
       },
@@ -195,7 +202,7 @@ export function ElementorOnboardingWizard({
         content: (
           <WaitForLeadStep
             title="Submit a test form"
-            description="Open the test link in an incognito tab, submit the form with a fresh test email, then we’ll wait for the lead."
+            description="Open the test link in an incognito tab, submit the form with a fresh test email, then we'll wait for the lead."
             linkHref={created?.shortLink ?? null}
             canStart={Boolean(created?.id)}
             waiting={waiting}
@@ -213,6 +220,7 @@ export function ElementorOnboardingWizard({
     done,
     formOk,
     pageUrl,
+    resetTestLink,
     scriptInstalled,
     scriptVerified,
     setPageUrl,
@@ -227,7 +235,7 @@ export function ElementorOnboardingWizard({
   return (
     <IntegrationOnboardingWizard
       title="WordPress / Elementor setup"
-      subtitle="Install the script, configure the webhook, then validate tracking with a test submission."
+      subtitle="Install the scripts, configure the webhook, then validate tracking with a test submission."
       contentTop={
         <GuideCard title="Elementor guide" href={GUIDE_URL} thumbnail={guideThumbnail ?? null} />
       }
@@ -238,4 +246,3 @@ export function ElementorOnboardingWizard({
     />
   );
 }
-

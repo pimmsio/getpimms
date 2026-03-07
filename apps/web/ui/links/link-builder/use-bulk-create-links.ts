@@ -27,8 +27,13 @@ function pushLink(
   const key = seenDomainKey.has(id) ? "" : k;
   if (key) seenDomainKey.add(id);
   const { utm_campaign, utm_medium, utm_source, utm_content, utm_term } = link;
+
+  // processLink rejects bulk links with proxy + external image (!isStored).
+  // Strip image/video but keep proxy, title, description for custom OG text.
+  const { image: _image, video: _video, ...safeFormData } = formData;
+
   linksPayload.push({
-    ...formData,
+    ...safeFormData,
     url: link.url,
     key,
     domain: link.domain,

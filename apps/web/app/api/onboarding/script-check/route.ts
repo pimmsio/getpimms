@@ -17,11 +17,28 @@ function scanHtml(html: string) {
   let scriptFound = false;
   let exposeFound = false;
   let injectFormFound = false;
+  const outboundDomains: string[] = [];
 
   for (const m of matches) {
     const srcMatch = m.match(/src=["']([^"']*)["']/);
     const src = srcMatch ? srcMatch[1] : "";
-    if (src.includes(detectionScript)) scriptFound = true;
+    if (src.includes(detectionScript)) {
+      scriptFound = true;
+
+      const domainsMatch = m.match(/data-domains=["']([^"']*)["']/);
+      if (domainsMatch) {
+        try {
+          const cfg = JSON.parse(domainsMatch[1]);
+          if (typeof cfg.outbound === "string" && cfg.outbound) {
+            outboundDomains.push(
+              ...cfg.outbound.split(",").map((d: string) => d.trim().toLowerCase()),
+            );
+          }
+        } catch {
+          // malformed JSON -- ignore
+        }
+      }
+    }
     if (src.includes(exposeScript)) exposeFound = true;
     if (src.includes(injectFormScript)) injectFormFound = true;
 
@@ -29,12 +46,12 @@ function scanHtml(html: string) {
     if (m.includes("@getpimms/analytics")) scriptFound = true;
   }
 
-  // Also accept the SDK meta tag as “detected”.
+  // Also accept the SDK meta tag as "detected".
   const metaFound =
     /<meta\s+name=["']pimms-sdk["']\s+content=["']true["']\s*\/?>/i.test(html);
   if (metaFound) scriptFound = true;
 
-  return { scriptFound, exposeFound, injectFormFound };
+  return { scriptFound, exposeFound, injectFormFound, outboundDomains };
 }
 
 export async function GET(request: NextRequest) {
@@ -42,6 +59,7 @@ export async function GET(request: NextRequest) {
   const url = searchParams.get("url");
   const requireInjectForm = parseBoolParam(searchParams.get("requireInjectForm"));
   const requireExpose = parseBoolParam(searchParams.get("requireExpose"));
+  const requireOutbound = searchParams.get("requireOutbound")?.trim().toLowerCase() || null;
 
   if (!url) {
     return NextResponse.json({ error: "URL parameter is required" }, { status: 400 });
@@ -72,13 +90,16 @@ export async function GET(request: NextRequest) {
     }
 
     const html = await response.text();
-    let { scriptFound, exposeFound, injectFormFound } = scanHtml(html);
+    let { scriptFound, exposeFound, injectFormFound, outboundDomains } = scanHtml(html);
+
+    const outboundOk = !requireOutbound || outboundDomains.includes(requireOutbound);
 
     // Fallback: render JS if we didn't meet the requirements.
     const needsMore =
       !scriptFound ||
       (requireInjectForm && !injectFormFound) ||
-      (requireExpose && !exposeFound);
+      (requireExpose && !exposeFound) ||
+      !outboundOk;
 
     if (needsMore) {
       const wsApiKey = process.env.WEBSCRAPINGAI_API_KEY;
@@ -99,13 +120,14 @@ export async function GET(request: NextRequest) {
       }
 
       const renderedHtml = await wsResponse.text();
-      ({ scriptFound, exposeFound, injectFormFound } = scanHtml(renderedHtml));
+      ({ scriptFound, exposeFound, injectFormFound, outboundDomains } = scanHtml(renderedHtml));
     }
 
     const detected =
       scriptFound &&
       (!requireInjectForm || injectFormFound) &&
-      (!requireExpose || exposeFound);
+      (!requireExpose || exposeFound) &&
+      (!requireOutbound || outboundDomains.includes(requireOutbound));
 
     return NextResponse.json({ detected, error: null });
   } catch (error) {
@@ -121,4 +143,3 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ detected: false, error: errorMessage });
   }
 }
-

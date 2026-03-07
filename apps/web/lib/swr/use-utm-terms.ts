@@ -55,7 +55,7 @@ export function useUtmTermsCount({
   const { id: workspaceId } = useWorkspace();
   const { getQueryString } = useRouterStuff();
 
-  const { data, error } = useSWR<number>(
+  const { data, error, mutate } = useSWR<number>(
     workspaceId
       ? `/api/utm-terms/count${getQueryString({ workspaceId, ...query })}`
       : null,
@@ -71,6 +71,7 @@ export function useUtmTermsCount({
     data,
     loading: !error && data === undefined,
     error,
+    mutate,
   };
 }
 

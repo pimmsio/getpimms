@@ -104,8 +104,8 @@ export function BrevoOnboardingWizard({
     creating: creatingTest,
     error: createTestError,
     created: createdTestLink,
-    setCreated: setCreatedTestLink,
     create: createTestLink,
+    reset: resetTestLink,
   } = useCreateOnboardingTestLink({ workspaceId, domain: trackingDomain });
 
   const { waiting, done, start: startWaitingForLead } = useWaitForLinkLead({
@@ -189,9 +189,9 @@ export function BrevoOnboardingWizard({
 
   const clearSavedAndRegenerate = useCallback(() => {
     setThankYouLink(null);
-    setCreatedTestLink(null);
+    resetTestLink();
     void clearSavedThankYou();
-  }, [clearSavedThankYou, setCreatedTestLink]);
+  }, [clearSavedThankYou, resetTestLink]);
 
   const completed = useMemo(
     () => [step1Done, Boolean(thankYouLink), Boolean(createdTestLink), done],
@@ -242,15 +242,15 @@ export function BrevoOnboardingWizard({
               </ul>
             </div>
 
-            <div className="mt-5 flex items-center">
+            <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center">
               {step1Done ? (
-                <div className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-800">
+                <div className="sm:ml-auto inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-800">
                   Completed
                 </div>
               ) : (
                 <button
                   type="button"
-                  className="ml-auto inline-flex w-full items-center justify-center rounded-md bg-neutral-900 px-3 py-2 text-sm font-semibold text-white hover:bg-neutral-800 sm:w-auto"
+                  className="inline-flex w-full items-center justify-center rounded-md bg-neutral-900 px-3 py-2 text-sm font-semibold text-white hover:bg-neutral-800 sm:ml-auto sm:w-auto"
                   onClick={() => {
                     setStep1Done(true);
                     wizard.advance();
@@ -331,13 +331,22 @@ export function BrevoOnboardingWizard({
                   <span className="font-semibold text-neutral-900">Thank you URL</span>.
                 </div>
 
-                <button
-                  type="button"
-                  className="inline-flex w-full items-center justify-center rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-semibold text-neutral-900 hover:bg-neutral-50 sm:w-auto"
-                  onClick={clearSavedAndRegenerate}
-                >
-                  Generate a new link
-                </button>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <button
+                    type="button"
+                    className="inline-flex w-full items-center justify-center rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 sm:w-auto"
+                    onClick={clearSavedAndRegenerate}
+                  >
+                    Generate a new link
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex w-full items-center justify-center rounded-md bg-neutral-900 px-3 py-2 text-sm font-semibold text-white hover:bg-neutral-800 sm:ml-auto sm:w-auto"
+                    onClick={() => wizard.advance()}
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="mt-5">
@@ -399,6 +408,7 @@ export function BrevoOnboardingWizard({
               wizard.forceGoTo(3);
               startWaitingForLead();
             }}
+            onReset={resetTestLink}
           />
         ),
       },
@@ -436,6 +446,7 @@ export function BrevoOnboardingWizard({
     done,
     domains,
     loadingSaved,
+    resetTestLink,
     savedThankYou,
     setBrevoUrl,
     startWaitingForLead,

@@ -23,8 +23,15 @@ export async function createOnboardingTestLink({
   );
 
   if (!res.ok) {
-    const txt = await res.text().catch(() => "");
-    throw new Error(txt || "Failed to create the test link. Please try again.");
+    const fallback = "Failed to create the test link. Please try again.";
+    let message = fallback;
+    try {
+      const data = await res.json();
+      message = data?.error?.message || data?.message || fallback;
+    } catch {
+      // response wasn't JSON — use fallback
+    }
+    throw new Error(message);
   }
 
   const data = (await res.json()) as any;

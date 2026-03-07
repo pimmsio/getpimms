@@ -121,16 +121,32 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
     return;
   }
 
-  const stripeId = checkoutSession.customer.toString();
-  const workspaceId = checkoutSession.client_reference_id;
+  let stripeId = checkoutSession.customer.toString();
+  let workspaceId = checkoutSession.client_reference_id;
+
+  // Fallback: resolve workspace by stripeId when client_reference_id is missing
+  if (!workspaceId && stripeId) {
+    const found = await prisma.project.findUnique({ where: { stripeId }, select: { id: true } });
+    if (found) workspaceId = found.id;
+  }
+
+  // Fallback: re-fetch session to get auto-created customer when customer is missing
+  if (!stripeId && workspaceId) {
+    try {
+      const fresh = await stripe.checkout.sessions.retrieve(checkoutSession.id);
+      fresh.customer && (stripeId = fresh.customer.toString());
+    } catch { /* proceed without stripeId */ }
+  }
   const planName = plan.name.toLowerCase();
 
-  const workspaceExists = await prisma.project.findUnique({
-    where: { id: workspaceId },
-    select: { id: true },
-  });
+  const workspaceExists = workspaceId
+    ? await prisma.project.findUnique({
+        where: { id: workspaceId },
+        select: { id: true },
+      })
+    : null;
 
-  if (!workspaceExists) {
+  if (!workspaceExists || !workspaceId) {
     console.log("[Stripe Webhook] Workspace not found for checkout session", {
       eventId: event.id,
       sessionId: checkoutSession.id,
@@ -161,7 +177,7 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
       id: workspaceId,
     },
     data: {
-      stripeId,
+      ...(stripeId && { stripeId }),
       billingCycleStart: new Date().getDate(),
       plan: planName,
       usageLimit: plan.limits.clicks!,

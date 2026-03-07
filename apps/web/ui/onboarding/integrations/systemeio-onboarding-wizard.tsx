@@ -44,6 +44,7 @@ export function SystemeioOnboardingWizard({
     error: createError,
     created,
     create: createTestLink,
+    reset: resetTestLink,
   } = useCreateOnboardingTestLink({
     workspaceId,
   });
@@ -177,6 +178,7 @@ export function SystemeioOnboardingWizard({
               wizard.forceGoTo(4);
               startWaitingForLead();
             }}
+            onReset={resetTestLink}
           />
         ),
       },
@@ -205,6 +207,7 @@ export function SystemeioOnboardingWizard({
     created,
     creating,
     funnelUrl,
+    resetTestLink,
     scriptInstalled,
     scriptVerified,
     setFunnelUrl,

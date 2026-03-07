@@ -93,7 +93,7 @@ function OnboardingButtonInner({
         checked: totalClicks && totalClicks > 0,
       },
       {
-        display: "Show a contact",
+        display: "Setup contact tracking",
         cta: `/${slug}/conversions`,
         checked: customersCount && customersCount > 0,
         onClick: () => setShowConversionOnboardingModal(true),

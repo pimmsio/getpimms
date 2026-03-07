@@ -6,6 +6,7 @@ import {
   useKeyboardShortcut,
   useMediaQuery,
 } from "@dub/ui";
+import { UtmConventionOptions } from "@dub/utils";
 import { UTMBuilderEnhanced } from "@/ui/links/link-builder/utm-builder-enhanced";
 import posthog from "posthog-js";
 import {
@@ -35,8 +36,18 @@ function AddEditUtmTemplateModal({
   onCreated?: (templateId: string) => void;
 }) {
   const { id } = props || {};
-  const { id: workspaceId } = useWorkspace();
+  const workspace = useWorkspace();
+  const { id: workspaceId } = workspace;
   const { isMobile } = useMediaQuery();
+
+  const conventionOptions = useMemo<UtmConventionOptions>(
+    () => ({
+      spaceChar: workspace.utmSpaceChar ?? "-",
+      prohibitedChars: workspace.utmProhibitedChars ?? "",
+      forceLowercase: workspace.utmForceLowercase ?? true,
+    }),
+    [workspace.utmSpaceChar, workspace.utmProhibitedChars, workspace.utmForceLowercase],
+  );
 
   const {
     register,
@@ -83,7 +94,7 @@ function AddEditUtmTemplateModal({
             url: `/api/utm?workspaceId=${workspaceId}`,
             successMessage: "Successfully added template!",
           },
-    [id],
+    [id, workspaceId],
   );
 
   return (
@@ -174,6 +185,7 @@ function AddEditUtmTemplateModal({
               onChange={(key, value) => {
                 setValue(key as any, value, { shouldDirty: true });
               }}
+              conventionOptions={conventionOptions}
             />
           </div>
         </div>

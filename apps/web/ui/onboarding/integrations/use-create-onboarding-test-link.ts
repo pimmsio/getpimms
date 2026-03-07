@@ -4,7 +4,7 @@ import {
   createOnboardingTestLink,
   OnboardingTestLink,
 } from "@/ui/onboarding/integrations/onboarding-test-link";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 export function useCreateOnboardingTestLink({
   workspaceId,
@@ -19,10 +19,13 @@ export function useCreateOnboardingTestLink({
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [created, setCreated] = useState<OnboardingTestLink | null>(null);
+  const creatingRef = useRef(false);
 
   const create = useCallback(async () => {
+    if (creatingRef.current) return;
     setError(null);
     if (!workspaceId) throw new Error("Missing workspace ID.");
+    creatingRef.current = true;
     setCreating(true);
     try {
       const link = await createOnboardingTestLink({
@@ -37,9 +40,16 @@ export function useCreateOnboardingTestLink({
       setError(e instanceof Error ? e.message : "Failed to create test link");
       throw e;
     } finally {
+      creatingRef.current = false;
       setCreating(false);
     }
   }, [domain, onCreated, url, workspaceId]);
+
+  const reset = useCallback(() => {
+    setCreated(null);
+    setUrl("");
+    setError(null);
+  }, []);
 
   return {
     url,
@@ -49,6 +59,7 @@ export function useCreateOnboardingTestLink({
     created,
     setCreated,
     create,
+    reset,
   };
 }
 

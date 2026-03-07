@@ -46,6 +46,7 @@ export function FramerOnboardingWizard({
     error: createError,
     created,
     create: createTestLink,
+    reset: resetTestLink,
   } = useCreateOnboardingTestLink({ workspaceId });
 
   const { waiting, done, start: startWaitingForLead } = useWaitForLinkLead({
@@ -190,6 +191,7 @@ export function FramerOnboardingWizard({
               wizard.forceGoTo(5);
               startWaitingForLead();
             }}
+            onReset={resetTestLink}
           />
         ),
       },
@@ -218,6 +220,7 @@ export function FramerOnboardingWizard({
     done,
     formOk,
     pageUrl,
+    resetTestLink,
     scriptInstalled,
     scriptVerified,
     setPageUrl,

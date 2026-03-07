@@ -5,13 +5,19 @@ import {
   updateUtmTermBodySchema,
 } from "@/lib/zod/schemas/utm-parameters";
 import { prisma } from "@dub/prisma";
+import { normalizeUtmValue } from "@dub/utils";
 import { NextResponse } from "next/server";
 
 // PATCH /api/utm-terms/[id] – update a UTM term for a workspace
 export const PATCH = withWorkspace(
   async ({ req, params, workspace }) => {
     const { id } = params;
-    const { name } = updateUtmTermBodySchema.parse(await req.json());
+    const { name: rawName } = updateUtmTermBodySchema.parse(await req.json());
+    const name = normalizeUtmValue(rawName, {
+      spaceChar: workspace.utmSpaceChar ?? "-",
+      prohibitedChars: workspace.utmProhibitedChars ?? "",
+      forceLowercase: workspace.utmForceLowercase ?? true,
+    });
 
     const utmTerm = await prisma.utmTerm.findFirst({
       where: {

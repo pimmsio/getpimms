@@ -87,6 +87,7 @@ export const PLANS: Plan[] = [
         "price_1T31oABN5sOoOmBUJwRn5Wur", // prod monthly USD
         "price_1T31oABN5sOoOmBU1ryyWPfO", // prod lifetime EUR
         "price_1T31oABN5sOoOmBUSGuITpd8", // prod lifetime USD
+        "price_1T87q0BL7DFxjjSQfcDKCphO", // staging lifetime EUR
       ],
     },
     limits: {
