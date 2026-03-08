@@ -11,6 +11,7 @@ type OnboardingPreferences = {
   providerIds: string[];
   completedProviderIds: string[];
   startedProviderIds: StartedProvider[];
+  otherMessage?: string;
 };
 
 export function useOnboardingPreferences() {
@@ -70,15 +71,27 @@ export function useOnboardingPreferences() {
     await mutate();
   };
 
+  const setOtherMessage = async (otherMessage: string) => {
+    if (!workspaceId) return;
+    await fetch(`/api/onboarding-preferences?workspaceId=${workspaceId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ otherMessage }),
+    });
+    await mutate();
+  };
+
   return {
     providerIds: data?.providerIds ?? [],
     completedProviderIds: data?.completedProviderIds ?? [],
     startedProviderIds: data?.startedProviderIds ?? [],
+    otherMessage: data?.otherMessage ?? "",
     loading: isLoading,
     error,
     setProviderIds,
     setCompletedProviderIds,
     markProviderStarted,
+    setOtherMessage,
     mutate,
   };
 }

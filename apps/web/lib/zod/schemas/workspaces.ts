@@ -84,6 +84,11 @@ export const WorkspaceSchema = z
       .boolean()
       .default(false)
       .describe("Whether the workspace has already used the free Pro trial."),
+    trialEndsAt: z
+      .date()
+      .nullable()
+      .optional()
+      .describe("When the free Pro trial ends (null if no active trial)."),
 
     utmSpaceChar: z
       .string()

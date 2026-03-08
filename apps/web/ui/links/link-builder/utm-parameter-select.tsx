@@ -37,7 +37,7 @@ interface UtmParameterSelectProps {
  */
 function useUtmParameters(
   parameterType: UtmParameterType,
-  query: { sortBy: "name" | "createdAt"; sortOrder: "asc" | "desc"; search?: string }
+  query: { sortBy: "name" | "createdAt" | "updatedAt"; sortOrder: "asc" | "desc"; search?: string }
 ) {
   const sourceData = useUtmSources({ 
     query: parameterType === "source" ? query : undefined,
@@ -144,8 +144,8 @@ export function UtmParameterSelect({
   const { data: parameters, loading, mutate } = useUtmParameters(
     parameterType,
     {
-      sortBy: "name" as const,
-      sortOrder: "asc" as const,
+      sortBy: "updatedAt" as const,
+      sortOrder: "desc" as const,
       ...(useAsync ? { search: debouncedSearch } : {}),
     },
   );

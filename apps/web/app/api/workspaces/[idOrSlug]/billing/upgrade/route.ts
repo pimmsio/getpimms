@@ -5,10 +5,18 @@ import { APP_DOMAIN } from "@dub/utils";
 import { NextResponse } from "next/server";
 
 export const POST = withWorkspace(async ({ req, workspace, session }) => {
-  let { plan, period, baseUrl, onboarding, currency } = await req.json();
+  let { plan, period, baseUrl, onboarding, currency, trial } = await req.json();
 
   if (!plan || !period) {
     return new Response("Invalid plan or period", { status: 400 });
+  }
+
+  // Block trial if already used
+  if (trial && workspace.trialUsed) {
+    throw new DubApiError({
+      code: "forbidden",
+      message: "Free trial has already been used for this workspace.",
+    });
   }
 
   plan = plan.replace(" ", "+");
@@ -93,7 +101,7 @@ export const POST = withWorkspace(async ({ req, workspace, session }) => {
             customer_email: session.user.email,
           }),
       billing_address_collection: "required",
-      success_url: `${APP_DOMAIN}/${workspace.slug}?${onboarding ? "onboarded" : "upgraded"}=true&plan=${plan}&period=${period}`,
+      success_url: `${APP_DOMAIN}/${workspace.slug}?${onboarding ? "onboarded" : trial ? "trial" : "upgraded"}=true&plan=${plan}&period=${period}`,
       cancel_url: baseUrl,
       line_items: [{ price: priceId, quantity: 1 }],
       // ...(customer?.discount?.couponId
@@ -116,9 +124,13 @@ export const POST = withWorkspace(async ({ req, workspace, session }) => {
         enabled: true,
       },
       mode: isLifetime ? "payment" : "subscription",
+      ...(trial && !isLifetime
+        ? { subscription_data: { trial_period_days: 7 } }
+        : {}),
       client_reference_id: workspace.id,
       metadata: {
         pimmsCustomerId: session.user.id,
+        ...(trial ? { trial: "true" } : {}),
       },
     });
 

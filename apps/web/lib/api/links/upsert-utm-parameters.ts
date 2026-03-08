@@ -52,7 +52,7 @@ export async function upsertUtmParameters({
             name: utm_source,
             projectId,
           },
-          update: {},
+          update: { updatedAt: new Date() },
         }),
       );
     }
@@ -72,7 +72,7 @@ export async function upsertUtmParameters({
             name: utm_medium,
             projectId,
           },
-          update: {},
+          update: { updatedAt: new Date() },
         }),
       );
     }
@@ -92,7 +92,7 @@ export async function upsertUtmParameters({
             name: utm_campaign,
             projectId,
           },
-          update: {},
+          update: { updatedAt: new Date() },
         }),
       );
     }
@@ -112,7 +112,7 @@ export async function upsertUtmParameters({
             name: utm_term,
             projectId,
           },
-          update: {},
+          update: { updatedAt: new Date() },
         }),
       );
     }
@@ -132,7 +132,7 @@ export async function upsertUtmParameters({
             name: utm_content,
             projectId,
           },
-          update: {},
+          update: { updatedAt: new Date() },
         }),
       );
     }
@@ -155,6 +155,11 @@ export async function upsertUtmParameters({
         prisma.utmSource.create({
           data: { id: createId({ prefix: "utm_src_" }), name: utm_source!, projectId },
         }),
+      touch: () =>
+        prisma.utmSource.update({
+          where: { name_projectId: { name: utm_source!, projectId } },
+          data: { updatedAt: new Date() },
+        }),
     },
     {
       value: utm_medium,
@@ -166,6 +171,11 @@ export async function upsertUtmParameters({
       create: () =>
         prisma.utmMedium.create({
           data: { id: createId({ prefix: "utm_med_" }), name: utm_medium!, projectId },
+        }),
+      touch: () =>
+        prisma.utmMedium.update({
+          where: { name_projectId: { name: utm_medium!, projectId } },
+          data: { updatedAt: new Date() },
         }),
     },
     {
@@ -179,6 +189,11 @@ export async function upsertUtmParameters({
         prisma.utmCampaign.create({
           data: { id: createId({ prefix: "utm_cmp_" }), name: utm_campaign!, projectId },
         }),
+      touch: () =>
+        prisma.utmCampaign.update({
+          where: { name_projectId: { name: utm_campaign!, projectId } },
+          data: { updatedAt: new Date() },
+        }),
     },
     {
       value: utm_term,
@@ -190,6 +205,11 @@ export async function upsertUtmParameters({
       create: () =>
         prisma.utmTerm.create({
           data: { id: createId({ prefix: "utm_trm_" }), name: utm_term!, projectId },
+        }),
+      touch: () =>
+        prisma.utmTerm.update({
+          where: { name_projectId: { name: utm_term!, projectId } },
+          data: { updatedAt: new Date() },
         }),
     },
     {
@@ -203,16 +223,35 @@ export async function upsertUtmParameters({
         prisma.utmContent.create({
           data: { id: createId({ prefix: "utm_cnt_" }), name: utm_content!, projectId },
         }),
+      touch: () =>
+        prisma.utmContent.update({
+          where: { name_projectId: { name: utm_content!, projectId } },
+          data: { updatedAt: new Date() },
+        }),
     },
   ].filter((c) => Boolean(c.value));
 
   if (candidates.length === 0) return;
 
   const existence = await Promise.allSettled(candidates.map((c) => c.exists()));
-  const toCreate = candidates.filter((_, idx) => {
+
+  const toCreate: typeof candidates = [];
+  const toTouch: typeof candidates = [];
+
+  candidates.forEach((candidate, idx) => {
     const res = existence[idx];
-    return res.status === "fulfilled" ? !res.value : true;
+    const exists = res.status === "fulfilled" && res.value;
+    if (exists) {
+      toTouch.push(candidate);
+    } else {
+      toCreate.push(candidate);
+    }
   });
+
+  // Touch updatedAt on existing values so they surface in "last used" sort
+  if (toTouch.length > 0) {
+    await Promise.allSettled(toTouch.map((c) => c.touch()));
+  }
 
   if (toCreate.length === 0) return;
 

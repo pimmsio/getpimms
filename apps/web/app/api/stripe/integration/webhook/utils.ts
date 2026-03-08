@@ -525,3 +525,197 @@ async function recordSaleFromCheckout({
 
   return `Sale recorded for customer ${customer.id} with invoice ID ${invoiceId}`;
 }
+
+/**
+ * Records a sale from a Stripe PaymentIntent (for platforms like Podia that
+ * use the PaymentIntents API directly instead of Checkout Sessions).
+ */
+export async function recordStripePaymentIntentSale({
+  paymentIntent,
+  workspaceId,
+  stripeAccountId,
+  stripeCustomerId,
+  stripeCustomerName,
+  stripeCustomerEmail,
+  clickEvent,
+  existingCustomer,
+}: {
+  paymentIntent: Stripe.PaymentIntent;
+  workspaceId: string;
+  stripeAccountId: string;
+  stripeCustomerId: string | null;
+  stripeCustomerName: string | null;
+  stripeCustomerEmail: string | null;
+  clickEvent: z.infer<typeof clickEventSchemaTB>;
+  existingCustomer: Customer | null;
+}) {
+  console.log("[Stripe PI Sale] Recording sale from payment intent", {
+    workspaceId,
+    paymentIntentId: paymentIntent.id,
+    amount: paymentIntent.amount_received,
+    currency: paymentIntent.currency,
+  });
+
+  if (!existingCustomer) {
+    existingCustomer = await prisma.customer.findFirst({
+      where: {
+        projectId: workspaceId,
+        OR: [
+          { externalId: clickEvent.click_id },
+          ...(stripeCustomerEmail
+            ? [{ externalId: stripeCustomerEmail }]
+            : []),
+        ],
+      },
+    });
+  }
+
+  const { anonymousId, totalClicks } =
+    await computeAnonymousCustomerFields(clickEvent);
+
+  // TODO: if both stripeCustomerId and stripeCustomerEmail are null,
+  // externalId will be null. Podia always creates a Stripe customer first so
+  // this is safe for now, but a fallback to clickEvent.click_id should be added.
+  const customerPayload = {
+    name: stripeCustomerName,
+    email: stripeCustomerEmail,
+    externalId: stripeCustomerId || stripeCustomerEmail,
+    projectId: workspaceId,
+    projectConnectId: stripeAccountId,
+    stripeCustomerId,
+    clickId: clickEvent.click_id,
+    linkId: clickEvent.link_id,
+    lastActivityLinkId: clickEvent.link_id,
+    lastActivityType: "lead",
+    country: clickEvent.country,
+    clickedAt: new Date(clickEvent.timestamp + "Z"),
+    anonymousId,
+    totalClicks,
+    lastEventAt: new Date(),
+  };
+
+  let customer: Customer;
+  if (existingCustomer) {
+    customer = await prisma.customer.update({
+      where: { id: existingCustomer.id },
+      data: customerPayload,
+    });
+  } else {
+    customer = await prisma.customer.create({
+      data: { id: createId({ prefix: "cus_" }), ...customerPayload },
+    });
+  }
+
+  const { timestamp, ...clickRest } = clickEvent;
+  const leadEvent: z.infer<typeof leadEventSchemaTB> = {
+    ...clickRest,
+    event_id: nanoid(16),
+    event_name: "Register",
+    customer_id: customer.id,
+    metadata: "",
+  };
+
+  if (!existingCustomer) {
+    await recordLead(leadEvent);
+  }
+
+  // Dedup by payment_intent.id (PaymentIntents have no invoiceId)
+  const dedupKey = `pimms_sale_events:pi:${paymentIntent.id}`;
+  const ok = await redis.set(dedupKey, 1, { ex: 60 * 60 * 24 * 7, nx: true });
+  if (!ok) {
+    return `PaymentIntent ${paymentIntent.id} already processed, skipping...`;
+  }
+
+  if (paymentIntent.amount_received === 0) {
+    return `PaymentIntent ${paymentIntent.id} amount is 0, skipping...`;
+  }
+
+  let saleAmount = paymentIntent.amount_received;
+  let saleCurrency = paymentIntent.currency;
+
+  if (saleCurrency && saleCurrency !== "usd" && saleAmount) {
+    const { currency: convertedCurrency, amount: convertedAmount } =
+      await convertCurrency({ currency: saleCurrency, amount: saleAmount });
+    saleCurrency = convertedCurrency;
+    saleAmount = convertedAmount;
+  }
+
+  const linkId = clickEvent.link_id;
+  const eventId = nanoid(16);
+  const saleData = {
+    ...leadEvent,
+    event_id: eventId,
+    event_name: "Purchase",
+    payment_processor: "stripe",
+    amount: saleAmount,
+    currency: saleCurrency,
+    invoice_id: "",
+    metadata: JSON.stringify({ paymentIntent }),
+  };
+
+  const link = await prisma.link.findUnique({ where: { id: linkId } });
+
+  const [_sale, linkUpdated, workspace] = await Promise.all([
+    recordSale(saleData),
+
+    link &&
+      prisma.link.update({
+        where: { id: link.id },
+        data: {
+          ...(!existingCustomer && { leads: { increment: 1 } }),
+          sales: { increment: 1 },
+          saleAmount: { increment: saleAmount },
+        },
+        include: includeTags,
+      }),
+
+    prisma.project.update({
+      where: { id: customer.projectId },
+      data: {
+        usage: { increment: existingCustomer ? 1 : 2 },
+        salesUsage: { increment: saleAmount },
+      },
+    }),
+  ]);
+
+  waitUntil(
+    (async () => {
+      await prisma.customer.update({
+        where: { id: customer.id },
+        data: {
+          hotScore: await computeCustomerHotScore(customer.id, workspaceId),
+          lastHotScoreAt: new Date(),
+          lastEventAt: new Date(),
+          lastActivityLinkId: linkId,
+          lastActivityType: "sale",
+        },
+      });
+
+      if (!existingCustomer) {
+        await sendWorkspaceWebhook({
+          trigger: "lead.created",
+          workspace,
+          data: transformLeadEventData({
+            ...clickEvent,
+            eventName: "Payment intent succeeded",
+            link: linkUpdated,
+            customer,
+          }),
+        });
+      }
+
+      await sendWorkspaceWebhook({
+        trigger: "sale.created",
+        workspace,
+        data: transformSaleEventData({
+          ...saleData,
+          clickedAt: customer.clickedAt || customer.createdAt,
+          link: linkUpdated,
+          customer,
+        }),
+      });
+    })(),
+  );
+
+  return `Sale recorded for customer ${customer.id} from PaymentIntent ${paymentIntent.id}`;
+}

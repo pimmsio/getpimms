@@ -7,11 +7,13 @@ import { checkoutSessionCompleted } from "./checkout-session-completed";
 import { customerCreated } from "./customer-created";
 import { customerUpdated } from "./customer-updated";
 import { invoicePaid } from "./invoice-paid";
+import { paymentIntentSucceeded } from "./payment-intent-succeeded";
 
 const relevantEvents = new Set([
   "customer.created",
   "customer.updated",
   "checkout.session.completed",
+  "payment_intent.succeeded",
   "invoice.paid",
   "charge.refunded",
   "account.application.deauthorized",
@@ -68,6 +70,9 @@ export const POST = withAxiom(async (req: Request) => {
       break;
     case "checkout.session.completed":
       response = await checkoutSessionCompleted(event);
+      break;
+    case "payment_intent.succeeded":
+      response = await paymentIntentSucceeded(event);
       break;
     case "invoice.paid":
       response = await invoicePaid(event);

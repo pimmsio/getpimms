@@ -22,7 +22,9 @@ export function UtmTemplateSelect({
   const [search, setSearch] = useState("");
 
   const { data: templates, isLoading, mutate } = useSWR<UtmTemplateWithUserProps[]>(
-    workspaceId ? `/api/utm?workspaceId=${workspaceId}` : null,
+    workspaceId
+      ? `/api/utm?workspaceId=${workspaceId}&sortBy=updatedAt&sortOrder=desc`
+      : null,
     fetcher,
     {
       dedupingInterval: 60000,

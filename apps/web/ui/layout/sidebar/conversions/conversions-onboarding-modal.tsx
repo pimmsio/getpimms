@@ -5,6 +5,7 @@ import { useOnboardingPreferences } from "@/lib/swr/use-onboarding-preferences";
 import { X } from "@/ui/shared/icons";
 import { CustomSetupSupportContent } from "@/ui/onboarding/custom-setup-support-modal";
 import {
+  EXCLUDED_PROVIDER_IDS,
   canonicalizeProviderId,
   isProviderCompleted,
 } from "@/ui/onboarding/canonical-provider-id";
@@ -53,15 +54,7 @@ import { SystemeioOnboardingWizard } from "@/ui/onboarding/integrations/systemei
 import { TallyOnboardingWizard } from "@/ui/onboarding/integrations/tally-onboarding-wizard";
 import { WebflowOnboardingWizard } from "@/ui/onboarding/integrations/webflow-onboarding-wizard";
 
-const EXCLUDED_PROVIDER_IDS = new Set<ProviderId>([
-  // Temporarily disabled (keep consistent with Today onboarding list).
-  "hubspotMeetings",
-  "lemcal",
-  "lovable",
-  "shopify",
-  "shopifyPayments",
-  "typeform",
-]);
+// EXCLUDED_PROVIDER_IDS imported from canonical-provider-id.ts
 
 type SetupCategory =
   | "leadMagnet"

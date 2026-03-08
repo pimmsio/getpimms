@@ -1,12 +1,33 @@
 "use client";
 
-import { CompleteForm } from "@/ui/onboarding/complete-form";
-import { DeepLinksForm } from "@/ui/onboarding/deeplinks-form";
 import { OnboardingModalWrapper } from "@/ui/onboarding/onboarding-modal-wrapper";
+import { TechStackForm } from "@/ui/onboarding/tech-stack-form";
 import { TrackingFamiliarityForm } from "@/ui/onboarding/tracking-familiarity-form";
 import { TrackingForm } from "@/ui/onboarding/tracking-form";
 import { UtmForm } from "@/ui/onboarding/utm-form";
 import { useSearchParams } from "next/navigation";
+
+const TOTAL_STEPS = 4;
+
+function StepLabel({ step }: { step: number }) {
+  return (
+    <div className="mb-2 text-xs font-medium text-neutral-500">
+      Step {step} of {TOTAL_STEPS}
+    </div>
+  );
+}
+
+function ProgressBar({ step }: { step: number }) {
+  const pct = (step / TOTAL_STEPS) * 100;
+  return (
+    <div className="mb-4 h-1 w-full overflow-hidden rounded-full bg-neutral-100">
+      <div
+        className="h-full rounded-full bg-neutral-900 transition-all duration-300"
+        style={{ width: `${pct}%` }}
+      />
+    </div>
+  );
+}
 
 export function OnboardingOverlay() {
   const searchParams = useSearchParams();
@@ -21,104 +42,89 @@ export function OnboardingOverlay() {
       case "tracking-familiarity":
         return (
           <div className="flex w-full flex-col items-center">
-            <div className="mb-2 text-xs font-medium text-neutral-500">
-              Step 1 of 5
-            </div>
+            <ProgressBar step={1} />
+            <StepLabel step={1} />
             <h1 className="mb-2 text-center text-2xl font-semibold text-neutral-900">
-              Quick vibe check: how “tracking-y” are you?
+              What brings you to Pimms?
             </h1>
-            <div className="mb-6" />
+            <p className="mb-6 text-center text-sm text-neutral-600">
+              Select all that apply — this helps us personalize your experience.
+            </p>
             <TrackingFamiliarityForm />
-          </div>
-        );
-      case "deeplinks":
-        return (
-          <div className="flex w-full flex-col items-center">
-            <div className="mb-2 text-xs font-medium text-neutral-500">
-              Step 2 of 5
-            </div>
-            <div className="w-full">
-              <div className="mb-6">
-                <div className="text-sm font-medium text-neutral-600">
-                  Mobile Deep Links
-                </div>
-                <h1 className="mt-1 text-2xl font-semibold text-neutral-900">
-                  Opens the official app
-                </h1>
-                <div className="mt-2 text-sm text-neutral-600">
-                  On mobile, your Pimms link opens the right app (ex: YouTube →
-                  YouTube app) — fewer drop‑offs.
-                </div>
-              </div>
-              <DeepLinksForm />
-            </div>
           </div>
         );
       case "tracking":
         return (
           <div className="flex w-full flex-col items-center">
-            <div className="mb-2 text-xs font-medium text-neutral-500">
-              Step 3 of 5
-            </div>
+            <ProgressBar step={2} />
+            <StepLabel step={2} />
             <div className="w-full">
               <div className="mb-6">
-                <div className="text-sm font-medium text-neutral-600">
-                  Tracking
-                </div>
-                <h1 className="mt-1 text-2xl font-semibold text-neutral-900">
-                  Capture leads & conversion paths
+                <h1 className="text-2xl font-semibold text-neutral-900">
+                  What do you want to track?
                 </h1>
-                <div className="mt-3 space-y-1 text-sm text-neutral-600">
-                  <div>Collect leads from forms, bookings, payments.</div>
-                  <div>
-                    Understand the path to conversion: content consumed, clicks,
-                    opt-in, payments.
-                  </div>
-                  <div>
-                    Contact activity shows live updates and scoring so you focus on
-                    contacts most likely to convert.
-                  </div>
+                <div className="mt-2 text-sm text-neutral-600">
+                  Pick the conversions that matter most to you.
                 </div>
               </div>
               <TrackingForm />
             </div>
           </div>
         );
-      case "utm":
-      case "utm-conversion":
+      case "tech-stack":
         return (
           <div className="flex w-full flex-col items-center">
-            <div className="mb-2 text-xs font-medium text-neutral-500">
-              Step 4 of 5
-            </div>
+            <ProgressBar step={3} />
+            <StepLabel step={3} />
             <div className="w-full">
               <div className="mb-6">
-                <div className="text-sm font-medium text-neutral-600">UTM</div>
-                <h1 className="mt-1 text-2xl font-semibold text-neutral-900">
-                  Split traffic. Organize links. Learn faster.
+                <h1 className="text-2xl font-semibold text-neutral-900">
+                  What's your tech stack?
                 </h1>
-                <div className="mt-3 space-y-1 text-sm text-neutral-600">
-                  <div>
-                    UTMs help you compare campaigns fast—and Pimms makes them
-                    easy to create consistently.
-                  </div>
+                <div className="mt-2 text-sm text-neutral-600">
+                  Select the tools and platforms you use — we'll show you
+                  personalized setup guides.
+                </div>
+              </div>
+              <TechStackForm />
+            </div>
+          </div>
+        );
+      case "campaign-tracking":
+        return (
+          <div className="flex w-full flex-col items-center">
+            <ProgressBar step={4} />
+            <StepLabel step={4} />
+            <div className="w-full">
+              <div className="mb-6">
+                <h1 className="text-2xl font-semibold text-neutral-900">
+                  How do you track campaigns today?
+                </h1>
+                <div className="mt-2 text-sm text-neutral-600">
+                  No wrong answer — this helps us suggest the right features for
+                  you.
                 </div>
               </div>
               <UtmForm />
             </div>
           </div>
         );
+      // Legacy steps: redirect to the new flow start if somehow reached
+      case "deeplinks":
+      case "utm":
+      case "utm-conversion":
       case "complete":
         return (
           <div className="flex w-full flex-col items-center">
-            <div className="mb-2 text-xs font-medium text-neutral-500">
-              Step 5 of 5
-            </div>
+            <ProgressBar step={1} />
+            <StepLabel step={1} />
             <h1 className="mb-2 text-center text-2xl font-semibold text-neutral-900">
-              You’re in. Let’s ship links.
+              What brings you to Pimms?
             </h1>
-            <div className="mb-6" />
-            <CompleteForm />
+            <p className="mb-6 text-center text-sm text-neutral-600">
+              Select all that apply — this helps us personalize your experience.
+            </p>
+            <TrackingFamiliarityForm />
           </div>
         );
       default:
@@ -128,7 +134,6 @@ export function OnboardingOverlay() {
 
   const stepContent = renderStep();
 
-  // Don't render modal if step content is null (unknown step)
   if (!stepContent) {
     return null;
   }

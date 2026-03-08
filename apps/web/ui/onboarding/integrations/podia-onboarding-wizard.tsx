@@ -115,7 +115,7 @@ export function PodiaOnboardingWizard({
 
     setCreatingThankYou(true);
     try {
-      const dest = "https://www.google.com/";
+      const dest = "https://www.podia.com/";
       const key = `${nanoid(8)}/thankyou`;
       const res = await fetch(
         `/api/links?workspaceId=${encodeURIComponent(workspaceId)}`,
@@ -300,7 +300,7 @@ export function PodiaOnboardingWizard({
         content: (
           <InstallScriptStep
             title="Add the Pimms detection script"
-            description="Copy this script and paste it into your Podia site: Settings → Website → Website tracking code. It detects thank-you page visits and fires a conversion event."
+            description="Copy this script and paste it into your Podia site: Settings → Analytics → Third Party Code → Website tracking code."
             info={
               thankYouLink?.shortLink
                 ? `Tracking uses this short link: ${thankYouLink.shortLink}`

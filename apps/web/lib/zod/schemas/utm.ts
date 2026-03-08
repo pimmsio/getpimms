@@ -44,6 +44,19 @@ export const createUTMTemplateBodySchema = z.object({
 
 export const updateUTMTemplateBodySchema = createUTMTemplateBodySchema;
 
+export const getUtmTemplatesQuerySchema = z.object({
+  sortBy: z
+    .enum(["name", "createdAt", "updatedAt"])
+    .optional()
+    .default("name")
+    .describe("The field to sort the templates by."),
+  sortOrder: z
+    .enum(["asc", "desc"])
+    .optional()
+    .default("asc")
+    .describe("The order to sort the templates by."),
+});
+
 export const utmTagsSchema = z.object({
   utm_source: z
     .string()

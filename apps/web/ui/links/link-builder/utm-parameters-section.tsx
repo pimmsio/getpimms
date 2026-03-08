@@ -63,9 +63,11 @@ export function UTMParametersSection({
     null,
   );
 
-  // Fetch templates
+  // Fetch templates sorted by last usage
   const { data: templates } = useSWR<UtmTemplateWithUserProps[]>(
-    workspaceId ? `/api/utm?workspaceId=${workspaceId}` : null,
+    workspaceId
+      ? `/api/utm?workspaceId=${workspaceId}&sortBy=updatedAt&sortOrder=desc`
+      : null,
     fetcher,
     {
       dedupingInterval: 60000,
@@ -107,8 +109,13 @@ export function UTMParametersSection({
       if (selectedTemplate.utm_term) {
         setValue("utm_term", selectedTemplate.utm_term, { shouldDirty: true });
       }
+
+      // Track last usage so templates sort by most recently used
+      fetch(`/api/utm/${selectedTemplate.id}/touch?workspaceId=${workspaceId}`, {
+        method: "POST",
+      }).catch(() => {});
     }
-  }, [selectedTemplate, setValue]);
+  }, [selectedTemplate, setValue, workspaceId]);
 
   const handleChange = (key: string, value: string) => {
     const normalized = value ? normalizeUtmValue(value, conventionOptions) : "";

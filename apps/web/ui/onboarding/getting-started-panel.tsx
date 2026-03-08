@@ -6,7 +6,7 @@ import useUsers from "@/lib/swr/use-users";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { UtmTemplateWithUserProps } from "@/lib/types";
 import { PROVIDERS, getConversionProviderDisplayName } from "@/ui/layout/sidebar/conversions/conversions-onboarding-modal";
-import { canonicalizeProviderId, isProviderCompleted } from "@/ui/onboarding/canonical-provider-id";
+import { EXCLUDED_PROVIDER_IDS, canonicalizeProviderId, isProviderCompleted } from "@/ui/onboarding/canonical-provider-id";
 import { CheckCircleFill } from "@/ui/shared/icons";
 import { ModalContext } from "@/ui/modals/modal-provider";
 import { ArrowRight, CircleDotted } from "@dub/ui/icons";
@@ -57,15 +57,7 @@ const ONBOARDING_VIDEOS: OnboardingVideo[] = [
   },
 ];
 
-const EXCLUDED_PROVIDER_IDS = new Set([
-  // Temporarily disabled
-  "hubspotMeetings",
-  "lemcal",
-  "lovable",
-  "shopify",
-  "shopifyPayments",
-  "typeform",
-]);
+// EXCLUDED_PROVIDER_IDS imported from canonical-provider-id.ts
 
 export function GettingStartedPanel() {
   const { setShowLinkBuilder } = useContext(ModalContext);
@@ -82,7 +74,7 @@ export function GettingStartedPanel() {
     ignoreParams: true,
   });
 
-  const { completedProviderIds, startedProviderIds } = useOnboardingPreferences();
+  const { providerIds, completedProviderIds, startedProviderIds } = useOnboardingPreferences();
 
   const { users, loading: usersLoading } = useUsers();
   const { users: invites, loading: invitesLoading } = useUsers({
@@ -141,12 +133,15 @@ export function GettingStartedPanel() {
   );
 
   const resolvedTrackingProviderIds = useMemo(() => {
+    const META_IDS = new Set(["leadMagnet", "thankyou"]);
     const raw = new Set([
+      ...(providerIds || []),
       ...(startedProviderIdsList || []),
       ...(completedProviderIds || []),
     ]);
     const resolved: string[] = [];
     for (const id of raw) {
+      if (META_IDS.has(id)) continue;
       if (PROVIDERS.some((p) => p.id === id)) {
         resolved.push(id);
         continue;
@@ -166,7 +161,7 @@ export function GettingStartedPanel() {
       }
     }
     return Array.from(byCanonical.values());
-  }, [completedProviderIds, startedProviderIdsList]);
+  }, [providerIds, completedProviderIds, startedProviderIdsList]);
 
   const { data: videoProgress } = useSWR<{ watched: string[] }>(
     "/api/onboarding-videos",

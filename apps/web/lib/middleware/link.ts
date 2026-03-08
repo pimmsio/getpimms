@@ -259,8 +259,14 @@ export default async function LinkMiddleware(
   if (key.toLowerCase().endsWith("/thankyou")) {
     console.log("TY link", key);
 
+    const pimmsRedirect = req.nextUrl.searchParams.get("pimms_redirect") || "";
+    const rewriteUrl = new URL(`/api/thankyou?linkId=${linkId}`, req.url);
+    if (pimmsRedirect) {
+      rewriteUrl.searchParams.set("pimms_redirect", pimmsRedirect);
+    }
+
     return createResponseWithCookies(
-      NextResponse.rewrite(new URL(`/api/thankyou?linkId=${linkId}`, req.url), {
+      NextResponse.rewrite(rewriteUrl, {
         headers: {
           ...DUB_HEADERS,
           "X-Robots-Tag": "googlebot: noindex",

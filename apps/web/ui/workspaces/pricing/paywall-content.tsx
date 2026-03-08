@@ -96,8 +96,10 @@ const PAID_PLAN_IDS: PaidPlanId[] = ["tiny", "solo", "pro", "business"];
 
 export function PaywallContent({
   className,
+  hideCurrentPlan,
 }: {
   className?: string;
+  hideCurrentPlan?: boolean;
 }) {
   const {
     id: workspaceId,
@@ -174,14 +176,20 @@ export function PaywallContent({
   return (
     <div className={cn("w-full", className)}>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="text-sm text-neutral-500">
-          You are currently on the{" "}
-          <span className="font-medium text-neutral-900 capitalize">
-            {currentPlan}
-          </span>{" "}
-          plan
-        </div>
-        <CurrencyToggle value={currency} onChange={handleCurrencyChange} />
+        {!hideCurrentPlan && (
+          <div className="text-sm text-neutral-500">
+            You are currently on the{" "}
+            <span className="font-medium text-neutral-900 capitalize">
+              {currentPlan}
+            </span>{" "}
+            plan
+          </div>
+        )}
+        <CurrencyToggle
+          value={currency}
+          onChange={handleCurrencyChange}
+          className={hideCurrentPlan ? "ml-auto" : undefined}
+        />
       </div>
 
       <div className="mt-4">

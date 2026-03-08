@@ -30,10 +30,16 @@ function pushLink(
 
   // processLink rejects bulk links with proxy + external image (!isStored).
   // Strip image/video but keep proxy, title, description for custom OG text.
-  const { image: _image, video: _video, ...safeFormData } = formData;
+  const { image: _image, video: _video, tags, folderId, ...safeFormData } =
+    formData;
 
   linksPayload.push({
     ...safeFormData,
+    tagIds: tags?.map(({ id }) => id) ?? [],
+    folderId: folderId === "unsorted" ? null : folderId,
+    expiredUrl: safeFormData.expiredUrl || null,
+    ios: safeFormData.ios || null,
+    android: safeFormData.android || null,
     url: link.url,
     key,
     domain: link.domain,

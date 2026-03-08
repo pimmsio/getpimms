@@ -1,7 +1,10 @@
 export const ONBOARDING_STEPS = [
   "tracking-familiarity",
-  "deeplinks",
   "tracking",
+  "tech-stack",
+  "campaign-tracking",
+  // Legacy steps kept for backward compatibility with existing users mid-onboarding
+  "deeplinks",
   "utm",
   "utm-conversion",
   "complete",

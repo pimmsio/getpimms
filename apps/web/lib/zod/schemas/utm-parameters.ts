@@ -7,7 +7,7 @@ export const UTM_PARAMETERS_MAX_PAGE_SIZE = 100;
 const getUtmParameterQuerySchemaBase = z
   .object({
     sortBy: z
-      .enum(["name", "createdAt"])
+      .enum(["name", "createdAt", "updatedAt"])
       .optional()
       .default("name")
       .describe("The field to sort the parameters by."),

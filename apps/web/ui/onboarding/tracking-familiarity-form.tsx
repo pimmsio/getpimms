@@ -1,33 +1,51 @@
 "use client";
 
 import { AppButton } from "@/ui/components/controls/app-button";
-import { AppTextarea } from "@/ui/components/controls/app-textarea";
-import { useMediaQuery } from "@dub/ui";
-import useWorkspace from "@/lib/swr/use-workspace";
+import { useWorkspaceSlug } from "@/lib/hooks/use-workspace-slug";
 import { useOnboardingProgress } from "@/lib/onboarding/use-onboarding-progress";
-import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { saveOnboardingAnswer } from "@/lib/onboarding/save-answer";
+import { MultiChoiceButtons } from "@/ui/onboarding/choice-buttons";
+import { toast } from "sonner";
+
+const USE_CASE_OPTIONS = [
+  { value: "track-leads", label: "Track where my leads come from" },
+  { value: "shorten-brand", label: "Shorten and brand my links" },
+  { value: "replace-tool", label: "Replace Bitly / Rebrandly" },
+  { value: "deep-links", label: "Deep link to mobile apps" },
+  { value: "exploring", label: "Just exploring" },
+] as const;
+
+type UseCase = (typeof USE_CASE_OPTIONS)[number]["value"];
 
 export function TrackingFamiliarityForm() {
   const { continueTo, isLoading } = useOnboardingProgress();
-  const { isMobile } = useMediaQuery();
-  const searchParams = useSearchParams();
-  const { slug: workspaceSlug } = useWorkspace();
-  const slug = workspaceSlug || searchParams.get("workspace") || "";
-  const [answer, setAnswer] = useState("");
+  const slug = useWorkspaceSlug() || "";
+  const [selected, setSelected] = useState<UseCase[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const toggle = (value: string) => {
+    const v = value as UseCase;
+    setSelected((prev) =>
+      prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v],
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!answer.trim()) return;
+    if (selected.length === 0) return;
 
     setIsSubmitting(true);
     try {
-      await saveOnboardingAnswer("trackingFamiliarity", answer, slug);
-      continueTo("deeplinks");
+      await saveOnboardingAnswer(
+        "trackingFamiliarity",
+        { useCases: selected },
+        slug,
+      );
+      continueTo("tracking");
     } catch (error) {
       console.error("Failed to save answer:", error);
+      toast.error("Failed to save your answer. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -35,19 +53,16 @@ export function TrackingFamiliarityForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex w-full flex-col gap-6">
-      <AppTextarea
-        value={answer}
-        onChange={(e) => setAnswer(e.target.value)}
-        placeholder="e.g., I've used Google Analytics, I'm new to tracking, I've used UTM parameters before..."
-        autoFocus={!isMobile}
-        className="min-h-[140px]"
-        rows={6}
-        required
+      <MultiChoiceButtons
+        columns={1}
+        values={selected}
+        onToggle={toggle}
+        options={[...USE_CASE_OPTIONS]}
       />
       <AppButton
         type="submit"
         loading={isSubmitting || isLoading}
-        disabled={!answer.trim()}
+        disabled={selected.length === 0}
         className="w-full"
         variant="primary"
       >

@@ -12,6 +12,7 @@ const bodySchema = z.object({
   providerIds: z.array(z.string().min(1)).optional(),
   completedProviderIds: z.array(z.string().min(1)).optional(),
   startedProviderIds: z.array(startedProviderSchema).optional(),
+  otherMessage: z.string().max(500).optional(),
 });
 
 function keyFor({ userId, workspaceId }: { userId: string; workspaceId: string }) {
@@ -70,10 +71,13 @@ export const GET = withWorkspace(async ({ session, workspace }) => {
     dedupeStarted(startedProviderIdsRaw),
   );
 
+  const otherMessage = typeof stored?.otherMessage === "string" ? stored.otherMessage : "";
+
   return NextResponse.json({
     providerIds: providerIdsRaw,
     completedProviderIds: completedProviderIdsRaw,
     startedProviderIds,
+    otherMessage,
   });
 });
 
@@ -100,10 +104,13 @@ export const POST = withWorkspace(async ({ req, session, workspace }) => {
     dedupeStarted(body.startedProviderIds ?? prevStartedProviderIds),
   ).filter((entry) => !completedSet.has(entry.id));
 
+  const prevOtherMessage = typeof stored?.otherMessage === "string" ? stored.otherMessage : "";
+
   const next = {
     providerIds: body.providerIds ?? prevProviderIds,
     completedProviderIds: nextCompletedProviderIds,
     startedProviderIds: nextStartedProviderIds,
+    otherMessage: body.otherMessage ?? prevOtherMessage,
   };
   await redis.set(key, next);
 

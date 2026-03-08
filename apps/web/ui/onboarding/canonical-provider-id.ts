@@ -39,6 +39,19 @@ export function canonicalizeProviderIds(ids: string[]) {
   return Array.from(new Set((ids || []).map(canonicalizeProviderId)));
 }
 
+/**
+ * Providers temporarily disabled across onboarding UI.
+ * Single source of truth — import this instead of duplicating the set.
+ */
+export const EXCLUDED_PROVIDER_IDS = new Set([
+  "hubspotMeetings",
+  "lemcal",
+  "lovable",
+  "shopify",
+  "shopifyPayments",
+  "typeform",
+]);
+
 export function isProviderCompleted(providerId: string, completedProviderIds: string[]) {
   const canonical = canonicalizeProviderId(providerId);
   return (completedProviderIds || []).some(

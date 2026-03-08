@@ -13,6 +13,7 @@ import { usePlausible } from "next-plausible";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export function UpgradePlanButton({
   plan,
@@ -56,7 +57,7 @@ export function UpgradePlanButton({
 
   const handleUpgrade = async () => {
     if (mode === "lifetime" && !selectedPlan.price.lifetime) {
-      alert("Lifetime is only available for Tiny and Solo plans.");
+      toast.error("Lifetime is only available for Tiny and Solo plans.");
       return;
     }
 
@@ -107,7 +108,7 @@ export function UpgradePlanButton({
         router.push(url);
       }
     } catch (err) {
-      alert(err instanceof Error ? err.message : String(err));
+      toast.error(err instanceof Error ? err.message : String(err));
     } finally {
       setClicked(false);
     }

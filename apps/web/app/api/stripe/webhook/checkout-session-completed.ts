@@ -172,6 +172,8 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
   // in the database for easy identification in future webhook events
   // also update the billingCycleStart to today's date
 
+  const isTrial = checkoutSession.metadata?.trial === "true";
+
   const workspace = await prisma.project.update({
     where: {
       id: workspaceId,
@@ -188,6 +190,10 @@ export async function checkoutSessionCompleted(event: Stripe.Event) {
       foldersLimit: plan.limits.folders!,
       usersLimit: plan.limits.users!,
       salesLimit: plan.limits.sales!,
+      ...(isTrial && {
+        trialUsed: true,
+        trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      }),
     },
     select: {
       users: {

@@ -2,20 +2,22 @@ import { createId } from "@/lib/api/create-id";
 import { DubApiError } from "@/lib/api/errors";
 import { withWorkspace } from "@/lib/auth";
 import { throwIfUtmTemplatesLimitExceeded } from "@/lib/utm/limits";
-import { createUTMTemplateBodySchema } from "@/lib/zod/schemas/utm";
+import { createUTMTemplateBodySchema, getUtmTemplatesQuerySchema } from "@/lib/zod/schemas/utm";
 import { randomBadgeColor } from "@/ui/links/tag-badge";
 import { prisma } from "@dub/prisma";
 import { NextResponse } from "next/server";
 
 // GET /api/utm - get all UTM templates for a workspace
 export const GET = withWorkspace(
-  async ({ workspace, headers }) => {
+  async ({ workspace, headers, searchParams }) => {
+    const { sortBy, sortOrder } = getUtmTemplatesQuerySchema.parse(searchParams);
+
     const templates = await prisma.utmTemplate.findMany({
       where: {
         projectId: workspace.id,
       },
       orderBy: {
-        name: "asc",
+        [sortBy]: sortOrder,
       },
       include: {
         user: true,

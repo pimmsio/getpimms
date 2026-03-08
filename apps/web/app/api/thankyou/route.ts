@@ -9,9 +9,43 @@ import { prismaEdge } from "@dub/prisma/edge";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
+/**
+ * Validates and returns the pimms_redirect URL if it's a safe absolute URL.
+ * Prevents open-redirect attacks by rejecting non-http(s) schemes.
+ */
+function getValidatedRedirectUrl(raw: string | null): string | null {
+  if (!raw) return null;
+  try {
+    const parsed = new URL(raw);
+    if (parsed.protocol === "https:" || parsed.protocol === "http:") {
+      return parsed.toString();
+    }
+  } catch {
+    // malformed URL
+  }
+  return null;
+}
+
+/**
+ * Appends pimms_redirected=1 to the redirect URL so the client-side detection
+ * script knows the TY redirect already happened and skips re-firing.
+ */
+function withRedirectedFlag(url: string): string {
+  try {
+    const u = new URL(url);
+    u.searchParams.set("pimms_redirected", "1");
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
 export const GET = async (req: Request) => {
   const url = new URL(req.url);
   const linkId = url.searchParams.get("linkId");
+  const pimmsRedirect = getValidatedRedirectUrl(
+    url.searchParams.get("pimms_redirect"),
+  );
 
   console.log("[TY] Thank-you link hit", { linkId });
 
@@ -37,21 +71,24 @@ export const GET = async (req: Request) => {
 
   const isTyLink = (link.key || "").toLowerCase().endsWith("/thankyou");
   if (!isTyLink) {
-    // Safety: never run TY flow for non-TY links.
     console.log("[TY] Not a thank-you link, redirecting", {
       linkId,
       key: link.key,
     });
-    return NextResponse.redirect(link.url || "/", 302);
+    return NextResponse.redirect(
+      withRedirectedFlag(pimmsRedirect || link.url || "/"),
+      302,
+    );
   }
+
+  const redirectTo = pimmsRedirect || link.url || "/";
 
   const anonymousId =
     (await cookies()).get("pimms_anonymous_id")?.value || null;
 
-  // If we can't identify the visitor, we can't attribute — just redirect.
   if (!anonymousId) {
     console.log("[TY] No anonymousId found, cannot attribute", { linkId });
-    return NextResponse.redirect(link.url || "/", 302);
+    return NextResponse.redirect(withRedirectedFlag(redirectTo), 302);
   }
 
   const workspaceId = link.projectId;
@@ -72,7 +109,7 @@ export const GET = async (req: Request) => {
       workspaceId,
       anonymousId: anonymousId.substring(0, 8) + "...",
     });
-    return NextResponse.redirect(link.url || "/", 302);
+    return NextResponse.redirect(withRedirectedFlag(redirectTo), 302);
   }
 
   console.log("[TY] Found lastClick", {
@@ -82,7 +119,6 @@ export const GET = async (req: Request) => {
   });
 
   try {
-    // Reverse order: if webhook arrived first, attempt to process it now.
     const pending = await takeLatestTyPendingWebhook(workspaceId);
     if (pending) {
       console.log("[TY] Found pending webhook, processing", {
@@ -101,7 +137,6 @@ export const GET = async (req: Request) => {
         clickId: lastClick.clickId,
       });
     } else {
-      // Normal order: store a short-lived conversion marker to attach the next webhook.
       console.log("[TY] No pending webhook, storing waiting conversion", {
         clickId: lastClick.clickId,
         linkId: lastClick.linkId,
@@ -122,11 +157,12 @@ export const GET = async (req: Request) => {
       workspaceId,
       clickId: lastClick.clickId,
     });
-  } finally {
-    console.log("[TY] Redirecting to destination URL", {
-      linkId,
-      destinationUrl: link.url,
-    });
-    return NextResponse.redirect(link.url || "/", 302);
   }
+
+  const finalUrl = withRedirectedFlag(redirectTo);
+  console.log("[TY] Redirecting to destination URL", {
+    linkId,
+    destinationUrl: finalUrl,
+  });
+  return NextResponse.redirect(finalUrl, 302);
 };

@@ -153,9 +153,11 @@ export function BulkUTMParametersSection({
     SelectedTemplateInstance[]
   >([]);
 
-  // Fetch templates
+  // Fetch templates sorted by last usage
   const { data: templates } = useSWR<UtmTemplateWithUserProps[]>(
-    workspaceId ? `/api/utm?workspaceId=${workspaceId}` : null,
+    workspaceId
+      ? `/api/utm?workspaceId=${workspaceId}&sortBy=updatedAt&sortOrder=desc`
+      : null,
     fetcher,
     {
       dedupingInterval: 60000,
@@ -246,6 +248,11 @@ export function BulkUTMParametersSection({
         return next;
       });
     }
+
+    // Track last usage so templates sort by most recently used
+    fetch(`/api/utm/${templateId}/touch?workspaceId=${workspaceId}`, {
+      method: "POST",
+    }).catch(() => {});
   };
 
   const handleRemoveTemplate = (instanceId: string) => {

@@ -17,15 +17,21 @@ export function OnboardingCompletionEmail({
   name,
   workspaceName,
   answers,
+  providerIds,
+  otherMessage,
 }: {
   email: string;
   name?: string | null;
   workspaceName: string;
   answers: {
-    trackingFamiliarity?: string;
+    trackingFamiliarity?: string | { useCases?: string[] };
     trackingSetup?: {
       firstGoals?: string[];
     };
+    campaignTracking?: {
+      currentMethod?: string;
+    };
+    // Legacy keys (kept for emails from users who started before the revamp)
     utmConversion?: {
       trackingGoal?: string;
       conversionTypes?: string[];
@@ -40,45 +46,52 @@ export function OnboardingCompletionEmail({
       orgNeeds?: string[];
     };
   };
+  providerIds?: string[];
+  otherMessage?: string;
 }) {
-  const formatUtmConversionAnswers = () => {
-    const utm = answers.utmConversion;
-    if (!utm) return "None";
-    const parts: string[] = [];
-    if (utm.trackingGoal) parts.push(`Tracking goal: ${utm.trackingGoal}`);
-    if (utm.linkVolume) parts.push(`Link volume: ${utm.linkVolume}`);
-    if (utm.conversionTypes && utm.conversionTypes.length > 0) {
-      parts.push(`Conversions: ${utm.conversionTypes.join(", ")}`);
-    }
-    return parts.length > 0 ? parts.join("\n") : "None";
-  };
-
-  const formatDeepLinksAnswers = () => {
-    const dl = answers.deepLinks;
-    if (!dl) return "None";
-    const parts: string[] = [];
-    if (dl.wantsDeepLinks) parts.push(`Wants deep links: ${dl.wantsDeepLinks}`);
-    return parts.length > 0 ? parts.join("\n") : "None";
+  const formatUseCases = () => {
+    const tf = answers.trackingFamiliarity;
+    if (!tf) return "Not provided";
+    if (typeof tf === "string") return tf;
+    if (tf.useCases && tf.useCases.length > 0) return tf.useCases.join(", ");
+    return "Not provided";
   };
 
   const formatTrackingSetupAnswers = () => {
     const t = answers.trackingSetup;
     if (!t) return "None";
     return t.firstGoals && t.firstGoals.length > 0
-      ? `First capture: ${t.firstGoals.join(", ")}`
+      ? t.firstGoals.join(", ")
       : "None";
   };
 
-  const formatUtmClicksAnswers = () => {
-    const u = answers.utmClicks;
-    if (!u) return "None";
-    const parts: string[] = [];
-    if (u.utmComfort) parts.push(`UTM usage: ${u.utmComfort}`);
-    if (u.linksPerMonth) parts.push(`Links / month: ${u.linksPerMonth}`);
-    if (u.orgNeeds && u.orgNeeds.length > 0) {
-      parts.push(`Org needs: ${u.orgNeeds.join(", ")}`);
+  const formatCampaignTracking = () => {
+    const ct = answers.campaignTracking;
+    if (!ct?.currentMethod) {
+      // Fallback to legacy utmClicks if present
+      const u = answers.utmClicks;
+      if (!u) return "None";
+      const parts: string[] = [];
+      if (u.utmComfort) parts.push(`UTM usage: ${u.utmComfort}`);
+      if (u.linksPerMonth) parts.push(`Links / month: ${u.linksPerMonth}`);
+      if (u.orgNeeds && u.orgNeeds.length > 0) {
+        parts.push(`Org needs: ${u.orgNeeds.join(", ")}`);
+      }
+      return parts.length > 0 ? parts.join("\n") : "None";
     }
-    return parts.length > 0 ? parts.join("\n") : "None";
+    return ct.currentMethod;
+  };
+
+  const formatProviderIds = () => {
+    if (!providerIds || providerIds.length === 0) return "None selected";
+    const list = providerIds.filter((id) => id !== "other").join(", ");
+    if (otherMessage) {
+      return list ? `${list}\nOther: "${otherMessage}"` : `Other: "${otherMessage}"`;
+    }
+    if (providerIds.includes("other")) {
+      return list ? `${list}, Other (no details provided)` : "Other (no details provided)";
+    }
+    return list || "None selected";
   };
 
   return (
@@ -92,7 +105,7 @@ export function OnboardingCompletionEmail({
               <Img src={DUB_WORDMARK} height="14" alt="PIMMS" className="my-0" />
             </Section>
             <Heading className="mx-0 my-7 p-0 text-lg font-medium text-black">
-              🎉 New User Completed Onboarding
+              New User Completed Onboarding
             </Heading>
             <Text className="text-sm leading-6 text-black">
               <span className="font-semibold">{name || email}</span> (
@@ -102,34 +115,16 @@ export function OnboardingCompletionEmail({
 
             <Section className="my-6">
               <Heading className="mx-0 my-4 p-0 text-base font-medium text-black">
-                Tracking Familiarity
+                What brings them to Pimms
               </Heading>
               <Text className="text-sm leading-6 text-black whitespace-pre-wrap">
-                {answers.trackingFamiliarity || "Not provided"}
+                {formatUseCases()}
               </Text>
             </Section>
 
             <Section className="my-6">
               <Heading className="mx-0 my-4 p-0 text-base font-medium text-black">
-                Quick Check-in
-              </Heading>
-              <Text className="text-sm leading-6 text-black whitespace-pre-wrap">
-                {formatUtmConversionAnswers()}
-              </Text>
-            </Section>
-
-            <Section className="my-6">
-              <Heading className="mx-0 my-4 p-0 text-base font-medium text-black">
-                Deep Links
-              </Heading>
-              <Text className="text-sm leading-6 text-black whitespace-pre-wrap">
-                {formatDeepLinksAnswers()}
-              </Text>
-            </Section>
-
-            <Section className="my-6">
-              <Heading className="mx-0 my-4 p-0 text-base font-medium text-black">
-                Tracking Setup
+                What they want to track
               </Heading>
               <Text className="text-sm leading-6 text-black whitespace-pre-wrap">
                 {formatTrackingSetupAnswers()}
@@ -138,10 +133,19 @@ export function OnboardingCompletionEmail({
 
             <Section className="my-6">
               <Heading className="mx-0 my-4 p-0 text-base font-medium text-black">
-                UTM Setup
+                Tech stack (integrations)
               </Heading>
               <Text className="text-sm leading-6 text-black whitespace-pre-wrap">
-                {formatUtmClicksAnswers()}
+                {formatProviderIds()}
+              </Text>
+            </Section>
+
+            <Section className="my-6">
+              <Heading className="mx-0 my-4 p-0 text-base font-medium text-black">
+                How they track campaigns today
+              </Heading>
+              <Text className="text-sm leading-6 text-black whitespace-pre-wrap">
+                {formatCampaignTracking()}
               </Text>
             </Section>
           </Container>

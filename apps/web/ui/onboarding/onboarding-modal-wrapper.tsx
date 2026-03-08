@@ -18,11 +18,9 @@ export function OnboardingModalWrapper({ children }: PropsWithChildren) {
   }, []);
 
   const handleClose = () => {
-    // Prevent closing during onboarding
     return;
   };
 
-  // Don't render modal if there's no content
   if (!children) {
     return null;
   }
@@ -36,7 +34,9 @@ export function OnboardingModalWrapper({ children }: PropsWithChildren) {
       className="max-w-2xl max-h-[85vh]"
       overlayClassName="onboarding-glass-overlay"
     >
-      <div className="bg-white rounded-2xl p-6 sm:p-8">{children}</div>
+      <div className="bg-white rounded-2xl p-6 sm:p-8">
+        {children}
+      </div>
     </Modal>
   );
 }

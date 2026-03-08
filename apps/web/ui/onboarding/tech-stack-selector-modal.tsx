@@ -6,24 +6,16 @@ import {
   PROVIDERS,
   getConversionProviderDisplayName,
 } from "@/ui/layout/sidebar/conversions/conversions-onboarding-modal";
-import { canonicalizeProviderId } from "@/ui/onboarding/canonical-provider-id";
+import { EXCLUDED_PROVIDER_IDS, canonicalizeProviderId } from "@/ui/onboarding/canonical-provider-id";
 import { Modal } from "@dub/ui";
 import { LoadingSpinner } from "@dub/ui/icons";
 import { cn } from "@dub/utils";
 import { Check, ChevronLeft } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type Step = "chooseCategory" | "chooseProviders";
 
-const EXCLUDED_PROVIDER_IDS = new Set([
-  // Temporarily disabled
-  "hubspotMeetings",
-  "lemcal",
-  "lovable",
-  "shopify",
-  "shopifyPayments",
-  "typeform",
-]);
+// EXCLUDED_PROVIDER_IDS imported from canonical-provider-id.ts
 
 function isSelectableProviderId(id: string) {
   // Exclude internal “setup paths” from the stack selector.
@@ -82,6 +74,7 @@ export function TechStackSelector({
   showHeading = true,
   chrome = "default",
   onSavingChange,
+  scrollClassName,
 }: {
   active: boolean;
   onClose?: () => void;
@@ -90,23 +83,32 @@ export function TechStackSelector({
   showHeading?: boolean;
   chrome?: "default" | "none";
   onSavingChange?: (saving: boolean) => void;
+  scrollClassName?: string;
 }) {
-  const { providerIds, setProviderIds } = useOnboardingPreferences();
+  const { providerIds, setProviderIds, otherMessage, setOtherMessage } =
+    useOnboardingPreferences();
 
   const [step, setStep] = useState<Step>("chooseCategory");
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [draftSelected, setDraftSelected] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
+  const [otherSaving, setOtherSaving] = useState(false);
+  const [otherDraft, setOtherDraft] = useState("");
 
   const lastSavedKeyRef = useRef<string>("");
   const latestDraftKeyRef = useRef<string>("");
   const saveTimerRef = useRef<number | null>(null);
+  const otherSaveTimerRef = useRef<number | null>(null);
   const didInitForOpenRef = useRef(false);
 
   useEffect(() => {
     if (!active) {
-      // Allow a fresh init next time it's opened.
       didInitForOpenRef.current = false;
+      if (otherSaveTimerRef.current) {
+        window.clearTimeout(otherSaveTimerRef.current);
+        otherSaveTimerRef.current = null;
+      }
+      setOtherSaving(false);
       return;
     }
     // IMPORTANT: do not reset steps when providerIds changes (autosave),
@@ -135,6 +137,7 @@ export function TechStackSelector({
       .join(",");
     latestDraftKeyRef.current = lastSavedKeyRef.current;
     setSaving(false);
+    setOtherDraft(otherMessage || "");
   }, [active]);
 
   const selectedSet = useMemo(() => new Set(draftSelected), [draftSelected]);
@@ -172,11 +175,12 @@ export function TechStackSelector({
     setSaving(true);
     saveTimerRef.current = window.setTimeout(async () => {
       const saveKey = key;
+      const timeout = window.setTimeout(() => setSaving(false), 5000);
       try {
         await setProviderIds(next);
         lastSavedKeyRef.current = saveKey;
       } finally {
-        // If nothing else changed while saving, we can re-enable dismiss.
+        window.clearTimeout(timeout);
         const canStopSaving = latestDraftKeyRef.current === lastSavedKeyRef.current;
         if (canStopSaving) {
           setSaving(false);
@@ -193,12 +197,11 @@ export function TechStackSelector({
   }, [active, draftSelected, saving, setProviderIds]);
 
   useEffect(() => {
-    onSavingChange?.(saving);
-  }, [onSavingChange, saving]);
+    onSavingChange?.(saving || otherSaving);
+  }, [onSavingChange, saving, otherSaving]);
 
   useEffect(() => {
     if (!active) {
-      // If the selector is hidden by the parent, ensure parent doesn't stay locked.
       onSavingChange?.(false);
     }
   }, [active, onSavingChange]);
@@ -237,6 +240,33 @@ export function TechStackSelector({
     return withOther;
   }, [categoryId]);
 
+  const debounceSaveOtherMessage = useCallback(
+    (msg: string) => {
+      if (otherSaveTimerRef.current) {
+        window.clearTimeout(otherSaveTimerRef.current);
+      }
+      setOtherSaving(true);
+      otherSaveTimerRef.current = window.setTimeout(async () => {
+        try {
+          await setOtherMessage(msg);
+        } finally {
+          otherSaveTimerRef.current = null;
+          setOtherSaving(false);
+        }
+      }, 600);
+    },
+    [setOtherMessage],
+  );
+
+  const handleOtherDraftChange = useCallback(
+    (value: string) => {
+      const clamped = value.slice(0, 500);
+      setOtherDraft(clamped);
+      debounceSaveOtherMessage(clamped);
+    },
+    [debounceSaveOtherMessage],
+  );
+
   const toggleProvider = (id: string) => {
     setDraftSelected((prev) => {
       const next = new Set(prev);
@@ -252,7 +282,13 @@ export function TechStackSelector({
 
       // If user clicked an "Other" option and it was already selected, this is a deselect.
       if (canonicalId === "other") {
-        if (!hadOtherSelected) next.add("other");
+        if (!hadOtherSelected) {
+          next.add("other");
+        } else {
+          // Deselecting "other" -- clear the message
+          setOtherDraft("");
+          debounceSaveOtherMessage("");
+        }
         return Array.from(next);
       }
 
@@ -340,6 +376,7 @@ export function TechStackSelector({
         className={cn(
           "flex-1 overflow-y-auto",
           chrome === "default" ? "px-4 py-4 sm:px-8 sm:py-6" : "py-2",
+          scrollClassName,
         )}
       >
         {chrome === "none" && step === "chooseProviders" ? (
@@ -438,6 +475,22 @@ export function TechStackSelector({
                 );
               })}
             </div>
+
+            {selectedSet.has("other") ? (
+              <div className="mt-3">
+                <textarea
+                  value={otherDraft}
+                  onChange={(e) => handleOtherDraftChange(e.target.value)}
+                  placeholder="Tell us which tool(s) you use..."
+                  maxLength={500}
+                  rows={3}
+                  className="w-full resize-none rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-400 focus:outline-none focus:ring-1 focus:ring-neutral-400"
+                />
+                <p className="mt-1 text-right text-xs text-neutral-400">
+                  {otherDraft.length}/500
+                </p>
+              </div>
+            ) : null}
 
             {providersForCategory.length === 0 ? (
               <div className="mt-4 rounded-lg border border-neutral-200 bg-white p-4 text-sm text-neutral-600">

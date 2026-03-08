@@ -12,6 +12,7 @@ import { useImportBitlyModal } from "@/ui/modals/import-bitly-modal";
 import { useImportCsvModal } from "@/ui/modals/import-csv-modal";
 import { useImportShortModal } from "@/ui/modals/import-short-modal";
 import { usePaywallModal } from "@/ui/modals/paywall-modal";
+import { useProTrialModal } from "@/ui/modals/pro-trial-modal";
 import { useCookies } from "@dub/ui";
 import { DEFAULT_LINK_PROPS, getUrlFromString } from "@dub/utils";
 import { useSession } from "next-auth/react";
@@ -41,6 +42,7 @@ export const ModalContext = createContext<{
   setShowImportRebrandlyModal: Dispatch<SetStateAction<boolean>>;
   setShowImportCsvModal: Dispatch<SetStateAction<boolean>>;
   setShowPaywallModal: Dispatch<SetStateAction<boolean>>;
+  setShowProTrialModal: Dispatch<SetStateAction<boolean>>;
 }>({
   setShowAddWorkspaceModal: () => {},
   setShowAddEditDomainModal: () => {},
@@ -52,6 +54,7 @@ export const ModalContext = createContext<{
   setShowImportRebrandlyModal: () => {},
   setShowImportCsvModal: () => {},
   setShowPaywallModal: () => {},
+  setShowProTrialModal: () => {},
 });
 
 export function ModalProvider({ children }: { children: ReactNode }) {
@@ -111,6 +114,7 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
     useImportRebrandlyModal();
   const { setShowImportCsvModal, ImportCsvModal } = useImportCsvModal();
   const { setShowPaywallModal, PaywallModal } = usePaywallModal();
+  const { setShowProTrialModal, ProTrialModal } = useProTrialModal();
 
   const [hashes, setHashes] = useCookies<SimpleLinkProps[]>(
     "hashes__pimms",
@@ -199,6 +203,7 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
         setShowImportRebrandlyModal,
         setShowImportCsvModal,
         setShowPaywallModal,
+        setShowProTrialModal,
       }}
     >
       <AddWorkspaceModal />
@@ -212,6 +217,7 @@ function ModalProviderClient({ children }: { children: ReactNode }) {
       <ImportRebrandlyModal />
       <ImportCsvModal />
       <PaywallModal />
+      <ProTrialModal />
       {children}
     </ModalContext.Provider>
   );

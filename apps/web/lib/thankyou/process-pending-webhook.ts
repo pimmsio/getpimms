@@ -1,5 +1,5 @@
-import { WebhookError } from "@/lib/webhook/utils";
 import { processStripeCheckoutCompleted } from "./handlers/stripe-checkout-completed";
+import { processStripePaymentIntentCompleted } from "./handlers/stripe-payment-intent-completed";
 import { processCustomerCreatedFromPimmsId } from "@/lib/webhook/customer-created";
 
 /**
@@ -22,6 +22,14 @@ export async function processTyPendingWebhook({
 }): Promise<string> {
   if (provider === "stripe") {
     return await processStripeCheckoutCompleted({
+      clickId,
+      workspaceId,
+      payload,
+    });
+  }
+
+  if (provider === "stripe-payment-intent") {
+    return await processStripePaymentIntentCompleted({
       clickId,
       workspaceId,
       payload,
