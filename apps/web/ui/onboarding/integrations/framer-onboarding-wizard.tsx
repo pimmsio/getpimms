@@ -49,7 +49,7 @@ export function FramerOnboardingWizard({
     reset: resetTestLink,
   } = useCreateOnboardingTestLink({ workspaceId });
 
-  const { waiting, done, start: startWaitingForLead } = useWaitForLinkLead({
+  const { waiting, done } = useWaitForLinkLead({
     workspaceId,
     linkId: created?.id,
   });
@@ -110,7 +110,7 @@ export function FramerOnboardingWizard({
           <ScriptInstallVerifyStep
             title="Verify the scripts are detected"
             description="Paste the URL of a page containing your Framer form. We’ll check it periodically until it’s detected."
-            required={{ detection: true, injectForm: true }}
+            required={{ detection: true, injectForm: "info" }}
             initialUrlPlaceholder="your-site.com/page-with-framer-form"
             autoVerify
             onNext={() => {
@@ -172,7 +172,11 @@ export function FramerOnboardingWizard({
         content: (
           <CreateTestLinkStep
             title="Create a test link (expires in 24h)"
-            description="Paste your page URL (the one with the form). We’ll create a test short link."
+            description={
+              created
+                ? "Test link ready. Open in an incognito tab and submit the form."
+                : "Paste the URL of the page where your form is embedded."
+            }
             urlValue={pageUrl}
             urlPlaceholder="https://your-site.com/form"
             onChangeUrl={setPageUrl}
@@ -189,7 +193,6 @@ export function FramerOnboardingWizard({
             }}
             onOpenCreated={() => {
               wizard.forceGoTo(5);
-              startWaitingForLead();
             }}
             onReset={resetTestLink}
           />
@@ -202,12 +205,14 @@ export function FramerOnboardingWizard({
         content: (
           <WaitForLeadStep
             title="Submit a test form"
-            description="Open the test link in an incognito tab, submit the form with a fresh test email, then we’ll wait for the lead."
+            description="Submit the form using the test link above."
             linkHref={created?.shortLink ?? null}
             canStart={Boolean(created?.id)}
             waiting={waiting}
             done={done}
-            onStartWaiting={startWaitingForLead}
+            warnings={[
+              <strong key="email">Use a new email for each test.</strong>,
+            ]}
           />
         ),
       },
@@ -224,7 +229,6 @@ export function FramerOnboardingWizard({
     scriptInstalled,
     scriptVerified,
     setPageUrl,
-    startWaitingForLead,
     waiting,
     webhookOk,
     webhookUrl,

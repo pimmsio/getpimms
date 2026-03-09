@@ -7,8 +7,11 @@ import { GuideCard } from "@/ui/onboarding/integrations/components/guide-card";
 import { IntegrationOnboardingWizard } from "@/ui/onboarding/integrations/integration-onboarding-wizard";
 import { InstallScriptStep } from "@/ui/onboarding/integrations/steps/install-script-step";
 import { CreateTestLinkStep } from "@/ui/onboarding/integrations/steps/create-test-link-step";
+import { ManualConfirmStep } from "@/ui/onboarding/integrations/steps/manual-confirm-step";
+import { ScriptInstallVerifyStep } from "@/ui/onboarding/integrations/steps/script-install-verify-step";
 import { WaitForLeadStep } from "@/ui/onboarding/integrations/steps/wait-for-lead-step";
 import { StepCard } from "@/ui/onboarding/integrations/components/step-card";
+import { BlurImage } from "@dub/ui";
 import { useAvailableDomains } from "@/ui/links/use-available-domains";
 import { canonicalizeProviderIds } from "@/ui/onboarding/canonical-provider-id";
 import { useCreateOnboardingTestLink } from "@/ui/onboarding/integrations/use-create-onboarding-test-link";
@@ -67,6 +70,8 @@ export function PodiaOnboardingWizard({
   } | null>(null);
 
   const [scriptDone, setScriptDone] = useState(false);
+  const [scriptVerified, setScriptVerified] = useState(false);
+  const [requireAccountDone, setRequireAccountDone] = useState(false);
 
   useEffect(() => {
     if (!savedThankYou) return;
@@ -88,7 +93,7 @@ export function PodiaOnboardingWizard({
     reset: resetTestLink,
   } = useCreateOnboardingTestLink({ workspaceId, domain: trackingDomain });
 
-  const { waiting, done, start: startWaitingForSale } = useWaitForLinkLead({
+  const { waiting, done } = useWaitForLinkLead({
     workspaceId,
     linkId: createdTestLink?.id,
     metric: "sales",
@@ -177,10 +182,18 @@ export function PodiaOnboardingWizard({
   }, [markProviderStarted, providerId, stripeReady]);
 
   const completed = useMemo(
-    () => [stripeReady, Boolean(thankYouLink), scriptDone, Boolean(createdTestLink), done],
-    [createdTestLink, done, scriptDone, stripeReady, thankYouLink],
+    () => [
+      stripeReady,
+      Boolean(thankYouLink),
+      scriptDone,
+      scriptVerified,
+      requireAccountDone,
+      Boolean(createdTestLink),
+      done,
+    ],
+    [createdTestLink, done, requireAccountDone, scriptDone, scriptVerified, stripeReady, thankYouLink],
   );
-  const wizard = useLinearWizard({ completed, initialStepIndex: 0, stepsCount: 5 });
+  const wizard = useLinearWizard({ completed, initialStepIndex: 0, stepsCount: 7 });
 
   // When Stripe is already connected, auto-advance past step 0.
   useEffect(() => {
@@ -198,7 +211,7 @@ export function PodiaOnboardingWizard({
         content: (
           <StepCard
             title="Connect Stripe"
-            description="Podia payments are processed by Stripe. Connect Stripe so Pimms can record purchases with attribution."
+            description="Podia uses Stripe for payments. Connect Stripe to track purchases."
           >
             <button
               type="button"
@@ -217,12 +230,12 @@ export function PodiaOnboardingWizard({
       },
       {
         id: "podia-step-2",
-        title: "Select short link domain",
+        title: "Pick a tracking domain",
         isComplete: Boolean(thankYouLink),
         content: (
           <StepCard
-            title="Pick a domain for the Podia short link"
-            description="We create a short link and use it in the Podia script. This link is what ties sales back to Pimms."
+            title="Pick a tracking domain"
+            description="Select the domain for the short link used by the Podia detection script."
           >
             <div className="space-y-3">
               <select
@@ -234,6 +247,8 @@ export function PodiaOnboardingWizard({
                   if (thankYouLink) {
                     setThankYouLink(null);
                     setScriptDone(false);
+                    setScriptVerified(false);
+                    setRequireAccountDone(false);
                     setCreateThankYouError(null);
                     resetTestLink();
                     void clearSavedThankYou();
@@ -254,9 +269,9 @@ export function PodiaOnboardingWizard({
               {loadingSaved ? (
                 <div className="text-sm text-neutral-500">Loading saved setup…</div>
               ) : savedThankYou ? (
-                  <div className="text-sm text-neutral-500">
-                    A tracking link is already saved for this workspace.
-                  </div>
+                <div className="text-sm text-neutral-500">
+                  A tracking link is already saved for this workspace.
+                </div>
               ) : null}
             </div>
 
@@ -300,7 +315,7 @@ export function PodiaOnboardingWizard({
         content: (
           <InstallScriptStep
             title="Add the Pimms detection script"
-            description="Copy this script and paste it into your Podia site: Settings → Analytics → Third Party Code → Website tracking code."
+            description="Copy this script into your Podia site: Settings → Website → Website tracking code."
             info={
               thankYouLink?.shortLink
                 ? `Tracking uses this short link: ${thankYouLink.shortLink}`
@@ -323,6 +338,64 @@ export function PodiaOnboardingWizard({
       },
       {
         id: "podia-step-4",
+        title: "Verify script installation",
+        isComplete: scriptVerified,
+        content: (
+          <ScriptInstallVerifyStep
+            title="Verify script installation"
+            description="Paste your Podia site URL to check the script is installed."
+            required={{ detection: true, thankYou: true }}
+            initialUrlPlaceholder="https://your-site.podia.com"
+            autoVerify
+            onNext={() => {
+              setScriptVerified(true);
+              wizard.advance();
+            }}
+          />
+        ),
+      },
+      {
+        id: "podia-step-5",
+        title: "Require account setup",
+        isComplete: requireAccountDone,
+        content: (
+          <StepCard
+            title="Enable 'Require account setup before checkout'"
+            description="In your Podia product settings, enable this option so the buyer's email is captured before payment."
+          >
+            <div className="mt-1 overflow-hidden rounded-lg border border-neutral-200">
+              <BlurImage
+                src="/static/guides/podia-option-require-account-before-checkout.webp"
+                alt="Podia option: Require account setup before checkout"
+                className="w-full"
+                width={800}
+                height={400}
+              />
+            </div>
+
+            <div className="mt-4 flex items-center">
+              {requireAccountDone ? (
+                <div className="sm:ml-auto inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-800">
+                  Completed
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="inline-flex w-full items-center justify-center rounded-md bg-neutral-900 px-3 py-2 text-sm font-semibold text-white hover:bg-neutral-800 sm:ml-auto sm:w-auto"
+                  onClick={() => {
+                    setRequireAccountDone(true);
+                    wizard.advance();
+                  }}
+                >
+                  I&apos;ve done this
+                </button>
+              )}
+            </div>
+          </StepCard>
+        ),
+      },
+      {
+        id: "podia-step-6",
         title: "Create test link",
         isComplete: Boolean(createdTestLink),
         content: (
@@ -330,8 +403,8 @@ export function PodiaOnboardingWizard({
             title="Create a test link (expires in 24h)"
             description={
               createdTestLink
-                ? "Your test link is ready. Open it in an incognito tab, then complete a test purchase."
-                : "Paste your Podia checkout / sales page URL. We'll create a test short link."
+                ? "Test link ready. Open in an incognito tab and complete a purchase."
+                : "Paste your Podia product or sales page URL."
             }
             urlValue={checkoutUrl}
             urlPlaceholder="https://your-site.podia.com/..."
@@ -342,34 +415,36 @@ export function PodiaOnboardingWizard({
             onCreate={async () => {
               try {
                 await createTestLink();
-                wizard.forceGoTo(4);
+                wizard.forceGoTo(6);
               } catch {
                 // error already set by hook
               }
             }}
             onOpenCreated={() => {
-              wizard.forceGoTo(4);
-              startWaitingForSale();
+              wizard.forceGoTo(6);
             }}
             onReset={resetTestLink}
           />
         ),
       },
       {
-        id: "podia-step-5",
+        id: "podia-step-7",
         title: "Verify tracking",
         isComplete: done,
         content: (
           <WaitForLeadStep
             title="Verify tracking works"
-            description="Open the test link and complete a test purchase in Podia. We'll wait for the sale."
+            description="Complete a test purchase using the link above. We detect the sale automatically."
             linkHref={createdTestLink?.shortLink ?? null}
             canStart={Boolean(createdTestLink?.id)}
             waiting={waiting}
             done={done}
-            onStartWaiting={startWaitingForSale}
             waitingLabel="Waiting for sale…"
             successLabel="Sale recorded. Tracking works."
+            warnings={[
+              <strong key="email">Use a new email for each test.</strong>,
+              "The purchase must be at least 1 EUR / 1 USD.",
+            ]}
           />
         ),
       },
@@ -386,16 +461,16 @@ export function PodiaOnboardingWizard({
     done,
     domains,
     loadingSaved,
-    integrations,
     onContinueToStripe,
     podiaScript,
     providerIds,
+    requireAccountDone,
     resetTestLink,
     scriptDone,
+    scriptVerified,
     savedThankYou,
     setCheckoutUrl,
     setProviderIds,
-    startWaitingForSale,
     stripeReady,
     thankYouLink,
     trackingDomain,

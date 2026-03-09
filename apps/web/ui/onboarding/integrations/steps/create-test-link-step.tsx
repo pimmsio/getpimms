@@ -3,8 +3,9 @@
 import { OnboardingTestLink } from "@/ui/onboarding/integrations/onboarding-test-link";
 import { StepCard } from "@/ui/onboarding/integrations/components/step-card";
 import { cn } from "@dub/utils";
-import { ExternalLink, Loader2, RotateCcw } from "lucide-react";
-import React from "react";
+import { Check, Copy, ExternalLink, Loader2, RotateCcw } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 export function CreateTestLinkStep({
   title,
@@ -33,6 +34,45 @@ export function CreateTestLinkStep({
   onOpenCreated?: () => void;
   onReset?: () => void;
 }) {
+  const [copied, setCopied] = useState(false);
+  const copyTimerRef = useRef<number | null>(null);
+  const prevCreatedRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) window.clearTimeout(copyTimerRef.current);
+    };
+  }, []);
+
+  // Auto-copy shortLink to clipboard when a new link is created.
+  useEffect(() => {
+    const link = created?.shortLink ?? null;
+    if (link && link !== prevCreatedRef.current) {
+      prevCreatedRef.current = link;
+      navigator.clipboard.writeText(link).then(
+        () => toast.success("Copied short link to clipboard!"),
+        () => {},
+      );
+    } else if (!link) {
+      prevCreatedRef.current = null;
+    }
+  }, [created?.shortLink]);
+
+  const copyLink = async () => {
+    if (!created?.shortLink) return;
+    setCopied(true);
+    if (copyTimerRef.current) window.clearTimeout(copyTimerRef.current);
+    copyTimerRef.current = window.setTimeout(() => {
+      setCopied(false);
+      copyTimerRef.current = null;
+    }, 2000);
+    try {
+      await navigator.clipboard.writeText(created.shortLink);
+    } catch {
+      // ignore
+    }
+  };
+
   return (
     <StepCard title={title} description={description}>
       {!created ? (
@@ -100,6 +140,14 @@ export function CreateTestLinkStep({
             >
               Open test link
               <ExternalLink className="size-4" />
+            </button>
+            <button
+              type="button"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 sm:w-auto"
+              onClick={() => void copyLink()}
+            >
+              {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+              {copied ? "Copied" : "Copy link"}
             </button>
             {onReset ? (
               <button

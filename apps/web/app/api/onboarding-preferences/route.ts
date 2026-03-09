@@ -83,7 +83,7 @@ export const GET = withWorkspace(async ({ session, workspace }) => {
 
 // POST /api/onboarding-preferences - update onboarding preferences for current user+workspace
 export const POST = withWorkspace(async ({ req, session, workspace }) => {
-  const body = bodySchema.parse(await req.json().catch(() => null));
+  const body = bodySchema.parse(await req.json().catch(() => ({})));
   const key = keyFor({ userId: session.user.id, workspaceId: workspace.id });
 
   const stored = await redis.get<any>(key);

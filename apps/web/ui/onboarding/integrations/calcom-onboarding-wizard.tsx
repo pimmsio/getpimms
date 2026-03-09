@@ -49,7 +49,7 @@ export function CalcomOnboardingWizard({
     workspaceId,
   });
 
-  const { waiting, done, start: startWaitingForLead } = useWaitForLinkLead({
+  const { waiting, done } = useWaitForLinkLead({
     workspaceId,
     linkId: created?.id,
   });
@@ -184,7 +184,11 @@ export function CalcomOnboardingWizard({
         content: (
           <CreateTestLinkStep
             title="Create a test link (expires in 24h)"
-            description="Paste your booking URL. We'll create a test short link."
+            description={
+              created
+                ? "Test link ready. Open in an incognito tab and book a meeting."
+                : "Paste the URL of your Cal.com booking page."
+            }
             urlValue={bookingUrl}
             urlPlaceholder="https://cal.com/your-name/your-event"
             onChangeUrl={setBookingUrl}
@@ -201,7 +205,6 @@ export function CalcomOnboardingWizard({
             }}
             onOpenCreated={() => {
               wizard.forceGoTo(5);
-              startWaitingForLead();
             }}
             onReset={resetTestLink}
           />
@@ -209,17 +212,19 @@ export function CalcomOnboardingWizard({
       },
       {
         id: "calcom-step-6",
-        title: "Verify the tracking works",
+        title: "Verify tracking works",
         isComplete: validated,
         content: (
           <WaitForLeadStep
-            title="Book a test meeting"
-            description='Open your test link and book a meeting with a test email. Use a different test email for each attempt.'
+            title="Verify tracking works"
+            description="Complete a test booking using the link above."
             linkHref={created?.shortLink ?? null}
             canStart={Boolean(created?.id)}
             waiting={validating}
             done={validated}
-            onStartWaiting={startWaitingForLead}
+            warnings={[
+              <strong key="email">Use a new email for each test.</strong>,
+            ]}
           />
         ),
       },
@@ -240,7 +245,6 @@ export function CalcomOnboardingWizard({
     validating,
     webhookUrl,
     workspaceId,
-    startWaitingForLead,
     wizard,
   ]);
 

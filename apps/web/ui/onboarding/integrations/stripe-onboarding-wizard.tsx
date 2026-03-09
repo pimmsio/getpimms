@@ -52,7 +52,7 @@ export function StripeOnboardingWizard({
     reset: resetTestLink,
   } = useCreateOnboardingTestLink({ workspaceId });
 
-  const { waiting, done, start: startWaitingForSale } = useWaitForLinkLead({
+  const { waiting, done } = useWaitForLinkLead({
     workspaceId,
     linkId: created?.id,
     metric: "sales",
@@ -207,7 +207,7 @@ export function StripeOnboardingWizard({
         content: (
           <ManualConfirmStep
             title="Approve permissions"
-            description="Open the PiMMS app in your Stripe Dashboard and click Connect workspace, then accept permissions."
+            description="Open the PiMMS app in your Stripe Dashboard and accept permissions."
             isDone={permissionsConfirmed}
             confirmLabel="I've done this"
             onConfirm={() => {
@@ -252,7 +252,11 @@ export function StripeOnboardingWizard({
         content: (
           <CreateTestLinkStep
             title="Create a test link (expires in 24h)"
-            description="First create a Stripe Payment Link, then paste it here. We’ll create a test short link. Make a test purchase using the link."
+            description={
+              created
+                ? "Test link ready. Open in an incognito tab and make a purchase."
+                : "Paste a Stripe Payment Link URL."
+            }
             info="This payment link is only for testing. You can delete it afterwards if needed."
             urlValue={paymentLinkUrl}
             urlPlaceholder="https://buy.stripe.com/..."
@@ -270,7 +274,6 @@ export function StripeOnboardingWizard({
             }}
             onOpenCreated={() => {
               forceGoTo(3);
-              startWaitingForSale();
             }}
             onReset={resetTestLink}
           />
@@ -283,14 +286,17 @@ export function StripeOnboardingWizard({
         content: (
           <WaitForLeadStep
             title="Make a test purchase"
-            description="Open your test link in an incognito tab and complete a test purchase."
+            description="Complete a test purchase using the link above."
             linkHref={created?.shortLink ?? null}
             canStart={Boolean(created?.id)}
             waiting={waiting}
             done={done}
-            onStartWaiting={startWaitingForSale}
             waitingLabel="Waiting for sale…"
             successLabel="Sale recorded. Tracking works."
+            warnings={[
+              <strong key="email">Use a new email for each test.</strong>,
+              "The purchase must be at least 1 EUR / 1 USD.",
+            ]}
           />
         ),
       },
@@ -367,7 +373,6 @@ export function StripeOnboardingWizard({
     setupGuideHref,
     setupGuideThumbnail,
     startConnectFlow,
-    startWaitingForSale,
     stripeInstalled,
     waiting,
   ]);

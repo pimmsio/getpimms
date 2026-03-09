@@ -108,7 +108,7 @@ export function BrevoOnboardingWizard({
     reset: resetTestLink,
   } = useCreateOnboardingTestLink({ workspaceId, domain: trackingDomain });
 
-  const { waiting, done, start: startWaitingForLead } = useWaitForLinkLead({
+  const { waiting, done } = useWaitForLinkLead({
     workspaceId,
     linkId: createdTestLink?.id,
   });
@@ -270,8 +270,8 @@ export function BrevoOnboardingWizard({
         isComplete: Boolean(thankYouLink),
         content: (
           <StepCard
-            title="Create a Brevo thank-you redirect link"
-            description="Generate a short link and paste it into Brevo’s “Thank you URL”."
+            title="Create a thank-you redirect link"
+            description="Generate a redirect link, then paste it into Brevo's Thank you URL field."
           >
             <div className="space-y-4">
               <div>
@@ -389,7 +389,11 @@ export function BrevoOnboardingWizard({
         content: (
           <CreateTestLinkStep
             title="Create a test link (expires in 24h)"
-            description="Paste your Brevo form URL or Brevo meeting booking URL. We’ll create a test short link."
+            description={
+              createdTestLink
+                ? "Test link ready. Open in an incognito tab and submit a form or book a meeting."
+                : "Paste your Brevo form or meeting URL."
+            }
             urlValue={brevoUrl}
             urlPlaceholder="https://..."
             onChangeUrl={setBrevoUrl}
@@ -406,7 +410,6 @@ export function BrevoOnboardingWizard({
             }}
             onOpenCreated={() => {
               wizard.forceGoTo(3);
-              startWaitingForLead();
             }}
             onReset={resetTestLink}
           />
@@ -419,14 +422,16 @@ export function BrevoOnboardingWizard({
         content: (
           <WaitForLeadStep
             title="Verify tracking works"
-            description="Submit a Brevo form or book a Brevo meeting using the test link. We’ll wait for the lead."
+            description="Submit a form or book a meeting using the test link."
             linkHref={createdTestLink?.shortLink ?? null}
             canStart={Boolean(createdTestLink?.id)}
             waiting={waiting}
             done={done}
-            onStartWaiting={startWaitingForLead}
             waitingLabel="Waiting for lead…"
             successLabel="Contact recorded. Tracking works."
+            warnings={[
+              <strong key="email">Use a new email for each test.</strong>,
+            ]}
           />
         ),
       },
@@ -449,7 +454,6 @@ export function BrevoOnboardingWizard({
     resetTestLink,
     savedThankYou,
     setBrevoUrl,
-    startWaitingForLead,
     step1Done,
     thankYouLink,
     trackingDomain,

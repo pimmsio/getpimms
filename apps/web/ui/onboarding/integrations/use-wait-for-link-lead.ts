@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function useWaitForLinkLead({
   workspaceId,
@@ -17,21 +17,18 @@ export function useWaitForLinkLead({
   const [done, setDone] = useState(false);
   const timerRef = useRef<number | null>(null);
 
-  const start = useCallback(() => {
-    if (!workspaceId || !linkId) return;
-    if (done) return;
-    setWaiting(true);
-  }, [done, linkId, workspaceId]);
-
-  const stop = useCallback(() => {
-    setWaiting(false);
-  }, []);
-
   // Reset state when the tracked link changes (e.g. "Create another").
   useEffect(() => {
     setDone(false);
     setWaiting(false);
   }, [linkId]);
+
+  // Auto-start polling as soon as linkId is available.
+  useEffect(() => {
+    if (!workspaceId || !linkId) return;
+    if (done) return;
+    setWaiting(true);
+  }, [workspaceId, linkId, done]);
 
   useEffect(() => {
     if (!workspaceId || !linkId) return;
@@ -76,6 +73,6 @@ export function useWaitForLinkLead({
     };
   }, [done, linkId, metric, min, pollIntervalMs, waiting, workspaceId]);
 
-  return { waiting, done, start, stop };
+  return { waiting, done };
 }
 

@@ -61,7 +61,7 @@ export function CalendlyOnboardingWizard({
     reset: resetTestLink,
   } = useCreateOnboardingTestLink({ workspaceId });
 
-  const { waiting, done, start: startWaitingForLead } = useWaitForLinkLead({
+  const { waiting, done } = useWaitForLinkLead({
     workspaceId,
     linkId: created?.id,
   });
@@ -187,7 +187,11 @@ export function CalendlyOnboardingWizard({
         content: (
           <CreateTestLinkStep
             title="Create a test link (expires in 24h)"
-            description="Paste your Calendly booking URL. We’ll create a test short link."
+            description={
+              created
+                ? "Test link ready. Open in an incognito tab and book a meeting."
+                : "Paste your Calendly booking URL."
+            }
             urlValue={bookingUrl}
             urlPlaceholder="https://calendly.com/your-name/30min"
             onChangeUrl={setBookingUrl}
@@ -204,7 +208,6 @@ export function CalendlyOnboardingWizard({
             }}
             onOpenCreated={() => {
               forceGoTo(2);
-              startWaitingForLead();
             }}
             onReset={resetTestLink}
           />
@@ -216,13 +219,15 @@ export function CalendlyOnboardingWizard({
         isComplete: done,
         content: (
           <WaitForLeadStep
-            title="Book a test meeting"
-            description="Open your test link in an incognito tab and book a meeting with a fresh test email."
+            title="Verify tracking works"
+            description="Book a meeting using the test link above."
             linkHref={created?.shortLink ?? null}
             canStart={Boolean(created?.id)}
             waiting={waiting}
             done={done}
-            onStartWaiting={startWaitingForLead}
+            warnings={[
+              <strong key="email">Use a new email for each test.</strong>,
+            ]}
           />
         ),
       },
@@ -240,7 +245,6 @@ export function CalendlyOnboardingWizard({
     forceGoTo,
     resetTestLink,
     startConnectFlow,
-    startWaitingForLead,
     waiting,
     setBookingUrl,
   ]);

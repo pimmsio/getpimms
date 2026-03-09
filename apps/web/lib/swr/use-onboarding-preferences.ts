@@ -29,24 +29,29 @@ export function useOnboardingPreferences() {
     },
   );
 
+  const postPreferences = async (body: Record<string, unknown>) => {
+    const res = await fetch(
+      `/api/onboarding-preferences?workspaceId=${workspaceId}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      },
+    );
+    if (!res.ok) {
+      console.error("Failed to update onboarding preferences:", res.status);
+    }
+    await mutate();
+  };
+
   const setProviderIds = async (providerIds: string[]) => {
     if (!workspaceId) return;
-    await fetch(`/api/onboarding-preferences?workspaceId=${workspaceId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ providerIds }),
-    });
-    await mutate();
+    await postPreferences({ providerIds });
   };
 
   const setCompletedProviderIds = async (completedProviderIds: string[]) => {
     if (!workspaceId) return;
-    await fetch(`/api/onboarding-preferences?workspaceId=${workspaceId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ completedProviderIds }),
-    });
-    await mutate();
+    await postPreferences({ completedProviderIds });
   };
 
   const markProviderStarted = async (providerId: string) => {
@@ -55,30 +60,14 @@ export function useOnboardingPreferences() {
     const completed = data?.completedProviderIds ?? [];
     if (completed.includes(providerId)) return;
     const existing = data?.startedProviderIds ?? [];
-    const now = Date.now();
-    const next = [...existing];
-    const idx = next.findIndex((entry) => entry.id === providerId);
-    if (idx >= 0) {
-      next[idx] = { id: providerId, startedAt: now };
-    } else {
-      next.push({ id: providerId, startedAt: now });
-    }
-    await fetch(`/api/onboarding-preferences?workspaceId=${workspaceId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ startedProviderIds: next }),
-    });
-    await mutate();
+    if (existing.some((entry) => entry.id === providerId)) return;
+    const next = [...existing, { id: providerId, startedAt: Date.now() }];
+    await postPreferences({ startedProviderIds: next });
   };
 
   const setOtherMessage = async (otherMessage: string) => {
     if (!workspaceId) return;
-    await fetch(`/api/onboarding-preferences?workspaceId=${workspaceId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ otherMessage }),
-    });
-    await mutate();
+    await postPreferences({ otherMessage });
   };
 
   return {

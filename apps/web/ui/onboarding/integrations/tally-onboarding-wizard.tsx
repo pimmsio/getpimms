@@ -53,7 +53,7 @@ export function TallyOnboardingWizard({
      reset: resetTestLink,
    } = useCreateOnboardingTestLink({ workspaceId });
  
-   const { waiting, done, start: startWaitingForLead } = useWaitForLinkLead({
+   const { waiting, done } = useWaitForLinkLead({
      workspaceId,
      linkId: created?.id,
    });
@@ -189,7 +189,11 @@ export function TallyOnboardingWizard({
          content: (
            <CreateTestLinkStep
              title="Create a test link (expires in 24h)"
-             description="Paste the URL of the page that hosts your Tally form."
+             description={
+               created
+                 ? "Test link ready. Open in an incognito tab and submit the form."
+                 : "Paste the URL of the page that hosts your Tally form."
+             }
              urlValue={formUrl}
              urlPlaceholder="https://your-site.com/page-with-tally-form"
              onChangeUrl={setFormUrl}
@@ -206,7 +210,6 @@ export function TallyOnboardingWizard({
              }}
              onOpenCreated={() => {
                wizard.forceGoTo(5);
-               startWaitingForLead();
              }}
              onReset={resetTestLink}
            />
@@ -214,19 +217,21 @@ export function TallyOnboardingWizard({
        },
        {
          id: "tally-step-6",
-         title: "Verify the tracking works",
+         title: "Verify tracking works",
          isComplete: done,
          content: (
            <WaitForLeadStep
              title="Submit a test form"
-             description="Open your test link in an incognito tab and submit the Tally form with a test email."
+             description="Submit the form using the test link above."
              linkHref={created?.shortLink ?? null}
              canStart={Boolean(created?.id)}
              waiting={waiting}
              done={done}
-             onStartWaiting={startWaitingForLead}
              waitingLabel="Waiting for lead…"
              successLabel="Contact recorded. Tracking works."
+             warnings={[
+               <strong key="email">Use a new email for each test.</strong>,
+             ]}
            />
          ),
        },
@@ -242,7 +247,6 @@ export function TallyOnboardingWizard({
      scriptInstalled,
      scriptVerified,
      setFormUrl,
-     startWaitingForLead,
      step1Done,
      step2Done,
      waiting,

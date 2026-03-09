@@ -277,13 +277,6 @@ function ProTrialModalHelper({
         >
           Start free trial
         </AppButton>
-        <button
-          type="button"
-          onClick={() => setShowModal(false)}
-          className="mt-2 flex h-10 w-full items-center justify-center rounded-xl border border-neutral-200 text-sm font-semibold text-neutral-700 transition-colors hover:bg-neutral-50 md:mt-3 md:h-12"
-        >
-          Skip
-        </button>
         <p className="mt-3 text-center text-xs text-neutral-400 md:mt-4">
           By using our service you accept our{" "}
           <a

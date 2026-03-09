@@ -49,7 +49,7 @@ export function SystemeioOnboardingWizard({
     workspaceId,
   });
 
-  const { waiting, done, start: startWaitingForLead } = useWaitForLinkLead({
+  const { waiting, done } = useWaitForLinkLead({
     workspaceId,
     linkId: created?.id,
   });
@@ -121,7 +121,7 @@ export function SystemeioOnboardingWizard({
           <ScriptInstallVerifyStep
             title="Verify the script is detected"
             description="Paste a public URL of your funnel page (or your website) to verify the script is installed."
-            required={{ detection: true }}
+            required={{ detection: true, forwardAll: true }}
             initialUrlPlaceholder="youraccount.systeme.io/your-funnel"
             autoVerify
             onNext={() => {
@@ -159,7 +159,11 @@ export function SystemeioOnboardingWizard({
         content: (
           <CreateTestLinkStep
             title="Create a test link (expires in 24h)"
-            description="Paste the first step of your Systeme.io funnel URL. We’ll create a test short link."
+            description={
+              created
+                ? "Test link ready. Open in an incognito tab and complete an opt-in."
+                : "Paste your Systeme.io funnel page URL."
+            }
             urlValue={funnelUrl}
             urlPlaceholder="https://youraccount.systeme.io/your-funnel"
             onChangeUrl={setFunnelUrl}
@@ -176,7 +180,6 @@ export function SystemeioOnboardingWizard({
             }}
             onOpenCreated={() => {
               wizard.forceGoTo(4);
-              startWaitingForLead();
             }}
             onReset={resetTestLink}
           />
@@ -188,15 +191,17 @@ export function SystemeioOnboardingWizard({
         isComplete: validated,
         content: (
           <WaitForLeadStep
-            title="Run a test opt-in (and optionally a sale)"
-            description="Open your test link in an incognito tab and complete an opt-in. If your funnel includes payment, you can also run a test purchase."
+            title="Verify tracking works"
+            description="Complete an opt-in using the test link above. Optionally test a purchase too."
             linkHref={created?.shortLink ?? null}
             canStart={Boolean(created?.id)}
             waiting={validating}
             done={validated}
-            onStartWaiting={startWaitingForLead}
             waitingLabel="Waiting for lead…"
             successLabel="Contact recorded. Tracking works."
+            warnings={[
+              <strong key="email">Use a new email for each test.</strong>,
+            ]}
           />
         ),
       },
@@ -212,7 +217,6 @@ export function SystemeioOnboardingWizard({
     scriptVerified,
     setFunnelUrl,
     secret,
-    startWaitingForLead,
     validated,
     validating,
     webhookConfigured,

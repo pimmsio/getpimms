@@ -31,17 +31,16 @@ export function CopyField({
   const copy = async () => {
     if (disabled) return;
     if (!textToCopy) return;
-    setCopied(true);
-    if (timerRef.current) window.clearTimeout(timerRef.current);
-    timerRef.current = window.setTimeout(() => {
-      setCopied(false);
-      timerRef.current = null;
-    }, 2000);
-
     try {
       await navigator.clipboard.writeText(textToCopy);
+      setCopied(true);
+      if (timerRef.current) window.clearTimeout(timerRef.current);
+      timerRef.current = window.setTimeout(() => {
+        setCopied(false);
+        timerRef.current = null;
+      }, 2000);
     } catch {
-      // ignore (we still show feedback)
+      // clipboard not available
     }
   };
 

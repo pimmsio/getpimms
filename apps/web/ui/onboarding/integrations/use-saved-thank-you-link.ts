@@ -49,7 +49,7 @@ export function useSavedThankYouLink({
   const persist = useCallback(
     async (input: Omit<SavedThankYouLink, "savedAt">) => {
       if (!workspaceId) return null;
-      // optimistic local update (server returns same shape + savedAt)
+      const prev = saved;
       setSaved({ ...input, savedAt: Date.now() });
       try {
         const res = await fetch(
@@ -68,16 +68,20 @@ export function useSavedThankYouLink({
             }),
           },
         );
-        if (!res.ok) return null;
+        if (!res.ok) {
+          setSaved(prev);
+          return null;
+        }
         const payload = (await res.json().catch(() => null)) as any;
         const stored = payload?.thankYou as SavedThankYouLink | null | undefined;
         if (stored) setSaved(stored);
         return stored ?? null;
       } catch {
+        setSaved(prev);
         return null;
       }
     },
-    [providerKey, workspaceId],
+    [providerKey, saved, workspaceId],
   );
 
   const clear = useCallback(async () => {
