@@ -4,6 +4,7 @@ import { sendOtpAction } from "@/lib/actions/send-otp";
 import z from "@/lib/zod";
 import { signUpSchema } from "@/lib/zod/schemas/auth";
 import { CtaButton } from "@dub/ui";
+import { cn } from "@dub/utils";
 import { useAction } from "next-safe-action/hooks";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -53,11 +54,12 @@ export const SignUpEmail = () => {
           readOnly={!errors.email && lockEmail}
           {...register("email")}
         />
-        {errors.email?.message && (
-          <p className="text-sm text-red-500" role="alert">
-            {errors.email.message}
-          </p>
-        )}
+        <p
+          className={cn("text-sm text-red-500", !errors.email?.message && "hidden")}
+          role="alert"
+        >
+          {errors.email?.message}
+        </p>
         <AppInput
           type="password"
           placeholder="Password"
@@ -65,11 +67,12 @@ export const SignUpEmail = () => {
           {...register("password")}
           minLength={8}
         />
-        {errors.password?.message && (
-          <p className="text-sm text-red-500" role="alert">
-            {errors.password.message}
-          </p>
-        )}
+        <p
+          className={cn("text-sm text-red-500", !errors.password?.message && "hidden")}
+          role="alert"
+        >
+          {errors.password?.message}
+        </p>
         <CtaButton
           type="submit"
           loading={isPending}

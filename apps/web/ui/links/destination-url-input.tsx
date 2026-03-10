@@ -2,16 +2,12 @@
 
 import { DomainProps } from "@/lib/types";
 import {
-  HelpTooltip,
-  SimpleTooltipContent,
   useMediaQuery,
-  UTM_PARAMETERS,
 } from "@dub/ui";
-import { getParamsFromURL } from "@dub/utils";
+import { cn } from "@dub/utils";
 import { forwardRef, HTMLProps, ReactNode, useId } from "react";
 import { useFormContext } from "react-hook-form";
 import { AlertCircleFill } from "../shared/icons";
-import { ProBadgeTooltip } from "../shared/pro-badge-tooltip";
 import { LinkFormData } from "./link-builder/link-builder-provider";
 
 type DestinationUrlInputProps = {
@@ -104,20 +100,27 @@ export const DestinationUrlInput = forwardRef<
               }
             }}
           />
-          {error && (
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-              <AlertCircleFill
-                className="h-5 w-5 text-red-500"
-                aria-hidden="true"
-              />
-            </div>
-          )}
+          <div
+            className={cn(
+              "pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3",
+              !error && "hidden",
+            )}
+          >
+            <AlertCircleFill
+              className="h-5 w-5 text-red-500"
+              aria-hidden="true"
+            />
+          </div>
         </div>
-        {error && (
-          <p className="mt-2 text-sm text-red-600" id="key-error">
-            {error}
-          </p>
-        )}
+        <p
+          className={cn(
+            "mt-2 text-sm text-red-600",
+            !error && "hidden",
+          )}
+          id="key-error"
+        >
+          {error}
+        </p>
       </div>
     );
   },

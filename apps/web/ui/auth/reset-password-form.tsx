@@ -3,6 +3,7 @@
 import z from "@/lib/zod";
 import { resetPasswordSchema } from "@/lib/zod/schemas/auth";
 import { Label } from "@dub/ui";
+import { cn } from "@dub/utils";
 import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -56,15 +57,13 @@ export const ResetPasswordForm = () => {
             required
             autoComplete="new-password"
           />
-          {errors.password && (
-            <span
-              className="block text-sm text-red-500"
-              role="alert"
-              aria-live="assertive"
-            >
-              {errors.password.message}
-            </span>
-          )}
+          <span
+            className={cn("block text-sm text-red-500", !errors.password && "hidden")}
+            role="alert"
+            aria-live="assertive"
+          >
+            {errors.password?.message}
+          </span>
         </div>
 
         <div className="grid w-full max-w-sm items-center gap-2">
@@ -75,15 +74,13 @@ export const ResetPasswordForm = () => {
             required
             autoComplete="new-password"
           />
-          {errors.confirmPassword && (
-            <span
-              className="block text-sm text-red-500"
-              role="alert"
-              aria-live="assertive"
-            >
-              {errors.confirmPassword.message}
-            </span>
-          )}
+          <span
+            className={cn("block text-sm text-red-500", !errors.confirmPassword && "hidden")}
+            role="alert"
+            aria-live="assertive"
+          >
+            {errors.confirmPassword?.message}
+          </span>
         </div>
 
         <AppButton type="submit" variant="primary" loading={isSubmitting} disabled={isSubmitting}>

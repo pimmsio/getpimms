@@ -164,7 +164,7 @@ export const DraftControls = forwardRef<
               ) : (
                 <CircleCheck className="size-3.5" />
               )}
-              {isSavePending ? "Saving..." : "Draft saved"}
+              <span>{isSavePending ? "Saving..." : "Draft saved"}</span>
             </div>
           ) : drafts.length > 0 ? (
             <div className="flex items-center justify-end gap-1">

@@ -126,7 +126,7 @@ export const EmailSignIn = ({ next }: { next?: string }) => {
         }}
         className="flex flex-col gap-y-3"
       >
-        {authMethod === "email" && (
+        <div className={cn(authMethod !== "email" && "hidden")}>
           <AppInput
             id="email"
             name="email"
@@ -145,19 +145,17 @@ export const EmailSignIn = ({ next }: { next?: string }) => {
               },
             )}
           />
-        )}
+        </div>
 
-        {showPasswordField && (
-          <div>
-            <AppInput
-              type="password"
-              autoFocus={!isMobile}
-              value={password}
-              placeholder="Password (optional)"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-        )}
+        <div className={cn(!showPasswordField && "hidden")}>
+          <AppInput
+            type="password"
+            autoFocus={!isMobile}
+            value={password}
+            placeholder="Password (optional)"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
 
         <CtaButton
           {...(authMethod !== "email" && {
@@ -175,14 +173,15 @@ export const EmailSignIn = ({ next }: { next?: string }) => {
           {`Continue with ${password ? "Password" : "Email"}`}
         </CtaButton>
       </form>
-      {showPasswordField && (
-        <Link
-          href={`/forgot-password?email=${encodeURIComponent(email)}`}
-          className="text-center text-xs text-neutral-500 transition-colors hover:text-black"
-        >
-          Forgot password?
-        </Link>
-      )}
+      <Link
+        href={`/forgot-password?email=${encodeURIComponent(email)}`}
+        className={cn(
+          "text-center text-xs text-neutral-500 transition-colors hover:text-black",
+          !showPasswordField && "hidden",
+        )}
+      >
+        Forgot password?
+      </Link>
     </>
   );
 };

@@ -40,28 +40,25 @@ export function PaginationControls({
     >
       <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
         <div className="text-xs sm:text-sm whitespace-nowrap">
-          <span className="hidden sm:inline-block text-neutral-600">Viewing</span>{" "}
-          {totalCount > 0 && (
-            <>
-              <span className="font-semibold text-neutral-900">
-                {(validPageIndex - 1) * validPageSize + 1}-
-                {Math.min(
-                  (validPageIndex - 1) * validPageSize +
-                    validPageSize,
-                  totalCount,
-                )}
-              </span>
-              {showTotalCount && (
-                <>
-                  <span className="hidden sm:inline text-neutral-600"> of </span>
-                  <span className="hidden sm:inline font-semibold text-neutral-900">
-                    {nFormatter(totalCount, { full: true })}
-                  </span>
-                </>
+          <span className="hidden sm:inline-block text-neutral-600">Viewing</span>
+          <span> </span>
+          <span className={cn(totalCount <= 0 && "hidden")}>
+            <span className="font-semibold text-neutral-900">
+              {(validPageIndex - 1) * validPageSize + 1}-
+              {Math.min(
+                (validPageIndex - 1) * validPageSize +
+                  validPageSize,
+                totalCount,
               )}
-            </>
-          )}
-          {" "}
+            </span>
+            <span className={cn("hidden sm:inline", !showTotalCount && "!hidden")}>
+              <span className="text-neutral-600"> of </span>
+              <span className="font-semibold text-neutral-900">
+                {nFormatter(totalCount, { full: true })}
+              </span>
+            </span>
+          </span>
+          <span> </span>
           <span className="text-neutral-600">
             {typeof unit === "function" ? unit(totalCount !== 1) : unit}
           </span>

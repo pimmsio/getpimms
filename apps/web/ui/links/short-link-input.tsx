@@ -310,7 +310,10 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
             }}
             {...inputProps}
           />
-          {(error || isLongLink) && (
+          <div className={cn(
+            "absolute inset-y-0 right-0 z-50 flex items-center pr-3",
+            !error && !isLongLink && "hidden",
+          )}>
             <Tooltip
               content={
                 error || (
@@ -344,18 +347,18 @@ export const ShortLinkInput = forwardRef<HTMLInputElement, ShortLinkInputProps>(
                 )
               }
             >
-              <div className="absolute inset-y-0 right-0 z-50 flex items-center pr-3">
+              <div>
                 {error ? (
                   <AlertCircleFill
                     className="h-5 w-5 text-red-500"
                     aria-hidden="true"
                   />
-                ) : isLongLink ? (
+                ) : (
                   <AlertCircleFill className="h-5 w-5 text-amber-500" />
-                ) : null}
+                )}
               </div>
             </Tooltip>
-          )}
+          </div>
         </div>
         {error ? (
           error.includes("Upgrade to") ? (

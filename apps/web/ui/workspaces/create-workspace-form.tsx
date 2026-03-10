@@ -153,20 +153,27 @@ export function CreateWorkspaceForm({
             }}
             aria-invalid="true"
           />
-          {errors.slug && (
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-              <AlertCircleFill
-                className="h-5 w-5 text-red-500"
-                aria-hidden="true"
-              />
-            </div>
-          )}
+          <div
+            className={cn(
+              "pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3",
+              !errors.slug && "hidden",
+            )}
+          >
+            <AlertCircleFill
+              className="h-5 w-5 text-red-500"
+              aria-hidden="true"
+            />
+          </div>
         </div>
-        {errors.slug && (
-          <p className="mt-2 text-sm text-red-600" id="slug-error">
-            {errors.slug.message}
-          </p>
-        )}
+        <p
+          className={cn(
+            "mt-2 text-sm text-red-600",
+            !errors.slug && "hidden",
+          )}
+          id="slug-error"
+        >
+          {errors.slug?.message}
+        </p>
       </div>
 
       <Button

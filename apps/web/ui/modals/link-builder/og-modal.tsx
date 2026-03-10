@@ -16,7 +16,7 @@ import {
   Tooltip,
 } from "@dub/ui";
 import { LoadingCircle, Magic, Unsplash } from "@dub/ui/icons";
-import { resizeImage } from "@dub/utils";
+import { cn, resizeImage } from "@dub/utils";
 import { useCompletion } from "ai/react";
 import posthog from "posthog-js";
 import {
@@ -365,11 +365,14 @@ function OGModalInner({
                 </div>
               </div>
               <div className="relative mt-1 flex rounded shadow-sm">
-                {generatingMetatags && (
-                  <div className="absolute flex h-full w-full items-center justify-center rounded border border-neutral-300 bg-white">
-                    <LoadingCircle />
-                  </div>
-                )}
+                <div
+                  className={cn(
+                    "absolute flex h-full w-full items-center justify-center rounded border border-neutral-300 bg-white",
+                    !generatingMetatags && "hidden",
+                  )}
+                >
+                  <LoadingCircle />
+                </div>
                 <TextareaAutosize
                   name="title"
                   id="title"
@@ -421,11 +424,14 @@ function OGModalInner({
                 </div>
               </div>
               <div className="relative mt-1 flex rounded shadow-sm">
-                {generatingMetatags && (
-                  <div className="absolute flex h-full w-full items-center justify-center rounded border border-neutral-300 bg-white">
-                    <LoadingCircle />
-                  </div>
-                )}
+                <div
+                  className={cn(
+                    "absolute flex h-full w-full items-center justify-center rounded border border-neutral-300 bg-white",
+                    !generatingMetatags && "hidden",
+                  )}
+                >
+                  <LoadingCircle />
+                </div>
                 <TextareaAutosize
                   name="description"
                   id="description"

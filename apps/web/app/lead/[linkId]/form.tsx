@@ -2,6 +2,7 @@
 
 import { AlertCircleFill } from "@/ui/shared/icons";
 import { Button, useMediaQuery } from "@dub/ui";
+import { cn } from "@dub/utils";
 import { useEffect } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { captureLeadMagnet } from "./action";
@@ -85,20 +86,27 @@ export default function LeadMagnetForm({
                 : "border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-0"
             } block w-full rounded focus:outline-none sm:text-sm`}
           />
-          {state.error && (
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-              <AlertCircleFill
-                className="h-5 w-5 text-red-500"
-                aria-hidden="true"
-              />
-            </div>
-          )}
+          <div
+            className={cn(
+              "pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3",
+              !state.error && "hidden",
+            )}
+          >
+            <AlertCircleFill
+              className="h-5 w-5 text-red-500"
+              aria-hidden="true"
+            />
+          </div>
         </div>
-        {state.error && (
-          <p className="mt-2 text-sm text-red-600" id="lead-magnet-error">
-            {state.error}
-          </p>
-        )}
+        <p
+          className={cn(
+            "mt-2 text-sm text-red-600",
+            !state.error && "hidden",
+          )}
+          id="lead-magnet-error"
+        >
+          {state.error}
+        </p>
       </div>
 
       <FormButton />

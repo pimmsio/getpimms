@@ -113,20 +113,20 @@ export const LinkPreview = memo(({ showMetaFields = true }: { showMetaFields?: b
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-medium text-neutral-700">
-            Custom preview is {proxy ? "enabled" : "disabled"}
-            {url && !doIndex && (
-              <button
-                type="button"
-                onClick={() => refreshMetadata({ shouldDirty: true })}
-                disabled={generatingMetatags}
-                className={cn(
-                  "ml-2 text-xs font-normal text-neutral-500 underline-offset-2 hover:text-neutral-700 hover:underline",
-                  generatingMetatags && "cursor-not-allowed opacity-50",
-                )}
-              >
-                {generatingMetatags ? "refreshing..." : "(refresh now)"}
-              </button>
-            )}
+            <span>Custom preview is </span>
+            <span>{proxy ? "enabled" : "disabled"}</span>
+            <button
+              type="button"
+              onClick={() => refreshMetadata({ shouldDirty: true })}
+              disabled={generatingMetatags}
+              className={cn(
+                "ml-2 text-xs font-normal text-neutral-500 underline-offset-2 hover:text-neutral-700 hover:underline",
+                generatingMetatags && "cursor-not-allowed opacity-50",
+                (!url || doIndex) && "hidden",
+              )}
+            >
+              <span>{generatingMetatags ? "refreshing..." : "(refresh now)"}</span>
+            </button>
           </h2>
           <HelpTooltip
             label="Help: Custom preview"
@@ -383,11 +383,9 @@ function DefaultOGPreview({
               setValue("proxy", true, { shouldDirty: true });
             }}
           />
-          {hostname && (
-            <p className="mt-2 text-xs text-neutral-600">
-              {proxy ? SHORT_DOMAIN : hostname || "domain.com"}
-            </p>
-          )}
+          <p className={cn("mt-2 text-xs text-neutral-600", !hostname && "hidden")}>
+            {proxy ? SHORT_DOMAIN : hostname || "domain.com"}
+          </p>
         </>
       )}
     </div>
