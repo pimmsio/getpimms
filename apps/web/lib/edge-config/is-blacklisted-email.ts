@@ -1,7 +1,7 @@
 import { edgeConfigGet } from "./safe-get";
 
 export const isBlacklistedEmail = async (email: string) => {
-  if (!process.env.NEXT_PUBLIC_IS_DUB || !process.env.EDGE_CONFIG) {
+  if (!process.env.EDGE_CONFIG) {
     return false;
   }
 
@@ -12,5 +12,10 @@ export const isBlacklistedEmail = async (email: string) => {
     blacklistedEmails = [];
   }
   if (blacklistedEmails.length === 0) return false;
-  return new RegExp(blacklistedEmails.join("|"), "i").test(email);
+  return new RegExp(
+    blacklistedEmails
+      .map((e) => e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+      .join("|"),
+    "i",
+  ).test(email);
 };

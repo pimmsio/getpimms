@@ -6,6 +6,7 @@ import {
 import { verifyFolderAccess } from "@/lib/folder/permissions";
 import { getPangeaDomainIntel } from "@/lib/pangea";
 import { checkIfUserExists, getRandomKey } from "@/lib/planetscale";
+import { checkPhishingHeuristics } from "@/lib/phishing-heuristics";
 import { checkUrlWithSafeBrowsing } from "@/lib/safeBrowsing";
 import { isStored } from "@/lib/storage";
 import { NewLinkProps, ProcessedLinkProps, WorkspaceProps } from "@/lib/types";
@@ -820,6 +821,27 @@ async function checkUrlSecurity({
         `URL ${currentUrl} is whitelisted, skipping remaining checks`,
       );
       return { isMalicious: false };
+    }
+
+    // Check heuristics (catches fresh phishing kits Safe Browsing doesn't know yet)
+    const heuristicResult = checkPhishingHeuristics(currentUrl);
+    if (heuristicResult.suspicious) {
+      await handleMaliciousDetection({
+        url: currentUrl,
+        domain,
+        reason: `Phishing heuristics: ${heuristicResult.reason}`,
+        isRedirect,
+        originalUrl,
+        urlsToCheck,
+        userId,
+        workspaceId,
+      });
+      return {
+        isMalicious: true,
+        reason:
+          "Invalid destination URL: Flagged as malicious. An administrator has been notified.",
+        code: "unprocessable_entity",
+      };
     }
 
     // Check Safe Browsing
